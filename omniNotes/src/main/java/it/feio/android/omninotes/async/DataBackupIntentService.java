@@ -369,8 +369,8 @@ public class DataBackupIntentService extends IntentService implements OnAttachin
 				
 				if (TextUtils.isEmpty(springpadAttachment.getUrl())) {
 					continue;
-				};
-				
+				}
+
 				// Tries first with online images
 				try {
 					File file = StorageManager.createNewAttachmentFileFromHttp(this, springpadAttachment.getUrl());
@@ -403,8 +403,8 @@ public class DataBackupIntentService extends IntentService implements OnAttachin
 			// Updating notification
 			importedSpringpadNotes++;
 			updateImportNotification(importer);
-		};
-		
+		}
+
 		// Delete temp data
 		try {
 			importer.clean();
