@@ -36,7 +36,7 @@ import it.feio.android.omninotes.models.listeners.OnNoteSaved;
 import it.feio.android.omninotes.receiver.AlarmReceiver;
 import it.feio.android.omninotes.utils.Constants;
 import it.feio.android.omninotes.utils.StorageManager;
-import roboguice.util.Ln;
+
 
 public class SaveNoteTask extends AsyncTask<Note, Void, Note> {
 
@@ -79,29 +79,29 @@ public class SaveNoteTask extends AsyncTask<Note, Void, Note> {
 		List<Attachment> deletedAttachments = note.getAttachmentsListOld();
 		for (Attachment attachment : note.getAttachmentsList()) {
 			if (attachment.getId() != 0) {
-                // Workaround to prevent deleting attachments if instance is changed (app restart)
-                if (deletedAttachments.indexOf(attachment) == -1) {
-                    attachment = getFixedAttachmentInstance(deletedAttachments, attachment);
-                }
-                deletedAttachments.remove(attachment);
+				// Workaround to prevent deleting attachments if instance is changed (app restart)
+				if (deletedAttachments.indexOf(attachment) == -1) {
+					attachment = getFixedAttachmentInstance(deletedAttachments, attachment);
+				}
+				deletedAttachments.remove(attachment);
 			}
 		}
 		// Remove from database deleted attachments
 		for (Attachment deletedAttachment : deletedAttachments) {
 			StorageManager.delete(mActivity, deletedAttachment.getUri().getPath());
-            Ln.d("Removed attachment " + deletedAttachment.getUri());
+
 		}
 	}
 
-    private Attachment getFixedAttachmentInstance(List<Attachment> deletedAttachments, Attachment attachment) {
-        for (Attachment deletedAttachment : deletedAttachments) {
-            if (deletedAttachment.getId() == attachment.getId()) return deletedAttachment;
-        }
-        return attachment;
-    }
+	private Attachment getFixedAttachmentInstance(List<Attachment> deletedAttachments, Attachment attachment) {
+		for (Attachment deletedAttachment : deletedAttachments) {
+			if (deletedAttachment.getId() == attachment.getId()) return deletedAttachment;
+		}
+		return attachment;
+	}
 
 
-    @Override
+	@Override
 	protected void onPostExecute(Note note) {
 		super.onPostExecute(note);
 
@@ -115,7 +115,6 @@ public class SaveNoteTask extends AsyncTask<Note, Void, Note> {
 			mOnNoteSaved.onNoteSaved(note);
 		}
 	}
-
 
 
 	private void setAlarm(Note note) {

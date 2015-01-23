@@ -27,7 +27,7 @@ import java.util.ArrayList;
 import it.feio.android.omninotes.db.DbHelper;
 import it.feio.android.omninotes.models.Note;
 import it.feio.android.omninotes.models.listeners.OnNotesLoadedListener;
-import roboguice.util.Ln;
+
 
 public class NoteLoaderTask extends AsyncTask<Object, Void, ArrayList<Note>> {
 
@@ -36,7 +36,7 @@ public class NoteLoaderTask extends AsyncTask<Object, Void, ArrayList<Note>> {
 	private OnNotesLoadedListener mOnNotesLoadedListener;
 
 	public NoteLoaderTask(Fragment mFragment,
-			OnNotesLoadedListener mOnNotesLoadedListener) {
+						  OnNotesLoadedListener mOnNotesLoadedListener) {
 		mFragmentReference = new WeakReference<Fragment>(mFragment);
 		mActivity = mFragment.getActivity();
 		this.mOnNotesLoadedListener = mOnNotesLoadedListener;
@@ -71,7 +71,7 @@ public class NoteLoaderTask extends AsyncTask<Object, Void, ArrayList<Note>> {
 			notes = (ArrayList<Note>) method.invoke(db,
 					paramClass[0].cast(methodArgs));
 		} catch (Exception e) {
-			Ln.e(e, "Error retrieving notes");
+
 		}
 
 		return notes;
@@ -85,10 +85,10 @@ public class NoteLoaderTask extends AsyncTask<Object, Void, ArrayList<Note>> {
 		}
 	}
 
-    private boolean isAlive() {
-        return mFragmentReference.get() != null
-                && mFragmentReference.get().getActivity() != null
-                && !mFragmentReference.get().getActivity().isFinishing()
-                && mFragmentReference.get().isAdded();
-    }
+	private boolean isAlive() {
+		return mFragmentReference.get() != null
+				&& mFragmentReference.get().getActivity() != null
+				&& !mFragmentReference.get().getActivity().isFinishing()
+				&& mFragmentReference.get().isAdded();
+	}
 }

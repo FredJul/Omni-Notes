@@ -29,7 +29,7 @@ import java.io.File;
 import java.io.IOException;
 
 import it.feio.android.omninotes.utils.SimpleDiskCache.BitmapEntry;
-import roboguice.util.Ln;
+
 
 public class BitmapCache extends LruCache<String, Bitmap> {
 
@@ -51,14 +51,10 @@ public class BitmapCache extends LruCache<String, Bitmap> {
 
 
 	/**
-	 * @param mContext
-	 *            Context of the application.
-	 * @param maxMemorySize
-	 *            Memory in kilobytes to be used. Negative values will allow the class to use its defaults.
-	 * @param maxDiskSize
-	 *            Memory in megabytes to be used. Negative values will allow the class to use its defaults.
-	 * @param diskCacheDirectory
-	 *            Directory to use for disk cache data storage.
+	 * @param mContext           Context of the application.
+	 * @param maxMemorySize      Memory in kilobytes to be used. Negative values will allow the class to use its defaults.
+	 * @param maxDiskSize        Memory in megabytes to be used. Negative values will allow the class to use its defaults.
+	 * @param diskCacheDirectory Directory to use for disk cache data storage.
 	 */
 	public BitmapCache(Context mContext, int maxMemorySize, int maxDiskSize, File diskCacheDirectory) {
 		super(maxMemorySize <= 0 ? MEMORY_CACHE_DEFAULT_SIZE : maxMemorySize);
@@ -84,14 +80,14 @@ public class BitmapCache extends LruCache<String, Bitmap> {
 				try {
 					version = mContext.getPackageManager().getPackageInfo(mContext.getPackageName(), 0).versionCode;
 				} catch (NameNotFoundException e) {
-					Ln.e("Error retrieving package name", e);
+
 				}
 				try {
 					mDiskLruCache = SimpleDiskCache.open(params[0], version, maxDiskSize);
 				} catch (IOException e) {
-					Ln.e("Error retrieving disk cache", e);
+
 				} catch (NullPointerException e) {
-					Ln.e("Error retrieving disk cache", e);
+
 				}
 				mDiskCacheStarting = false; // Finished initialization
 				mDiskCacheLock.notifyAll(); // Wake any waiting threads
@@ -104,11 +100,12 @@ public class BitmapCache extends LruCache<String, Bitmap> {
 	@SuppressLint("NewApi")
 	@Override
 	protected int sizeOf(String key, Bitmap value) {
-		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR1) { return value.getByteCount(); }
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR1) {
+			return value.getByteCount();
+		}
 		return value.getRowBytes() * value.getHeight();
 	}
 
-	
 
 	public void addBitmap(String key, Bitmap bitmap) {
 		// Add to memory cache as before
@@ -132,7 +129,7 @@ public class BitmapCache extends LruCache<String, Bitmap> {
 
 	/**
 	 * Retrieval of bitmap from chache
-	 * 
+	 *
 	 * @param key
 	 * @return
 	 */
@@ -149,7 +146,8 @@ public class BitmapCache extends LruCache<String, Bitmap> {
 				while (mDiskCacheStarting) {
 					try {
 						mDiskCacheLock.wait();
-					} catch (InterruptedException e) {}
+					} catch (InterruptedException e) {
+					}
 				}
 				if (mDiskLruCache != null) {
 					try {
@@ -158,7 +156,7 @@ public class BitmapCache extends LruCache<String, Bitmap> {
 							bitmap = bitmapEntry.getBitmap();
 						}
 					} catch (IOException e) {
-						Ln.e("Error retrieving bitmap from disk cache");
+
 					}
 				}
 			}

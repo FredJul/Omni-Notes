@@ -28,7 +28,7 @@ import java.util.List;
 public class SqlParser {
 
 	public static List<String> parseSqlFile(String sqlFile,
-			AssetManager assetManager) throws IOException {
+											AssetManager assetManager) throws IOException {
 		List<String> sqlIns = null;
 		InputStream is = assetManager.open(sqlFile);
 		try {
@@ -67,7 +67,7 @@ public class SqlParser {
 								multiLineComment = "{";
 							}
 						} else if (!line.startsWith("--") && !line.equals("")) {
-							sql.append(" " + line);
+							sql.append(" ").append(line);
 						}
 					} else if (multiLineComment.equals("/*")) {
 						if (line.endsWith("*/")) {

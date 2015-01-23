@@ -60,7 +60,7 @@ import it.feio.android.springpadimporter.models.SpringpadComment;
 import it.feio.android.springpadimporter.models.SpringpadElement;
 import it.feio.android.springpadimporter.models.SpringpadItem;
 import listeners.ZipProgressesListener;
-import roboguice.util.Ln;
+
 
 public class DataBackupIntentService extends IntentService implements OnAttachingFileListener {
 
@@ -74,7 +74,7 @@ public class DataBackupIntentService extends IntentService implements OnAttachin
 
 	private SharedPreferences prefs;
 	private NotificationsHelper mNotificationsHelper;
-	
+
 	private int importedSpringpadNotes, importedSpringpadNotebooks;
 
 
@@ -111,7 +111,7 @@ public class DataBackupIntentService extends IntentService implements OnAttachin
 		}
 
 		// Release the lock
-		// Ln.d(TAG, "Releasing power lock, all done");
+		//
 		// wl.release();
 
 	}
@@ -169,7 +169,7 @@ public class DataBackupIntentService extends IntentService implements OnAttachin
 
 	/**
 	 * Imports notes and notebooks from Springpad exported archive
-	 * 
+	 *
 	 * @param intent
 	 */
 	synchronized private void importDataFromSpringpad(Intent intent) {
@@ -196,11 +196,13 @@ public class DataBackupIntentService extends IntentService implements OnAttachin
 		List<SpringpadElement> elements = importer.getSpringpadNotes();
 
 		// If nothing is retrieved it will exit
-		if (elements == null || elements.size() == 0) { return; }
+		if (elements == null || elements.size() == 0) {
+			return;
+		}
 
 		// These maps are used to associate with post processing notes to categories (notebooks)
 		HashMap<String, Category> categoriesWithUuid = new HashMap<String, Category>();
-		
+
 		// Adds all the notebooks (categories)
 		for (SpringpadElement springpadElement : importer.getNotebooks()) {
 			Category cat = new Category();
@@ -208,7 +210,7 @@ public class DataBackupIntentService extends IntentService implements OnAttachin
 			cat.setColor(String.valueOf(Color.parseColor("#F9EA1B")));
 			DbHelper.getInstance(this).updateCategory(cat);
 			categoriesWithUuid.put(springpadElement.getUuid(), cat);
-			
+
 			// Updating notification
 			importedSpringpadNotebooks++;
 			updateImportNotification(importer);
@@ -218,7 +220,7 @@ public class DataBackupIntentService extends IntentService implements OnAttachin
 		defaulCategory.setName("Springpad");
 		defaulCategory.setColor(String.valueOf(Color.parseColor("#F9EA1B")));
 		DbHelper.getInstance(this).updateCategory(defaulCategory);
-		
+
 		// And then notes are created
 		Note note;
 		Attachment mAttachment = null;
@@ -241,7 +243,7 @@ public class DataBackupIntentService extends IntentService implements OnAttachin
 				Toast.makeText(this, getString(R.string.error), Toast.LENGTH_SHORT).show();
 				continue;
 			}
-			
+
 			if (springpadElement.getType().equals(SpringpadElement.TYPE_VIDEO)) {
 				try {
 					content.append(System.getProperty("line.separator")).append(springpadElement.getVideos().get(0));
@@ -328,7 +330,7 @@ public class DataBackupIntentService extends IntentService implements OnAttachin
 					note.setLatitude(coords[0]);
 					note.setLongitude(coords[1]);
 				} catch (IOException e) {
-					Ln.e(e, "An error occurred trying to resolve address to coords during Springpad import");
+
 				}
 				note.setAddress(address);
 			}
@@ -343,7 +345,7 @@ public class DataBackupIntentService extends IntentService implements OnAttachin
 			note.setLastModification(springpadElement.getModified().getTime());
 
 			// Image
-			String image = springpadElement.getImage();			
+			String image = springpadElement.getImage();
 			if (!TextUtils.isEmpty(image)) {
 				try {
 					File file = StorageManager.createNewAttachmentFileFromHttp(this, image);
@@ -354,19 +356,19 @@ public class DataBackupIntentService extends IntentService implements OnAttachin
 					uri = Uri.parse(importer.getWorkingPath() + image);
 					mAttachment = StorageManager.createAttachmentFromUri(this, uri, true);
 				} catch (IOException e) {
-					Ln.e(e, "Error retrieving Springpad online image");
+
 				}
 				if (mAttachment != null) {
 					note.addAttachment(mAttachment);
 				}
 				mAttachment = null;
 			}
-			
+
 			// Other attachments
 			for (SpringpadAttachment springpadAttachment : springpadElement.getAttachments()) {
 				// The attachment could be the image itself so it's jumped
 				if (image != null && image.equals(springpadAttachment.getUrl())) continue;
-				
+
 				if (TextUtils.isEmpty(springpadAttachment.getUrl())) {
 					continue;
 				}
@@ -381,7 +383,7 @@ public class DataBackupIntentService extends IntentService implements OnAttachin
 					uri = Uri.parse(importer.getWorkingPath() + springpadAttachment.getUrl());
 					mAttachment = StorageManager.createAttachmentFromUri(this, uri, true);
 				} catch (IOException e) {
-					Ln.e(e, "Error retrieving Springpad online image");
+
 				}
 				if (mAttachment != null) {
 					note.addAttachment(mAttachment);
@@ -394,12 +396,12 @@ public class DataBackupIntentService extends IntentService implements OnAttachin
 			if (springpadElement.getNotebooks().size() > 0) {
 				note.setCategory(categoriesWithUuid.get(springpadElement.getNotebooks().get(0)));
 			} else {
-				note.setCategory(defaulCategory);				
+				note.setCategory(defaulCategory);
 			}
 
 			// The note is saved
 			DbHelper.getInstance(this).updateNote(note, false);
-			
+
 			// Updating notification
 			importedSpringpadNotes++;
 			updateImportNotification(importer);
@@ -409,7 +411,7 @@ public class DataBackupIntentService extends IntentService implements OnAttachin
 		try {
 			importer.clean();
 		} catch (IOException e) {
-			Ln.w(e, "Springpad import temp files not deleted");
+
 		}
 
 		String title = getString(R.string.data_import_completed);
@@ -444,7 +446,7 @@ public class DataBackupIntentService extends IntentService implements OnAttachin
 
 	/**
 	 * Creation of notification on operations completed
-	 * 
+	 *
 	 * @param intent2
 	 * @param ctx
 	 * @param message
@@ -470,14 +472,15 @@ public class DataBackupIntentService extends IntentService implements OnAttachin
 		NotificationsHelper mNotificationsHelper = new NotificationsHelper(mContext);
 		mNotificationsHelper.createNotification(R.drawable.ic_stat_notification_icon, title, notifyIntent)
 				.setMessage(message).setRingtone(prefs.getString("settings_notification_ringtone", null));
-		if (prefs.getBoolean("settings_notification_vibration", true)) mNotificationsHelper.setVibration();
+		if (prefs.getBoolean("settings_notification_vibration", true))
+			mNotificationsHelper.setVibration();
 		mNotificationsHelper.show();
 	}
 
 
 	/**
 	 * Export database to backup folder
-	 * 
+	 *
 	 * @param backupDir
 	 * @return True if success, false otherwise
 	 */
@@ -489,7 +492,7 @@ public class DataBackupIntentService extends IntentService implements OnAttachin
 
 	/**
 	 * Export attachments to backup folder
-	 * 
+	 *
 	 * @param backupDir
 	 * @return True if success, false otherwise
 	 */
@@ -512,7 +515,7 @@ public class DataBackupIntentService extends IntentService implements OnAttachin
 
 	/**
 	 * Exports settings if required
-	 * 
+	 *
 	 * @param backupDir
 	 * @return
 	 */
@@ -524,7 +527,7 @@ public class DataBackupIntentService extends IntentService implements OnAttachin
 
 	/**
 	 * Imports settings
-	 * 
+	 *
 	 * @param backupDir
 	 * @return
 	 */
@@ -537,7 +540,7 @@ public class DataBackupIntentService extends IntentService implements OnAttachin
 
 	/**
 	 * Import database from backup folder
-	 * 
+	 *
 	 * @param backupDir
 	 * @return True if success, false otherwise
 	 */
@@ -552,7 +555,7 @@ public class DataBackupIntentService extends IntentService implements OnAttachin
 
 	/**
 	 * Import attachments from backup folder
-	 * 
+	 *
 	 * @param backupDir
 	 * @return True if success, false otherwise
 	 */
@@ -577,7 +580,7 @@ public class DataBackupIntentService extends IntentService implements OnAttachin
 						.show();
 			} catch (IOException e) {
 				result = false;
-				Ln.e(e, "Error importing the attachment " + file.getName());
+
 			}
 		}
 		return result;

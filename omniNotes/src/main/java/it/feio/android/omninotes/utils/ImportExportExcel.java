@@ -31,10 +31,10 @@ import java.util.List;
 import it.feio.android.omninotes.R;
 import it.feio.android.omninotes.db.DbHelper;
 import it.feio.android.omninotes.models.Note;
-import roboguice.util.Ln;
+
 
 public class ImportExportExcel {
-	
+
 	private DbHelper db;
 	private Context context;
 	private boolean silentMode = false;
@@ -50,7 +50,7 @@ public class ImportExportExcel {
 
 	public Boolean exportDataToCSV(String path) {
 
-		Ln.e("excel", "in exportDatabasecsv()");
+
 		Boolean returnCode = false;
 
 		String csvHeader = "";
@@ -66,11 +66,11 @@ public class ImportExportExcel {
 			String fileName = Constants.EXPORT_FILE_NAME + ".csv";
 			File outFile = new File(path, fileName);
 			FileWriter fileWriter = new FileWriter(outFile, false);
-			Ln.e("after FileWriter :file name", outFile.toString());
+
 			BufferedWriter out = new BufferedWriter(fileWriter);
 
 			List<Note> notesList = db.getAllNotes(false);
-			Ln.i("Exporting " + notesList.size() + " notes");
+
 
 			csvHeader += "\"" + "Id" + "\",";
 			csvHeader += "\"" + "Creation" + "\",";
@@ -90,7 +90,7 @@ public class ImportExportExcel {
 					csvValues += "\"" + note.isArchived() + "\";\n";
 
 					out.write(csvValues);
-					Ln.v("Note values are: " + csvValues);
+
 				}
 
 			}
@@ -99,7 +99,7 @@ public class ImportExportExcel {
 			returnCode = true;
 		} catch (Exception e) {
 			returnCode = false;
-			Ln.e("Error exportin csv: " + e.getMessage());
+
 		}
 
 		db.close();
@@ -113,7 +113,7 @@ public class ImportExportExcel {
 		String fileName = Constants.EXPORT_FILE_NAME + ".csv";
 		File file = new File(path, fileName);
 		if (!file.exists()) {
-			Ln.w("File to import doesn't exists");
+
 			if (!silentMode)
 				Toast.makeText(context, context.getString(R.string.file_not_exists), Toast.LENGTH_SHORT).show();
 			return false;
@@ -134,7 +134,7 @@ public class ImportExportExcel {
 			StringBuffer lineBuf = new StringBuffer();
 			Note note;
 			while ((line = bufRdr.readLine()) != null) {
-				
+
 				if (flag_is_header) {
 					flag_is_header = false;
 					continue;
@@ -143,14 +143,14 @@ public class ImportExportExcel {
 				lineBuf.append(line).append(System.getProperty("line.separator"));
 				if (line.lastIndexOf("\";") != line.length() - 2) {
 					continue;
-				} 
-				line = lineBuf.substring(1, lineBuf.length() - 3).toString();
+				}
+				line = lineBuf.substring(1, lineBuf.length() - 3);
 				lineBuf.setLength(0);
-				
-				
+
+
 				// Split substring (cutted out first and last quotes) on column separator string
 				String[] insertValues = line.split("\",\"");
-				
+
 				// Creation of note
 				note = new Note();
 				note.set_id(Integer.parseInt(insertValues[0]));
@@ -159,10 +159,10 @@ public class ImportExportExcel {
 				note.setTitle(textDecode(insertValues[3]));
 				note.setContent(textDecode(insertValues[4]));
 				note.setArchived(Boolean.parseBoolean(insertValues[5]));
-				
+
 				// Database inserting
 				db.updateNote(note, false);
-				
+
 				returnCode = true;
 			}
 			db.close();
@@ -172,15 +172,15 @@ public class ImportExportExcel {
 		}
 		return returnCode;
 	}
-	
-	
+
+
 	private String textEncode(String text) {
 		String textEncoded = null;
 		textEncoded = text.replace("\"", "\"\"");
 		return textEncoded;
 	}
-	
-	
+
+
 	private String textDecode(String text) {
 		String textDecoded = null;
 		textDecoded = text.replace("\"\"", "\"");

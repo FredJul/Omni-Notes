@@ -31,18 +31,19 @@ import android.view.View.OnClickListener;
 import android.view.View.OnLongClickListener;
 import android.widget.Button;
 import android.widget.EditText;
+
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.larswerkman.holocolorpicker.ColorPicker;
 import com.larswerkman.holocolorpicker.ColorPicker.OnColorChangedListener;
 import com.larswerkman.holocolorpicker.SaturationBar;
 import com.larswerkman.holocolorpicker.ValueBar;
-import it.feio.android.omninotes.db.DbHelper;
-import it.feio.android.omninotes.models.Category;
-import it.feio.android.omninotes.utils.Constants;
-import roboguice.util.Ln;
 
 import java.io.File;
 import java.io.FileOutputStream;
+
+import it.feio.android.omninotes.db.DbHelper;
+import it.feio.android.omninotes.models.Category;
+import it.feio.android.omninotes.utils.Constants;
 
 public class CategoryActivity extends Activity {
 
@@ -63,7 +64,7 @@ public class CategoryActivity extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_category);
-		
+
 		mActivity = this;
 
 		// Retrieving intent
@@ -73,27 +74,26 @@ public class CategoryActivity extends Activity {
 		initViews();
 
 		if (category == null) {
-			Ln.d("Adding new category");
+
 			category = new Category();
 		} else {
-			Ln.d("Editing category " + category.getName());
+
 			populateViews();
 		}
 	}
-	
-	
-	
+
+
 //	@Override
 //	public void onBackPressed() {
 //		discard();
 //	}
-	
+
 
 	private void initViews() {
 		title = (EditText) findViewById(R.id.category_title);
 		description = (EditText) findViewById(R.id.category_description);
 		picker = (ColorPicker) findViewById(R.id.colorpicker_category);
-		picker.setOnColorChangedListener(new OnColorChangedListener() {			
+		picker.setOnColorChangedListener(new OnColorChangedListener() {
 			@Override
 			public void onColorChanged(int color) {
 				picker.setOldCenterColor(picker.getColor());
@@ -101,14 +101,14 @@ public class CategoryActivity extends Activity {
 			}
 		});
 		// Long click on color picker to remove color
-		picker.setOnLongClickListener(new OnLongClickListener() {			
+		picker.setOnLongClickListener(new OnLongClickListener() {
 			@Override
 			public boolean onLongClick(View v) {
 				picker.setColor(Color.WHITE);
 				return true;
 			}
 		});
-		picker.setOnClickListener(new OnClickListener() {			
+		picker.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
 				picker.setColor(Color.WHITE);
@@ -126,23 +126,23 @@ public class CategoryActivity extends Activity {
 		deleteBtn = (Button) findViewById(R.id.delete);
 		saveBtn = (Button) findViewById(R.id.save);
 //		discardBtn = (Button) findViewById(R.id.discard);
-		
+
 		// Buttons events
-		deleteBtn.setOnClickListener(new OnClickListener() {			
+		deleteBtn.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
 				deleteCategory();
 			}
 		});
-		saveBtn.setOnClickListener(new OnClickListener() {			
+		saveBtn.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
 				// In case category name is not compiled a message will be shown
-                if (title.getText().toString().length() > 0) {
-    				saveCategory();
-                } else {
-                	title.setError(getString(R.string.category_missing_title));
-                }
+				if (title.getText().toString().length() > 0) {
+					saveCategory();
+				} else {
+					title.setError(getString(R.string.category_missing_title));
+				}
 			}
 		});
 //		discardBtn.setOnClickListener(new OnClickListener() {
@@ -165,7 +165,7 @@ public class CategoryActivity extends Activity {
 		deleteBtn.setVisibility(View.VISIBLE);
 	}
 
-	
+
 	/**
 	 * Category saving
 	 */
@@ -174,16 +174,16 @@ public class CategoryActivity extends Activity {
 		category.setDescription(description.getText().toString());
 		if (colorChanged || category.getColor() == null)
 			category.setColor(String.valueOf(picker.getColor()));
-		
+
 		// Saved to DB and new id or update result catched
 		DbHelper db = DbHelper.getInstance(this);
 		category = db.updateCategory(category);
-		
+
 		// If category has no its an insertion and id is filled from db
 //		if (category.getId() == null) {
 //			category.setId((int)n);
 //		}		
-		
+
 		// Sets result to show proper message
 		getIntent().putExtra(Constants.INTENT_TAG, category);
 		setResult(RESULT_OK, getIntent());
@@ -191,7 +191,7 @@ public class CategoryActivity extends Activity {
 	}
 
 	private void deleteCategory() {
-		
+
 		// Retrieving how many notes are categorized with category to be deleted
 		DbHelper db = DbHelper.getInstance(this);
 		int count = db.getCategorizedCount(category);
@@ -200,7 +200,7 @@ public class CategoryActivity extends Activity {
 			msg = getString(R.string.delete_category_confirmation).replace("$1$", String.valueOf(count));
 		else
 			msg = getString(R.string.delete_unused_category_confirmation);
-	
+
 		// Showing dialog
 //		final AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
 //		alertDialogBuilder.setMessage(msg)
@@ -232,13 +232,13 @@ public class CategoryActivity extends Activity {
 //		dialog = alertDialogBuilder.create();
 //		dialog.show();
 
-        new MaterialDialog.Builder(this)
-                .content(msg)
-                .positiveText(R.string.ok)
-                .callback(new MaterialDialog.SimpleCallback() {
-                    @Override
-                    public void onPositive(MaterialDialog dialog) {
-                        // Changes navigation if actually are shown notes associated with this category
+		new MaterialDialog.Builder(this)
+				.content(msg)
+				.positiveText(R.string.ok)
+				.callback(new MaterialDialog.SimpleCallback() {
+					@Override
+					public void onPositive(MaterialDialog dialog) {
+						// Changes navigation if actually are shown notes associated with this category
 						SharedPreferences prefs = getSharedPreferences(Constants.PREFS_NAME, MODE_MULTI_PROCESS);
 						String navNotes = getResources().getStringArray(R.array.navigation_list_codes)[0];
 						String navigation = prefs.getString(Constants.PREF_NAVIGATION, navNotes);
@@ -251,8 +251,8 @@ public class CategoryActivity extends Activity {
 						// Sets result to show proper message
 						setResult(RESULT_FIRST_USER);
 						finish();
-                    }
-                }).build().show();
+					}
+				}).build().show();
 	}
 
 //	private void discard() {
@@ -260,30 +260,30 @@ public class CategoryActivity extends Activity {
 //		setResult(RESULT_FIRST_USER);
 //		finish();
 //	}
-	
+
 
 	public boolean goHome() {
-		
+
 		// In this case the caller activity is DetailActivity
 		if (getIntent().getBooleanExtra("noHome", false)) {
 			setResult(RESULT_OK);
 			super.finish();
 			return true;
 		}
-		
+
 		NavUtils.navigateUpFromSameTask(this);
 		return true;
 	}
-	
-	
-public void save(Bitmap bitmap) {
-		
+
+
+	public void save(Bitmap bitmap) {
+
 		if (bitmap == null) {
 			setResult(RESULT_CANCELED);
 			super.finish();
 		}
-		
-		try {			
+
+		try {
 			Uri uri = getIntent().getParcelableExtra(MediaStore.EXTRA_OUTPUT);
 			File bitmapFile = new File(uri.getPath());
 			FileOutputStream out = new FileOutputStream(bitmapFile);
@@ -300,7 +300,7 @@ public void save(Bitmap bitmap) {
 
 		} catch (Exception e) {
 			e.printStackTrace();
-			Ln.d("Error writing sketch image data");
+
 		}
 	}
 }

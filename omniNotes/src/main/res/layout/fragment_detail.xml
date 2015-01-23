@@ -15,15 +15,15 @@
   ~ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:pixlui="http://schemas.android.com/apk/com.neopixl.pixlui"
-    android:id="@+id/detail_root"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:animateLayoutChanges="true"
-    android:focusableInTouchMode="true"
-    android:orientation="vertical"
-    android:layout_marginLeft="@dimen/activity_additional_margin"
-    android:layout_marginRight="@dimen/activity_additional_margin">>
+              xmlns:pixlui="http://schemas.android.com/apk/com.neopixl.pixlui"
+              android:id="@+id/detail_root"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:animateLayoutChanges="true"
+              android:focusableInTouchMode="true"
+              android:orientation="vertical"
+              android:layout_marginLeft="@dimen/activity_additional_margin"
+              android:layout_marginRight="@dimen/activity_additional_margin">
 
     <LinearLayout
         android:id="@+id/detail_wrapper"
@@ -55,7 +55,7 @@
                     android:id="@+id/tag_marker"
                     android:layout_width="7dp"
                     android:layout_height="match_parent"
-                    android:background="@null" />
+                    android:background="@null"/>
 
                 <com.neopixl.pixlui.components.edittext.EditText
                     android:id="@+id/detail_title"
@@ -75,7 +75,7 @@
                     android:textColorHint="@color/text_color_lighter"
                     android:textColor="@color/text_color"
                     pixlui:typeface="RobotoSlab-Bold.ttf"
-                    android:textCursorDrawable="@null" />
+                    android:textCursorDrawable="@null"/>
             </LinearLayout>
         </LinearLayout>
 
@@ -107,7 +107,7 @@
                         android:drawSelectorOnTop="true"
                         android:listSelector="@drawable/icon_selector"
                         android:numColumns="2"
-                        android:stretchMode="columnWidth" />
+                        android:stretchMode="columnWidth"/>
 
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -129,7 +129,7 @@
                             android:textColor="@color/location_text"
                             android:textAppearance="@style/Text.Small"
                             android:visibility="gone"
-                            pixlui:typeface="Roboto-Regular.ttf" />
+                            pixlui:typeface="Roboto-Regular.ttf"/>
 
                         <LinearLayout
                             android:layout_width="match_parent"
@@ -150,7 +150,7 @@
                                 android:textColorHint="@color/text_color_lighter"
                                 android:textColor="@color/text_color"
                                 pixlui:typeface="RobotoSlab-Regular.ttf"
-                                android:textCursorDrawable="@null" />
+                                android:textCursorDrawable="@null"/>
                         </LinearLayout>
 
                         <LinearLayout
@@ -173,7 +173,7 @@
                                 android:layout_marginEnd="5dp"
                                 android:layout_marginRight="5dp"
                                 android:contentDescription="@string/reminder"
-                                android:src="@drawable/ic_alarm_grey600_48dp" />
+                                android:src="@drawable/ic_alarm_grey600_48dp"/>
 
                             <com.neopixl.pixlui.components.textview.TextView
                                 android:id="@+id/datetime"
@@ -185,7 +185,7 @@
                                 android:textAppearance="@style/Text.Small"
                                 android:textColorHint="@color/text_color"
                                 android:textColor="@color/text_color"
-                                pixlui:typeface="Roboto-Regular.ttf" />
+                                pixlui:typeface="Roboto-Regular.ttf"/>
                         </LinearLayout>
                     </LinearLayout>
                 </LinearLayout>
@@ -208,7 +208,7 @@
                 android:gravity="left|start"
                 android:padding="0dp"
                 android:textAppearance="@style/Text.Small"
-                pixlui:typeface="Roboto-Regular.ttf" />
+                pixlui:typeface="Roboto-Regular.ttf"/>
 
             <com.neopixl.pixlui.components.textview.TextView
                 android:id="@+id/last_modification"
@@ -218,7 +218,7 @@
                 android:gravity="end"
                 android:padding="0dp"
                 android:textAppearance="@style/Text.Small"
-                pixlui:typeface="Roboto-Regular.ttf" />
+                pixlui:typeface="Roboto-Regular.ttf"/>
         </LinearLayout>
     </LinearLayout>
 

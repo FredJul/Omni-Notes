@@ -21,7 +21,8 @@ buildscript {
         jcenter()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:1.0.0'
+        classpath 'com.android.tools.build:gradle:+'
+        classpath 'com.droidtitan:lint-cleaner-plugin:0.3.0'
     }
 }
 

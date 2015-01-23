@@ -29,15 +29,14 @@ import android.util.DisplayMetrics;
 import android.view.View;
 import android.view.WindowManager;
 
-import roboguice.util.Ln;
 
 public class Display {
-	
-	
+
+
 	public static View getRootView(Activity mActivity) {
 		return mActivity.getWindow().getDecorView().findViewById(android.R.id.content);
 	}
-	
+
 
 	@SuppressWarnings("deprecation")
 	@SuppressLint("NewApi")
@@ -56,7 +55,7 @@ public class Display {
 				}
 			}
 		} catch (Exception e) {
-			Ln.e(e, "checkDisplaySize", "Error checking display sizes");
+
 		}
 		return displaySize;
 	}
@@ -85,21 +84,21 @@ public class Display {
 		}
 		return result;
 	}
-	
+
 	public static int getNavigationBarHeightStandard(Context mContext) {
 		int resourceId = mContext.getResources().getIdentifier("navigation_bar_height", "dimen", "android");
 		if (resourceId > 0) {
-		    return mContext.getResources().getDimensionPixelSize(resourceId);
+			return mContext.getResources().getDimensionPixelSize(resourceId);
 		}
 		return 0;
 	}
-	
-	
+
+
 	public static int getNavigationBarHeight(View view) {
 		return (getFullSize(view).y - getUsableSize(view.getContext()).y);
 	}
-	
-	
+
+
 	@SuppressLint("NewApi")
 	public static int getActionbarHeight(Object mObject) {
 		int res = 0;
@@ -120,10 +119,8 @@ public class Display {
 //		int actionBarHeight = contentViewTop - StatusBarHeight;
 //		return actionBarHeight;
 //	}
-	
-	
-	
-	
+
+
 	@TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR1)
 	public static Point getScreenDimensions(Context mContext) {
 		WindowManager wm = (WindowManager) mContext.getSystemService(Context.WINDOW_SERVICE);
@@ -135,12 +132,12 @@ public class Display {
 		size.y = metrics.heightPixels;
 		return size;
 	}
-	
-	
+
+
 	@TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR1)
 	public static int getNavigationBarHeightKitkat(Context mContext) {
 		return getScreenDimensions(mContext).y - getUsableSize(mContext).y;
 	}
-	
-	
+
+
 }

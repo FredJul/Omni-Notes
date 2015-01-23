@@ -45,7 +45,7 @@ import java.util.Locale;
 
 import it.feio.android.omninotes.R;
 import it.feio.android.omninotes.models.Attachment;
-import roboguice.util.Ln;
+
 
 public class StorageManager {
 
@@ -69,28 +69,29 @@ public class StorageManager {
 		}
 		return mExternalStorageAvailable && mExternalStorageWriteable;
 	}
-	
+
 
 	public static String getStorageDir() {
 		// return Environment.getExternalStorageDirectory() + File.separator +
 		// Constants.TAG + File.separator;
 		return Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).toString();
 	}
-	
+
 
 	public static File getAttachmentDir(Context mContext) {
 		return mContext.getExternalFilesDir(null);
 	}
 
-	
+
 	/**
 	 * Retrieves the folderwhere to store data to sync notes
+	 *
 	 * @param mContext
 	 * @return
 	 */
 	public static File getDbSyncDir(Context mContext) {
 		File extFilesDir = mContext.getExternalFilesDir(null);
-		File dbSyncDir = new File (extFilesDir, Constants.APP_STORAGE_DIRECTORY_SB_SYNC);
+		File dbSyncDir = new File(extFilesDir, Constants.APP_STORAGE_DIRECTORY_SB_SYNC);
 		dbSyncDir.mkdirs();
 		if (dbSyncDir.exists() && dbSyncDir.isDirectory()) {
 			return dbSyncDir;
@@ -100,10 +101,9 @@ public class StorageManager {
 	}
 
 
-	
 	/**
 	 * Create a path where we will place our private file on external
-	 * 
+	 *
 	 * @param mContext
 	 * @param uri
 	 * @return
@@ -129,40 +129,38 @@ public class StorageManager {
 				is = new FileInputStream(FileHelper.getPath(mContext, uri));
 				os = new FileOutputStream(file);
 				copyFile(is, os);
-			// It's a path!!
+				// It's a path!!
 			} catch (NullPointerException e1) {
 				try {
 					is = new FileInputStream(uri.getPath());
 					os = new FileOutputStream(file);
 					copyFile(is, os);
 				} catch (FileNotFoundException e2) {
-					Ln.e(e2, "Error writing " + file);
+
 					file = null;
 				}
 			} catch (FileNotFoundException e2) {
-				Ln.e(e2, "Error writing " + file);
+
 				file = null;
 			}
 		}
 		return file;
 	}
 
-	
-	
-	
+
 	public static boolean copyFile(File source, File destination) {
 		try {
 			return copyFile(new FileInputStream(source), new FileOutputStream(destination));
 		} catch (FileNotFoundException e) {
-			Ln.e(e, "Error copying file");
+
 			return false;
 		}
 	}
 
-	
-	
+
 	/**
 	 * Generic file copy method
+	 *
 	 * @param is Input
 	 * @param os Output
 	 * @return True if copy is done, false otherwise
@@ -178,7 +176,7 @@ public class StorageManager {
 //			os.close();
 //			res = true;
 //		} catch (IOException e) {
-//			Ln.e("Error copying file", e);
+//
 //		}
 //		return res;
 //	}
@@ -189,17 +187,17 @@ public class StorageManager {
 		try {
 			while ((len = is.read(data)) > 0) {
 				os.write(data, 0, len);
-	        }
+			}
 			is.close();
 			os.close();
 			res = true;
 		} catch (IOException e) {
-			Ln.e("Error copying file", e);
+
 		}
 		return res;
 	}
 
-	
+
 	public static boolean deleteExternalStoragePrivateFile(Context mContext, String name) {
 		boolean res = false;
 
@@ -214,11 +212,11 @@ public class StorageManager {
 			file.delete();
 			res = true;
 		}
-		
+
 		return res;
 	}
 
-	
+
 	public static boolean delete(Context mContext, String name) {
 		boolean res = false;
 
@@ -235,42 +233,41 @@ public class StorageManager {
 			} else if (file.isDirectory()) {
 				File[] files = file.listFiles();
 				for (File file2 : files) {
-					res = delete(mContext, file2.getAbsolutePath());					
+					res = delete(mContext, file2.getAbsolutePath());
 				}
 				res = file.delete();
 			}
 		}
-		
+
 		return res;
 	}
 
-	
-	
-	
+
 	public static String getRealPathFromURI(Context mContext, Uri contentUri) {
-		String[] proj = { MediaStore.Images.Media.DATA };
-	    Cursor cursor = null;
-	    try {
-	    	mContext.getContentResolver().query(contentUri, proj, null, null, null);
-	    } catch (Exception e) {}
-	    if (cursor == null) {
-	    	return null;
-	    }
-	    int column_index = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
-	    cursor.moveToFirst();
-	    return cursor.getString(column_index);
+		String[] proj = {MediaStore.Images.Media.DATA};
+		Cursor cursor = null;
+		try {
+			mContext.getContentResolver().query(contentUri, proj, null, null, null);
+		} catch (Exception e) {
+		}
+		if (cursor == null) {
+			return null;
+		}
+		int column_index = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
+		cursor.moveToFirst();
+		return cursor.getString(column_index);
 	}
-	
-	
-	public static File createNewAttachmentFile(Context mContext, String extension){
+
+
+	public static File createNewAttachmentFile(Context mContext, String extension) {
 		File f = null;
-		if (checkStorage()) {			
+		if (checkStorage()) {
 			f = new File(mContext.getExternalFilesDir(null), createNewAttachmentName(extension));
 		}
 		return f;
 	}
-	
-	
+
+
 	public static String createNewAttachmentName(String extension) {
 		Calendar now = Calendar.getInstance();
 		SimpleDateFormat sdf = new SimpleDateFormat(Constants.DATE_FORMAT_SORTABLE);
@@ -278,17 +275,16 @@ public class StorageManager {
 		name += extension != null ? extension : "";
 		return name;
 	}
-	
-	
-	public static File createNewAttachmentFile(Context mContext){
+
+
+	public static File createNewAttachmentFile(Context mContext) {
 		return createNewAttachmentFile(mContext, null);
 	}
 
-	
-	
+
 	/**
 	 * Create a path where we will place our private file on external
-	 * 
+	 *
 	 * @param mContext
 	 * @param uri
 	 * @return
@@ -299,115 +295,114 @@ public class StorageManager {
 		if (!checkStorage()) {
 			return null;
 		}
-		
+
 		if (!backupDir.exists()) {
 			backupDir.mkdirs();
 		}
-		
+
 		File destination = new File(backupDir, file.getName());
 
 		try {
 			copyFile(new FileInputStream(file), new FileOutputStream(destination));
 		} catch (FileNotFoundException e) {
-			Ln.e(e, "Error copying file to backup");
+
 			destination = null;
 		}
-		
+
 		return destination;
 	}
-	
-	
-	
+
+
 	public static File getCacheDir(Context mContext) {
-		File dir = mContext.getExternalCacheDir();		
+		File dir = mContext.getExternalCacheDir();
 		if (!dir.exists())
 			dir.mkdirs();
 		return dir;
 	}
-	
-	
+
 
 	public static File getExternalStoragePublicDir() {
-		File dir = new File(Environment.getExternalStorageDirectory() + File.separator + Constants.TAG + File.separator);		
+		File dir = new File(Environment.getExternalStorageDirectory() + File.separator + Constants.TAG + File.separator);
 		if (!dir.exists())
 			dir.mkdirs();
 		return dir;
 	}
-	
-	
-	public static File getBackupDir(String backupName){
-		File backupDir = new File(getExternalStoragePublicDir(), backupName);		
+
+
+	public static File getBackupDir(String backupName) {
+		File backupDir = new File(getExternalStoragePublicDir(), backupName);
 		if (!backupDir.exists())
 			backupDir.mkdirs();
 		return backupDir;
 	}
-	
-	
-	public static File getSharedPreferencesFile(Context mContext){
+
+
+	public static File getSharedPreferencesFile(Context mContext) {
 		File appData = mContext.getFilesDir().getParentFile();
 		String packageName = mContext.getApplicationContext().getPackageName();
-		File prefsPath = new File(appData 
-									+ System.getProperty("file.separator") 
-									+ "shared_prefs" 
-									+ System.getProperty("file.separator") 
-									+ packageName 
-									+ "_preferences.xml");
+		File prefsPath = new File(appData
+				+ System.getProperty("file.separator")
+				+ "shared_prefs"
+				+ System.getProperty("file.separator")
+				+ packageName
+				+ "_preferences.xml");
 		return prefsPath;
 	}
-	
-	
+
+
 	/**
 	 * Returns a directory size in bytes
+	 *
 	 * @param directory
 	 * @return
 	 */
 	@SuppressWarnings("deprecation")
 	@SuppressLint("NewApi")
 	public static long getSize(File directory) {
-	    StatFs statFs = new StatFs(directory.getAbsolutePath());
-	    long blockSize = 0;
-	    try {
-		    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
-		        blockSize = statFs.getBlockSizeLong();
-		    } else {
-		        blockSize = statFs.getBlockSize();
-		    }
-		// Can't understand why on some devices this fails
-	    } catch (NoSuchMethodError e) {}
+		StatFs statFs = new StatFs(directory.getAbsolutePath());
+		long blockSize = 0;
+		try {
+			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
+				blockSize = statFs.getBlockSizeLong();
+			} else {
+				blockSize = statFs.getBlockSize();
+			}
+			// Can't understand why on some devices this fails
+		} catch (NoSuchMethodError e) {
+		}
 
-	    return getSize(directory, blockSize);
+		return getSize(directory, blockSize);
 	}
-	
-		
+
+
 	private static long getSize(File directory, long blockSize) {
-	    File[] files = directory.listFiles();
-	    if (files != null) {
+		File[] files = directory.listFiles();
+		if (files != null) {
 
-	        // space used by directory itself 
-	        long size = directory.length();
+			// space used by directory itself
+			long size = directory.length();
 
-	        for (File file : files) {
-	            if (file.isDirectory()) {
-	                // space used by subdirectory
-	                size += getSize(file, blockSize);
-	            } else {
-	                // file size need to rounded up to full block sizes
-	                // (not a perfect function, it adds additional block to 0 sized files
-	                // and file who perfectly fill their blocks) 
-	                size += (file.length() / blockSize + 1) * blockSize;
-	            }
-	        }
-	        return size;
-	    } else {
-	        return 0;
-	    }
+			for (File file : files) {
+				if (file.isDirectory()) {
+					// space used by subdirectory
+					size += getSize(file, blockSize);
+				} else {
+					// file size need to rounded up to full block sizes
+					// (not a perfect function, it adds additional block to 0 sized files
+					// and file who perfectly fill their blocks)
+					size += (file.length() / blockSize + 1) * blockSize;
+				}
+			}
+			return size;
+		} else {
+			return 0;
+		}
 	}
-	
-	
-	
+
+
 	public static boolean copyDirectory(File sourceLocation, File targetLocation) {
 		boolean res = true;
-		
+
 		// If target is a directory the method will be iterated
 		if (sourceLocation.isDirectory()) {
 			if (!targetLocation.exists()) {
@@ -424,17 +419,17 @@ public class StorageManager {
 			try {
 				res = res && copyFile(new FileInputStream(sourceLocation), new FileOutputStream(targetLocation));
 			} catch (FileNotFoundException e) {
-				Ln.e(e, "Error copying directory");
+
 				res = false;
 			}
-		}		
+		}
 		return res;
 	}
-	
-	
+
 
 	/**
 	 * Retrieves uri mime-type using ContentResolver
+	 *
 	 * @param mContext
 	 * @param uri
 	 * @return
@@ -447,10 +442,11 @@ public class StorageManager {
 		}
 		return mimeType;
 	}
-	
-		
+
+
 	/**
 	 * Tries to retrieve mime types from file extension
+	 *
 	 * @param url
 	 * @return
 	 */
@@ -463,22 +459,24 @@ public class StorageManager {
 		}
 		return type;
 	}
-	
-	
+
+
 	/**
 	 * Retrieves uri mime-type between the ones managed by application
+	 *
 	 * @param mContext
 	 * @param uri
 	 * @return
 	 */
-	public static String getMimeTypeInternal(Context mContext, Uri uri) {		
+	public static String getMimeTypeInternal(Context mContext, Uri uri) {
 		String mimeType = getMimeType(mContext, uri);
-		mimeType = getMimeTypeInternal(mContext, mimeType);		
-		return mimeType;		
-	}	
-	
+		mimeType = getMimeTypeInternal(mContext, mimeType);
+		return mimeType;
+	}
+
 	/**
 	 * Retrieves mime-type between the ones managed by application from given string
+	 *
 	 * @param mContext
 	 * @param mimeType
 	 * @return
@@ -498,10 +496,10 @@ public class StorageManager {
 		return mimeType;
 	}
 
-	
-	
+
 	/**
 	 * Creates a new attachment file copying data from source file
+	 *
 	 * @param mContext
 	 * @param uri
 	 * @return
@@ -509,13 +507,13 @@ public class StorageManager {
 	public static Attachment createAttachmentFromUri(Context mContext, Uri uri) {
 		return createAttachmentFromUri(mContext, uri, false);
 	}
-		
-		
-		/**
-		 * @param mContext
-		 * @param uri
-		 * @return
-		 */
+
+
+	/**
+	 * @param mContext
+	 * @param uri
+	 * @return
+	 */
 	public static Attachment createAttachmentFromUri(Context mContext, Uri uri, boolean moveSource) {
 		String name = FileHelper.getNameFromUri(mContext, uri);
 		String extension = FileHelper.getFileExtension(FileHelper.getNameFromUri(mContext, uri)).toLowerCase(
@@ -526,7 +524,7 @@ public class StorageManager {
 			try {
 				FileUtils.moveFile(new File(uri.getPath()), f);
 			} catch (IOException e) {
-				Ln.e(e, "Can't move file " + uri.getPath());
+
 			}
 		} else {
 			f = StorageManager.createExternalStoragePrivateFile(mContext, uri, extension);
@@ -539,12 +537,11 @@ public class StorageManager {
 		}
 		return mAttachment;
 	}
-	
-	
-	
+
+
 	/**
 	 * Creates new attachment from web content
-	 * 
+	 *
 	 * @param mContext
 	 * @param url
 	 * @return
@@ -557,11 +554,11 @@ public class StorageManager {
 		}
 		return getFromHttp(url, createNewAttachmentFile(mContext, FileHelper.getFileExtension(url)));
 	}
-	
-	
+
+
 	/**
 	 * Retrieves a file from its web url
-	 * 
+	 *
 	 * @param url
 	 * @return
 	 * @throws IOException
@@ -582,8 +579,6 @@ public class StorageManager {
 		// os.close();
 		return file;
 	}
-	
-	
-	
-	
+
+
 }

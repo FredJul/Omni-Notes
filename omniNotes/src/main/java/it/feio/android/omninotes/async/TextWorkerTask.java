@@ -38,7 +38,7 @@ public class TextWorkerTask extends AsyncTask<Note, Void, Spanned[]> {
 	private boolean expandedView;
 
 	public TextWorkerTask(Activity activity, TextView titleTextView,
-			TextView contentTextView, boolean expandedView) {
+						  TextView contentTextView, boolean expandedView) {
 		mActivityWeakReference = new WeakReference<Activity>(activity);
 		mActivity = activity;
 		this.titleTextView = titleTextView;
@@ -46,14 +46,14 @@ public class TextWorkerTask extends AsyncTask<Note, Void, Spanned[]> {
 		this.expandedView = expandedView;
 	}
 
-	
+
 	@Override
 	protected Spanned[] doInBackground(Note... params) {
 		Note note = params[0];
 		Spanned[] titleAndContent = TextHelper.parseTitleAndContent(mActivity, note);
 		return titleAndContent;
 	}
-	
+
 
 	@Override
 	protected void onPostExecute(Spanned[] titleAndContent) {
@@ -62,7 +62,7 @@ public class TextWorkerTask extends AsyncTask<Note, Void, Spanned[]> {
 			titleTextView.setText(titleAndContent[0]);
 			if (titleAndContent[1].length() > 0) {
 				contentTextView.setText(titleAndContent[1]);
-				contentTextView.setVisibility(View.VISIBLE);	
+				contentTextView.setVisibility(View.VISIBLE);
 			} else {
 				if (expandedView) {
 					contentTextView.setVisibility(View.INVISIBLE);
@@ -76,8 +76,7 @@ public class TextWorkerTask extends AsyncTask<Note, Void, Spanned[]> {
 
 	/**
 	 * Cheks if activity is still alive and not finishing
-	 * 
-	 * @param weakDetailFragmentReference
+	 *
 	 * @return True or false
 	 */
 	private boolean isAlive() {

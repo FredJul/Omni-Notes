@@ -43,10 +43,10 @@ import it.feio.android.omninotes.utils.BitmapHelper;
 import it.feio.android.omninotes.utils.Constants;
 import it.feio.android.omninotes.utils.Fonts;
 import it.feio.android.omninotes.utils.date.DateHelper;
-import roboguice.util.Ln;
+
 
 public class AttachmentAdapter extends BaseAdapter {
-		
+
 	private Activity mActivity;
 	private List<Attachment> attachmentsList = new ArrayList<Attachment>();
 	private ExpandableHeightGridView mGridView;
@@ -72,17 +72,15 @@ public class AttachmentAdapter extends BaseAdapter {
 		return 0;
 	}
 
-	
-	
+
 	public View getView(int position, View convertView, ViewGroup parent) {
-		
-		Ln.v("GridView called for position " + position);
-		
+
+
 		Attachment mAttachment = attachmentsList.get(position);
-		
+
 		AttachmentHolder holder;
 		if (convertView == null) {
-	    	convertView = inflater.inflate(R.layout.gridview_item, parent, false);
+			convertView = inflater.inflate(R.layout.gridview_item, parent, false);
 
 			// Overrides font sizes with the one selected from user
 			Fonts.overrideTextSize(mActivity, mActivity.getSharedPreferences(Constants.PREFS_NAME, Context.MODE_MULTI_PROCESS), convertView);
@@ -92,23 +90,23 @@ public class AttachmentAdapter extends BaseAdapter {
 			holder.text = (TextView) convertView.findViewById(R.id.gridview_item_text);
 			convertView.setTag(holder);
 		} else {
-	        holder = (AttachmentHolder) convertView.getTag();
-		}	
-		
+			holder = (AttachmentHolder) convertView.getTag();
+		}
+
 		// Draw name in case the type is an audio recording
 		if (mAttachment.getMime_type() != null && mAttachment.getMime_type().equals(Constants.MIME_TYPE_AUDIO)) {
 			String text = "";
-			
+
 			if (mAttachment.getLength() > 0) {
 				// Recording duration
 				text = DateHelper.formatShortTime(mActivity, mAttachment.getLength());
-			} else {					
+			} else {
 				// Recording date otherwise
 				text = DateHelper.getLocalizedDateTime(mActivity, mAttachment
-						.getUri().getLastPathSegment().split("\\.")[0],
+								.getUri().getLastPathSegment().split("\\.")[0],
 						Constants.DATE_FORMAT_SORTABLE);
 			}
-		
+
 			if (text == null) {
 				text = mActivity.getString(R.string.attachment);
 			}
@@ -117,7 +115,7 @@ public class AttachmentAdapter extends BaseAdapter {
 		} else {
 			holder.text.setVisibility(View.GONE);
 		}
-		
+
 		// Draw name in case the type is an audio recording (or file in the future)
 		if (mAttachment.getMime_type() != null && mAttachment.getMime_type().equals(Constants.MIME_TYPE_FILES)) {
 			holder.text.setText(mAttachment.getName());
@@ -126,16 +124,15 @@ public class AttachmentAdapter extends BaseAdapter {
 
 		// Starts the AsyncTask to draw bitmap into ImageView
 //		loadThumbnail(holder, mAttachment);
-        Uri thumbnailUri = BitmapHelper.getThumbnailUri(mActivity, mAttachment);
-        Glide.with(mActivity)
-                .load(thumbnailUri)
-                .centerCrop()
-                .crossFade()
-                .into(holder.image);
+		Uri thumbnailUri = BitmapHelper.getThumbnailUri(mActivity, mAttachment);
+		Glide.with(mActivity)
+				.load(thumbnailUri)
+				.centerCrop()
+				.crossFade()
+				.into(holder.image);
 
 		return convertView;
 	}
-
 
 
 	@SuppressLint("NewApi")
@@ -153,10 +150,10 @@ public class AttachmentAdapter extends BaseAdapter {
 			}
 		}
 	}
-	
-	
+
+
 	public static boolean cancelPotentialWork(Uri uri, SquareImageView imageView) {
-		final BitmapWorkerTask bitmapWorkerTask = (BitmapWorkerTask)imageView.getAsyncTask();
+		final BitmapWorkerTask bitmapWorkerTask = (BitmapWorkerTask) imageView.getAsyncTask();
 
 		if (bitmapWorkerTask != null && bitmapWorkerTask.getAttachment() != null) {
 			final Uri bitmapData = bitmapWorkerTask.getAttachment().getUri();
@@ -173,19 +170,16 @@ public class AttachmentAdapter extends BaseAdapter {
 		// cancelled
 		return true;
 	}
-	
-	
 
 
 	public class AttachmentHolder {
-        TextView text;
-        SquareImageView image;
-    }
-    
-    
+		TextView text;
+		SquareImageView image;
+	}
+
 
 	public void setOnErrorListener(OnAttachingFileListener listener) {
 		this.mOnAttachingFileErrorListener = listener;
 	}
-	
+
 }

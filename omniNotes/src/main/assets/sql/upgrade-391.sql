@@ -1,1 +1,0 @@
--- Add location fieldsALTER TABLE notes ADD COLUMN latitude REAL DEFAULT null;ALTER TABLE notes ADD COLUMN longitude REAL DEFAULT null;

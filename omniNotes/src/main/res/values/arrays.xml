@@ -68,11 +68,6 @@
         <item>Move to the end of unchecked items</item>
     </string-array>
 
-    <string-array name="checked_items_behavior_values">
-        <item>0</item>
-        <item>1</item>
-        <item>2</item>
-    </string-array>
 
     <string-array name="colors_app">
         <item>Disabled</item>
@@ -81,12 +76,6 @@
         <item>Complete</item>
     </string-array>
 
-    <string-array name="colors_app_values">
-        <item>disabled</item>
-        <item>strip</item>
-        <item>list</item>
-        <item>complete</item>
-    </string-array>
 
     <string-array name="colors_widget">
         <item>Disabled</item>
@@ -94,11 +83,6 @@
         <item>Notes list</item>
     </string-array>
 
-    <string-array name="colors_widget_values">
-        <item>disabled</item>
-        <item>strip</item>
-        <item>list</item>
-    </string-array>
 
     <string-array name="text_size">
         <item>Smallest</item>
@@ -123,66 +107,6 @@
         <item>3</item>
         <item>5</item>
     </integer-array>
-
-    <string-array name="languages">
-        <item>العربية (Arabic)</item>
-        <item>Asturianu (Asturian)</item>
-        <item>Català (Catalan)</item>
-        <item>中文 (Chinese)</item>
-        <item>Čeština (Czech)</item>
-        <item>Nederlands (Dutch)</item>
-        <item>English (English)</item>
-        <item>Français (French)</item>
-        <item>ភាសាខ្មែរ (Khmer)</item>
-        <item>Deutsch (German)</item>
-        <item>Galego (Galician)</item>
-        <item>ελληνικά (Greek)</item>
-        <item>עברית (Hebrew)</item>
-        <item>हिंदी (Hindi)</item>
-        <item>Bahasa Indonesia (Indonesian)</item>
-        <item>Italiano (Italian)</item>
-        <item>ສ​ປ​ປ​ລາວ  (Lao)</item>
-        <item>Português (Portuguese Brazil)</item>
-        <item>Português (Portuguese Portugal)</item>
-        <item>Русский (Russian)</item>
-        <item>Slovenčina  (Slovak)</item>
-        <item>Slovenščina (Slovenian)</item>
-        <item>Español (Spanish)</item>
-        <item>Kinesiska (Swedish)</item>
-        <item>臺灣話 (Taiwanese)</item>
-        <item>Türkçe (Turkish)</item>
-        <item>Українська (Ukrainian)</item>
-    </string-array>
-
-    <string-array name="languages_codes">
-        <item>ar</item>
-        <item>es_XA</item>
-        <item>ca_ES</item>
-        <item>zh_CN</item>
-        <item>cs</item>
-        <item>nl</item>
-        <item>en</item>
-        <item>fr</item>
-        <item>km</item>
-        <item>de</item>
-        <item>gl</item>
-        <item>el</item>
-        <item>iw</item>
-        <item>hi</item>
-        <item>in</item>
-        <item>it</item>
-        <item>lo</item>
-        <item>pt_BR</item>
-        <item>pt_PT</item>
-        <item>ru</item>
-        <item>sk</item>
-        <item>sl</item>
-        <item>es</item>
-        <item>sv</item>
-        <item>zh_TW</item>
-        <item>tr</item>
-        <item>uk</item>
-    </string-array>
 
 
 </resources>

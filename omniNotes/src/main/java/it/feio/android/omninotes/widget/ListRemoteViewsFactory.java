@@ -42,30 +42,30 @@ import it.feio.android.omninotes.models.adapters.NoteAdapter;
 import it.feio.android.omninotes.utils.BitmapHelper;
 import it.feio.android.omninotes.utils.Constants;
 import it.feio.android.omninotes.utils.TextHelper;
-import roboguice.util.Ln;
+
 
 @TargetApi(Build.VERSION_CODES.HONEYCOMB)
 public class ListRemoteViewsFactory implements RemoteViewsFactory {
 
 	private final int WIDTH = 80;
 	private final int HEIGHT = 80;
-	
+
 	private static boolean showThumbnails = true;
-	
+
 	private OmniNotes app;
 	private int appWidgetId;
 	private List<Note> notes;
 
-	
+
 	public ListRemoteViewsFactory(Application app, Intent intent) {
 		this.app = (OmniNotes) app;
 		appWidgetId = intent.getIntExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, AppWidgetManager.INVALID_APPWIDGET_ID);
 	}
 
-	
+
 	@Override
 	public void onCreate() {
-		Ln.d("Created widget " + appWidgetId);
+
 		String condition = app.getSharedPreferences(Constants.PREFS_NAME, app.MODE_MULTI_PROCESS)
 				.getString(
 						Constants.PREF_WIDGET_PREFIX
@@ -73,17 +73,17 @@ public class ListRemoteViewsFactory implements RemoteViewsFactory {
 		notes = DbHelper.getInstance(app).getNotes(condition, true);
 	}
 
-	
+
 	@Override
 	public void onDataSetChanged() {
-		Ln.d("onDataSetChanged widget " + appWidgetId);
+
 		String condition = app.getSharedPreferences(Constants.PREFS_NAME, app.MODE_MULTI_PROCESS)
 				.getString(
 						Constants.PREF_WIDGET_PREFIX
 								+ String.valueOf(appWidgetId), "");
 		notes = DbHelper.getInstance(app).getNotes(condition, true);
 	}
-	
+
 
 	@Override
 	public void onDestroy() {
@@ -92,27 +92,27 @@ public class ListRemoteViewsFactory implements RemoteViewsFactory {
 				.remove(Constants.PREF_WIDGET_PREFIX
 						+ String.valueOf(appWidgetId)).commit();
 	}
-	
+
 
 	@Override
 	public int getCount() {
 		return notes.size();
 	}
 
-	
+
 	@Override
 	public RemoteViews getViewAt(int position) {
 		RemoteViews row = new RemoteViews(app.getPackageName(), R.layout.note_layout_widget);
-		
+
 		Note note = notes.get(position);
-		
+
 		Spanned[] titleAndContent = TextHelper.parseTitleAndContent(app, note);
 
 		row.setTextViewText(R.id.note_title, titleAndContent[0]);
 		row.setTextViewText(R.id.note_content, titleAndContent[1]);
-		
+
 		color(note, row);
-		
+
 		if (note.getAttachmentsList().size() > 0 && showThumbnails) {
 			Attachment mAttachment = note.getAttachmentsList().get(0);
 			// Fetch from cache if possible
@@ -129,18 +129,18 @@ public class ListRemoteViewsFactory implements RemoteViewsFactory {
 		} else {
 			row.setInt(R.id.attachmentThumbnail, "setVisibility", View.GONE);
 		}
-		
+
 		row.setTextViewText(R.id.note_date, NoteAdapter.getDateText(app, note));
 
 		// Next, set a fill-intent, which will be used to fill in the pending intent template
-        // that is set on the collection view in StackWidgetProvider.
-        Bundle extras = new Bundle();
-        extras.putParcelable(Constants.INTENT_NOTE, note);
-        Intent fillInIntent = new Intent();
-        fillInIntent.putExtras(extras);
-        // Make it possible to distinguish the individual on-click
-        // action of a given item
-        row.setOnClickFillInIntent(R.id.root, fillInIntent);
+		// that is set on the collection view in StackWidgetProvider.
+		Bundle extras = new Bundle();
+		extras.putParcelable(Constants.INTENT_NOTE, note);
+		Intent fillInIntent = new Intent();
+		fillInIntent.putExtras(extras);
+		// Make it possible to distinguish the individual on-click
+		// action of a given item
+		row.setOnClickFillInIntent(R.id.root, fillInIntent);
 
 		return (row);
 	}
@@ -167,15 +167,15 @@ public class ListRemoteViewsFactory implements RemoteViewsFactory {
 	}
 
 	public static void updateConfiguration(Context mContext, int mAppWidgetId, String sqlCondition, boolean thumbnails) {
-		Ln.d("Widget configuration updated");
+
 		mContext.getSharedPreferences(Constants.PREFS_NAME, mContext.MODE_MULTI_PROCESS).edit()
 				.putString(Constants.PREF_WIDGET_PREFIX + String.valueOf(mAppWidgetId), sqlCondition).commit();
 		showThumbnails = thumbnails;
 	}
-	
-	
+
+
 	private void color(Note note, RemoteViews row) {
-		
+
 		String colorsPref = app.getSharedPreferences(Constants.PREFS_NAME, app.MODE_MULTI_PROCESS)
 				.getString("settings_colors_widget",
 						Constants.PREF_COLORS_APP_DEFAULT);
@@ -189,7 +189,7 @@ public class ListRemoteViewsFactory implements RemoteViewsFactory {
 			// If tag is set the color will be applied on the appropriate target
 			if (note.getCategory() != null && note.getCategory().getColor() != null) {
 				if (colorsPref.equals("list")) {
-					row.setInt(R.id.card_layout, "setBackgroundColor", Integer.parseInt(note.getCategory().getColor()));					
+					row.setInt(R.id.card_layout, "setBackgroundColor", Integer.parseInt(note.getCategory().getColor()));
 				} else {
 					row.setInt(R.id.tag_marker, "setBackgroundColor", Integer.parseInt(note.getCategory().getColor()));
 				}

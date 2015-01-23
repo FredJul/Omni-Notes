@@ -95,7 +95,7 @@
 ////            TextWorkerTask task = new TextWorkerTask(activity, holder.title, holder.content, expandedView);
 ////            task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, note);
 ////        } catch (RejectedExecutionException e) {
-////            Ln.w(e, "Oversized tasks pool to load texts!");
+////
 ////        }
 //        Spanned[] titleAndContent = TextHelper.parseTitleAndContent(activity, note);
 //        holder.title.setText(titleAndContent[0]);

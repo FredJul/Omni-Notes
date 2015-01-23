@@ -22,9 +22,14 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.view.ViewPager.OnPageChangeListener;
 import android.support.v7.app.ActionBarActivity;
-import android.view.*;
-import com.google.analytics.tracking.android.Fields;
-import com.google.analytics.tracking.android.MapBuilder;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
+import android.view.MotionEvent;
+import android.view.View;
+
+import java.util.ArrayList;
+
 import it.feio.android.omninotes.models.Attachment;
 import it.feio.android.omninotes.models.listeners.OnViewTouchedListener;
 import it.feio.android.omninotes.models.views.InterceptorFrameLayout;
@@ -34,13 +39,10 @@ import it.feio.android.omninotes.utils.StorageManager;
 import it.feio.android.omninotes.utils.systemui.SystemUiHider;
 import it.feio.android.simplegallery.models.GalleryPagerAdapter;
 import it.feio.android.simplegallery.views.GalleryViewPager;
-import roboguice.util.Ln;
-
-import java.util.ArrayList;
 
 /**
  * An example full-screen activity that shows and hides the system UI (i.e. status bar and navigation/system bar) with user interaction.
- * 
+ *
  * @see SystemUiHider
  */
 public class GalleryActivity extends ActionBarActivity {
@@ -129,55 +131,48 @@ public class GalleryActivity extends ActionBarActivity {
 		// operations to prevent the jarring behavior of controls going away
 		// while interacting with the UI.
 //		findViewById(R.id.dummy_button).setOnTouchListener(mDelayHideTouchListener);
-		
+
 		initViews();
 		initData();
 	}
 
-	
-	@Override
-	public void onStart() {
-		// GA tracking
-		OmniNotes.getGaTracker().set(Fields.SCREEN_NAME, getClass().getName());
-		OmniNotes.getGaTracker().send(MapBuilder.createAppView().build());		
-		super.onStart();
-	}
-	
-	
-	
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
-	    MenuInflater inflater = getMenuInflater();
-	    inflater.inflate(R.menu.menu_gallery, menu);
-	    return true;
+		MenuInflater inflater = getMenuInflater();
+		inflater.inflate(R.menu.menu_gallery, menu);
+		return true;
 	}
-	
-	
+
+
 	private void initViews() {
-		
+
 		// Show the Up button in the action bar.
 		if (getSupportActionBar() != null) {
 			getSupportActionBar().setDisplayShowTitleEnabled(true);
 			getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 		}
-		
+
 		((InterceptorFrameLayout) findViewById(R.id.gallery_root)).setOnViewTouchedListener(screenTouches);
-		
-		mViewPager = (GalleryViewPager)findViewById(R.id.fullscreen_content);
+
+		mViewPager = (GalleryViewPager) findViewById(R.id.fullscreen_content);
 //		mViewPager.setPageTransformer(GalleryViewPager.PAGE_TRANSFORMER_DEPTH);
-		mViewPager.setOnPageChangeListener(new OnPageChangeListener() {			
+		mViewPager.setOnPageChangeListener(new OnPageChangeListener() {
 			@Override
 			public void onPageSelected(int arg0) {
-				getSupportActionBar().setSubtitle("(" + (arg0+1) + "/" + images.size() + ")");
+				getSupportActionBar().setSubtitle("(" + (arg0 + 1) + "/" + images.size() + ")");
 			}
+
 			@Override
-			public void onPageScrolled(int arg0, float arg1, int arg2) {}
+			public void onPageScrolled(int arg0, float arg1, int arg2) {
+			}
+
 			@Override
-			public void onPageScrollStateChanged(int arg0) {}
+			public void onPageScrollStateChanged(int arg0) {
+			}
 		});
 	}
 
-	
+
 	/**
 	 * Initializes data received from note detail screen
 	 */
@@ -185,25 +180,25 @@ public class GalleryActivity extends ActionBarActivity {
 		String title = getIntent().getStringExtra(Constants.GALLERY_TITLE);
 		images = getIntent().getParcelableArrayListExtra(Constants.GALLERY_IMAGES);
 		int clickedImage = getIntent().getIntExtra(Constants.GALLERY_CLICKED_IMAGE, 0);
-		
+
 		ArrayList<String> imagesPaths = new ArrayList<String>();
 		for (Attachment mAttachment : images) {
 			Uri uri = mAttachment.getUri();
 			imagesPaths.add(FileHelper.getPath(this, uri));
 		}
-		
+
 //		FilePagerAdapter  pagerAdapter = new FilePagerAdapter (this, imagesPaths);  
-		GalleryPagerAdapter pagerAdapter = new GalleryPagerAdapter (this, imagesPaths);  
+		GalleryPagerAdapter pagerAdapter = new GalleryPagerAdapter(this, imagesPaths);
 //		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
 //			mViewPager.setPageTransformer(false, new DepthPageTransformer());
 //		}
 		mViewPager.setOffscreenPageLimit(3);
 		mViewPager.setAdapter(pagerAdapter);
 		mViewPager.setCurrentItem(clickedImage);
-		
+
 		getSupportActionBar().setTitle(title);
-		getSupportActionBar().setSubtitle("(" + (clickedImage+1) + "/" + images.size() + ")");
-		
+		getSupportActionBar().setSubtitle("(" + (clickedImage + 1) + "/" + images.size() + ")");
+
 		// If selected attachment is a video it will be immediately played
 		if (images.get(clickedImage).getMime_type().equals(Constants.MIME_TYPE_VIDEO)) {
 			viewMedia();
@@ -228,10 +223,8 @@ public class GalleryActivity extends ActionBarActivity {
 		}
 		return super.onOptionsItemSelected(item);
 	}
-	
-	
 
-	
+
 	private void viewMedia() {
 		Attachment attachment = images.get(mViewPager.getCurrentItem());
 		Intent intent = new Intent(Intent.ACTION_VIEW);
@@ -239,7 +232,6 @@ public class GalleryActivity extends ActionBarActivity {
 				StorageManager.getMimeType(this, attachment.getUri()));
 		startActivity(intent);
 	}
-
 
 
 	private void shareMedia() {
@@ -282,7 +274,7 @@ public class GalleryActivity extends ActionBarActivity {
 //		}
 //	};
 
-	
+
 	/**
 	 * Schedules a call to hide() in [delay] milliseconds, canceling any previously scheduled calls.
 	 */
@@ -290,11 +282,10 @@ public class GalleryActivity extends ActionBarActivity {
 //		mHideHandler.removeCallbacks(mHideRunnable);
 //		mHideHandler.postDelayed(mHideRunnable, delayMillis);
 //	}
-	
 
 
 	OnViewTouchedListener screenTouches = new OnViewTouchedListener() {
-		
+
 		private final int MOVING_THRESHOLD = 30;
 
 		float x;
@@ -311,8 +302,8 @@ public class GalleryActivity extends ActionBarActivity {
 			if ((ev.getAction() & MotionEvent.ACTION_MASK) == MotionEvent.ACTION_MOVE) {
 				float dx = Math.abs(x - ev.getX());
 				float dy = Math.abs(y - ev.getY());
-				double dxy = Math.sqrt(dx*dx + dy*dy);
-				Ln.d("Moved of " + dxy);
+				double dxy = Math.sqrt(dx * dx + dy * dy);
+
 				if (dxy >= MOVING_THRESHOLD) {
 					status_pressed = false;
 				}

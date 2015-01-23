@@ -27,13 +27,13 @@ import java.util.Arrays;
 
 import it.feio.android.checklistview.utils.DensityUtil;
 import it.feio.android.omninotes.R;
-import roboguice.util.Ln;
+
 
 public class Fonts {
 	/**
 	 * Overrides all the fonts set to TextView class descendants found in the
 	 * view passed as parameter
-	 * 
+	 *
 	 * @param context
 	 * @param v
 	 */
@@ -59,7 +59,7 @@ public class Fonts {
 				((TextView) v).setTextSize(currentSize + offset);
 			}
 		} catch (Exception e) {
-			Ln.e(e, "Error setting font size");
+
 		}
 	}
 }

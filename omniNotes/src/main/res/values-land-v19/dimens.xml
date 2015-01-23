@@ -16,6 +16,5 @@
   -->
 <resources>
 
-    <dimen name="padding_bottom_kitkat">0dp</dimen>
 
 </resources>

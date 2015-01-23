@@ -33,18 +33,15 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 
-import roboguice.util.Ln;
 
 public class FileHelper {
 	/**
 	 * Get a file path from a Uri. This will get the the path for Storage Access
 	 * Framework Documents, as well as the _data field for the MediaStore and
 	 * other file-based ContentProviders.
-	 * 
-	 * @param context
-	 *            The context.
-	 * @param uri
-	 *            The Uri to query.
+	 *
+	 * @param context The context.
+	 * @param uri     The Uri to query.
 	 * @author paulburke
 	 */
 	@SuppressLint("NewApi")
@@ -96,7 +93,7 @@ public class FileHelper {
 				}
 
 				final String selection = "_id=?";
-				final String[] selectionArgs = new String[] { split[1] };
+				final String[] selectionArgs = new String[]{split[1]};
 
 				return getDataColumn(context, contentUri, selection,
 						selectionArgs);
@@ -117,23 +114,19 @@ public class FileHelper {
 	/**
 	 * Get the value of the data column for this Uri. This is useful for
 	 * MediaStore Uris, and other file-based ContentProviders.
-	 * 
-	 * @param context
-	 *            The context.
-	 * @param uri
-	 *            The Uri to query.
-	 * @param selection
-	 *            (Optional) Filter used in the query.
-	 * @param selectionArgs
-	 *            (Optional) Selection arguments used in the query.
+	 *
+	 * @param context       The context.
+	 * @param uri           The Uri to query.
+	 * @param selection     (Optional) Filter used in the query.
+	 * @param selectionArgs (Optional) Selection arguments used in the query.
 	 * @return The value of the _data column, which is typically a file path.
 	 */
 	public static String getDataColumn(Context context, Uri uri,
-			String selection, String[] selectionArgs) {
+									   String selection, String[] selectionArgs) {
 
 		Cursor cursor = null;
 		final String column = "_data";
-		final String[] projection = { column };
+		final String[] projection = {column};
 
 		try {
 			cursor = context.getContentResolver().query(uri, projection,
@@ -143,7 +136,7 @@ public class FileHelper {
 				return cursor.getString(column_index);
 			}
 		} catch (Exception e) {
-			Ln.e(e, "Error retrieving uri path");
+
 		} finally {
 			if (cursor != null)
 				cursor.close();
@@ -152,8 +145,7 @@ public class FileHelper {
 	}
 
 	/**
-	 * @param uri
-	 *            The Uri to check.
+	 * @param uri The Uri to check.
 	 * @return Whether the Uri authority is ExternalStorageProvider.
 	 */
 	public static boolean isExternalStorageDocument(Uri uri) {
@@ -162,8 +154,7 @@ public class FileHelper {
 	}
 
 	/**
-	 * @param uri
-	 *            The Uri to check.
+	 * @param uri The Uri to check.
 	 * @return Whether the Uri authority is DownloadsProvider.
 	 */
 	public static boolean isDownloadsDocument(Uri uri) {
@@ -172,8 +163,7 @@ public class FileHelper {
 	}
 
 	/**
-	 * @param uri
-	 *            The Uri to check.
+	 * @param uri The Uri to check.
 	 * @return Whether the Uri authority is MediaProvider.
 	 */
 	public static boolean isMediaDocument(Uri uri) {
@@ -193,23 +183,20 @@ public class FileHelper {
 			return null;
 		}
 	}
-	
-	
-	
-	
+
+
 //	public static File getFileFromUri(Context mContext, Uri uri) {
 //		File f = null;
 //		try {
 //			InputStream is = mContext.getContentResolver().openInputStream(uri);			
 //			f = getFileFromInputStream(mContext, is, getNameFromUri(mContext, uri));
 //		} catch (FileNotFoundException e) {
-//			Ln.e("Error creating InputStream", e);
+//
 //		}
 //		return f;
 //	}
 
-	
-	
+
 	public static String getNameFromUri(Context mContext, Uri uri) {
 		String fileName = "";
 		// Trying to retrieve file name from content resolver
@@ -220,8 +207,9 @@ public class FileHelper {
 					if (c.moveToFirst()) {
 						fileName = c.getString(0);
 					}
-					
-				} catch (Exception e) {}
+
+				} catch (Exception e) {
+				}
 			} else {
 				fileName = uri.getLastPathSegment();
 			}
@@ -230,9 +218,8 @@ public class FileHelper {
 		}
 		return fileName;
 	}
-	
-	
-	
+
+
 //	public static File getFileFromInputStream(Context mContext, InputStream inputStream, String fileName) {
 //		File file = null;
 //		File f = null;
@@ -246,7 +233,7 @@ public class FileHelper {
 //			f = StorageManager.createExternalStoragePrivateFile(mContext, uri, extension)
 //			f.deleteOnExit();
 //		} catch (IOException e1) {
-//			Ln.e("Error creating file from InputStream", e1);
+//
 //			return file;
 //		}
 //		OutputStream outputStream = null;
@@ -268,7 +255,7 @@ public class FileHelper {
 //				try {
 //					inputStream.close();
 //				} catch (IOException e) {
-//					Ln.e(Constants.TAG,
+//
 //							"Error closing InputStream", e);
 //				}
 //			}
@@ -278,7 +265,7 @@ public class FileHelper {
 //					file = f;
 //					outputStream.close();
 //				} catch (IOException e) {
-//					Ln.e(Constants.TAG,
+//
 //							"Error closing OutputStream", e);
 //				}
 //
@@ -287,8 +274,7 @@ public class FileHelper {
 //		return file;
 //	}
 
-	
-	
+
 	public static String getFilePrefix(File file) {
 		return getFilePrefix(file.getName());
 	}
@@ -297,13 +283,12 @@ public class FileHelper {
 		String prefix = fileName;
 		int index = fileName.indexOf(".");
 		if (index != -1) {
-			prefix = fileName.substring(0, index);			
+			prefix = fileName.substring(0, index);
 		}
 		return prefix;
 	}
 
-	
-	
+
 	public static String getFileExtension(File file) {
 		return getFileExtension(file.getName());
 	}
@@ -313,8 +298,8 @@ public class FileHelper {
 		String extension = "";
 		int index = fileName.lastIndexOf(".");
 		if (index != -1) {
-			extension = fileName.substring(index, fileName.length());			
-		} 
+			extension = fileName.substring(index, fileName.length());
+		}
 		return extension;
 	}
 }
