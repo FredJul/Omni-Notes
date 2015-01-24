@@ -54,7 +54,6 @@
     <string name="delete_selected_image">הסרת הקבצים המצורפים שנבחרו?</string>
     <string name="gallery">גלריה</string>
     <string name="location">מיקום</string>
-    <string name="pushbullet">Pushbullet</string>
     <string name="remove_location">הסרת מיקום?</string>
     <string name="remove_reminder">הסרת תזכורת?</string>
     <string name="add_reminder">הוספת תזכורת</string>
@@ -64,9 +63,6 @@
     <string name="storage_not_available">אחסון איננו זמין</string>
     <string name="video">וידיאו</string>
     <string name="feature_not_available_on_this_device">תכונה זו איננה זמינה במכשיר זה</string>
-    <string name="data_export_completed">גיבוי מידע הושלם</string>
-    <string name="data_import_completed">שחזור מידע הושלם</string>
-    <string name="click_to_refresh_application">לחיצה לרענון אפליקציה</string>
     <string name="tags">תגיות</string>
     <string name="add_tag">הוספת תגיות</string>
     <string name="select_tags">בחירת תגיות</string>
@@ -87,7 +83,6 @@
     <string name="no_tags_created">לא נוצרו עדיין תגיות</string>
     <string name="notes_category_removed">קטגוריה הוסרה מההערות</string>
     <string name="notes_categorized_as">הערות סווגו כ</string>
-    <string name="deleted">נמחק</string>
     <string name="no_items_in_list">שום דבר כאן!</string>
     <string name="checklist_on">אפשור רשימת סימון</string>
     <string name="checklist_off">נטרול רשימת סימון</string>
@@ -107,12 +102,9 @@
     <string name="error_saving_attachments">שגיאה בשמירת הקבצים המצורפים</string>
     <string name="contracted_view">תצוגה מצומצמת</string>
     <string name="expanded_view">תצוגה מורחבת</string>
-    <string name="add_shortcut">הוספת קיצור דרך</string>
-    <string name="shortcut_added">קיצור דרך התווסף לעמוד הבית</string>
     <string name="shortcut_note_deleted">קיצור הדרך מוביל להערה שנמחקה</string>
     <string name="widget_simple_description">וידג\'ט פשוט עם כפתורים</string>
     <string name="widget_list_description">וידג\'ט עם כפתורים ורשימה נגללת</string>
-    <string name="notes">הערות</string>
     <string name="show_thumbnails">הצגת תמונות ממוזערות לקבצים המצורפים</string>
     <string name="edit">עריכה</string>
     <string name="open">פתיחה</string>
@@ -128,10 +120,7 @@
     <string name="empty_trash">ריקון אשפה</string>
     <string name="empty_trash_confirmation">Confirm deleting all trashed notes?</string>
     <string name="tags_added">תגיות התווספו</string>
-    <string name="working">Working…</string>
-    <string name="imported">imported</string>
     <string name="synchronize">Synchronize</string>
-    <string name="extracted">Extracted</string>
     <string name="select_all">Select all</string>
     <string name="search_location">Search location</string>
     <string name="use_current_location">Use current location</string>
@@ -139,16 +128,12 @@
     <string name="remove_filter">Remove filter</string>
     <string name="settings">הגדרות</string>
     <string name="action_settings">הגדרות</string>
-    <string name="import_fail">יבוא קובץ נכשל</string>
     <string name="file_not_exists">קובץ לייבוא איננו קיים</string>
     <string name="settings_screen_interface">Interface</string>
     <string name="settings_screen_notifications">Notifications</string>
     <string name="settings_max_video_size_summary">גודל מירבי מותר ב-MB</string>
-    <string name="data_deletion_completed">מחיקת נתונים הושלמה</string>
     <string name="settings_category_preferences">העדפות</string>
     <string name="minutes">דקות</string>
-    <string name="password_forgot">Password forgotten</string>
-    <string name="password_remove">Remove password</string>
     <string name="settings_screen_behaviors">Behaviors</string>
     <string name="settings_swipe_to_trash_summary_1">Swiping notes with finger will archive them</string>
     <string name="settings_swipe_to_trash_summary_2">Swiping notes with finger will trash them</string>

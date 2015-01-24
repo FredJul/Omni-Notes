@@ -54,7 +54,6 @@
     <string name="delete_selected_image">Seçili eki sil?</string>
     <string name="gallery">Galeri</string>
     <string name="location">Konum</string>
-    <string name="pushbullet">Pushbullet</string>
     <string name="remove_location">Konumu kaldır?</string>
     <string name="remove_reminder">Hatırlatma kaldırılsın mı?</string>
     <string name="add_reminder">Hatırlatma ekle</string>
@@ -64,9 +63,6 @@
     <string name="storage_not_available">Depolama mevcut değil</string>
     <string name="video">Video</string>
     <string name="feature_not_available_on_this_device">Bu cihazda özellik desteklenmiyor</string>
-    <string name="data_export_completed">Veri yedekleme tamamlandı</string>
-    <string name="data_import_completed">Veri alma tamamlandı</string>
-    <string name="click_to_refresh_application">Uygulamayı yenilemek için dokunun</string>
     <string name="tags">Etiketler</string>
     <string name="add_tag">Etiket ekle</string>
     <string name="select_tags">Select tag(s)</string>
@@ -87,7 +83,6 @@
     <string name="no_tags_created">Oluşturulmuş bir etiket yok</string>
     <string name="notes_category_removed">Category removed from notes</string>
     <string name="notes_categorized_as">Notes categorized as</string>
-    <string name="deleted">silindi</string>
     <string name="no_items_in_list">Burada bir şey yok!</string>
     <string name="checklist_on">Listeyi etkinleştir</string>
     <string name="checklist_off">Liste devre dışı</string>
@@ -107,12 +102,9 @@
     <string name="error_saving_attachments">Ekler kaydedilirken hata oluştu</string>
     <string name="contracted_view">Dar görünüm</string>
     <string name="expanded_view">Geniş görünüm</string>
-    <string name="add_shortcut">Kısayol ekle</string>
-    <string name="shortcut_added">Ana ekrana kısayol eklendi</string>
     <string name="shortcut_note_deleted">Shortcut points to deleted note</string>
     <string name="widget_simple_description">Simple widget with buttons</string>
     <string name="widget_list_description">Scrolling list widget with buttons</string>
-    <string name="notes">notlar</string>
     <string name="show_thumbnails">Ekli dosyaların küçük resimlerini göster</string>
     <string name="edit">Düzenle</string>
     <string name="open">Aç</string>
@@ -128,10 +120,7 @@
     <string name="empty_trash">Çöp kutusunu boşalt</string>
     <string name="empty_trash_confirmation">Notlar tamamen silinsin mi?</string>
     <string name="tags_added">Tags added</string>
-    <string name="working">Working…</string>
-    <string name="imported">imported</string>
     <string name="synchronize">Synchronize</string>
-    <string name="extracted">Extracted</string>
     <string name="select_all">Select all</string>
     <string name="search_location">Search location</string>
     <string name="use_current_location">Use current location</string>
@@ -139,16 +128,12 @@
     <string name="remove_filter">Remove filter</string>
     <string name="settings">Ayarlar</string>
     <string name="action_settings">Ayarlar</string>
-    <string name="import_fail">İçe aktarılamadı</string>
     <string name="file_not_exists">İçe aktarılacak dosya bulunamadı</string>
     <string name="settings_screen_interface">Interface</string>
     <string name="settings_screen_notifications">Notifications</string>
     <string name="settings_max_video_size_summary">İzin verilen maksimum boyut (MB)</string>
-    <string name="data_deletion_completed">Veri silme işlemi tamamlandı</string>
     <string name="settings_category_preferences">Tercihler</string>
     <string name="minutes">dakika</string>
-    <string name="password_forgot">Password forgotten</string>
-    <string name="password_remove">Remove password</string>
     <string name="settings_screen_behaviors">Behaviors</string>
     <string name="settings_swipe_to_trash_summary_1">Notları kaydırarak arşive gönderin</string>
     <string name="settings_swipe_to_trash_summary_2">Notları kaydırarak çöp kutusuna gönderin</string>

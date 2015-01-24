@@ -36,7 +36,6 @@ import java.util.List;
 import it.feio.android.omninotes.models.Attachment;
 import it.feio.android.omninotes.models.Category;
 import it.feio.android.omninotes.models.Note;
-import it.feio.android.omninotes.models.Stats;
 import it.feio.android.omninotes.models.Tag;
 import it.feio.android.omninotes.utils.AssetUtils;
 import it.feio.android.omninotes.utils.Constants;
@@ -391,7 +390,7 @@ public class DbHelper extends SQLiteOpenHelper {
 	public List<Note> getNotes(String whereCondition, boolean order) {
 		List<Note> noteList = new ArrayList<Note>();
 
-		String sort_column = "", sort_order = "";
+		String sort_column, sort_order = "";
 
 		// Getting sorting criteria from preferences. Reminder screen forces sorting.
 		if (Navigation.checkNavigation(Navigation.REMINDERS)) {
@@ -511,7 +510,7 @@ public class DbHelper extends SQLiteOpenHelper {
 	public boolean deleteNote(Note note) {
 		int deletedNotes, deletedAttachments;
 
-		SQLiteDatabase db = null;
+		SQLiteDatabase db;
 		boolean result;
 		try {
 			db = this.getWritableDatabase();
@@ -752,7 +751,7 @@ public class DbHelper extends SQLiteOpenHelper {
 				+ KEY_ATTACHMENT_MIME_TYPE
 				+ " FROM " + TABLE_ATTACHMENTS
 				+ whereCondition;
-		SQLiteDatabase db = null;
+		SQLiteDatabase db;
 		Cursor cursor = null;
 
 		try {
@@ -809,7 +808,7 @@ public class DbHelper extends SQLiteOpenHelper {
 				+ " ORDER BY IFNULL(NULLIF(" + KEY_CATEGORY_NAME + ", ''),'zzzzzzzz') ";
 
 
-		SQLiteDatabase db = null;
+		SQLiteDatabase db;
 		Cursor cursor = null;
 
 		try {
@@ -843,7 +842,7 @@ public class DbHelper extends SQLiteOpenHelper {
 	 */
 	public Category updateCategory(Category category) {
 
-		SQLiteDatabase db = null;
+		SQLiteDatabase db;
 
 		try {
 			db = this.getWritableDatabase();
@@ -882,7 +881,7 @@ public class DbHelper extends SQLiteOpenHelper {
 	public long deleteCategory(Category category) {
 		long deleted;
 
-		SQLiteDatabase db = null;
+		SQLiteDatabase db;
 		try {
 			db = this.getWritableDatabase();
 			// Un-categorize notes associated with this category
@@ -921,7 +920,7 @@ public class DbHelper extends SQLiteOpenHelper {
 				+ " FROM " + TABLE_CATEGORY
 				+ " WHERE " + KEY_CATEGORY_ID + " = " + id;
 
-		SQLiteDatabase db = null;
+		SQLiteDatabase db;
 		Cursor cursor = null;
 
 		try {
@@ -950,7 +949,7 @@ public class DbHelper extends SQLiteOpenHelper {
 				+ " FROM " + TABLE_NOTES
 				+ " WHERE " + KEY_CATEGORY + " = " + category.getId();
 
-		SQLiteDatabase db = null;
+		SQLiteDatabase db;
 		Cursor cursor = null;
 		try {
 			db = this.getReadableDatabase();
@@ -969,159 +968,4 @@ public class DbHelper extends SQLiteOpenHelper {
 		}
 		return count;
 	}
-
-
-	/**
-	 * Retrieves statistics data based on app usage
-	 *
-	 * @return
-	 */
-//	public Stats getStats() {
-//		Stats mStats = new Stats();
-//
-//		mStats.setNotesActive(getNotesActive().size());
-//		mStats.setNotesArchived(getNotesArchived().size());
-//		mStats.setNotesTrashed(getNotesTrashed().size());
-//		mStats.setReminders(getNotesWithReminder(true).size());
-//		mStats.setRemindersFutures(getNotesWithReminder(false).size());
-//		mStats.setNotesChecklist(getChecklists().size());
-//		mStats.setNotesMasked(getMasked().size());
-//		mStats.setCategories(getCategories().size());
-//		mStats.setTags(getTags().size());
-//
-//		mStats.setAttachments(getAllAttachments().size());
-//		mStats.setImages(getAttachmentsOfType(Constants.MIME_TYPE_IMAGE).size());
-//		mStats.setVideos(getAttachmentsOfType(Constants.MIME_TYPE_VIDEO).size());
-//		mStats.setAudioRecordings(getAttachmentsOfType(Constants.MIME_TYPE_AUDIO).size());
-//		mStats.setSketches(getAttachmentsOfType(Constants.MIME_TYPE_SKETCH).size());
-//		mStats.setFiles(getAttachmentsOfType(Constants.MIME_TYPE_FILES).size());
-//		mStats.setLocation(getNotesWithLocation().size());
-//
-//		int totalWords = 0;
-//		int totalChars = 0;
-//		int maxWords = 0;
-//		int maxChars = 0;
-//		int avgWords = 0;
-//		int avgChars = 0;
-//		
-//		List<Note> notes = getAllNotes(false);
-//		int words, chars;
-//		for (Note note : notes) {
-//			words = getWords(note);
-//			chars = getChars(note);
-//			if (words > maxWords) {
-//				maxWords = words;
-//			}
-//			if (chars > maxChars) {
-//				maxChars = chars;
-//			}
-//			totalWords += words;
-//			totalChars += chars;
-//		}
-//		avgWords = totalWords / notes.size();
-//		avgChars = totalChars / notes.size();
-//		
-//		
-//		mStats.setWords(totalWords);
-//		mStats.setWordsMax(maxWords);
-//		mStats.setWordsAvg(avgWords);
-//		mStats.setChars(totalChars);
-//		mStats.setCharsMax(maxChars);
-//		mStats.setCharsAvg(avgChars);
-//		
-//		return mStats;
-//	}
-	public Stats getStats() {
-		Stats mStats = new Stats();
-
-		// Categories
-		mStats.setCategories(getCategories().size());
-
-		// Everything about notes and their text stats
-		int notesActive = 0, notesArchived = 0, notesTrashed = 0, reminders = 0, remindersFuture = 0, checklists = 0, notesMasked = 0, tags = 0, locations = 0;
-		int totalWords = 0, totalChars = 0, maxWords = 0, maxChars = 0, avgWords = 0, avgChars = 0;
-		int words, chars;
-		List<Note> notes = getAllNotes(false);
-		for (Note note : notes) {
-			if (note.isTrashed()) {
-				notesTrashed++;
-			} else if (note.isArchived()) {
-				notesArchived++;
-			} else {
-				notesActive++;
-			}
-			if (note.getAlarm() != null && Long.parseLong(note.getAlarm()) > 0) {
-				if (Long.parseLong(note.getAlarm()) > Calendar.getInstance().getTimeInMillis()) {
-					remindersFuture++;
-				} else {
-					reminders++;
-				}
-			}
-			if (note.isChecklist()) {
-				checklists++;
-			}
-			if (note.isLocked()) {
-				notesMasked++;
-			}
-			tags += TagsHelper.retrieveTags(note).size();
-			if (note.getLongitude() != null && note.getLongitude() != 0) {
-				locations++;
-			}
-			words = getWords(note);
-			chars = getChars(note);
-			if (words > maxWords) {
-				maxWords = words;
-			}
-			if (chars > maxChars) {
-				maxChars = chars;
-			}
-			totalWords += words;
-			totalChars += chars;
-		}
-		mStats.setNotesActive(notesActive);
-		mStats.setNotesArchived(notesArchived);
-		mStats.setNotesTrashed(notesTrashed);
-		mStats.setReminders(reminders);
-		mStats.setRemindersFutures(remindersFuture);
-		mStats.setNotesChecklist(checklists);
-		mStats.setNotesMasked(notesMasked);
-		mStats.setTags(tags);
-		mStats.setLocation(locations);
-		avgWords = totalWords / notes.size();
-		avgChars = totalChars / notes.size();
-
-		mStats.setWords(totalWords);
-		mStats.setWordsMax(maxWords);
-		mStats.setWordsAvg(avgWords);
-		mStats.setChars(totalChars);
-		mStats.setCharsMax(maxChars);
-		mStats.setCharsAvg(avgChars);
-
-		// Everything about attachments
-		int attachmentsAll = 0, images = 0, videos = 0, audioRecordings = 0, sketches = 0, files = 0;
-		List<Attachment> attachments = getAllAttachments();
-		for (Attachment attachment : attachments) {
-			if (Constants.MIME_TYPE_IMAGE.equals(attachment.getMime_type())) {
-				images++;
-			} else if (Constants.MIME_TYPE_VIDEO.equals(attachment.getMime_type())) {
-				videos++;
-			} else if (Constants.MIME_TYPE_AUDIO.equals(attachment.getMime_type())) {
-				audioRecordings++;
-			} else if (Constants.MIME_TYPE_SKETCH.equals(attachment.getMime_type())) {
-				sketches++;
-			} else if (Constants.MIME_TYPE_FILES.equals(attachment.getMime_type())) {
-				files++;
-			}
-		}
-		mStats.setAttachments(attachmentsAll);
-		mStats.setImages(images);
-		mStats.setVideos(videos);
-		mStats.setAudioRecordings(audioRecordings);
-		mStats.setSketches(sketches);
-		mStats.setFiles(files);
-
-		return mStats;
-	}
-
-
 }

@@ -31,7 +31,7 @@ import it.feio.android.omninotes.R;
 public class TimePickerFragment extends DialogFragment {
 
 	public static final String DEFAULT_TIME = "default_time";
-	
+
 	TextView timer_label;
 	private Activity mActivity;
 	private OnTimeSetListener mListener;
@@ -40,7 +40,7 @@ public class TimePickerFragment extends DialogFragment {
 	@Override
 	public void onAttach(Activity activity) {
 		super.onAttach(activity);
-		mActivity = (Activity) activity;
+		mActivity = activity;
 		if (getArguments().containsKey(DEFAULT_TIME)) {
 			this.defaultTime = getArguments().getLong(DEFAULT_TIME);
 		}
@@ -55,7 +55,7 @@ public class TimePickerFragment extends DialogFragment {
 
 	@Override
 	public Dialog onCreateDialog(Bundle savedInstanceState) {
-		
+
 		Calendar cal = DateHelper.getCalendar(defaultTime);
 		int hour = cal.get(Calendar.HOUR_OF_DAY);
 		int minute = cal.get(Calendar.MINUTE);

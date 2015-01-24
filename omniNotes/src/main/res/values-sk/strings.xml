@@ -54,7 +54,6 @@
     <string name="delete_selected_image">Vymazať vybranú prílohu?</string>
     <string name="gallery">Galéria</string>
     <string name="location">Poloha</string>
-    <string name="pushbullet">Pushbullet</string>
     <string name="remove_location">Odstrániť polohu?</string>
     <string name="remove_reminder">Odstrániť pripomienku?</string>
     <string name="add_reminder">Pridať pripomienku</string>
@@ -64,9 +63,6 @@
     <string name="storage_not_available">Úložisko nie je k dispozícii</string>
     <string name="video">Video</string>
     <string name="feature_not_available_on_this_device">Funkcia nie je k dispozícii na tomto zariadení</string>
-    <string name="data_export_completed">Záloha údajov bola dokončená</string>
-    <string name="data_import_completed">Import údajov bol dokončený</string>
-    <string name="click_to_refresh_application">Kliknite pre obnovu aplikácie</string>
     <string name="tags">Značky</string>
     <string name="add_tag">Pridať značky</string>
     <string name="select_tags">Vyberte značky</string>
@@ -87,7 +83,6 @@
     <string name="no_tags_created">Žiadne značky ešte neboli vytvorené</string>
     <string name="notes_category_removed">Kategória bola odstránená z poznámok</string>
     <string name="notes_categorized_as">Poznámky boli kategorizovaná ako</string>
-    <string name="deleted">vymazané</string>
     <string name="no_items_in_list">Nič tu nie je!</string>
     <string name="checklist_on">Povoliť zaškrtávací zoznam</string>
     <string name="checklist_off">Zakázať zaškrtávací zoznam</string>
@@ -107,12 +102,9 @@
     <string name="error_saving_attachments">Chyba pri ukladaní príloh</string>
     <string name="contracted_view">Zjednodušené zobrazenie</string>
     <string name="expanded_view">Rozšírené zobrazenie</string>
-    <string name="add_shortcut">Pridať odkaz</string>
-    <string name="shortcut_added">Odkaz bol pridaný na domovskú obrazovku</string>
     <string name="shortcut_note_deleted">Odkaz odkazuje na vymazanú poznámku</string>
     <string name="widget_simple_description">Jednoduchá miniaplikácia s tlačidlami</string>
     <string name="widget_list_description">Miniaplikácia s posuvným zoznamom a tlačidlami</string>
-    <string name="notes">poznámky</string>
     <string name="show_thumbnails">Zobraziť náhľady príloh</string>
     <string name="edit">Upraviť</string>
     <string name="open">Otvoriť</string>
@@ -128,10 +120,7 @@
     <string name="empty_trash">Vyprázdniť kôš</string>
     <string name="empty_trash_confirmation">Potvrdzujete vymazanie všetkých zahodených poznámok v koši?</string>
     <string name="tags_added">Značky boli pridané</string>
-    <string name="working">Pracovanie…</string>
-    <string name="imported">importovaných</string>
     <string name="synchronize">Synchronizovať</string>
-    <string name="extracted">extrahovaných</string>
     <string name="select_all">Vybrať všetky</string>
     <string name="search_location">Hľadať polohu</string>
     <string name="use_current_location">Použiť aktuálnu polohu</string>
@@ -139,16 +128,12 @@
     <string name="remove_filter">Odstrániť filter</string>
     <string name="settings">Nastavenia</string>
     <string name="action_settings">Nastavenia</string>
-    <string name="import_fail">Nepodarilo sa exportovať súbor</string>
     <string name="file_not_exists">Súbor, ktorý má byť importovaný, neexistuje</string>
     <string name="settings_screen_interface">Interface</string>
     <string name="settings_screen_notifications">Notifications</string>
     <string name="settings_max_video_size_summary">Maximálna povolená veľkosť v MB</string>
-    <string name="data_deletion_completed">Vymazávanie údajov bolo dokončené</string>
     <string name="settings_category_preferences">Nastavenia</string>
     <string name="minutes">min.</string>
-    <string name="password_forgot">Password forgotten</string>
-    <string name="password_remove">Remove password</string>
     <string name="settings_screen_behaviors">Behaviors</string>
     <string name="settings_swipe_to_trash_summary_1">Potiahnutím archivovať poznámky</string>
     <string name="settings_swipe_to_trash_summary_2">Potiahnutím zahodiť poznámky do koša</string>

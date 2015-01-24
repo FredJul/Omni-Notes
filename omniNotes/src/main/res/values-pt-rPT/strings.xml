@@ -54,7 +54,6 @@
     <string name="delete_selected_image">Eliminar o anexo seleccionado?</string>
     <string name="gallery">Galeria</string>
     <string name="location">Localização</string>
-    <string name="pushbullet">Pushbullet</string>
     <string name="remove_location">Remover localização?</string>
     <string name="remove_reminder">Remover alerta?</string>
     <string name="add_reminder">Adicionar alerta</string>
@@ -64,9 +63,6 @@
     <string name="storage_not_available">Armazenamento não disponível</string>
     <string name="video">Vídeo</string>
     <string name="feature_not_available_on_this_device">Funcionalidade não disponível neste dispositivo</string>
-    <string name="data_export_completed">Cópia de segurança dos dados concluída</string>
-    <string name="data_import_completed">Importação de dados concluída</string>
-    <string name="click_to_refresh_application">Toque para actualizar a aplicação</string>
     <string name="tags">Etiquetas</string>
     <string name="add_tag">Adicionar etiquetas</string>
     <string name="select_tags">Seleccione etiqueta(s)</string>
@@ -87,7 +83,6 @@
     <string name="no_tags_created">Não foram criadas nenhumas etiquetas ainda</string>
     <string name="notes_category_removed">Categoria removida das notas</string>
     <string name="notes_categorized_as">Notas adicionadas à categoria</string>
-    <string name="deleted">eliminado</string>
     <string name="no_items_in_list">Nada aqui!</string>
     <string name="checklist_on">Activar modo de lista</string>
     <string name="checklist_off">Desactivar modo de lista</string>
@@ -107,12 +102,9 @@
     <string name="error_saving_attachments">Erro ao guardar anexos</string>
     <string name="contracted_view">Vista compactada</string>
     <string name="expanded_view">Vista expandida</string>
-    <string name="add_shortcut">Adicionar atalho</string>
-    <string name="shortcut_added">Atalho adicionado ao ecrã inicial</string>
     <string name="shortcut_note_deleted">O atalho aponta para uma nota eliminada</string>
     <string name="widget_simple_description">Widget simples com botões</string>
     <string name="widget_list_description">Widget de lista deslocável com botões</string>
-    <string name="notes">notas</string>
     <string name="show_thumbnails">Mostrar miniaturas dos anexos</string>
     <string name="edit">Editar</string>
     <string name="open">Abrir</string>
@@ -128,10 +120,7 @@
     <string name="empty_trash">Esvaziar lixo</string>
     <string name="empty_trash_confirmation">Confirma a eliminação de todas as notas no lixo?</string>
     <string name="tags_added">Etiquetas adicionadas</string>
-    <string name="working">A executar…</string>
-    <string name="imported">importados</string>
     <string name="synchronize">Sincronizar</string>
-    <string name="extracted">Extraídos</string>
     <string name="select_all">Seleccionar tudo</string>
     <string name="search_location">Procurar local</string>
     <string name="use_current_location">Usar a localização actual</string>
@@ -139,16 +128,12 @@
     <string name="remove_filter">Remove filter</string>
     <string name="settings">Definições</string>
     <string name="action_settings">Definições</string>
-    <string name="import_fail">Importação do ficheiro falhou</string>
     <string name="file_not_exists">O ficheiro a ser importado não existe</string>
     <string name="settings_screen_interface">Interface</string>
     <string name="settings_screen_notifications">Notifications</string>
     <string name="settings_max_video_size_summary">Tamanho máximo permitido em MB</string>
-    <string name="data_deletion_completed">Eliminação de dados concluída</string>
     <string name="settings_category_preferences">Preferências</string>
     <string name="minutes">minutos</string>
-    <string name="password_forgot">Password forgotten</string>
-    <string name="password_remove">Remove password</string>
     <string name="settings_screen_behaviors">Behaviors</string>
     <string name="settings_swipe_to_trash_summary_1">Deslizar as notas com o dedo irá arquivá-las</string>
     <string name="settings_swipe_to_trash_summary_2">Deslizar as notas com o dedo irá enviá-las para o lixo</string>

@@ -95,7 +95,7 @@ public class AttachmentAdapter extends BaseAdapter {
 
 		// Draw name in case the type is an audio recording
 		if (mAttachment.getMime_type() != null && mAttachment.getMime_type().equals(Constants.MIME_TYPE_AUDIO)) {
-			String text = "";
+			String text;
 
 			if (mAttachment.getLength() > 0) {
 				// Recording duration

@@ -1123,7 +1123,7 @@ public class ListFragment extends Fragment implements OnNotesLoadedListener, OnV
 	private void checkSortActionPerformed(MenuItem item) {
 		if (item.getGroupId() == Constants.MENU_SORT_GROUP_ID) {
 			final String[] arrayDb = getResources().getStringArray(R.array.sortable_columns);
-			prefs.edit().putString(Constants.PREF_SORTING_COLUMN, (String) arrayDb[item.getOrder()]).commit();
+			prefs.edit().putString(Constants.PREF_SORTING_COLUMN, arrayDb[item.getOrder()]).commit();
 			initNotesList(getActivity().getIntent());
 			// Resets list scrolling position
 			listViewPositionOffset = 0;

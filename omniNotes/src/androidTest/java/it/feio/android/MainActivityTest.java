@@ -33,40 +33,40 @@ import static org.junit.Assert.assertNotNull;
 public class MainActivityTest extends ActivityInstrumentationTestCase2<MainActivity> {
 
 
-    public MainActivityTest() {
-        super(MainActivity.class);
-    }
+	public MainActivityTest() {
+		super(MainActivity.class);
+	}
 
-    @TargetApi(Build.VERSION_CODES.HONEYCOMB)
-    @MediumTest
-    public void testRemoveExistentDetailFragment() {
-        MainActivity mainActivity = getActivity();
-        assertNotNull(mainActivity);
-        assertSame(MainActivity.class, mainActivity.getClass());
-        FragmentManager fm = mainActivity.getSupportFragmentManager();
-        Fragment f = new TestFragment("tf1");
-        fm.beginTransaction().add(f, "tf1").commit();
-    }
+	@TargetApi(Build.VERSION_CODES.HONEYCOMB)
+	@MediumTest
+	public void testRemoveExistentDetailFragment() {
+		MainActivity mainActivity = getActivity();
+		assertNotNull(mainActivity);
+		assertSame(MainActivity.class, mainActivity.getClass());
+		FragmentManager fm = mainActivity.getSupportFragmentManager();
+		Fragment f = new TestFragment("tf1");
+		fm.beginTransaction().add(f, "tf1").commit();
+	}
 
-    public MainActivity getActivity() {
-        if (super.getActivity().getClass().isAssignableFrom(MainActivity.class)) {
-            return (MainActivity) super.getActivity();
-        }
-        return null;
-    }
+	public MainActivity getActivity() {
+		if (super.getActivity().getClass().isAssignableFrom(MainActivity.class)) {
+			return super.getActivity();
+		}
+		return null;
+	}
 }
 
 
 class TestFragment extends Fragment {
-    private String tag;
+	private String tag;
 
-    public TestFragment(String tag) {
+	public TestFragment(String tag) {
 		this.tag = tag;
-    }
+	}
 
-    @Override
-    public void onAttach(Activity activity) {
-        super.onAttach(activity);
-        assertNotNull(getActivity().getSupportFragmentManager().findFragmentByTag(this.tag));
-    }
+	@Override
+	public void onAttach(Activity activity) {
+		super.onAttach(activity);
+		assertNotNull(getActivity().getSupportFragmentManager().findFragmentByTag(this.tag));
+	}
 }

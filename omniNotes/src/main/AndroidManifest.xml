@@ -162,9 +162,6 @@
         <!-- Restore on reboot alarm service -->
         <service android:name="it.feio.android.omninotes.async.AlarmRestoreOnRebootService"></service>
 
-        <!-- Data export and import service -->
-        <service android:name="it.feio.android.omninotes.async.DataBackupIntentService"></service>
-
         <!-- Widget configuration Activity -->
         <activity
             android:name="it.feio.android.omninotes.widget.WidgetConfigurationActivity"

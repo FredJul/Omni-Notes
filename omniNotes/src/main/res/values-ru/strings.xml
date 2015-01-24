@@ -54,7 +54,6 @@
     <string name="delete_selected_image">Удалить выбранное вложение?</string>
     <string name="gallery">Выбрать из галереи</string>
     <string name="location">Размещение</string>
-    <string name="pushbullet">Pushbullet</string>
     <string name="remove_location">Удалить размещение?</string>
     <string name="remove_reminder">Удалить напоминание?</string>
     <string name="add_reminder">Добавить напоминание</string>
@@ -64,9 +63,6 @@
     <string name="storage_not_available">Хранилище недоступно</string>
     <string name="video">Видео</string>
     <string name="feature_not_available_on_this_device">Функция недоступна на этом устройстве</string>
-    <string name="data_export_completed">Рез. копирование завершено</string>
-    <string name="data_import_completed">Импорт данных завершен</string>
-    <string name="click_to_refresh_application">Нажмите, чтобы обновить приложение</string>
     <string name="tags">Метки</string>
     <string name="add_tag">Добавить метки</string>
     <string name="select_tags">Выберите метки</string>
@@ -87,7 +83,6 @@
     <string name="no_tags_created">Пока не создано ни одной метки</string>
     <string name="notes_category_removed">Категория убрана из заметок</string>
     <string name="notes_categorized_as">Заметки в категории</string>
-    <string name="deleted">удалено</string>
     <string name="no_items_in_list">Здесь пока ничего нет!</string>
     <string name="checklist_on">Активировать список</string>
     <string name="checklist_off">Отключить список</string>
@@ -107,12 +102,9 @@
     <string name="error_saving_attachments">При сохранении вложений возникла ошибка</string>
     <string name="contracted_view">Упрощённый вид</string>
     <string name="expanded_view">Развернутый вид</string>
-    <string name="add_shortcut">Добавить ярлык</string>
-    <string name="shortcut_added">Ярлык отправлен на главный экран</string>
     <string name="shortcut_note_deleted">Ярлык ссылается на удалённую заметку</string>
     <string name="widget_simple_description">Обычный виджет с кнопками</string>
     <string name="widget_list_description">Прокручиваемый список с кнопками</string>
-    <string name="notes">заметки (-ок)</string>
     <string name="show_thumbnails">Отображать миниатюры вложений</string>
     <string name="edit">Редактировать</string>
     <string name="open">Перейти</string>
@@ -128,10 +120,7 @@
     <string name="empty_trash">Очистить корзину</string>
     <string name="empty_trash_confirmation">Вы согласны удалить все заметки из корзины?</string>
     <string name="tags_added">Метки добавлены</string>
-    <string name="working">Обработка…</string>
-    <string name="imported">импортировано</string>
     <string name="synchronize">Синхронизировать</string>
-    <string name="extracted">Извлеченные</string>
     <string name="select_all">Выбрать все</string>
     <string name="search_location">Найти расположение</string>
     <string name="use_current_location">Использовать текущее местонахождение</string>
@@ -139,16 +128,12 @@
     <string name="remove_filter">Убрать фильтрацию</string>
     <string name="settings">Настройки</string>
     <string name="action_settings">Настройки</string>
-    <string name="import_fail">Импорт файла не удался</string>
     <string name="file_not_exists">Импортируемый файл не существует</string>
     <string name="settings_screen_interface">Interface</string>
     <string name="settings_screen_notifications">Notifications</string>
     <string name="settings_max_video_size_summary">Максимально допустимый размер в МБ</string>
-    <string name="data_deletion_completed">Удаление данных завершено</string>
     <string name="settings_category_preferences">Параметры</string>
     <string name="minutes">минут (-ы)</string>
-    <string name="password_forgot">Password forgotten</string>
-    <string name="password_remove">Remove password</string>
     <string name="settings_screen_behaviors">Behaviors</string>
     <string name="settings_swipe_to_trash_summary_1">Проведение по заметке пальцем заархивирует её</string>
     <string name="settings_swipe_to_trash_summary_2">Проведение по заметке пальцем удалит её</string>

@@ -51,10 +51,10 @@ public class ImportExportExcel {
 	public Boolean exportDataToCSV(String path) {
 
 
-		Boolean returnCode = false;
+		Boolean returnCode;
 
 		String csvHeader = "";
-		String csvValues = "";
+		String csvValues;
 
 		try {
 
@@ -124,7 +124,7 @@ public class ImportExportExcel {
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		}
-		String line = null;
+		String line;
 
 		try {
 			if (db == null) {
@@ -175,14 +175,14 @@ public class ImportExportExcel {
 
 
 	private String textEncode(String text) {
-		String textEncoded = null;
+		String textEncoded;
 		textEncoded = text.replace("\"", "\"\"");
 		return textEncoded;
 	}
 
 
 	private String textDecode(String text) {
-		String textDecoded = null;
+		String textDecoded;
 		textDecoded = text.replace("\"\"", "\"");
 		return textDecoded;
 	}

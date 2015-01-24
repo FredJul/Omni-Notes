@@ -54,7 +54,6 @@
     <string name="delete_selected_image">删除选定的附件？</string>
     <string name="gallery">图库</string>
     <string name="location">位置</string>
-    <string name="pushbullet">Pushbullet</string>
     <string name="remove_location">删除位置？</string>
     <string name="remove_reminder">删除提醒？</string>
     <string name="add_reminder">添加提醒</string>
@@ -64,9 +63,6 @@
     <string name="storage_not_available">存储不可用</string>
     <string name="video">视频</string>
     <string name="feature_not_available_on_this_device">功能在此设备上不可用</string>
-    <string name="data_export_completed">数据备份完成</string>
-    <string name="data_import_completed">数据导入完成</string>
-    <string name="click_to_refresh_application">点击刷新应用</string>
     <string name="tags">标签</string>
     <string name="add_tag">添加标签</string>
     <string name="select_tags">选择标签</string>
@@ -87,7 +83,6 @@
     <string name="no_tags_created">尚未创建标签</string>
     <string name="notes_category_removed">类别已从记事中移除</string>
     <string name="notes_categorized_as">记事已分类为</string>
-    <string name="deleted">已删除</string>
     <string name="no_items_in_list">暂无内容！</string>
     <string name="checklist_on">启用待办事项列表</string>
     <string name="checklist_off">禁用待办事项列表</string>
@@ -107,12 +102,9 @@
     <string name="error_saving_attachments">保存附件时出错</string>
     <string name="contracted_view">缩略视图</string>
     <string name="expanded_view">扩展视图</string>
-    <string name="add_shortcut">添加快捷方式</string>
-    <string name="shortcut_added">快捷方式已添加到桌面</string>
     <string name="shortcut_note_deleted">快捷方式指向的记事已删除</string>
     <string name="widget_simple_description">带按钮的简单小部件</string>
     <string name="widget_list_description">带按钮的可滚动列表小部件</string>
-    <string name="notes">记事</string>
     <string name="show_thumbnails">显示附件缩略图</string>
     <string name="edit">编辑</string>
     <string name="open">打开</string>
@@ -128,10 +120,7 @@
     <string name="empty_trash">清空回收站</string>
     <string name="empty_trash_confirmation">确认删除回收站中所有记事？</string>
     <string name="tags_added">标签已添加</string>
-    <string name="working">工作中…</string>
-    <string name="imported">已导入</string>
     <string name="synchronize">同步</string>
-    <string name="extracted">已解压</string>
     <string name="select_all">全选</string>
     <string name="search_location">搜索位置</string>
     <string name="use_current_location">使用当前位置</string>
@@ -139,16 +128,12 @@
     <string name="remove_filter">Remove filter</string>
     <string name="settings">设置</string>
     <string name="action_settings">设置</string>
-    <string name="import_fail">文件导入失败</string>
     <string name="file_not_exists">要导入的文件不存在</string>
     <string name="settings_screen_interface">Interface</string>
     <string name="settings_screen_notifications">Notifications</string>
     <string name="settings_max_video_size_summary">文件大小上限(MB)</string>
-    <string name="data_deletion_completed">数据删除完成</string>
     <string name="settings_category_preferences">首选项</string>
     <string name="minutes">分钟</string>
-    <string name="password_forgot">Password forgotten</string>
-    <string name="password_remove">Remove password</string>
     <string name="settings_screen_behaviors">Behaviors</string>
     <string name="settings_swipe_to_trash_summary_1">滑动以将记事归档</string>
     <string name="settings_swipe_to_trash_summary_2">滑动以删除记事</string>

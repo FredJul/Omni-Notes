@@ -25,7 +25,7 @@ import java.util.Arrays;
 public class AssetUtils {
 
 	public static boolean exists(String fileName, String path,
-			AssetManager assetManager) throws IOException {
+								 AssetManager assetManager) throws IOException {
 		for (String currentFileName : assetManager.list(path)) {
 			if (currentFileName.equals(fileName)) {
 				return true;
@@ -40,18 +40,19 @@ public class AssetUtils {
 		Arrays.sort(files);
 		return files;
 	}
-	
-	
+
+
 	/**
 	 * Loads a file into string
+	 *
 	 * @param name
 	 * @param assetManager
 	 * @return
-	 * @throws IOException 
+	 * @throws IOException
 	 */
 	public static String readFile(String fileName, AssetManager assetManager) throws IOException {
 		InputStream input;
-		String text = null;
+		String text;
 		input = assetManager.open(fileName);
 
 		int size = input.available();

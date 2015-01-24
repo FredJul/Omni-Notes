@@ -16,19 +16,19 @@
   ~ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   -->
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:pixlui="http://schemas.android.com/apk/com.neopixl.pixlui"
-    android:id="@+id/attachment_dialog_root"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="@drawable/bg_popup"
-    android:orientation="vertical"
-    android:paddingBottom="8dp"
-    android:paddingLeft="8dp"
-    android:paddingRight="16dp"
-    android:paddingTop="8dp"
-    android:scrollbarSize="4dp"
-    android:scrollbarStyle="insideInset"
-    android:scrollbarThumbVertical="@drawable/scroll_bar" >
+            xmlns:pixlui="http://schemas.android.com/apk/com.neopixl.pixlui"
+            android:id="@+id/attachment_dialog_root"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@drawable/bg_popup"
+            android:orientation="vertical"
+            android:paddingBottom="8dp"
+            android:paddingLeft="8dp"
+            android:paddingRight="16dp"
+            android:paddingTop="8dp"
+            android:scrollbarSize="4dp"
+            android:scrollbarStyle="insideInset"
+            android:scrollbarThumbVertical="@drawable/scroll_bar">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -47,7 +47,7 @@
             android:text="@string/camera"
             android:textSize="@dimen/attachment_dialog_text_size"
             pixlui:typeface="Roboto-Regular.ttf"
-            android:textColor="@color/text_gray" />
+            android:textColor="@color/text_gray"/>
 
         <com.neopixl.pixlui.components.textview.TextView
             android:id="@+id/video"
@@ -60,7 +60,7 @@
             android:text="@string/video"
             android:textSize="@dimen/attachment_dialog_text_size"
             pixlui:typeface="Roboto-Regular.ttf"
-            android:textColor="@color/text_gray" />
+            android:textColor="@color/text_gray"/>
 
         <com.neopixl.pixlui.components.textview.TextView
             android:id="@+id/files"
@@ -73,7 +73,7 @@
             android:text="@string/files"
             android:textSize="@dimen/attachment_dialog_text_size"
             pixlui:typeface="Roboto-Regular.ttf"
-            android:textColor="@color/text_gray" />
+            android:textColor="@color/text_gray"/>
 
         <com.neopixl.pixlui.components.textview.TextView
             android:id="@+id/recording"
@@ -86,7 +86,7 @@
             android:text="@string/record"
             android:textSize="@dimen/attachment_dialog_text_size"
             pixlui:typeface="Roboto-Regular.ttf"
-            android:textColor="@color/text_gray" />
+            android:textColor="@color/text_gray"/>
 
         <com.neopixl.pixlui.components.textview.TextView
             android:id="@+id/sketch"
@@ -99,7 +99,7 @@
             android:text="@string/sketch"
             android:textSize="@dimen/attachment_dialog_text_size"
             pixlui:typeface="Roboto-Regular.ttf"
-            android:textColor="@color/text_gray" />
+            android:textColor="@color/text_gray"/>
 
         <com.neopixl.pixlui.components.textview.TextView
             android:id="@+id/location"
@@ -112,21 +112,7 @@
             android:text="@string/location"
             android:textSize="@dimen/attachment_dialog_text_size"
             pixlui:typeface="Roboto-Regular.ttf"
-            android:textColor="@color/text_gray" />
-
-        <com.neopixl.pixlui.components.textview.TextView
-            android:id="@+id/pushbullet"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@drawable/icon_selector"
-            android:drawableLeft="@drawable/ic_laptop"
-            android:drawablePadding="@dimen/attachment_dialog_drawable_padding"
-            android:padding="@dimen/attachment_dialog_items_padding"
-            android:text="@string/pushbullet"
-            android:visibility="gone"
-            android:textSize="@dimen/attachment_dialog_text_size"
-            pixlui:typeface="Roboto-Regular.ttf"
-            android:textColor="@color/text_gray" />
+            android:textColor="@color/text_gray"/>
     </LinearLayout>
 
 </ScrollView>

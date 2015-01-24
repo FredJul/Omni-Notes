@@ -50,8 +50,8 @@ import it.feio.android.omninotes.models.Attachment;
 public class StorageManager {
 
 	public static boolean checkStorage() {
-		boolean mExternalStorageAvailable = false;
-		boolean mExternalStorageWriteable = false;
+		boolean mExternalStorageAvailable;
+		boolean mExternalStorageWriteable;
 		String state = Environment.getExternalStorageState();
 
 		if (Environment.MEDIA_MOUNTED.equals(state)) {
@@ -518,7 +518,7 @@ public class StorageManager {
 		String name = FileHelper.getNameFromUri(mContext, uri);
 		String extension = FileHelper.getFileExtension(FileHelper.getNameFromUri(mContext, uri)).toLowerCase(
 				Locale.getDefault());
-		File f = null;
+		File f;
 		if (moveSource) {
 			f = createNewAttachmentFile(mContext, extension);
 			try {

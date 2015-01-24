@@ -54,7 +54,6 @@
     <string name="delete_selected_image">Hapus lampiran yang dipilih?</string>
     <string name="gallery">Galeri</string>
     <string name="location">Lokasi</string>
-    <string name="pushbullet">Pushbullet</string>
     <string name="remove_location">Hapus lokasi?</string>
     <string name="remove_reminder">Hapus pengingat?</string>
     <string name="add_reminder">Tambahkan pengingat</string>
@@ -64,9 +63,6 @@
     <string name="storage_not_available">Penyimpanan tidak tersedia</string>
     <string name="video">Video</string>
     <string name="feature_not_available_on_this_device">Fitur tidak tersedia diperangkat ini, maaf</string>
-    <string name="data_export_completed">Mencadangkan data telah selesai</string>
-    <string name="data_import_completed">Pemulihan data telah selesai</string>
-    <string name="click_to_refresh_application">Klik untuk menyegarkan aplikasi</string>
     <string name="tags">Tag</string>
     <string name="add_tag">Tambah tag</string>
     <string name="select_tags">Pilih tag(s)</string>
@@ -87,7 +83,6 @@
     <string name="no_tags_created">Tidak ada tag yang sudah dibuat</string>
     <string name="notes_category_removed">Kategori terhapus dari catatan</string>
     <string name="notes_categorized_as">Kategorikan catatan sebagai</string>
-    <string name="deleted">terhapus</string>
     <string name="no_items_in_list">Tidak ada disini!</string>
     <string name="checklist_on">Tampilkan kotak centang</string>
     <string name="checklist_off">Sembunyikan kotak centang</string>
@@ -107,12 +102,9 @@
     <string name="error_saving_attachments">Galat menyimpan lampiran</string>
     <string name="contracted_view">Kurangi penglihatan</string>
     <string name="expanded_view">Perluas penglihatkan</string>
-    <string name="add_shortcut">Tambahkan jalan pintas</string>
-    <string name="shortcut_added">Jalan pintas ditambahkan ke homescreen</string>
     <string name="shortcut_note_deleted">Titik jalan pintas untuk menghapus catatan</string>
     <string name="widget_simple_description">Widget simpel dengan tombol</string>
     <string name="widget_list_description">Daftar widget menggulir dengan tombol</string>
-    <string name="notes">catatan</string>
     <string name="show_thumbnails">Tampilkan lampiran thumbnail</string>
     <string name="edit">Sunting</string>
     <string name="open">Buka</string>
@@ -128,10 +120,7 @@
     <string name="empty_trash">Kosongkan tempat sampah</string>
     <string name="empty_trash_confirmation">Konfirmasi penghapusan semua catatan yang ada ditempat sampah?</string>
     <string name="tags_added">Tag telah ditambahkan</string>
-    <string name="working">Sedang bekerjaâ€¦</string>
-    <string name="imported">Terimpor</string>
     <string name="synchronize">Sinkronisasi</string>
-    <string name="extracted">Terekstrak</string>
     <string name="select_all">Pilih semua</string>
     <string name="search_location">Cari lokasi</string>
     <string name="use_current_location">Gunakan lokasi saat ini</string>
@@ -139,16 +128,12 @@
     <string name="remove_filter">Hapus filter</string>
     <string name="settings">Setelan</string>
     <string name="action_settings">Setelan</string>
-    <string name="import_fail">Gagal mengimpor file</string>
     <string name="file_not_exists">File yang diimpor sudah tidak ada</string>
     <string name="settings_screen_interface">Interface</string>
     <string name="settings_screen_notifications">Notifications</string>
     <string name="settings_max_video_size_summary">Ukuran maksimum yang diizinkan adalah MB</string>
-    <string name="data_deletion_completed">Penghapusan data selesai</string>
     <string name="settings_category_preferences">Pengaturan</string>
     <string name="minutes">menit</string>
-    <string name="password_forgot">Password forgotten</string>
-    <string name="password_remove">Remove password</string>
     <string name="settings_screen_behaviors">Behaviors</string>
     <string name="settings_swipe_to_trash_summary_1">Swiping notes with finger will archive them</string>
     <string name="settings_swipe_to_trash_summary_2">Swiping notes with finger will trash them</string>

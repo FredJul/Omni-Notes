@@ -54,7 +54,6 @@
     <string name="delete_selected_image">Supprimer la pièce jointe sélectionnée ?</string>
     <string name="gallery">Galerie</string>
     <string name="location">Localisation</string>
-    <string name="pushbullet">Pushbullet</string>
     <string name="remove_location">Supprimer la localisation ?</string>
     <string name="remove_reminder">Supprimer le rappel ?</string>
     <string name="add_reminder">Ajouter un rappel</string>
@@ -64,9 +63,6 @@
     <string name="storage_not_available">Stockage non disponible</string>
     <string name="video">Vidéo</string>
     <string name="feature_not_available_on_this_device">Fonctionnalité non disponible sur cet appareil</string>
-    <string name="data_export_completed">Sauvegarde des données terminée</string>
-    <string name="data_import_completed">Restauration des données terminée</string>
-    <string name="click_to_refresh_application">Appuyer pour actualiser l\'application</string>
     <string name="tags">Mots-clés</string>
     <string name="add_tag">Ajouter des mots-clés</string>
     <string name="select_tags">Sélectionnez le(s) mot(s)-clé(s)</string>
@@ -87,7 +83,6 @@
     <string name="no_tags_created">Aucun mot-clé n\'a été crée</string>
     <string name="notes_category_removed">Catégorie des notes supprimée</string>
     <string name="notes_categorized_as">Notes catégorisées en tant que</string>
-    <string name="deleted">supprimé</string>
     <string name="no_items_in_list">Aucune note !</string>
     <string name="checklist_on">Activer la liste à cocher</string>
     <string name="checklist_off">Désactiver la liste à cocher</string>
@@ -107,12 +102,9 @@
     <string name="error_saving_attachments">Erreur d\'enregistrement des pièces jointes</string>
     <string name="contracted_view">Vue réduite</string>
     <string name="expanded_view">Vue étendue</string>
-    <string name="add_shortcut">Ajouter un raccourci</string>
-    <string name="shortcut_added">Raccourci ajouté à l\'écran d\'accueil</string>
     <string name="shortcut_note_deleted">Le raccourci pointe vers une note supprimée</string>
     <string name="widget_simple_description">Simple widget avec boutons</string>
     <string name="widget_list_description">Widget avec liste déroulante et boutons</string>
-    <string name="notes">notes</string>
     <string name="show_thumbnails">Afficher les miniatures des pièces jointes</string>
     <string name="edit">Éditer</string>
     <string name="open">Ouvrir</string>
@@ -128,10 +120,7 @@
     <string name="empty_trash">Vider la corbeille</string>
     <string name="empty_trash_confirmation">Confirmer la suppression de toutes les notes de la corbeille ?</string>
     <string name="tags_added">Mots-clés ajoutés</string>
-    <string name="working">Traitement…</string>
-    <string name="imported">importé</string>
     <string name="synchronize">Synchroniser</string>
-    <string name="extracted">Extrait</string>
     <string name="select_all">Tout sélectionner</string>
     <string name="search_location">Rechercher un lieu</string>
     <string name="use_current_location">Utiliser la localisation actuelle</string>
@@ -139,16 +128,12 @@
     <string name="remove_filter">Supprimer le filtre</string>
     <string name="settings">Paramètres</string>
     <string name="action_settings">Paramètres</string>
-    <string name="import_fail">L\'importation du fichier a échoué</string>
     <string name="file_not_exists">Le fichier à importer n\'existe pas</string>
     <string name="settings_screen_interface">Interface</string>
     <string name="settings_screen_notifications">Notifications</string>
     <string name="settings_max_video_size_summary">Taille maximale allouée en Mo</string>
-    <string name="data_deletion_completed">Suppression des données terminée</string>
     <string name="settings_category_preferences">Préférences</string>
     <string name="minutes">minutes</string>
-    <string name="password_forgot">Password forgotten</string>
-    <string name="password_remove">Remove password</string>
     <string name="settings_screen_behaviors">Behaviors</string>
     <string name="settings_swipe_to_trash_summary_1">Glisser les notes avec le doigt les archiveront</string>
     <string name="settings_swipe_to_trash_summary_2">Glisser les notes avec le doigt les mettront à la corbeille</string>

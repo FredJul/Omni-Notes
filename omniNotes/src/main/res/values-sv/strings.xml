@@ -54,7 +54,6 @@
     <string name="delete_selected_image">Ta bort markerad bilaga?</string>
     <string name="gallery">Galleri</string>
     <string name="location">Plats</string>
-    <string name="pushbullet">Pushbullet</string>
     <string name="remove_location">Ta bort plats?</string>
     <string name="remove_reminder">Ta bort påminnelse?</string>
     <string name="add_reminder">Lägg till påminnelse</string>
@@ -64,9 +63,6 @@
     <string name="storage_not_available">Lagring inte tillgänglig</string>
     <string name="video">Video</string>
     <string name="feature_not_available_on_this_device">Funktionen ej tillgänglig på denna enhet</string>
-    <string name="data_export_completed">Backup klar</string>
-    <string name="data_import_completed">Importering klar</string>
-    <string name="click_to_refresh_application">Klicka för att uppdatera program</string>
     <string name="tags">Taggar</string>
     <string name="add_tag">Lägg till taggar</string>
     <string name="select_tags">Välj etikett(er)</string>
@@ -87,7 +83,6 @@
     <string name="no_tags_created">Inga taggar har skapats ännu</string>
     <string name="notes_category_removed">Kategori borttagen från anteckningar</string>
     <string name="notes_categorized_as">Anteckningar katagoriserade som</string>
-    <string name="deleted">raderat</string>
     <string name="no_items_in_list">Ingenting här!</string>
     <string name="checklist_on">Aktivera checklista</string>
     <string name="checklist_off">Inaktivera checklista</string>
@@ -107,12 +102,9 @@
     <string name="error_saving_attachments">Fel vid sparning av bifogningar</string>
     <string name="contracted_view">Sammandragen vy</string>
     <string name="expanded_view">Utökad vy</string>
-    <string name="add_shortcut">Lägg till genväg</string>
-    <string name="shortcut_added">Genväg tillagd till hemskärm</string>
     <string name="shortcut_note_deleted">Genvägen hänvisar till en raderad anteckning</string>
     <string name="widget_simple_description">Enkel widget med knappar</string>
     <string name="widget_list_description">Scrollbar listwidget med knappar</string>
-    <string name="notes">anteckningar</string>
     <string name="show_thumbnails">Visa bifogningars miniatyrer</string>
     <string name="edit">Ändra</string>
     <string name="open">Öppna</string>
@@ -128,10 +120,7 @@
     <string name="empty_trash">Töm papperskorgen</string>
     <string name="empty_trash_confirmation">Bekräfta att ta bort alla anteckningar från papperskorgen?</string>
     <string name="tags_added">Taggar tillagda</string>
-    <string name="working">Arbetar…</string>
-    <string name="imported">imperterade</string>
     <string name="synchronize">Synkronisera</string>
-    <string name="extracted">Extraherade</string>
     <string name="select_all">Markera alla</string>
     <string name="search_location">Sök plats</string>
     <string name="use_current_location">Använd nuvarande plats</string>
@@ -139,16 +128,12 @@
     <string name="remove_filter">Remove filter</string>
     <string name="settings">Inställningar</string>
     <string name="action_settings">Inställningar</string>
-    <string name="import_fail">Importering misslyckades</string>
     <string name="file_not_exists">Fil som ska importeras existerar inte</string>
     <string name="settings_screen_interface">Interface</string>
     <string name="settings_screen_notifications">Notifications</string>
     <string name="settings_max_video_size_summary">Max tillåten storlek i MB</string>
-    <string name="data_deletion_completed">Borttagning av data klar</string>
     <string name="settings_category_preferences">Inställningar</string>
     <string name="minutes">Minuter</string>
-    <string name="password_forgot">Password forgotten</string>
-    <string name="password_remove">Remove password</string>
     <string name="settings_screen_behaviors">Behaviors</string>
     <string name="settings_swipe_to_trash_summary_1">När du sveper med fingret över anteckningar arkiveras dem</string>
     <string name="settings_swipe_to_trash_summary_2">Svep med fingret över en anteckning för att ta bort dem</string>

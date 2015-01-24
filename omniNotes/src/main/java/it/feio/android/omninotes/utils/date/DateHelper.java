@@ -35,7 +35,7 @@ import it.feio.android.omninotes.utils.Constants;
 public class DateHelper {
 
 	public static String getSortableDate() {
-		String result = null;
+		String result;
 		SimpleDateFormat sdf = new SimpleDateFormat(Constants.DATE_FORMAT_SORTABLE);
 		Date now = Calendar.getInstance().getTime();
 		result = sdf.format(now);
@@ -211,7 +211,7 @@ public class DateHelper {
 
 
 	public static boolean is24HourMode(Context mContext) {
-		boolean res = true;
+		boolean res;
 		Calendar c = Calendar.getInstance();
 		String timeFormatted = DateUtils.formatDateTime(mContext, c.getTimeInMillis(), DateUtils.FORMAT_SHOW_TIME);
 		res = !timeFormatted.toLowerCase().contains("am") && !timeFormatted.toLowerCase().contains("pm");

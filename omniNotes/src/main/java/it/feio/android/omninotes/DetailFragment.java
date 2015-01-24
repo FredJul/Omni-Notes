@@ -85,7 +85,6 @@ import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.neopixl.pixlui.components.edittext.EditText;
 import com.neopixl.pixlui.components.textview.TextView;
-import com.pushbullet.android.extension.MessagingExtension;
 
 import java.io.File;
 import java.io.IOException;
@@ -114,7 +113,6 @@ import it.feio.android.omninotes.models.listeners.OnGeoUtilResultListener;
 import it.feio.android.omninotes.models.listeners.OnNoteSaved;
 import it.feio.android.omninotes.models.listeners.OnReminderPickedListener;
 import it.feio.android.omninotes.models.views.ExpandableHeightGridView;
-import it.feio.android.omninotes.utils.AlphaManager;
 import it.feio.android.omninotes.utils.ConnectionManager;
 import it.feio.android.omninotes.utils.Constants;
 import it.feio.android.omninotes.utils.Display;
@@ -325,7 +323,7 @@ public class DetailFragment extends Fragment implements
 		handleIntents();
 
 		if (noteOriginal == null) {
-			noteOriginal = (Note) getArguments().getParcelable(Constants.INTENT_NOTE);
+			noteOriginal = getArguments().getParcelable(Constants.INTENT_NOTE);
 		}
 
 		if (note == null) {
@@ -349,7 +347,7 @@ public class DetailFragment extends Fragment implements
 		if (Constants.ACTION_MERGE.equals(i.getAction())) {
 			noteOriginal = new Note();
 			note = new Note(noteOriginal);
-			noteTmp = (Note) getArguments().getParcelable(Constants.INTENT_NOTE);
+			noteTmp = getArguments().getParcelable(Constants.INTENT_NOTE);
 			i.setAction(null);
 		}
 
@@ -549,7 +547,7 @@ public class DetailFragment extends Fragment implements
 			public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
 				Attachment attachment = (Attachment) parent.getAdapter().getItem(position);
 				Uri uri = attachment.getUri();
-				Intent attachmentIntent = null;
+				Intent attachmentIntent;
 				if (Constants.MIME_TYPE_FILES.equals(attachment.getMime_type())) {
 
 					attachmentIntent = new Intent(Intent.ACTION_VIEW);
@@ -795,7 +793,7 @@ public class DetailFragment extends Fragment implements
 		toggleChecklistView = content;
 		if (noteTmp.isChecklist()) {
 			noteTmp.setChecklist(false);
-			AlphaManager.setAlpha(toggleChecklistView, 0);
+			toggleChecklistView.setAlpha(0);
 			toggleChecklist2();
 		}
 
@@ -1018,7 +1016,6 @@ public class DetailFragment extends Fragment implements
 			menu.findItem(R.id.menu_delete).setVisible(true);
 			// Otherwise all other actions will be available
 		} else {
-			menu.findItem(R.id.menu_add_shortcut).setVisible(!newNote);
 			menu.findItem(R.id.menu_archive).setVisible(!newNote && !noteTmp.isArchived());
 			menu.findItem(R.id.menu_unarchive).setVisible(!newNote && noteTmp.isArchived());
 			menu.findItem(R.id.menu_trash).setVisible(!newNote);
@@ -1086,9 +1083,6 @@ public class DetailFragment extends Fragment implements
 				break;
 			case R.id.menu_checklist_off:
 				toggleChecklist();
-				break;
-			case R.id.menu_add_shortcut:
-				addShortcut();
 				break;
 			case R.id.menu_archive:
 				archiveNote(true);
@@ -1392,12 +1386,6 @@ public class DetailFragment extends Fragment implements
 		// Location
 		android.widget.TextView locationSelection = (android.widget.TextView) layout.findViewById(R.id.location);
 		locationSelection.setOnClickListener(new AttachmentOnClickListener());
-		// Desktop note with PushBullet
-		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
-			android.widget.TextView pushbulletSelection = (android.widget.TextView) layout.findViewById(R.id.pushbullet);
-			pushbulletSelection.setVisibility(View.VISIBLE);
-			pushbulletSelection.setOnClickListener(new AttachmentOnClickListener());
-		}
 
 		try {
 			attachmentDialog.showAsDropDown(anchor);
@@ -1718,7 +1706,7 @@ public class DetailFragment extends Fragment implements
 	}
 
 	private String getNoteTitle() {
-		String res = "";
+		String res;
 		if (getActivity() != null && getActivity().findViewById(R.id.detail_title) != null) {
 			Editable editableTitle = ((EditText) getActivity().findViewById(R.id.detail_title)).getText();
 			res = TextUtils.isEmpty(editableTitle) ? "" : editableTitle.toString();
@@ -1908,27 +1896,6 @@ public class DetailFragment extends Fragment implements
 		v.startAnimation(mAnimation);
 	}
 
-	/**
-	 * Adding shortcut on Home screen
-	 */
-	private void addShortcut() {
-		Intent shortcutIntent = new Intent(getActivity(), MainActivity.class);
-		shortcutIntent.putExtra(Constants.INTENT_KEY, noteTmp.get_id());
-		shortcutIntent.setAction(Constants.ACTION_SHORTCUT);
-
-		Intent addIntent = new Intent();
-		addIntent.putExtra(Intent.EXTRA_SHORTCUT_INTENT, shortcutIntent);
-		String shortcutTitle = note.getTitle().length() > 0 ? note.getTitle() : note.getCreationShort(getActivity());
-		addIntent.putExtra(Intent.EXTRA_SHORTCUT_NAME, shortcutTitle);
-		addIntent.putExtra(Intent.EXTRA_SHORTCUT_ICON_RESOURCE,
-				Intent.ShortcutIconResource.fromContext(getActivity(), R.drawable.ic_shortcut));
-		addIntent.setAction("com.android.launcher.action.INSTALL_SHORTCUT");
-
-		getActivity().sendBroadcast(addIntent);
-		getMainActivity().showMessage(R.string.shortcut_added, ONStyle.INFO);
-
-	}
-
 	/* (non-Javadoc)
 	 * @see com.neopixl.pixlui.links.TextLinkClickListener#onTextLinkClick(android.view.View, java.lang.String, java.lang.String)
 	 *
@@ -1985,55 +1952,6 @@ public class DetailFragment extends Fragment implements
 				}).build();
 
 		dialog.show();
-//        dialog.set
-//                .setPositiveButton(R.string.open, new DialogInterface.OnClickListener() {
-//                    @Override
-//                    public void onClick(DialogInterface dialog, int id) {
-//                        boolean error = false;
-//                        Intent intent = null;
-//                        try {
-//                            intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
-//                            intent.addCategory(Intent.CATEGORY_BROWSABLE);
-//                            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-//                        } catch (NullPointerException e) {
-//                            error = true;
-//                        }
-//
-//                        if (intent == null
-//                                || error
-//                                || !IntentChecker
-//                                .isAvailable(
-//                                        getActivity(),
-//                                        intent,
-//                                        new String[]{PackageManager.FEATURE_CAMERA})) {
-//                            Crouton.makeText(
-//                                    getActivity(),
-//                                    R.string.no_application_can_perform_this_action,
-//                                    ONStyle.ALERT).show();
-//                        } else {
-//                            startActivity(intent);
-//                        }
-//                    }
-//                }).setNegativeButton(R.string.copy, new DialogInterface.OnClickListener() {
-//            @SuppressWarnings("deprecation")
-//            @Override
-//            public void onClick(DialogInterface dialog, int id) {
-//                // Creates a new text clip to put on the clipboard
-//                if (Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
-//                    android.text.ClipboardManager clipboard = (android.text.ClipboardManager) getActivity()
-//                            .getSystemService(Activity.CLIPBOARD_SERVICE);
-//                    clipboard.setText("text to clip");
-//                } else {
-//                    android.content.ClipboardManager clipboard = (android.content.ClipboardManager) getActivity()
-//                            .getSystemService(Activity.CLIPBOARD_SERVICE);
-//                    android.content.ClipData clip = android.content.ClipData.newPlainText("text label", clickedString);
-//                    clipboard.setPrimaryClip(clip);
-//                }
-//                dialog.cancel();
-//            }
-//        });
-//        AlertDialog alertDialog = alertDialogBuilder.create();
-//        alertDialog.show();
 	}
 
 	@SuppressLint("NewApi")
@@ -2287,10 +2205,6 @@ public class DetailFragment extends Fragment implements
 		}
 	}
 
-	public void appendToContentViewText(String text) {
-		content.setText(getNoteContent() + System.getProperty("line.separator") + text);
-	}
-
 	/**
 	 * Used to check currently opened note from activity to avoid openind multiple times the same one
 	 */
@@ -2356,12 +2270,6 @@ public class DetailFragment extends Fragment implements
 					break;
 				case R.id.location:
 					setAddress();
-					attachmentDialog.dismiss();
-					break;
-				case R.id.pushbullet:
-					MessagingExtension.mirrorMessage(getActivity(), getString(R.string.app_name), getString(R.string.pushbullet),
-							getNoteContent(), BitmapFactory.decodeResource(getResources(), R.drawable.ic_stat_notification_icon),
-							null, 0);
 					attachmentDialog.dismiss();
 					break;
 			}

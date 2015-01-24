@@ -32,12 +32,6 @@ import android.view.WindowManager;
 
 public class Display {
 
-
-	public static View getRootView(Activity mActivity) {
-		return mActivity.getWindow().getDecorView().findViewById(android.R.id.content);
-	}
-
-
 	@SuppressWarnings("deprecation")
 	@SuppressLint("NewApi")
 	public static Point getUsableSize(Context mContext) {
@@ -69,13 +63,6 @@ public class Display {
 		return displaySize;
 	}
 
-	public static Point getFullSize(View view) {
-		Point displaySize = new Point();
-		displaySize.x = view.getRootView().getWidth();
-		displaySize.y = view.getRootView().getHeight();
-		return displaySize;
-	}
-
 	public static int getStatusBarHeight(Context mContext) {
 		int result = 0;
 		int resourceId = mContext.getResources().getIdentifier("status_bar_height", "dimen", "android");
@@ -84,20 +71,6 @@ public class Display {
 		}
 		return result;
 	}
-
-	public static int getNavigationBarHeightStandard(Context mContext) {
-		int resourceId = mContext.getResources().getIdentifier("navigation_bar_height", "dimen", "android");
-		if (resourceId > 0) {
-			return mContext.getResources().getDimensionPixelSize(resourceId);
-		}
-		return 0;
-	}
-
-
-	public static int getNavigationBarHeight(View view) {
-		return (getFullSize(view).y - getUsableSize(view.getContext()).y);
-	}
-
 
 	@SuppressLint("NewApi")
 	public static int getActionbarHeight(Object mObject) {
@@ -109,17 +82,6 @@ public class Display {
 		}
 		return res;
 	}
-
-//	public static int getActionBarHeight(Activity mActivity) {
-//		Rect r = new Rect();
-//		Window window = mActivity.getWindow();
-//		window.getDecorView().getWindowVisibleDisplayFrame(r);
-//		int StatusBarHeight = r.top;
-//		int contentViewTop = window.findViewById(Window.ID_ANDROID_CONTENT).getTop();
-//		int actionBarHeight = contentViewTop - StatusBarHeight;
-//		return actionBarHeight;
-//	}
-
 
 	@TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR1)
 	public static Point getScreenDimensions(Context mContext) {

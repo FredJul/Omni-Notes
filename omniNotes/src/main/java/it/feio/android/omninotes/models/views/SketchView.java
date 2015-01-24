@@ -37,18 +37,18 @@ import it.feio.android.omninotes.models.listeners.OnDrawChangedListener;
 public class SketchView extends View implements OnTouchListener {
 
 	private static final float TOUCH_TOLERANCE = 4;
-	
+
 	public static final int STROKE = 0;
 	public static final int ERASER = 1;
 	public static final int DEFAULT_STROKE_SIZE = 7;
 	public static final int DEFAULT_ERASER_SIZE = 50;
-	
+
 	private float strokeSize = DEFAULT_STROKE_SIZE;
 	private int strokeColor = Color.BLACK;
 	private float eraserSize = DEFAULT_ERASER_SIZE;
 	private int background = Color.WHITE;
-	
-//	private Canvas mCanvas;
+
+	//	private Canvas mCanvas;
 	private Path m_Path;
 	private Paint m_Paint;
 	private float mX, mY;
@@ -63,13 +63,13 @@ public class SketchView extends View implements OnTouchListener {
 	private int mode = STROKE;
 
 	private OnDrawChangedListener onDrawChangedListener;
-	
+
 
 	public SketchView(Context context, AttributeSet attr) {
 		super(context, attr);
-		
+
 		this.mContext = context;
-		
+
 		setFocusable(true);
 		setFocusableInTouchMode(true);
 		setBackgroundColor(Color.WHITE);
@@ -87,24 +87,24 @@ public class SketchView extends View implements OnTouchListener {
 
 //		mCanvas = new Canvas();
 		m_Path = new Path();
-		Paint newPaint = new Paint(m_Paint);
 		invalidate();
 	}
-	
-	
+
+
 	public void setMode(int mode) {
 		if (mode == STROKE || mode == ERASER)
 			this.mode = mode;
 	}
-	
-	
+
+
 	public int getMode() {
 		return this.mode;
 	}
-	
-	
+
+
 	/**
 	 * Change canvass background and force redraw
+	 *
 	 * @param bitmap
 	 */
 	public void setBackgroundBitmap(Activity mActivity, Bitmap bitmap) {
@@ -120,8 +120,8 @@ public class SketchView extends View implements OnTouchListener {
 //		this.bitmap = getScaledBitmap(mActivity, bitmap);
 //		mCanvas = new Canvas(bitmap);
 	}
-	
-	
+
+
 //	private Bitmap getScaledBitmap(Activity mActivity, Bitmap bitmap) {
 //		DisplayMetrics display = new DisplayMetrics();
 //		mActivity.getWindowManager().getDefaultDisplay().getMetrics(display);
@@ -132,49 +132,48 @@ public class SketchView extends View implements OnTouchListener {
 //		int scaledHeight = (int) (bitmap.getHeight() / scale);
 //		return Bitmap.createScaledBitmap(bitmap, scaledWidth, scaledHeight, true);
 //	}
-	
-	
+
+
 	@Override
 	protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
 		width = View.MeasureSpec.getSize(widthMeasureSpec);
-	    height = View.MeasureSpec.getSize(heightMeasureSpec);
-	    
-	    setMeasuredDimension(width, height);
+		height = View.MeasureSpec.getSize(heightMeasureSpec);
+
+		setMeasuredDimension(width, height);
 	}
-	
-	
+
 
 	public boolean onTouch(View arg0, MotionEvent event) {
 		float x = event.getX();
 		float y = event.getY();
 
 		switch (event.getAction()) {
-		case MotionEvent.ACTION_DOWN:
-			touch_start(x, y);
-			invalidate();
-			break;
-		case MotionEvent.ACTION_MOVE:
-			touch_move(x, y);
-			invalidate();
-			break;
-		case MotionEvent.ACTION_UP:
-			touch_up();
-			invalidate();
-			break;
+			case MotionEvent.ACTION_DOWN:
+				touch_start(x, y);
+				invalidate();
+				break;
+			case MotionEvent.ACTION_MOVE:
+				touch_move(x, y);
+				invalidate();
+				break;
+			case MotionEvent.ACTION_UP:
+				touch_up();
+				invalidate();
+				break;
 		}
 		return true;
 	}
 
 	@Override
-	protected void onDraw(Canvas canvas) {		
+	protected void onDraw(Canvas canvas) {
 		if (bitmap != null) {
 			canvas.drawBitmap(bitmap, 0, 0, null);
 		}
-			
+
 		for (Pair<Path, Paint> p : paths) {
-			canvas.drawPath((Path) p.first, (Paint) p.second);				
+			canvas.drawPath(p.first, p.second);
 		}
-		
+
 		onDrawChangedListener.onDrawChanged();
 	}
 
@@ -191,12 +190,12 @@ public class SketchView extends View implements OnTouchListener {
 		}
 
 		Paint newPaint = new Paint(m_Paint); // Clones the mPaint object
-		
+
 		// Avoids that a sketch with just erasures is saved
-		if ( !(paths.size() == 0 && mode == ERASER && bitmap == null) ) {
+		if (!(paths.size() == 0 && mode == ERASER && bitmap == null)) {
 			paths.add(new Pair<Path, Paint>(m_Path, newPaint));
 		}
-		
+
 		m_Path.reset();
 		m_Path.moveTo(x, y);
 		mX = x;
@@ -204,50 +203,51 @@ public class SketchView extends View implements OnTouchListener {
 	}
 
 	private void touch_move(float x, float y) {
-		float dx = Math.abs(x - mX);
-		float dy = Math.abs(y - mY);
+//		float dx = Math.abs(x - mX);
+//		float dy = Math.abs(y - mY);
 //		if (dx >= TOUCH_TOLERANCE || dy >= TOUCH_TOLERANCE) {
-			m_Path.quadTo(mX, mY, (x + mX) / 2, (y + mY) / 2);
-			mX = x;
-			mY = y;
+		m_Path.quadTo(mX, mY, (x + mX) / 2, (y + mY) / 2);
+		mX = x;
+		mY = y;
 //		}
 	}
 
 	private void touch_up() {
 		m_Path.lineTo(mX, mY);
 		Paint newPaint = new Paint(m_Paint); // Clones the mPaint object
-		
+
 		// Avoids that a sketch with just erasures is saved
-		if ( !(paths.size() == 0 && mode == ERASER && bitmap == null) ) {
+		if (!(paths.size() == 0 && mode == ERASER && bitmap == null)) {
 			paths.add(new Pair<Path, Paint>(m_Path, newPaint));
 		}
-		
+
 		// kill this so we don't double draw
 		m_Path = new Path();
 	}
 
-	
+
 	/**
 	 * Returns a new bitmap associated with drawed canvas
+	 *
 	 * @return
 	 */
 	public Bitmap getBitmap() {
 		if (paths.size() == 0)
 			return null;
-		
+
 		if (bitmap == null) {
 			bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
 			bitmap.eraseColor(background);
 		}
 		Canvas canvas = new Canvas(bitmap);
 		for (Pair<Path, Paint> p : paths) {
-			canvas.drawPath((Path) p.first, (Paint) p.second);				
+			canvas.drawPath(p.first, p.second);
 		}
 		return bitmap;
 	}
 
 	public void undo() {
-		if (paths.size() >= 2) { 
+		if (paths.size() >= 2) {
 			undonePaths.add(paths.remove(paths.size() - 1));
 			// If there is not only one path remained both touch and move paths are removed
 			undonePaths.add(paths.remove(paths.size() - 1));
@@ -262,7 +262,7 @@ public class SketchView extends View implements OnTouchListener {
 			invalidate();
 		}
 	}
-	
+
 	public int getUndoneCount() {
 		return undonePaths.size();
 	}
@@ -282,28 +282,28 @@ public class SketchView extends View implements OnTouchListener {
 	public void setUndonePaths(ArrayList<Pair<Path, Paint>> undonePaths) {
 		this.undonePaths = undonePaths;
 	}
-	
-	public int getStrokeSize(){
-		return (int)Math.round(this.strokeSize);
+
+	public int getStrokeSize() {
+		return Math.round(this.strokeSize);
 	}
-	
-	public void setSize(int size, int eraserOrStroke){
+
+	public void setSize(int size, int eraserOrStroke) {
 		switch (eraserOrStroke) {
-		case STROKE:
-			strokeSize = size;
-			break;
-		case ERASER:
-			eraserSize = size;
-			break;
+			case STROKE:
+				strokeSize = size;
+				break;
+			case ERASER:
+				eraserSize = size;
+				break;
 		}
-		
+
 	}
-	
-	public int getStrokeColor(){
+
+	public int getStrokeColor() {
 		return this.strokeColor;
 	}
-	
-	public void setStrokeColor(int color){
+
+	public void setStrokeColor(int color) {
 		strokeColor = color;
 	}
 

@@ -16,26 +16,24 @@
   -->
 
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:pixlui="http://schemas.android.com/apk/com.neopixl.pixlui"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:clipToPadding="false"
-    android:fitsSystemWindows="false" >
+             android:layout_width="match_parent"
+             android:layout_height="match_parent"
+             android:clipToPadding="false"
+             android:fitsSystemWindows="false">
 
     <LinearLayout
         android:id="@+id/drawing_question"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="#FFFFFF"
-        android:orientation="vertical" >
+        android:orientation="vertical">
 
         <LinearLayout
             android:id="@+id/eraserView"
             android:layout_width="match_parent"
             android:layout_height="40dp"
             android:orientation="horizontal"
-            android:padding="4dp" >
+            android:padding="4dp">
 
             <ImageView
                 android:id="@+id/sketch_stroke"
@@ -46,7 +44,7 @@
                 android:layout_marginRight="10dp"
                 android:layout_weight="1"
                 android:contentDescription="@string/stroke"
-                android:src="@drawable/ic_brush_grey600_24dp" />
+                android:src="@drawable/ic_brush_grey600_24dp"/>
 
             <ImageView
                 android:id="@+id/sketch_eraser"
@@ -57,7 +55,7 @@
                 android:layout_marginRight="10dp"
                 android:layout_weight="1"
                 android:contentDescription="@string/eraser"
-                android:src="@drawable/ic_eraser" />
+                android:src="@drawable/ic_eraser"/>
 
             <ImageView
                 android:id="@+id/sketch_undo"
@@ -69,7 +67,7 @@
                 android:alpha="0.4"
                 android:background="@null"
                 android:contentDescription="@string/undo"
-                android:src="@drawable/ic_undo_grey600_24dp" />
+                android:src="@drawable/ic_undo_grey600_24dp"/>
 
             <ImageView
                 android:id="@+id/sketch_redo"
@@ -80,7 +78,7 @@
                 android:layout_weight="1"
                 android:alpha="0.4"
                 android:contentDescription="@string/redo"
-                android:src="@drawable/ic_redo_grey600_24dp" />
+                android:src="@drawable/ic_redo_grey600_24dp"/>
 
             <ImageView
                 android:id="@+id/sketch_erase"
@@ -91,7 +89,7 @@
                 android:layout_marginRight="10dp"
                 android:layout_weight="1"
                 android:contentDescription="@string/colors"
-                android:src="@drawable/ic_delete_grey600_48dp" />
+                android:src="@drawable/ic_delete_grey600_48dp"/>
         </LinearLayout>
 
         <it.feio.android.omninotes.models.views.SketchView
@@ -99,7 +97,7 @@
             android:id="@+id/drawing"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight="1" >
+            android:layout_weight="1">
         </it.feio.android.omninotes.models.views.SketchView>
     </LinearLayout>
 

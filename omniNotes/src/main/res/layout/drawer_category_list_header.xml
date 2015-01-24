@@ -25,13 +25,12 @@
 <!--     android:paddingRight="@dimen/horizontal_margin"  -->
 <!--     android:paddingEnd="@dimen/horizontal_margin" > -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:pixlui="http://schemas.android.com/apk/com.neopixl.pixlui"
-    android:id="@+id/layout_root"
-    android:layout_width="fill_parent"
-    android:layout_height="wrap_content"
-    android:orientation="vertical" 
-    android:paddingLeft="@dimen/horizontal_margin"
-    android:paddingRight="@dimen/horizontal_margin"  >
+              android:id="@+id/layout_root"
+              android:layout_width="fill_parent"
+              android:layout_height="wrap_content"
+              android:orientation="vertical"
+              android:paddingLeft="@dimen/horizontal_margin"
+              android:paddingRight="@dimen/horizontal_margin">
 
     <com.neopixl.pixlui.components.textview.TextView
         android:id="@+id/tag"
@@ -42,9 +41,9 @@
         android:textAllCaps="true"
         android:text="@string/categories"
         android:textAppearance="@style/Text.Small"
-        android:textColor="@color/text_color" />
-    
-    <View 
+        android:textColor="@color/text_color"/>
+
+    <View
         android:layout_width="match_parent"
         android:layout_height="1dp"
         android:background="@color/drawer_line"

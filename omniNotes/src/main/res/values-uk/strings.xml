@@ -54,7 +54,6 @@
     <string name="delete_selected_image">Видалити вибране вкладення?</string>
     <string name="gallery">Галерея</string>
     <string name="location">Розташування</string>
-    <string name="pushbullet">Pushbullet</string>
     <string name="remove_location">Видалити розташування?</string>
     <string name="remove_reminder">Видалити нагадування?</string>
     <string name="add_reminder">Додати нагадування</string>
@@ -64,9 +63,6 @@
     <string name="storage_not_available">Сховище недоступне</string>
     <string name="video">Відео</string>
     <string name="feature_not_available_on_this_device">Ця функція недоступна на цьому пристрої</string>
-    <string name="data_export_completed">Резервування даних завершене</string>
-    <string name="data_import_completed">Імпортування даних завершено</string>
-    <string name="click_to_refresh_application">Торкніться, щоб оновити програму</string>
     <string name="tags">Ярлички</string>
     <string name="add_tag">Додавання тегів</string>
     <string name="select_tags">Вибрати тег(и)</string>
@@ -87,7 +83,6 @@
     <string name="no_tags_created">Немає створених ярличків</string>
     <string name="notes_category_removed">Категорію вилучено з нотаток</string>
     <string name="notes_categorized_as">Нотататки класифіковані як</string>
-    <string name="deleted">видалено</string>
     <string name="no_items_in_list">Поки що тут порожньо!</string>
     <string name="checklist_on">Увімкнути список</string>
     <string name="checklist_off">Вимкнути список</string>
@@ -107,12 +102,9 @@
     <string name="error_saving_attachments">Помилка при збереженні вкладень</string>
     <string name="contracted_view">Компактний вигляд</string>
     <string name="expanded_view">Розширений вигляд</string>
-    <string name="add_shortcut">Додати ярличок</string>
-    <string name="shortcut_added">Ярличок додано на робочий стіл</string>
     <string name="shortcut_note_deleted">Ярличок пов\'язаний із видаленою нотаткою</string>
     <string name="widget_simple_description">Зручний віджет з кнопками</string>
     <string name="widget_list_description">Прокручуваний віджет з кнопками</string>
-    <string name="notes">нотатки</string>
     <string name="show_thumbnails">Показувати ескізи вкладених файлів</string>
     <string name="edit">Редагувати</string>
     <string name="open">Відкрити</string>
@@ -128,10 +120,7 @@
     <string name="empty_trash">Спорожнити смітник</string>
     <string name="empty_trash_confirmation">Підтверджуєте видалення усіх нотаток зі смітника?</string>
     <string name="tags_added">Теги додано</string>
-    <string name="working">Працюємо…</string>
-    <string name="imported">імпортовано</string>
     <string name="synchronize">Синхронізувати</string>
-    <string name="extracted">Розпаковано</string>
     <string name="select_all">Select all</string>
     <string name="search_location">Search location</string>
     <string name="use_current_location">Use current location</string>
@@ -139,16 +128,12 @@
     <string name="remove_filter">Remove filter</string>
     <string name="settings">Налаштування</string>
     <string name="action_settings">Налаштування</string>
-    <string name="import_fail">Не вдалося імпортувати файл</string>
     <string name="file_not_exists">Не існує файлу для імпортування</string>
     <string name="settings_screen_interface">Interface</string>
     <string name="settings_screen_notifications">Notifications</string>
     <string name="settings_max_video_size_summary">Макс. дозволений розмір в МБ</string>
-    <string name="data_deletion_completed">Видалення даних завершене</string>
     <string name="settings_category_preferences">Параметри</string>
     <string name="minutes">хвилин</string>
-    <string name="password_forgot">Password forgotten</string>
-    <string name="password_remove">Remove password</string>
     <string name="settings_screen_behaviors">Behaviors</string>
     <string name="settings_swipe_to_trash_summary_1">Протягуйте по нотатках пальцем, щоб заархівувати їх</string>
     <string name="settings_swipe_to_trash_summary_2">Протягуйте по нотатках пальцем, щоб видалити їх</string>

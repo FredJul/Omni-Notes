@@ -54,7 +54,6 @@
     <string name="delete_selected_image">Desaniciar axuntu esbilláu?</string>
     <string name="gallery">Galería</string>
     <string name="location">Allugamientu</string>
-    <string name="pushbullet">Pushbullet</string>
     <string name="remove_location">Desaniciar allugamientu?</string>
     <string name="remove_reminder">Desaniciar avisu?</string>
     <string name="add_reminder">Amestar un avisu</string>
@@ -64,9 +63,6 @@
     <string name="storage_not_available">Almacenamientu non disponible</string>
     <string name="video">Videu</string>
     <string name="feature_not_available_on_this_device">Carauterística non disponible nesti preséu</string>
-    <string name="data_export_completed">Copia de seguranza completada</string>
-    <string name="data_import_completed">Recuperación de datos completada</string>
-    <string name="click_to_refresh_application">Clic pa refrescar l\'aplicación</string>
     <string name="tags">Etiquetes</string>
     <string name="add_tag">Amestar etiquetes</string>
     <string name="select_tags">Seleicionar etiquetes</string>
@@ -87,7 +83,6 @@
     <string name="no_tags_created">Entá nun hai etiquetes creaes</string>
     <string name="notes_category_removed">Categoría desaniciada de les notes</string>
     <string name="notes_categorized_as">Notes categorizaes como</string>
-    <string name="deleted">desaniciada</string>
     <string name="no_items_in_list">Nun hai un res equí!</string>
     <string name="checklist_on">Habilitar llista de verificación</string>
     <string name="checklist_off">Deshabilitar llista de verificación</string>
@@ -107,12 +102,9 @@
     <string name="error_saving_attachments">Fallu al guardar axuntos</string>
     <string name="contracted_view">Vista amenorgada</string>
     <string name="expanded_view">Vista estendida</string>
-    <string name="add_shortcut">Amestar accesu direutu</string>
-    <string name="shortcut_added">Accesu direutu amestáu a pantalla d\'aniciu</string>
     <string name="shortcut_note_deleted">L\'accesu direutu apunta a una nota desaniciada</string>
     <string name="widget_simple_description">Widget simple con botones</string>
     <string name="widget_list_description">Widget de llista desplazable con botones</string>
-    <string name="notes">notes</string>
     <string name="show_thumbnails">Amosar miniatures d\'axuntos</string>
     <string name="edit">Editar</string>
     <string name="open">Abrir</string>
@@ -128,10 +120,7 @@
     <string name="empty_trash">Vaciar papelera</string>
     <string name="empty_trash_confirmation">Quies desaniciar toles notes de la papelera?</string>
     <string name="tags_added">Etiquetes amestaes</string>
-    <string name="working">Trabayando…</string>
-    <string name="imported">importaes</string>
     <string name="synchronize">Sincronizar</string>
-    <string name="extracted">Estrayíes</string>
     <string name="select_all">Esbillalo too</string>
     <string name="search_location">Guetar llocalización</string>
     <string name="use_current_location">Usar llocalización actual</string>
@@ -139,16 +128,12 @@
     <string name="remove_filter">Remove filter</string>
     <string name="settings">Axustes</string>
     <string name="action_settings">Axustes</string>
-    <string name="import_fail">Fallu al importar</string>
     <string name="file_not_exists">Nun esiste\'l ficheru que quies importar</string>
     <string name="settings_screen_interface">Interface</string>
     <string name="settings_screen_notifications">Notifications</string>
     <string name="settings_max_video_size_summary">Tamañu máximu permitíu en MB</string>
-    <string name="data_deletion_completed">Desaniciáu de datos completáu</string>
     <string name="settings_category_preferences">Preferencies</string>
     <string name="minutes">minutos</string>
-    <string name="password_forgot">Password forgotten</string>
-    <string name="password_remove">Remove password</string>
     <string name="settings_screen_behaviors">Behaviors</string>
     <string name="settings_swipe_to_trash_summary_1">Al pasar el deu peles notes, archivaránse</string>
     <string name="settings_swipe_to_trash_summary_2">Al pasar el deu peles notes, dirán a la papelera</string>

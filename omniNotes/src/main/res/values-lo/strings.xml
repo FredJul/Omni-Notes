@@ -54,7 +54,6 @@
     <string name="delete_selected_image">ລຶບ​ໄຟລ໌ແນບທີ່ເລືອກ​?</string>
     <string name="gallery">ຄັງຮູບ</string>
     <string name="location">ສະ​ຖານ​ທີ່</string>
-    <string name="pushbullet">Pushbullet</string>
     <string name="remove_location">ລຶບສະຖານທີ່?</string>
     <string name="remove_reminder">ລຶບໂຕເຕືອນຄວາມຈຳ​?</string>
     <string name="add_reminder">ເພີ່ມໂຕເຕືອນຄວາມຈຳ</string>
@@ -64,9 +63,6 @@
     <string name="storage_not_available">ຄັງຈັດເກັບໃຊ້ບໍ່ໄດ້</string>
     <string name="video">ວິ​ດີ​ໂ</string>
     <string name="feature_not_available_on_this_device">ຄຸນສົມບັດໃຊ້ກັບອຸປະກອນນີ້ບໍ່ໄດ້</string>
-    <string name="data_export_completed">ສຳຮອງ​ຂໍ້​ມູນ​ສ​ໍ​າ​ເລັດແລ້ວ</string>
-    <string name="data_import_completed">ການ​ນໍາ​ເຂົ້າ​ຂໍ້​ມູນ​ສໍາ​ເລັດແລ້ວ</string>
-    <string name="click_to_refresh_application">ກົດເພື່ອ refresh ແອັບພຼິເຄຊັນ</string>
     <string name="tags">ປ້າຍ</string>
     <string name="add_tag">Add tags</string>
     <string name="select_tags">Select tag(s)</string>
@@ -87,7 +83,6 @@
     <string name="no_tags_created">ບໍ່ມີປ້າຍທີ່ຖືກສ້າງຂຶ້ນເທື່ອ</string>
     <string name="notes_category_removed">Category removed from notes</string>
     <string name="notes_categorized_as">Notes categorized as</string>
-    <string name="deleted">ລຶບແລ້ວ</string>
     <string name="no_items_in_list">ບໍ່​ມີ​ຫຍັງ​ຢູ່​ນີ້!</string>
     <string name="checklist_on">ເປີດການໃຊ້ງານລາຍການແບບເລືອກ</string>
     <string name="checklist_off">ປິດ​ການ​ໃຊ້​ງານ​ລາຍການແບບເລືອກ</string>
@@ -107,12 +102,9 @@
     <string name="error_saving_attachments">ເກີດຂໍ້ຜິດພາດໃນການຈັດເກັບໄຟລ໌ແນບ</string>
     <string name="contracted_view">ມູມມອງທີ່ນ້ອຍລົງ</string>
     <string name="expanded_view">ມູມມອງແບບຂະຫຍາຍ</string>
-    <string name="add_shortcut">ເພີ່ມທາງລັດ</string>
-    <string name="shortcut_added">ທາງລັດຖືກເພີ່ມໄປຍັງໜ້າຈໍຫຼັກ</string>
     <string name="shortcut_note_deleted">ທາງລັດເຊື່ອມຕໍ່ໄປຍັງບັນທຶກທີ່ຖືກລຶບ</string>
     <string name="widget_simple_description">ວິດເຈັດທຳມະດາແບບມີປຸ່ມກົດ</string>
     <string name="widget_list_description">ວິດເຈັດເລື່ອນໄດ້ແບບມີປຸ່ມກົດ</string>
-    <string name="notes">ບັນທຶກ</string>
     <string name="show_thumbnails">ສະແດງຮູບຕົວຢ່າງຂອງໄຟລ໌ແນບ</string>
     <string name="edit">ແກ້ໄຂ</string>
     <string name="open">ເປີດ</string>
@@ -128,10 +120,7 @@
     <string name="empty_trash">Empty trash</string>
     <string name="empty_trash_confirmation">Confirm deleting all trashed notes?</string>
     <string name="tags_added">Tags added</string>
-    <string name="working">Working…</string>
-    <string name="imported">imported</string>
     <string name="synchronize">Synchronize</string>
-    <string name="extracted">Extracted</string>
     <string name="select_all">Select all</string>
     <string name="search_location">Search location</string>
     <string name="use_current_location">Use current location</string>
@@ -139,16 +128,12 @@
     <string name="remove_filter">Remove filter</string>
     <string name="settings">ການ​ຕັ້ງຄ່າ</string>
     <string name="action_settings">ການ​ຕັ້ງຄ່າ</string>
-    <string name="import_fail">ການ​ນໍາ​ເຂົ້າ​ໄຟລ​໌​ບໍ່ສໍາ​ເລັດ</string>
     <string name="file_not_exists">ບໍ່ມີໄຟລ໌ທີ່ຈະນຳເຂົ້າ</string>
     <string name="settings_screen_interface">Interface</string>
     <string name="settings_screen_notifications">Notifications</string>
     <string name="settings_max_video_size_summary">ຂະໜາດສູງສຸດທີ່ອະນຸຍາດ ເປັນ MB</string>
-    <string name="data_deletion_completed">ການລຶບຂໍ້ມູນສຳເລັດແລ້ວ</string>
     <string name="settings_category_preferences">ການອ້າງອີງ</string>
     <string name="minutes">ນາທີ</string>
-    <string name="password_forgot">Password forgotten</string>
-    <string name="password_remove">Remove password</string>
     <string name="settings_screen_behaviors">Behaviors</string>
     <string name="settings_swipe_to_trash_summary_1">Swiping notes with finger will archive them</string>
     <string name="settings_swipe_to_trash_summary_2">Swiping notes with finger will trash them</string>

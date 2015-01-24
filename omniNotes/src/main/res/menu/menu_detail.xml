@@ -57,12 +57,6 @@
         android:visible="false"
         app:showAsAction="ifRoom"/>
     <item
-        android:id="@+id/menu_add_shortcut"
-        android:orderInCategory="700"
-        android:title="@string/add_shortcut"
-        android:visible="false"
-        app:showAsAction="ifRoom"/>
-    <item
         android:id="@+id/menu_archive"
         android:icon="@drawable/ic_archive_grey600_48dp"
         android:orderInCategory="800"

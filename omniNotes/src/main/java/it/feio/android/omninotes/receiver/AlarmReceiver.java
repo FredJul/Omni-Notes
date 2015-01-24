@@ -46,8 +46,8 @@ public class AlarmReceiver extends BroadcastReceiver {
 //			// Acquire the lock
 //			wl.acquire();
 
-			try {			
-				Note note = (Note) intent.getExtras().getParcelable(Constants.INTENT_NOTE);
+			try {
+				Note note = intent.getExtras().getParcelable(Constants.INTENT_NOTE);
 
 				createNotification(mContext, note);
 			}
@@ -64,7 +64,7 @@ public class AlarmReceiver extends BroadcastReceiver {
 	}
 
 	private void createNotification(Context mContext, Note note) {
-		
+
 		// Retrieving preferences
 		@SuppressWarnings("static-access")
 		SharedPreferences prefs = mContext.getSharedPreferences(Constants.PREFS_NAME, mContext.MODE_MULTI_PROCESS);
@@ -78,27 +78,27 @@ public class AlarmReceiver extends BroadcastReceiver {
 				+ ", "
 				+ DateHelper.getDateTimeShort(mContext, Long.parseLong(note.getAlarm()));
 		String text = note.getTitle().length() > 0 && note.getContent().length() > 0 ? note.getContent() : alarmText;
-		
+
 		// Notification building
 		NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(
 				mContext).setSmallIcon(R.drawable.ic_stat_notification_icon)
 				.setContentTitle(title).setContentText(text)
 				.setAutoCancel(true);
-		
-		
+
+
 		// Ringtone options
 		String ringtone = prefs.getString("settings_notification_ringtone", null);
 		if (ringtone != null) {
 			mBuilder.setSound(Uri.parse(ringtone));
 		}
-		
-		
+
+
 		// Vibration options
-		long[] pattern = {500,500};		
+		long[] pattern = {500, 500};
 		if (prefs.getBoolean("settings_notification_vibration", true))
 			mBuilder.setVibrate(pattern);
-		
-		
+
+
 		// Sets up the Snooze and Dismiss action buttons that will appear in the
 		// big view of the notification.
 		Intent dismissIntent = new Intent(mContext, SnoozeActivity.class);
@@ -117,29 +117,29 @@ public class AlarmReceiver extends BroadcastReceiver {
 		postponeIntent.putExtra(Constants.INTENT_NOTE, (android.os.Parcelable) note);
 		snoozeIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 		PendingIntent piPostpone = PendingIntent.getActivity(mContext, 0, postponeIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-		
+
 		String snoozeDelay = mContext.getSharedPreferences(Constants.PREFS_NAME, mContext.MODE_MULTI_PROCESS).getString("settings_notification_snooze_delay", "10");
-		
-        //Sets the big view "big text" style  
+
+		//Sets the big view "big text" style
 		mBuilder
 //		.addAction (R.drawable.ic_action_cancel_dark,
 //       		mContext.getString(R.string.cancel), piDismiss)
-       .addAction (R.drawable.ic_snooze_reminder,
-    		   it.feio.android.omninotes.utils.TextHelper.capitalize(mContext.getString(R.string.snooze)) + ": " + snoozeDelay, piSnooze)
-        .addAction (R.drawable.ic_reminder,
-       		it.feio.android.omninotes.utils.TextHelper.capitalize(mContext.getString(R.string.add_reminder)), piPostpone);
-		
+				.addAction(R.drawable.ic_snooze_reminder,
+						it.feio.android.omninotes.utils.TextHelper.capitalize(mContext.getString(R.string.snooze)) + ": " + snoozeDelay, piSnooze)
+				.addAction(R.drawable.ic_reminder,
+						it.feio.android.omninotes.utils.TextHelper.capitalize(mContext.getString(R.string.add_reminder)), piPostpone);
+
 
 		// Next create the bundle and initialize it
-		Intent intent = new Intent(mContext, SnoozeActivity.class);		
+		Intent intent = new Intent(mContext, SnoozeActivity.class);
 		Bundle bundle = new Bundle();
 		bundle.putParcelable(Constants.INTENT_NOTE, note);
 		intent.putExtras(bundle);
-		
+
 		// Sets the Activity to start in a new, empty task
 		intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 		// Workaround to fix problems with multiple notifications
-	    intent.setAction(Constants.ACTION_NOTIFICATION_CLICK + Long.toString(System.currentTimeMillis()));
+		intent.setAction(Constants.ACTION_NOTIFICATION_CLICK + Long.toString(System.currentTimeMillis()));
 
 		// Creates the PendingIntent
 		PendingIntent notifyIntent = PendingIntent.getActivity(mContext, 0, intent,
@@ -147,10 +147,8 @@ public class AlarmReceiver extends BroadcastReceiver {
 
 		// Puts the PendingIntent into the notification builder
 		mBuilder.setContentIntent(notifyIntent);
-		
-		
-		
-		
+
+
 		// Notifications are issued by sending them to the
 		// NotificationManager system service.
 		NotificationManager mNotificationManager = (NotificationManager) mContext
