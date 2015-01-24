@@ -42,8 +42,8 @@ public interface Constants {
 	final int SWIPE_MARGIN = 30;
 	final int SWIPE_OFFSET = 100;
 
-    // Floating action button
-    final int FAB_ANIMATION_TIME = 200;
+	// Floating action button
+	final int FAB_ANIMATION_TIME = 200;
 
 	// Notes content masking
 	final String MASK_CHAR = "*";
@@ -93,9 +93,11 @@ public interface Constants {
 	final String ACTION_TAKE_PHOTO = "action_widget_take_photo";
 	final String ACTION_WIDGET_SHOW_LIST = "action_widget_show_list";
 	final String ACTION_NOTIFICATION_CLICK = "action_notification_click";
-    final String ACTION_MERGE = "action_merge";
-    /** Used to quickly add a note, save, and perform backPress (eg. Tasker+Pushbullet) **/
-    final String ACTION_SEND_AND_EXIT = "action_send_and_exit";
+	final String ACTION_MERGE = "action_merge";
+	/**
+	 * Used to quickly add a note, save, and perform backPress (eg. Tasker+Pushbullet) *
+	 */
+	final String ACTION_SEND_AND_EXIT = "action_send_and_exit";
 
 	final String MESSAGE = "message";
 
@@ -115,12 +117,11 @@ public interface Constants {
 	final String PREF_TOUR_PREFIX = "tour_";
 	final String PREF_EXPANDED_VIEW = "expanded_view";
 	final String PREF_COLORS_APP_DEFAULT = "strip";
-    final String PREF_WIDGET_PREFIX = "widget_";
-    final String PREF_SHOW_UNCATEGORIZED = "settings_show_uncategorized";
-    final String PREF_AUTO_LOCATION = "settings_auto_location";
-    final String PREF_FILTER_PAST_REMINDERS = "settings_filter_past_reminders";
-    final String PREF_DYNAMIC_MENU = "settings_dynamic_menu";
-    final String PREF_CURRENT_APP_VERSION = "settings_current_app_version";
+	final String PREF_WIDGET_PREFIX = "widget_";
+	final String PREF_SHOW_UNCATEGORIZED = "settings_show_uncategorized";
+	final String PREF_FILTER_PAST_REMINDERS = "settings_filter_past_reminders";
+	final String PREF_DYNAMIC_MENU = "settings_dynamic_menu";
+	final String PREF_CURRENT_APP_VERSION = "settings_current_app_version";
 
 	final String EXPORT_FILE_NAME = TAG;
 
@@ -140,7 +141,7 @@ public interface Constants {
 
 	final String SECURITY_ALGORITHM = "MD5";
 
-    final String TIMESTAMP_UNIX_EPOCH = "0";
+	final String TIMESTAMP_UNIX_EPOCH = "0";
 
-    final int MENU_SORT_GROUP_ID = 11998811;
+	final int MENU_SORT_GROUP_ID = 11998811;
 }

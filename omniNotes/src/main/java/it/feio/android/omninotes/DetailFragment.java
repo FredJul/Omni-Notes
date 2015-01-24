@@ -483,11 +483,7 @@ public class DetailFragment extends Fragment implements
 
 		// Initialization of location TextView
 		locationTextView = (TextView) getView().findViewById(R.id.location);
-		// Automatic location insertion
-		if (prefs.getBoolean(Constants.PREF_AUTO_LOCATION, false) && noteTmp.get_id() == 0) {
-			noteTmp.setLatitude(getMainActivity().currentLatitude);
-			noteTmp.setLongitude(getMainActivity().currentLongitude);
-		}
+
 		if (isNoteLocationValid()) {
 			if (!TextUtils.isEmpty(noteTmp.getAddress())) {
 				locationTextView.setVisibility(View.VISIBLE);
@@ -1670,10 +1666,6 @@ public class DetailFragment extends Fragment implements
 	 * Checks if nothing is changed to avoid committing if possible (check)
 	 */
 	private boolean saveNotNeeded() {
-		if (noteTmp.get_id() == 0 && prefs.getBoolean(Constants.PREF_AUTO_LOCATION, false)) {
-			noteTmp.setLatitude("");
-			noteTmp.setLongitude("");
-		}
 		if (!noteTmp.isChanged(note)) {
 			exitMessage = "";
 			onNoteSaved(noteTmp);

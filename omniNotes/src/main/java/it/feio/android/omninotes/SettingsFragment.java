@@ -142,20 +142,6 @@ public class SettingsFragment extends PreferenceFragment {
 			});
 		}
 
-
-		// Show Automatically adds location to new notes
-		final CheckBoxPreference autoLocation = (CheckBoxPreference) findPreference(Constants.PREF_AUTO_LOCATION);
-		if (autoLocation != null) {
-			autoLocation.setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
-				@Override
-				public boolean onPreferenceChange(Preference preference, final Object newValue) {
-					autoLocation.setChecked((Boolean) newValue);
-					return false;
-				}
-			});
-		}
-
-
 		// Maximum video attachment size
 		final EditTextPreference maxVideoSize = (EditTextPreference) findPreference("settings_max_video_size");
 		if (maxVideoSize != null) {

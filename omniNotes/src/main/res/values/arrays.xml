@@ -68,6 +68,11 @@
         <item>Move to the end of unchecked items</item>
     </string-array>
 
+    <string-array name="checked_items_behavior_values">
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
+    </string-array>
 
     <string-array name="colors_app">
         <item>Disabled</item>
@@ -76,6 +81,12 @@
         <item>Complete</item>
     </string-array>
 
+    <string-array name="colors_app_values">
+        <item>disabled</item>
+        <item>strip</item>
+        <item>list</item>
+        <item>complete</item>
+    </string-array>
 
     <string-array name="colors_widget">
         <item>Disabled</item>
@@ -83,6 +94,11 @@
         <item>Notes list</item>
     </string-array>
 
+    <string-array name="colors_widget_values">
+        <item>disabled</item>
+        <item>strip</item>
+        <item>list</item>
+    </string-array>
 
     <string-array name="text_size">
         <item>Smallest</item>
@@ -107,6 +123,5 @@
         <item>3</item>
         <item>5</item>
     </integer-array>
-
 
 </resources>
