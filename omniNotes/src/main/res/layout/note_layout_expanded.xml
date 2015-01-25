@@ -106,21 +106,6 @@
                     android:src="@drawable/ic_pin_drop_grey600_18dp"
                     android:visibility="gone" />
 
-                <ImageView
-                    android:id="@+id/archivedIcon"
-                    android:layout_width="15dp"
-                    android:layout_height="15dp"
-                    android:layout_gravity="bottom|right"
-                    android:src="@drawable/ic_archive_grey600_18dp"
-                    android:visibility="gone" />
-
-                <ImageView
-                    android:id="@+id/lockedIcon"
-                    android:layout_width="15dp"
-                    android:layout_height="15dp"
-                    android:layout_gravity="bottom|end"
-                    android:src="@drawable/ic_action_secure"
-                    android:visibility="gone" />
             </LinearLayout>
         </LinearLayout>
 

@@ -49,7 +49,6 @@ import it.feio.android.omninotes.models.holders.NoteViewHolder;
 import it.feio.android.omninotes.models.views.SquareImageView;
 import it.feio.android.omninotes.utils.BitmapHelper;
 import it.feio.android.omninotes.utils.Constants;
-import it.feio.android.omninotes.utils.Fonts;
 import it.feio.android.omninotes.utils.Navigation;
 import it.feio.android.omninotes.utils.TextHelper;
 
@@ -91,9 +90,6 @@ public class NoteAdapter extends ArrayAdapter<Note> implements Insertable {
 		if (convertView == null) {
 			convertView = inflater.inflate(layout, parent, false);
 
-			// Overrides font sizes with the one selected from user
-			Fonts.overrideTextSize(mActivity, mActivity.getSharedPreferences(Constants.PREFS_NAME, Context.MODE_MULTI_PROCESS), convertView);
-
 			holder = new NoteViewHolder();
 
 			holder.root = convertView.findViewById(R.id.root);
@@ -104,10 +100,8 @@ public class NoteAdapter extends ArrayAdapter<Note> implements Insertable {
 			holder.content = (TextView) convertView.findViewById(R.id.note_content);
 			holder.date = (TextView) convertView.findViewById(R.id.note_date);
 
-			holder.archiveIcon = (ImageView) convertView.findViewById(R.id.archivedIcon);
 			holder.locationIcon = (ImageView) convertView.findViewById(R.id.locationIcon);
 			holder.alarmIcon = (ImageView) convertView.findViewById(R.id.alarmIcon);
-			holder.lockedIcon = (ImageView) convertView.findViewById(R.id.lockedIcon);
 			if (!expandedView)
 				holder.attachmentIcon = (ImageView) convertView.findViewById(R.id.attachmentIcon);
 
@@ -174,15 +168,11 @@ public class NoteAdapter extends ArrayAdapter<Note> implements Insertable {
 
 
 	private void initIcons(Note note, NoteViewHolder holder) {
-		// Evaluates the archived state...
-		holder.archiveIcon.setVisibility(note.isArchived() ? View.VISIBLE : View.GONE);
 		// ...the location
 		holder.locationIcon.setVisibility(note.getLongitude() != null && note.getLongitude() != 0 ? View.VISIBLE : View.GONE);
 
 		// ...the presence of an alarm
 		holder.alarmIcon.setVisibility(note.getAlarm() != null ? View.VISIBLE : View.GONE);
-		// ...the locked with password state
-		holder.lockedIcon.setVisibility(note.isLocked() ? View.VISIBLE : View.GONE);
 		// ...the attachment icon for contracted view
 		if (!expandedView) {
 			holder.attachmentIcon.setVisibility(note.getAttachmentsList().size() > 0 ? View.VISIBLE : View.GONE);
@@ -295,9 +285,6 @@ public class NoteAdapter extends ArrayAdapter<Note> implements Insertable {
 
 	/**
 	 * Color of category marker if note is categorized a function is active in preferences
-	 *
-	 * @param note
-	 * @param rowView
 	 */
 	private void colorNote(Note note, View v, NoteViewHolder holder) {
 

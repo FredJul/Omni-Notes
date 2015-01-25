@@ -19,25 +19,6 @@
                   android:fitsSystemWindows="true">
 
     <ListPreference
-        android:entries="@array/text_size"
-        android:entryValues="@array/text_size_values"
-        android:key="settings_text_size"
-        android:title="@string/settings_text_size"
-        android:defaultValue="default"/>
-
-    <CheckBoxPreference
-        android:defaultValue="false"
-        android:key="settings_simple_calendar"
-        android:summary="@string/settings_simple_calendar_summary"
-        android:title="@string/settings_simple_calendar"/>
-
-    <CheckBoxPreference
-        android:defaultValue="false"
-        android:key="settings_show_category_count"
-        android:summary="@string/settings_show_category_count_summary"
-        android:title="@string/settings_show_category_count"/>
-
-    <ListPreference
         android:entries="@array/colors_app"
         android:entryValues="@array/colors_app_values"
         android:key="settings_colors_app"

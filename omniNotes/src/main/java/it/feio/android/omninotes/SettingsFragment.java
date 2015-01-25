@@ -103,45 +103,6 @@ public class SettingsFragment extends PreferenceFragment {
 	public void onResume() {
 		super.onResume();
 
-
-		// Swiping action
-		final CheckBoxPreference swipeToTrash = (CheckBoxPreference) findPreference("settings_swipe_to_trash");
-		if (swipeToTrash != null) {
-			if (prefs.getBoolean("settings_swipe_to_trash", false)) {
-				swipeToTrash.setChecked(true);
-				swipeToTrash.setSummary(getResources().getString(R.string.settings_swipe_to_trash_summary_2));
-			} else {
-				swipeToTrash.setSummary(getResources().getString(R.string.settings_swipe_to_trash_summary_1));
-				swipeToTrash.setChecked(false);
-			}
-			swipeToTrash.setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
-				@Override
-				public boolean onPreferenceChange(Preference preference, final Object newValue) {
-					if ((Boolean) newValue) {
-						swipeToTrash.setSummary(getResources().getString(R.string.settings_swipe_to_trash_summary_2));
-					} else {
-						swipeToTrash.setSummary(getResources().getString(R.string.settings_swipe_to_trash_summary_1));
-					}
-					swipeToTrash.setChecked((Boolean) newValue);
-					return false;
-				}
-			});
-		}
-
-
-		// Show uncategorized notes in menu
-		final CheckBoxPreference showUncategorized = (CheckBoxPreference) findPreference(Constants
-				.PREF_SHOW_UNCATEGORIZED);
-		if (showUncategorized != null) {
-			showUncategorized.setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
-				@Override
-				public boolean onPreferenceChange(Preference preference, final Object newValue) {
-					showUncategorized.setChecked((Boolean) newValue);
-					return false;
-				}
-			});
-		}
-
 		// Maximum video attachment size
 		final EditTextPreference maxVideoSize = (EditTextPreference) findPreference("settings_max_video_size");
 		if (maxVideoSize != null) {
@@ -158,26 +119,6 @@ public class SettingsFragment extends PreferenceFragment {
 				}
 			});
 		}
-
-		// Text size
-		final ListPreference textSize = (ListPreference) findPreference("settings_text_size");
-		if (textSize != null) {
-			int textSizeIndex = textSize.findIndexOfValue(prefs.getString("settings_text_size", "default"));
-			String textSizeString = getResources().getStringArray(R.array.text_size)[textSizeIndex];
-			textSize.setSummary(textSizeString);
-			textSize.setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
-				@Override
-				public boolean onPreferenceChange(Preference preference, Object newValue) {
-					int textSizeIndex = textSize.findIndexOfValue(newValue.toString());
-					String checklistString = getResources().getStringArray(R.array.text_size)[textSizeIndex];
-					textSize.setSummary(checklistString);
-					prefs.edit().putString("settings_text_size", newValue.toString()).commit();
-					textSize.setValueIndex(textSizeIndex);
-					return false;
-				}
-			});
-		}
-
 
 		// Application's colors
 		final ListPreference colorsApp = (ListPreference) findPreference("settings_colors_app");

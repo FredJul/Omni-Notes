@@ -25,26 +25,10 @@
         android:title="@string/settings_navdrawer_on_exit"/>
 
     <CheckBoxPreference
-        android:defaultValue="false"
-        android:key="settings_instant_search"
-        android:title="@string/settings_instant_search"/>
-
-    <CheckBoxPreference
-        android:defaultValue="false"
-        android:key="settings_swipe_to_trash"
-        android:title="@string/settings_swipe_to_trash"/>
-
-    <CheckBoxPreference
         android:defaultValue="true"
         android:key="settings_dynamic_menu"
         android:title="@string/settings_dynamic_menu"
         android:summary="@string/settings_dynamic_menu_summary"/>
-
-    <CheckBoxPreference
-        android:defaultValue="false"
-        android:key="settings_show_uncategorized"
-        android:title="@string/settings_show_uncategorized"
-        android:summary="@string/settings_show_uncategorized_summary"/>
 
     <EditTextPreference
         android:inputType="number"

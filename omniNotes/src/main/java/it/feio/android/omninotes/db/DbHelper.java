@@ -28,19 +28,14 @@ import android.net.Uri;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
 import java.util.List;
 
 import it.feio.android.omninotes.models.Attachment;
 import it.feio.android.omninotes.models.Category;
 import it.feio.android.omninotes.models.Note;
-import it.feio.android.omninotes.models.Tag;
 import it.feio.android.omninotes.utils.AssetUtils;
 import it.feio.android.omninotes.utils.Constants;
 import it.feio.android.omninotes.utils.Navigation;
-import it.feio.android.omninotes.utils.TagsHelper;
 
 public class DbHelper extends SQLiteOpenHelper {
 
@@ -59,7 +54,6 @@ public class DbHelper extends SQLiteOpenHelper {
 	public static final String KEY_LAST_MODIFICATION = "last_modification";
 	public static final String KEY_TITLE = "title";
 	public static final String KEY_CONTENT = "content";
-	public static final String KEY_ARCHIVED = "archived";
 	public static final String KEY_TRASHED = "trashed";
 	public static final String KEY_REMINDER = "alarm";
 	public static final String KEY_LATITUDE = "latitude";
@@ -182,7 +176,6 @@ public class DbHelper extends SQLiteOpenHelper {
 		values.put(KEY_LAST_MODIFICATION, updateLastModification ? Calendar
 				.getInstance().getTimeInMillis() : (note.getLastModification() != null ? note.getLastModification() : Calendar
 				.getInstance().getTimeInMillis()));
-		values.put(KEY_ARCHIVED, note.isArchived());
 		values.put(KEY_TRASHED, note.isTrashed());
 		values.put(KEY_REMINDER, note.getAlarm());
 		values.put(KEY_LATITUDE, note.getLatitude());
@@ -284,14 +277,10 @@ public class DbHelper extends SQLiteOpenHelper {
 			switch (navigation) {
 				case Navigation.NOTES:
 					return getNotesActive();
-				case Navigation.ARCHIVE:
-					return getNotesArchived();
 				case Navigation.REMINDERS:
 					return getNotesWithReminder(prefs.getBoolean(Constants.PREF_FILTER_PAST_REMINDERS, false));
 				case Navigation.TRASH:
 					return getNotesTrashed();
-				case Navigation.UNCATEGORIZED:
-					return getNotesUncategorized();
 				case Navigation.CATEGORY:
 					return getNotesByCategory(Navigation.getCategory());
 				default:
@@ -305,29 +294,14 @@ public class DbHelper extends SQLiteOpenHelper {
 
 
 	public List<Note> getNotesActive() {
-		String whereCondition = " WHERE " + KEY_ARCHIVED + " IS NOT 1 AND " + KEY_TRASHED + " IS NOT 1 ";
+		String whereCondition = " WHERE " + KEY_TRASHED + " IS NOT 1 ";
 		return getNotes(whereCondition, true);
 	}
-
-
-	public List<Note> getNotesArchived() {
-		String whereCondition = " WHERE " + KEY_ARCHIVED + " = 1 AND " + KEY_TRASHED + " IS NOT 1 ";
-		return getNotes(whereCondition, true);
-	}
-
 
 	public List<Note> getNotesTrashed() {
 		String whereCondition = " WHERE " + KEY_TRASHED + " = 1 ";
 		return getNotes(whereCondition, true);
 	}
-
-
-	public List<Note> getNotesUncategorized() {
-		String whereCondition = " WHERE "
-				+ KEY_CATEGORY_ID + " IS NULL AND " + KEY_TRASHED + " IS NOT 1";
-		return getNotes(whereCondition, true);
-	}
-
 
 	public List<Note> getNotesWithLocation() {
 		String whereCondition = " WHERE " + KEY_LONGITUDE + " IS NOT NULL "
@@ -415,7 +389,6 @@ public class DbHelper extends SQLiteOpenHelper {
 				+ KEY_LAST_MODIFICATION + ","
 				+ KEY_TITLE + ","
 				+ KEY_CONTENT + ","
-				+ KEY_ARCHIVED + ","
 				+ KEY_TRASHED + ","
 				+ KEY_REMINDER + ","
 				+ KEY_LATITUDE + ","
@@ -447,7 +420,6 @@ public class DbHelper extends SQLiteOpenHelper {
 					note.setLastModification(cursor.getLong(i++));
 					note.setTitle(cursor.getString(i++));
 					note.setContent(cursor.getString(i++));
-					note.setArchived("1".equals(cursor.getString(i++)));
 					note.setTrashed("1".equals(cursor.getString(i++)));
 					note.setAlarm(cursor.getString(i++));
 					note.setLatitude(cursor.getString(i++));
@@ -478,18 +450,6 @@ public class DbHelper extends SQLiteOpenHelper {
 
 		return noteList;
 	}
-
-
-	/**
-	 * Archives/restore single note
-	 *
-	 * @param note
-	 */
-	public void archiveNote(Note note, boolean archive) {
-		note.setArchived(archive);
-		updateNote(note, false);
-	}
-
 
 	/**
 	 * Trashes/restore single note
@@ -536,17 +496,6 @@ public class DbHelper extends SQLiteOpenHelper {
 		return result;
 	}
 
-
-	/**
-	 * Empties trash deleting all trashed notes
-	 */
-	public void emptyTrash() {
-		for (Note note : getNotesTrashed()) {
-			deleteNote(note);
-		}
-	}
-
-
 	/**
 	 * Gets notes matching pattern with title or content text
 	 *
@@ -574,31 +523,9 @@ public class DbHelper extends SQLiteOpenHelper {
 	public List<Note> getNotesWithReminder(boolean filterPastReminders) {
 		String whereCondition = " WHERE " + KEY_REMINDER
 				+ (filterPastReminders ? " >= " + Calendar.getInstance().getTimeInMillis() : " IS NOT NULL")
-				+ " AND " + KEY_ARCHIVED + " IS NOT 1"
 				+ " AND " + KEY_TRASHED + " IS NOT 1";
 		return getNotes(whereCondition, true);
 	}
-
-
-	/**
-	 * Retrieves locked or unlocked notes
-	 */
-	public List<Note> getNotesWithLock(boolean locked) {
-		String whereCondition = " WHERE " + KEY_LOCKED + (locked ? " = 1 " : " IS NOT 1 ");
-		return getNotes(whereCondition, true);
-	}
-
-
-	/**
-	 * Search for notes with reminder expiring the current day
-	 *
-	 * @return Notes list
-	 */
-	public List<Note> getTodayReminders() {
-		String whereCondition = " WHERE DATE(" + KEY_REMINDER + "/1000, 'unixepoch') = DATE('now')";
-		return getNotes(whereCondition, false);
-	}
-
 
 	/**
 	 * Retrieves all attachments related to specific note
@@ -610,19 +537,6 @@ public class DbHelper extends SQLiteOpenHelper {
 		String whereCondition = " WHERE " + KEY_ATTACHMENT_NOTE_ID + " = " + note.get_id();
 		return getAttachments(whereCondition);
 	}
-
-
-	public List<Note> getChecklists() {
-		String whereCondition = " WHERE " + KEY_CHECKLIST + " = 1";
-		return getNotes(whereCondition, false);
-	}
-
-
-	public List<Note> getMasked() {
-		String whereCondition = " WHERE " + KEY_LOCKED + " = 1";
-		return getNotes(whereCondition, false);
-	}
-
 
 	/**
 	 * Retrieves all notes related to Category it passed as parameter
@@ -642,95 +556,6 @@ public class DbHelper extends SQLiteOpenHelper {
 			notes = getAllNotes(true);
 		}
 		return notes;
-	}
-
-
-	/**
-	 * Retrieves all tags
-	 */
-	public List<Tag> getTags() {
-		return getTags(null);
-	}
-
-
-	/**
-	 * Retrieves all tags of a specified note
-	 */
-	public List<Tag> getTags(Note note) {
-		List<Tag> tags = new ArrayList<Tag>();
-		HashMap<String, Integer> tagsMap = new HashMap<String, Integer>();
-
-		String whereCondition = " WHERE "
-				+ (note != null ? KEY_ID + " = " + note.get_id() + " AND " : "")
-				+ "(" + KEY_CONTENT + " LIKE '%#%' OR " + KEY_TITLE + " LIKE '%#%' " + ")"
-				+ " AND " + KEY_TRASHED + " IS " + (Navigation.checkNavigation(Navigation.TRASH) ? "" : " NOT ") + " 1";
-		List<Note> notesRetrieved = getNotes(whereCondition, true);
-
-		for (Note noteRetrieved : notesRetrieved) {
-			HashMap<String, Integer> tagsRetrieved = TagsHelper.retrieveTags(noteRetrieved);
-			for (String s : tagsRetrieved.keySet()) {
-				int count = tagsMap.get(s) == null ? 0 : tagsMap.get(s);
-				tagsMap.put(s, ++count);
-			}
-		}
-
-		for (String s : tagsMap.keySet()) {
-			Tag tag = new Tag(s, tagsMap.get(s));
-			tags.add(tag);
-		}
-
-		Collections.sort(tags, new Comparator<Tag>() {
-			@Override
-			public int compare(Tag tag1, Tag tag2) {
-				return tag1.getText().compareToIgnoreCase(tag2.getText());
-			}
-		});
-		return tags;
-	}
-
-
-	/**
-	 * Retrieves all notes related to category it passed as parameter
-	 */
-	public List<Note> getNotesByTag(String tag) {
-		if (tag.indexOf(",") != -1) {
-			return getNotesByTag(tag.split(","));
-		} else {
-			return getNotesByTag(new String[]{tag});
-		}
-	}
-
-	/**
-	 * Retrieves all notes with specified tags
-	 */
-	public List<Note> getNotesByTag(String[] tags) {
-		// Select All Query
-		StringBuilder whereCondition = new StringBuilder();
-		whereCondition.append(" WHERE ");
-		for (int i = 0; i < tags.length; i++) {
-			if (i != 0) {
-				whereCondition.append(" AND ");
-			}
-			whereCondition.append("(" + KEY_CONTENT + " LIKE '%").append(tags[i]).append("%' OR ").append(KEY_TITLE).append(" LIKE '%").append(tags[i]).append("%')");
-		}
-
-		// Trashed notes must be included in search results only if search if performed from trash
-		whereCondition.append(" AND " + KEY_TRASHED + " IS ").append(Navigation.checkNavigation(Navigation.TRASH) ? "" : " NOT ").append(" 1");
-
-		return getNotes(whereCondition.toString(), true);
-	}
-
-
-	/**
-	 * Retrieves all attachments
-	 */
-	public ArrayList<Attachment> getAllAttachments() {
-		return getAttachments("");
-	}
-
-
-	public ArrayList<Attachment> getAttachmentsOfType(String mimeType) {
-		return getAttachments(" WHERE " + KEY_ATTACHMENT_MIME_TYPE + " = '" + mimeType + "'");
 	}
 
 

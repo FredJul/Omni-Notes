@@ -35,7 +35,6 @@ import it.feio.android.omninotes.ListFragment;
 import it.feio.android.omninotes.R;
 import it.feio.android.omninotes.models.Category;
 import it.feio.android.omninotes.utils.Constants;
-import it.feio.android.omninotes.utils.Fonts;
 
 import java.util.ArrayList;
 
@@ -81,9 +80,6 @@ public class NavDrawerCategoryAdapter extends BaseAdapter {
 	    if (convertView == null) {
 	    	convertView = inflater.inflate(layout, parent, false);
 
-			// Overrides font sizes with the one selected from user
-			Fonts.overrideTextSize(mActivity, mActivity.getSharedPreferences(Constants.PREFS_NAME, Context.MODE_MULTI_PROCESS), convertView);
-	    	
 	    	holder = new NoteDrawerCategoryAdapterViewHolder();
     		    	
 	    	holder.imgIcon = (ImageView) convertView.findViewById(R.id.icon);

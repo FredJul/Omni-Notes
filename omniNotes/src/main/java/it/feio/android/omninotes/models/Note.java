@@ -36,10 +36,9 @@ public class Note extends it.feio.android.omninotes.commons.models.Note implemen
 	}
 
 
-	public Note(int _id, Long creation, Long lastModification, String title, String content, Integer archived,
-			Integer trashed, String alarm, String latitude, String longitude, Category category, Integer locked,
+	public Note(int _id, Long creation, Long lastModification, String title, String content, Integer trashed, String alarm, String latitude, String longitude, Category category, Integer locked,
 			Integer checklist) {
-		super(_id, creation, lastModification, title, content, archived, trashed, alarm, latitude, longitude, category,
+		super(_id, creation, lastModification, title, content, trashed, alarm, latitude, longitude, category,
 				locked, checklist);
 	}
 
@@ -56,7 +55,6 @@ public class Note extends it.feio.android.omninotes.commons.models.Note implemen
 		setLastModification(in.readString());
 		setTitle(in.readString());
 		setContent(in.readString());
-		setArchived(in.readInt());
 		setTrashed(in.readInt());
 		setAlarm(in.readString());
 		setLatitude(in.readString());
@@ -140,7 +138,6 @@ public class Note extends it.feio.android.omninotes.commons.models.Note implemen
 		parcel.writeString(String.valueOf(getLastModification()));
 		parcel.writeString(getTitle());
 		parcel.writeString(getContent());
-		parcel.writeInt(isArchived() ? 1 : 0);
 		parcel.writeInt(isTrashed() ? 1 : 0);
 		parcel.writeString(getAlarm());
 		parcel.writeString(String.valueOf(getLatitude()));

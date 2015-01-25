@@ -18,10 +18,8 @@
 <resources>
   <string-array name="navigation_list">
     <item>Notes</item>
-    <item>Archive</item>
     <item>Rappels</item>
     <item>Corbeille</item>
-    <item>Sans catégorie</item>
   </string-array>
   <string-array name="sortable_columns_human_readable">
     <item>Titre </item>
@@ -44,12 +42,5 @@
     <item>Désactivé</item>
     <item>Marge uniquement</item>
     <item>Liste de notes</item>
-  </string-array>
-  <string-array name="text_size">
-    <item>Plus petit</item>
-    <item>Petit</item>
-    <item>Par défaut</item>
-    <item>Grand</item>
-    <item>Plus grand</item>
   </string-array>
 </resources>

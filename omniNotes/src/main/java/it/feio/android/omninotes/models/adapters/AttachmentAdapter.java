@@ -41,7 +41,6 @@ import it.feio.android.omninotes.models.views.ExpandableHeightGridView;
 import it.feio.android.omninotes.models.views.SquareImageView;
 import it.feio.android.omninotes.utils.BitmapHelper;
 import it.feio.android.omninotes.utils.Constants;
-import it.feio.android.omninotes.utils.Fonts;
 import it.feio.android.omninotes.utils.date.DateHelper;
 
 
@@ -81,9 +80,6 @@ public class AttachmentAdapter extends BaseAdapter {
 		AttachmentHolder holder;
 		if (convertView == null) {
 			convertView = inflater.inflate(R.layout.gridview_item, parent, false);
-
-			// Overrides font sizes with the one selected from user
-			Fonts.overrideTextSize(mActivity, mActivity.getSharedPreferences(Constants.PREFS_NAME, Context.MODE_MULTI_PROCESS), convertView);
 
 			holder = new AttachmentHolder();
 			holder.image = (SquareImageView) convertView.findViewById(R.id.gridview_item_picture);

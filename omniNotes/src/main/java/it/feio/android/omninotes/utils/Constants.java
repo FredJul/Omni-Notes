@@ -118,7 +118,6 @@ public interface Constants {
 	final String PREF_EXPANDED_VIEW = "expanded_view";
 	final String PREF_COLORS_APP_DEFAULT = "strip";
 	final String PREF_WIDGET_PREFIX = "widget_";
-	final String PREF_SHOW_UNCATEGORIZED = "settings_show_uncategorized";
 	final String PREF_FILTER_PAST_REMINDERS = "settings_filter_past_reminders";
 	final String PREF_DYNAMIC_MENU = "settings_dynamic_menu";
 	final String PREF_CURRENT_APP_VERSION = "settings_current_app_version";

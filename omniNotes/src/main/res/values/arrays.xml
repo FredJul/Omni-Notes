@@ -18,34 +18,26 @@
 
     <string-array name="navigation_list">
         <item>Notes</item>
-        <item>Archive</item>
         <item>Reminders</item>
         <item>Trash</item>
-        <item>Uncategorized</item>
     </string-array>
 
     <string-array name="navigation_list_codes">
         <item>Notes</item>
-        <item>Archive</item>
         <item>Reminders</item>
         <item>Trash</item>
-        <item>Uncategorized</item>
     </string-array>
 
     <integer-array name="navigation_list_icons">
         <item>@drawable/ic_file_document_grey600_48dp</item>
-        <item>@drawable/ic_archive_grey600_48dp</item>
         <item>@drawable/ic_alarm_grey600_48dp</item>
         <item>@drawable/ic_delete_grey600_48dp</item>
-        <item>@drawable/ic_folder_open_grey600_48dp</item>
     </integer-array>
 
     <integer-array name="navigation_list_icons_selected">
         <item>@drawable/ic_file_document_black_48dp</item>
-        <item>@drawable/ic_archive_black_48dp</item>
         <item>@drawable/ic_alarm_black_48dp</item>
         <item>@drawable/ic_delete_black_48dp</item>
-        <item>@drawable/ic_folder_open_black_48dp</item>
     </integer-array>
 
     <string-array name="sortable_columns">
@@ -99,29 +91,4 @@
         <item>strip</item>
         <item>list</item>
     </string-array>
-
-    <string-array name="text_size">
-        <item>Smallest</item>
-        <item>Small</item>
-        <item>Default</item>
-        <item>Large</item>
-        <item>Largest</item>
-    </string-array>
-
-    <string-array name="text_size_values">
-        <item>smallest</item>
-        <item>small</item>
-        <item>default</item>
-        <item>large</item>
-        <item>largest</item>
-    </string-array>
-
-    <integer-array name="text_size_offset">
-        <item>-3</item>
-        <item>-2</item>
-        <item>0</item>
-        <item>3</item>
-        <item>5</item>
-    </integer-array>
-
 </resources>

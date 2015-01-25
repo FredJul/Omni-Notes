@@ -84,7 +84,7 @@ public class WidgetConfigurationActivity extends Activity {
 			public void onClick(View v) {
 
 				if (mRadioGroup.getCheckedRadioButtonId() == R.id.widget_config_notes) {
-					sqlCondition = " WHERE " + DbHelper.KEY_ARCHIVED + " IS NOT 1 AND " + DbHelper.KEY_TRASHED + " IS NOT 1 ";
+					sqlCondition = " WHERE " + DbHelper.KEY_TRASHED + " IS NOT 1 ";
 					
 				} else {
 					Category tag = (Category) categorySpinner.getSelectedItem();

@@ -34,10 +34,8 @@ public class NoteViewHolder {
     public TextView content;
     public TextView date;
 
-    public ImageView archiveIcon;
     public ImageView locationIcon;
     public ImageView alarmIcon;
-    public ImageView lockedIcon;
     public ImageView attachmentIcon;
 
     public SquareImageView attachmentThumbnail;

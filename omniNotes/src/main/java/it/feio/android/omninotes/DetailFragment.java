@@ -104,7 +104,6 @@ import it.feio.android.omninotes.models.Attachment;
 import it.feio.android.omninotes.models.Category;
 import it.feio.android.omninotes.models.Note;
 import it.feio.android.omninotes.models.ONStyle;
-import it.feio.android.omninotes.models.Tag;
 import it.feio.android.omninotes.models.adapters.AttachmentAdapter;
 import it.feio.android.omninotes.models.adapters.NavDrawerCategoryAdapter;
 import it.feio.android.omninotes.models.adapters.PlacesAutoCompleteAdapter;
@@ -117,12 +116,10 @@ import it.feio.android.omninotes.utils.ConnectionManager;
 import it.feio.android.omninotes.utils.Constants;
 import it.feio.android.omninotes.utils.Display;
 import it.feio.android.omninotes.utils.FileHelper;
-import it.feio.android.omninotes.utils.Fonts;
 import it.feio.android.omninotes.utils.GeocodeHelper;
 import it.feio.android.omninotes.utils.IntentChecker;
 import it.feio.android.omninotes.utils.KeyboardUtils;
 import it.feio.android.omninotes.utils.StorageManager;
-import it.feio.android.omninotes.utils.TagsHelper;
 import it.feio.android.omninotes.utils.date.DateHelper;
 import it.feio.android.omninotes.utils.date.ReminderPickers;
 import it.feio.android.pixlui.links.TextLinkClickListener;
@@ -468,9 +465,6 @@ public class DetailFragment extends Fragment implements
 
 		// Title view card container
 		titleCardView = root.findViewById(R.id.detail_tile_card);
-
-		// Overrides font sizes with the one selected from user
-		Fonts.overrideTextSize(getActivity(), prefs, root);
 
 		// Color of tag marker if note is tagged a function is active in preferences
 		setTagMarkerColor(noteTmp.getCategory());
@@ -1012,8 +1006,6 @@ public class DetailFragment extends Fragment implements
 			menu.findItem(R.id.menu_delete).setVisible(true);
 			// Otherwise all other actions will be available
 		} else {
-			menu.findItem(R.id.menu_archive).setVisible(!newNote && !noteTmp.isArchived());
-			menu.findItem(R.id.menu_unarchive).setVisible(!newNote && noteTmp.isArchived());
 			menu.findItem(R.id.menu_trash).setVisible(!newNote);
 		}
 	}
@@ -1065,9 +1057,6 @@ public class DetailFragment extends Fragment implements
 			case R.id.menu_attachment:
 				showPopup(getActivity().findViewById(R.id.menu_attachment));
 				break;
-			case R.id.menu_tag:
-				addTags();
-				break;
 			case R.id.menu_category:
 				categorizeNote();
 				break;
@@ -1079,12 +1068,6 @@ public class DetailFragment extends Fragment implements
 				break;
 			case R.id.menu_checklist_off:
 				toggleChecklist();
-				break;
-			case R.id.menu_archive:
-				archiveNote(true);
-				break;
-			case R.id.menu_unarchive:
-				archiveNote(false);
 				break;
 			case R.id.menu_trash:
 				trashNote(true);
@@ -1560,22 +1543,6 @@ public class DetailFragment extends Fragment implements
 		}
 	}
 
-	@SuppressLint("NewApi")
-	private void archiveNote(boolean archive) {
-		// Simply go back if is a new note
-		if (noteTmp.get_id() == 0) {
-			goHome();
-			return;
-		}
-
-		noteTmp.setArchived(archive);
-		goBack = true;
-		exitMessage = archive ? getString(R.string.note_archived) : getString(R.string.note_unarchived);
-		exitCroutonStyle = archive ? ONStyle.WARN : ONStyle.INFO;
-		saveNote(this);
-	}
-
-	@SuppressLint("NewApi")
 	private void trashNote(boolean trash) {
 		// Simply go back if is a new note
 		if (noteTmp.get_id() == 0) {
@@ -1592,23 +1559,6 @@ public class DetailFragment extends Fragment implements
 
 	private void deleteNote() {
 		// Confirm dialog creation
-//        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(getActivity());
-//        alertDialogBuilder.setMessage(R.string.delete_note_confirmation)
-//                .setPositiveButton(R.string.confirm, new DialogInterface.OnClickListener() {
-//                    @Override
-//                    public void onClick(DialogInterface dialog, int id) {
-//                        ((MainActivity) getActivity()).deleteNote(noteTmp);
-//
-//                        Crouton.makeText(getActivity(), getString(R.string.note_deleted), ONStyle.ALERT).show();
-//                        MainActivity.notifyAppWidgets(getActivity());
-//                        goHome();
-//                    }
-//                }).setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
-//            @Override
-//            public void onClick(DialogInterface dialog, int id) {
-//            }
-//        });
-//        alertDialogBuilder.create().show();
 		new MaterialDialog.Builder(getActivity())
 				.content(R.string.delete_note_confirmation)
 				.positiveText(R.string.ok)
@@ -1681,7 +1631,6 @@ public class DetailFragment extends Fragment implements
 	 */
 	private boolean lastModificationUpdatedNeeded() {
 		note.setCategory(noteTmp.getCategory());
-		note.setArchived(noteTmp.isArchived());
 		note.setTrashed(noteTmp.isTrashed());
 		note.setLocked(noteTmp.isLocked());
 		return noteTmp.isChanged(note);
@@ -2102,84 +2051,6 @@ public class DetailFragment extends Fragment implements
 				scrollView.scrollBy(0, 60);
 			}
 			contentLineCounter = content.getLineCount();
-		}
-	}
-
-	/**
-	 * Add previously created tags to content
-	 */
-	private void addTags() {
-		contentCursorPosition = getCursorIndex();
-
-		// Retrieves all available categories
-		final List<Tag> tags = TagsHelper.getAllTags(getActivity());
-
-		// If there is no tag a message will be shown
-		if (tags.size() == 0) {
-			getMainActivity().showMessage(R.string.no_tags_created, ONStyle.WARN);
-			return;
-		}
-
-		final Note currentNote = new Note();
-		currentNote.setTitle(getNoteTitle());
-		currentNote.setContent(getNoteContent());
-		Integer[] preselectedTags = TagsHelper.getPreselectedTagsArray(currentNote, tags);
-
-		// Dialog and events creation
-		MaterialDialog dialog = new MaterialDialog.Builder(getActivity())
-				.title(R.string.select_tags)
-				.positiveText(R.string.ok)
-				.items(TagsHelper.getTagsArray(tags))
-				.itemsCallbackMultiChoice(preselectedTags, new MaterialDialog.ListCallbackMulti() {
-					@Override
-					public void onSelection(MaterialDialog dialog, Integer[] which, CharSequence[] text) {
-						dialog.dismiss();
-						tagNote(tags, which, currentNote);
-					}
-				}).build();
-		dialog.show();
-	}
-
-
-	private void tagNote(List<Tag> tags, Integer[] selectedTags, Note note) {
-		Pair<String, List<Tag>> taggingResult = TagsHelper.addTagToNote(tags, selectedTags, note);
-
-		StringBuilder sb;
-		if (noteTmp.isChecklist()) {
-			CheckListViewItem mCheckListViewItem = mChecklistManager.getFocusedItemView();
-			if (mCheckListViewItem != null) {
-				sb = new StringBuilder(mCheckListViewItem.getText());
-				sb.insert(contentCursorPosition, " " + taggingResult.first + " ");
-				mCheckListViewItem.setText(sb.toString());
-				mCheckListViewItem.getEditText().setSelection(contentCursorPosition + taggingResult.first.length()
-						+ 1);
-			} else {
-				title.append(" " + taggingResult.first);
-			}
-		} else {
-			sb = new StringBuilder(getNoteContent());
-			if (content.hasFocus()) {
-				sb.insert(contentCursorPosition, " " + taggingResult.first + " ");
-				content.setText(sb.toString());
-				content.setSelection(contentCursorPosition + taggingResult.first.length() + 1);
-			} else {
-				if (getNoteContent().trim().length() > 0) {
-					sb.append(System.getProperty("line.separator"))
-							.append(System.getProperty("line.separator"));
-				}
-				sb.append(taggingResult.first);
-				content.setText(sb.toString());
-			}
-		}
-
-		// Removes unchecked tags
-		if (taggingResult.second.size() > 0) {
-			if (noteTmp.isChecklist()) toggleChecklist2(true, true);
-			Pair<String, String> titleAndContent = TagsHelper.removeTag(getNoteTitle(), getNoteContent(),
-					taggingResult.second);
-			title.setText(titleAndContent.first);
-			content.setText(titleAndContent.second);
-			if (noteTmp.isChecklist()) toggleChecklist2();
 		}
 	}
 

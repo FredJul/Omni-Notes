@@ -47,7 +47,6 @@ import it.feio.android.omninotes.models.adapters.NavDrawerCategoryAdapter;
 import it.feio.android.omninotes.models.views.NonScrollableListView;
 import it.feio.android.omninotes.utils.Constants;
 import it.feio.android.omninotes.utils.Display;
-import it.feio.android.omninotes.utils.Fonts;
 import it.feio.android.omninotes.utils.Navigation;
 
 import java.util.ArrayList;
@@ -222,9 +221,6 @@ public class NavigationDrawerFragment extends Fragment {
         // Inflation of Settings view
         if (settingsView == null) {
             settingsView = ((ViewStub) getActivity().findViewById(R.id.settings_placeholder)).inflate();
-            Fonts.overrideTextSize(mActivity,
-                    mActivity.getSharedPreferences(Constants.PREFS_NAME, getActivity().MODE_MULTI_PROCESS),
-                    settingsView);
         }
         settingsView.setOnClickListener(new OnClickListener() {
             @Override
@@ -236,9 +232,6 @@ public class NavigationDrawerFragment extends Fragment {
 
         if (settingsViewCat == null) {
             settingsViewCat = inflater.inflate(R.layout.drawer_category_list_footer, null);
-            Fonts.overrideTextSize(mActivity,
-                    mActivity.getSharedPreferences(Constants.PREFS_NAME, getActivity().MODE_MULTI_PROCESS),
-                    settingsViewCat);
         }
         settingsViewCat.setOnClickListener(new OnClickListener() {
             @Override
@@ -369,15 +362,6 @@ public class NavigationDrawerFragment extends Fragment {
         switch (i) {
             case Navigation.REMINDERS:
                 if (DbHelper.getInstance(getActivity()).getNotesWithReminder(false).size() == 0 && dynamicMenu)
-                    skippable = true;
-                break;
-            case Navigation.UNCATEGORIZED:
-                boolean showUncategorized = prefs.getBoolean(Constants.PREF_SHOW_UNCATEGORIZED, false);
-                if ((!showUncategorized || DbHelper.getInstance(getActivity()).getNotesUncategorized().size() == 0) && dynamicMenu)
-                    skippable = true;
-                break;
-            case Navigation.ARCHIVE:
-                if (DbHelper.getInstance(getActivity()).getNotesArchived().size() == 0 && dynamicMenu)
                     skippable = true;
                 break;
             case Navigation.TRASH:
