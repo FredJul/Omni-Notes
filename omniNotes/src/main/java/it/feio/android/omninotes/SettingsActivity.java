@@ -13,8 +13,6 @@ import java.util.List;
 public class SettingsActivity extends ActionBarActivity {
 
 	private Toolbar toolbar;
-	private List<Fragment> backStack = new ArrayList<Fragment>();
-
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -36,31 +34,5 @@ public class SettingsActivity extends ActionBarActivity {
 		});
 		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 		getSupportActionBar().setHomeButtonEnabled(true);
-	}
-
-
-	void switchToScreen(String key) {
-		SettingsFragment sf = new SettingsFragment();
-		Bundle b = new Bundle();
-		b.putString(SettingsFragment.XML_NAME, key);
-		sf.setArguments(b);
-		backStack.add(getFragmentManager().findFragmentById(R.id.content_frame));
-		replaceFragment(sf);
-	}
-
-
-	private void replaceFragment(Fragment sf) {
-		getFragmentManager().beginTransaction().setCustomAnimations(R.animator.fade_in, R.animator.fade_out,
-				R.animator.fade_in, R.animator.fade_out).replace(R.id.content_frame, sf).commit();
-	}
-
-
-	@Override
-	public void onBackPressed() {
-		if (backStack.size() > 0) {
-			replaceFragment(backStack.remove(backStack.size() - 1));
-		} else {
-			super.onBackPressed();
-		}
 	}
 }

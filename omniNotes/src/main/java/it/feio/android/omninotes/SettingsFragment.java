@@ -47,19 +47,9 @@ public class SettingsFragment extends PreferenceFragment {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		int xmlId = getXmlId() > 0 ? getXmlId() : R.xml.settings;
-		addPreferencesFromResource(xmlId);
+		addPreferencesFromResource(R.xml.settings);
 		setTitle();
 		prefs = getActivity().getSharedPreferences(Constants.PREFS_NAME, Context.MODE_MULTI_PROCESS);
-	}
-
-
-	private int getXmlId() {
-		if (getArguments() == null || !getArguments().containsKey(XML_NAME)) return 0;
-		String xmlName = getArguments().getString(XML_NAME);
-		int settingsXmlId = getActivity().getResources().getIdentifier(xmlName, "xml",
-				getActivity().getPackageName());
-		return settingsXmlId;
 	}
 
 
@@ -86,17 +76,6 @@ public class SettingsFragment extends PreferenceFragment {
 		}
 		return super.onOptionsItemSelected(item);
 	}
-
-
-	@Override
-	public boolean onPreferenceTreeClick(PreferenceScreen preferenceScreen, Preference preference) {
-		super.onPreferenceTreeClick(preferenceScreen, preference);
-		if (preference instanceof PreferenceScreen) {
-			((SettingsActivity) getActivity()).switchToScreen(preference.getKey());
-		}
-		return false;
-	}
-
 
 	@SuppressWarnings("deprecation")
 	@Override

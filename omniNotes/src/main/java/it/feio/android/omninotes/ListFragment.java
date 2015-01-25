@@ -1220,15 +1220,7 @@ public class ListFragment extends Fragment implements OnNotesLoadedListener, OnV
 		layoutSelected = prefs.getBoolean(Constants.PREF_EXPANDED_VIEW, true) ? R.layout.note_layout_expanded
 				: R.layout.note_layout;
 
-//        initCards(notes);
-
-
 		listAdapter = new NoteAdapter(getActivity(), layoutSelected, notes);
-
-		// A specifical behavior is performed basing on navigation
-//		SwipeDismissAdapter adapter = new SwipeDismissAdapter(listAdapter, new OnDismissCallback() {
-//			@Override
-//            public void onDismiss(@NonNull ViewGroup viewGroup, @NonNull int[] reverseSortedPositions) {
 
 		list.enableSwipeToDismiss(new OnDismissCallback() {
 			@Override
