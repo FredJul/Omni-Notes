@@ -38,7 +38,6 @@
         android:paddingTop="@dimen/padding_half">
 
         <LinearLayout
-            android:id="@+id/detail_tile_card"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="6dp"
