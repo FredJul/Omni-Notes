@@ -53,7 +53,7 @@ public class TextHelper {
 
 		// Masking title and content string if note is locked
 		if (note.isLocked()
-				&& !mContext.getSharedPreferences(Constants.PREFS_NAME, mContext.MODE_MULTI_PROCESS).getBoolean(
+				&& !PrefUtils.getBoolean(
 				"settings_password_access", false)) {
 			// This checks if a part of content is used as title and should be partially masked
 			if (!note.getTitle().equals(titleText) && titleText.length() > 3) {

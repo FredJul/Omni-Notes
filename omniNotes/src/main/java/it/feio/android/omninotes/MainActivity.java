@@ -18,7 +18,6 @@
 package it.feio.android.omninotes;
 
 import android.animation.ValueAnimator;
-import android.annotation.SuppressLint;
 import android.app.DatePickerDialog.OnDateSetListener;
 import android.app.TimePickerDialog.OnTimeSetListener;
 import android.content.Intent;
@@ -50,6 +49,7 @@ import it.feio.android.omninotes.models.Attachment;
 import it.feio.android.omninotes.models.Category;
 import it.feio.android.omninotes.models.Note;
 import it.feio.android.omninotes.utils.Constants;
+import it.feio.android.omninotes.utils.PrefUtils;
 
 
 public class MainActivity extends BaseActivity implements OnDateSetListener, OnTimeSetListener {
@@ -117,7 +117,7 @@ public class MainActivity extends BaseActivity implements OnDateSetListener, OnT
 	@Override
 	public void onLowMemory() {
 
-		OmniNotes.getBitmapCache().evictAll();
+		MainApplication.getBitmapCache().evictAll();
 		super.onLowMemory();
 	}
 
@@ -221,9 +221,9 @@ public class MainActivity extends BaseActivity implements OnDateSetListener, OnT
 		f = checkFragmentInstance(R.id.fragment_container, ListFragment.class);
 		if (f != null) {
 			// Before exiting from app the navigation drawer is opened
-			if (prefs.getBoolean("settings_navdrawer_on_exit", false) && getDrawerLayout() != null && !getDrawerLayout().isDrawerOpen(GravityCompat.START)) {
+			if (PrefUtils.getBoolean("settings_navdrawer_on_exit", false) && getDrawerLayout() != null && !getDrawerLayout().isDrawerOpen(GravityCompat.START)) {
 				getDrawerLayout().openDrawer(GravityCompat.START);
-			} else if (!prefs.getBoolean("settings_navdrawer_on_exit", false) && getDrawerLayout() != null && getDrawerLayout().isDrawerOpen(GravityCompat.START)) {
+			} else if (!PrefUtils.getBoolean("settings_navdrawer_on_exit", false) && getDrawerLayout() != null && getDrawerLayout().isDrawerOpen(GravityCompat.START)) {
 				getDrawerLayout().closeDrawer(GravityCompat.START);
 			} else {
 				super.onBackPressed();
@@ -301,10 +301,6 @@ public class MainActivity extends BaseActivity implements OnDateSetListener, OnT
 		Intent i = getIntent();
 
 		if (i.getAction() == null) return;
-
-		if (Constants.ACTION_RESTART_APP.equals(i.getAction())) {
-			OmniNotes.restartApp(getApplicationContext());
-		}
 
 		if (receivedIntent(i)) {
 			Note note = i.getParcelableExtra(Constants.INTENT_NOTE);

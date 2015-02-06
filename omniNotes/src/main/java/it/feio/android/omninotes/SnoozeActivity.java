@@ -36,6 +36,7 @@ import it.feio.android.omninotes.models.Note;
 import it.feio.android.omninotes.models.listeners.OnReminderPickedListener;
 import it.feio.android.omninotes.receiver.AlarmReceiver;
 import it.feio.android.omninotes.utils.Constants;
+import it.feio.android.omninotes.utils.PrefUtils;
 import it.feio.android.omninotes.utils.date.ReminderPickers;
 
 public class SnoozeActivity extends FragmentActivity implements OnReminderPickedListener, OnDateSetListener, OnTimeSetListener {
@@ -50,21 +51,19 @@ public class SnoozeActivity extends FragmentActivity implements OnReminderPicked
 		super.onCreate(savedInstanceState);
 		
 		note = getIntent().getParcelableExtra(Constants.INTENT_NOTE);
-		
-		SharedPreferences prefs = getSharedPreferences(Constants.PREFS_NAME, MODE_MULTI_PROCESS);
-		
+
 		// If an alarm has been fired a notification must be generated
 		if (Constants.ACTION_DISMISS.equals(getIntent().getAction())) {
 			finish();
 		} 
 		else if (Constants.ACTION_SNOOZE.equals(getIntent().getAction())) {
-			String snoozeDelay = prefs.getString("settings_notification_snooze_delay", "10");
+			String snoozeDelay = PrefUtils.getString("settings_notification_snooze_delay", "10");
 			long newAlarm = Calendar.getInstance().getTimeInMillis() + Integer.parseInt(snoozeDelay) * 60 * 1000;
 			setAlarm(note, newAlarm);
 			finish();
 		}		
 		else if (Constants.ACTION_POSTPONE.equals(getIntent().getAction())) {
-			int pickerType = prefs.getBoolean("settings_simple_calendar", false) ? ReminderPickers.TYPE_AOSP : ReminderPickers.TYPE_GOOGLE;
+			int pickerType = PrefUtils.getBoolean("settings_simple_calendar", false) ? ReminderPickers.TYPE_AOSP : ReminderPickers.TYPE_GOOGLE;
 			ReminderPickers reminderPicker = new ReminderPickers(this, this, pickerType);
 			reminderPicker.pick(Long.parseLong(note.getAlarm()));
 			mOnDateSetListener = reminderPicker;

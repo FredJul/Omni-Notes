@@ -31,6 +31,7 @@ import it.feio.android.omninotes.R;
 import it.feio.android.omninotes.SnoozeActivity;
 import it.feio.android.omninotes.models.Note;
 import it.feio.android.omninotes.utils.Constants;
+import it.feio.android.omninotes.utils.PrefUtils;
 import it.feio.android.omninotes.utils.date.DateHelper;
 
 public class AlarmReceiver extends BroadcastReceiver {
@@ -64,11 +65,6 @@ public class AlarmReceiver extends BroadcastReceiver {
 	}
 
 	private void createNotification(Context mContext, Note note) {
-
-		// Retrieving preferences
-		@SuppressWarnings("static-access")
-		SharedPreferences prefs = mContext.getSharedPreferences(Constants.PREFS_NAME, mContext.MODE_MULTI_PROCESS);
-
 		// Prepare text contents
 		String title = note.getTitle().length() > 0 ? note.getTitle() : note
 				.getContent();
@@ -87,7 +83,7 @@ public class AlarmReceiver extends BroadcastReceiver {
 
 
 		// Ringtone options
-		String ringtone = prefs.getString("settings_notification_ringtone", null);
+		String ringtone = PrefUtils.getString("settings_notification_ringtone", null);
 		if (ringtone != null) {
 			mBuilder.setSound(Uri.parse(ringtone));
 		}
@@ -95,7 +91,7 @@ public class AlarmReceiver extends BroadcastReceiver {
 
 		// Vibration options
 		long[] pattern = {500, 500};
-		if (prefs.getBoolean("settings_notification_vibration", true))
+		if (PrefUtils.getBoolean("settings_notification_vibration", true))
 			mBuilder.setVibrate(pattern);
 
 
@@ -118,7 +114,7 @@ public class AlarmReceiver extends BroadcastReceiver {
 		snoozeIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 		PendingIntent piPostpone = PendingIntent.getActivity(mContext, 0, postponeIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
-		String snoozeDelay = mContext.getSharedPreferences(Constants.PREFS_NAME, mContext.MODE_MULTI_PROCESS).getString("settings_notification_snooze_delay", "10");
+		String snoozeDelay = PrefUtils.getString("settings_notification_snooze_delay", "10");
 
 		//Sets the big view "big text" style
 		mBuilder

@@ -101,6 +101,7 @@ import it.feio.android.omninotes.utils.Constants;
 import it.feio.android.omninotes.utils.Display;
 import it.feio.android.omninotes.utils.KeyboardUtils;
 import it.feio.android.omninotes.utils.Navigation;
+import it.feio.android.omninotes.utils.PrefUtils;
 import it.feio.android.pixlui.links.UrlCompleter;
 
 import static android.support.v4.view.ViewCompat.animate;
@@ -121,7 +122,6 @@ public class ListFragment extends Fragment implements OnNotesLoadedListener, OnV
 	private AnimationDrawable jinglesAnimation;
 	private int listViewPosition;
 	private int listViewPositionOffset;
-	private SharedPreferences prefs;
 	private ListFragment mFragment;
 	private android.support.v7.view.ActionMode actionMode;
 	private boolean keepActionMode = false;
@@ -155,7 +155,6 @@ public class ListFragment extends Fragment implements OnNotesLoadedListener, OnV
 		super.onCreate(savedInstanceState);
 
 		mFragment = this;
-		prefs = getMainActivity().prefs;
 
 		setHasOptionsMenu(true);
 		setRetainInstance(false);
@@ -276,7 +275,7 @@ public class ListFragment extends Fragment implements OnNotesLoadedListener, OnV
 	private void initTitle() {
 		String[] navigationList = getResources().getStringArray(R.array.navigation_list);
 		String[] navigationListCodes = getResources().getStringArray(R.array.navigation_list_codes);
-		String navigation = prefs.getString(Constants.PREF_NAVIGATION, navigationListCodes[0]);
+		String navigation = PrefUtils.getString(PrefUtils.PREF_NAVIGATION, navigationListCodes[0]);
 		int index = Arrays.asList(navigationListCodes).indexOf(navigation);
 		CharSequence title = "";
 		// If is a traditional navigation item
@@ -381,15 +380,6 @@ public class ListFragment extends Fragment implements OnNotesLoadedListener, OnV
 		if (getMainActivity().getDrawerLayout() != null) {
 			getMainActivity().getDrawerLayout().setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
 		}
-
-		// Restores again DefaultSharedPreferences too reload in case of data
-		// erased from Settings
-		prefs = getActivity().getSharedPreferences(Constants.PREFS_NAME, getActivity().MODE_MULTI_PROCESS);
-
-//        // Menu is invalidated to start again instructions tour if requested
-//        if (!prefs.getBoolean(Constants.PREF_TOUR_PREFIX + "list", false)) {
-//            getActivity().supportInvalidateOptionsMenu();
-//        }
 	}
 
 	private final class ModeCallback implements android.support.v7.view.ActionMode.Callback {
@@ -737,7 +727,7 @@ public class ListFragment extends Fragment implements OnNotesLoadedListener, OnV
 	private void initSortingSubmenu() {
 		final String[] arrayDb = getResources().getStringArray(R.array.sortable_columns);
 		final String[] arrayDialog = getResources().getStringArray(R.array.sortable_columns_human_readable);
-		int selected = Arrays.asList(arrayDb).indexOf(prefs.getString(Constants.PREF_SORTING_COLUMN, arrayDb[0]));
+		int selected = Arrays.asList(arrayDb).indexOf(PrefUtils.getString(PrefUtils.PREF_SORTING_COLUMN, arrayDb[0]));
 
 		SubMenu sortMenu = this.menu.findItem(R.id.menu_sort).getSubMenu();
 		for (int i = 0; i < arrayDialog.length; i++) {
@@ -841,13 +831,13 @@ public class ListFragment extends Fragment implements OnNotesLoadedListener, OnV
 				searchView.setOnQueryTextListener(new OnQueryTextListener() {
 					@Override
 					public boolean onQueryTextSubmit(String arg0) {
-						return prefs.getBoolean("settings_instant_search", false);
+						return PrefUtils.getBoolean("settings_instant_search", false);
 					}
 
 					@Override
 					public boolean onQueryTextChange(String pattern) {
 						View searchLayout = getActivity().findViewById(R.id.search_layout);
-						if (prefs.getBoolean("settings_instant_search", false) && searchLayout != null) {
+						if (PrefUtils.getBoolean("settings_instant_search", false) && searchLayout != null) {
 							searchTags = null;
 							searchQuery = pattern;
 							NoteLoaderTask mNoteLoaderTask = new NoteLoaderTask(mFragment, mFragment);
@@ -868,8 +858,8 @@ public class ListFragment extends Fragment implements OnNotesLoadedListener, OnV
 		// Defines the conditions to set actionbar items visible or not
 		boolean drawerOpen = (getMainActivity().getDrawerLayout() != null && getMainActivity()
 				.getDrawerLayout().isDrawerOpen(GravityCompat.START));
-		boolean expandedView = prefs.getBoolean(Constants.PREF_EXPANDED_VIEW, true);
-		boolean filterPastReminders = prefs.getBoolean(Constants.PREF_FILTER_PAST_REMINDERS, true);
+		boolean expandedView = PrefUtils.getBoolean(PrefUtils.PREF_EXPANDED_VIEW, true);
+		boolean filterPastReminders = PrefUtils.getBoolean(PrefUtils.PREF_FILTER_PAST_REMINDERS, true);
 		boolean navigationReminders = Navigation.checkNavigation(Navigation.REMINDERS);
 		boolean navigationTrash = Navigation.checkNavigation(Navigation.TRASH);
 
@@ -964,8 +954,8 @@ public class ListFragment extends Fragment implements OnNotesLoadedListener, OnV
 
 
 	private void switchNotesView() {
-		boolean expandedView = prefs.getBoolean(Constants.PREF_EXPANDED_VIEW, true);
-		prefs.edit().putBoolean(Constants.PREF_EXPANDED_VIEW, !expandedView).commit();
+		boolean expandedView = PrefUtils.getBoolean(PrefUtils.PREF_EXPANDED_VIEW, true);
+		PrefUtils.putBoolean(PrefUtils.PREF_EXPANDED_VIEW, !expandedView);
 		// Change list view
 		initNotesList(getActivity().getIntent());
 		// Called to switch menu voices
@@ -1046,7 +1036,7 @@ public class ListFragment extends Fragment implements OnNotesLoadedListener, OnV
 	private void checkSortActionPerformed(MenuItem item) {
 		if (item.getGroupId() == Constants.MENU_SORT_GROUP_ID) {
 			final String[] arrayDb = getResources().getStringArray(R.array.sortable_columns);
-			prefs.edit().putString(Constants.PREF_SORTING_COLUMN, arrayDb[item.getOrder()]).commit();
+			PrefUtils.putString(PrefUtils.PREF_SORTING_COLUMN, arrayDb[item.getOrder()]);
 			initNotesList(getActivity().getIntent());
 			// Resets list scrolling position
 			listViewPositionOffset = 0;
@@ -1123,7 +1113,7 @@ public class ListFragment extends Fragment implements OnNotesLoadedListener, OnV
 				String widgetId = intent.hasExtra(Constants.INTENT_WIDGET) ? intent.getExtras()
 						.get(Constants.INTENT_WIDGET).toString() : null;
 				if (widgetId != null) {
-					String sqlCondition = prefs.getString(Constants.PREF_WIDGET_PREFIX + widgetId, "");
+					String sqlCondition = PrefUtils.getString(PrefUtils.PREF_WIDGET_PREFIX + widgetId, "");
 					String pattern = DbHelper.KEY_CATEGORY + " = ";
 					if (sqlCondition.lastIndexOf(pattern) != -1) {
 						String tagId = sqlCondition.substring(sqlCondition.lastIndexOf(pattern) + pattern.length())
@@ -1191,7 +1181,7 @@ public class ListFragment extends Fragment implements OnNotesLoadedListener, OnV
 
 	@Override
 	public void onNotesLoaded(ArrayList<Note> notes) {
-		layoutSelected = prefs.getBoolean(Constants.PREF_EXPANDED_VIEW, true) ? R.layout.note_layout_expanded
+		layoutSelected = PrefUtils.getBoolean(PrefUtils.PREF_EXPANDED_VIEW, true) ? R.layout.note_layout_expanded
 				: R.layout.note_layout;
 
 		listAdapter = new NoteAdapter(getActivity(), layoutSelected, notes);
@@ -1463,7 +1453,7 @@ public class ListFragment extends Fragment implements OnNotesLoadedListener, OnV
 			list.setEmptyView(getActivity().findViewById(R.id.empty_list));
 
 		// Refreshes navigation drawer if is set to show categories count numbers
-		if (prefs.getBoolean("settings_show_category_count", false)) {
+		if (PrefUtils.getBoolean("settings_show_category_count", false)) {
 			getMainActivity().initNavigationDrawer();
 		}
 
@@ -1644,7 +1634,7 @@ public class ListFragment extends Fragment implements OnNotesLoadedListener, OnV
 	 * Excludes past reminders
 	 */
 	private void filterReminders(boolean filter) {
-		prefs.edit().putBoolean(Constants.PREF_FILTER_PAST_REMINDERS, filter).commit();
+		PrefUtils.putBoolean(PrefUtils.PREF_FILTER_PAST_REMINDERS, filter);
 		// Change list view
 		initNotesList(getActivity().getIntent());
 		// Called to switch menu voices

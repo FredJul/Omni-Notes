@@ -43,7 +43,7 @@
         android:required="false"/>
 
     <application
-        android:name="it.feio.android.omninotes.OmniNotes"
+        android:name=".MainApplication"
         android:allowBackup="true"
         android:largeHeap="true"
         android:icon="@drawable/ic_launcher"

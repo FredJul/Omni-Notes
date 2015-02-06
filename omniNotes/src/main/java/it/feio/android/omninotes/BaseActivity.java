@@ -38,6 +38,7 @@ import java.lang.reflect.Field;
 
 import it.feio.android.omninotes.utils.Constants;
 import it.feio.android.omninotes.utils.GeocodeHelper;
+import it.feio.android.omninotes.utils.PrefUtils;
 import it.feio.android.omninotes.widget.ListWidgetProvider;
 
 
@@ -45,8 +46,6 @@ public class BaseActivity extends ActionBarActivity implements LocationListener 
 
 	protected final int TRANSITION_VERTICAL = 0;
 	protected final int TRANSITION_HORIZONTAL = 1;
-
-	protected SharedPreferences prefs;
 
 	// Location variables
 	protected LocationManager locationManager;
@@ -69,8 +68,6 @@ public class BaseActivity extends ActionBarActivity implements LocationListener 
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
-		// Preloads shared preferences for all derived classes
-		prefs = getSharedPreferences(Constants.PREFS_NAME, MODE_MULTI_PROCESS);
 		// Starts location manager
 		locationManager = GeocodeHelper.getLocationManager(this, this);
 		// Force menu overflow icon
@@ -92,7 +89,7 @@ public class BaseActivity extends ActionBarActivity implements LocationListener 
 		super.onResume();
 		// Navigation selected
 		String navNotes = getResources().getStringArray(R.array.navigation_list_codes)[0];
-		navigation = prefs.getString(Constants.PREF_NAVIGATION, navNotes);
+		navigation = PrefUtils.getString(PrefUtils.PREF_NAVIGATION, navNotes);
 	}
 
 
@@ -127,13 +124,13 @@ public class BaseActivity extends ActionBarActivity implements LocationListener 
 	}
 
 	protected void showToast(CharSequence text, int duration) {
-		if (prefs.getBoolean("settings_enable_info", true)) {
+		if (PrefUtils.getBoolean("settings_enable_info", true)) {
 			Toast.makeText(getApplicationContext(), text, duration).show();
 		}
 	}
 
 	protected void updateNavigation(String nav) {
-		prefs.edit().putString(Constants.PREF_NAVIGATION, nav).commit();
+		PrefUtils.putString(PrefUtils.PREF_NAVIGATION, nav);
 		navigation = nav;
 		navigationTmp = null;
 	}

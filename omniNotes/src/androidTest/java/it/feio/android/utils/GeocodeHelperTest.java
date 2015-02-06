@@ -23,7 +23,7 @@ import org.junit.Test;
 
 import java.io.IOException;
 
-import it.feio.android.omninotes.OmniNotes;
+import it.feio.android.omninotes.MainApplication;
 import it.feio.android.omninotes.utils.ConnectionManager;
 import it.feio.android.omninotes.utils.GeocodeHelper;
 
@@ -34,8 +34,8 @@ public class GeocodeHelperTest extends InstrumentationTestCase {
 
 	@Test
 	public void testGetAddressFromCoordinates() throws IOException {
-		if (ConnectionManager.internetAvailable(OmniNotes.getAppContext())) {
-			String address = GeocodeHelper.getAddressFromCoordinates(OmniNotes.getAppContext(), LAT, LON);
+		if (ConnectionManager.internetAvailable(MainApplication.getContext())) {
+			String address = GeocodeHelper.getAddressFromCoordinates(MainApplication.getContext(), LAT, LON);
 			assertTrue(address.length() > 0);
 		}
 	}

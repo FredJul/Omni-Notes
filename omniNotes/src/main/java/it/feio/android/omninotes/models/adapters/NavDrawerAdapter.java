@@ -31,6 +31,7 @@ import it.feio.android.omninotes.ListFragment;
 import it.feio.android.omninotes.R;
 import it.feio.android.omninotes.models.NavigationItem;
 import it.feio.android.omninotes.utils.Constants;
+import it.feio.android.omninotes.utils.PrefUtils;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -104,8 +105,7 @@ public class NavDrawerAdapter extends BaseAdapter {
                 .getNavigationTmp() : null;
 				
 		String navigation = navigationTmp != null ? navigationTmp
-				: mActivity.getSharedPreferences(Constants.PREFS_NAME, Activity.MODE_MULTI_PROCESS)
-						.getString(Constants.PREF_NAVIGATION, navigationListCodes[0]);
+				: PrefUtils.getString(PrefUtils.PREF_NAVIGATION, navigationListCodes[0]);
 
 		// Finding selected item from standard navigation items or tags
 		int index = Arrays.asList(navigationListCodes).indexOf(navigation);

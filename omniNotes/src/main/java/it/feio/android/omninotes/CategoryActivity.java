@@ -44,6 +44,7 @@ import java.io.FileOutputStream;
 import it.feio.android.omninotes.db.DbHelper;
 import it.feio.android.omninotes.models.Category;
 import it.feio.android.omninotes.utils.Constants;
+import it.feio.android.omninotes.utils.PrefUtils;
 
 public class CategoryActivity extends Activity {
 
@@ -189,11 +190,10 @@ public class CategoryActivity extends Activity {
 					@Override
 					public void onPositive(MaterialDialog dialog) {
 						// Changes navigation if actually are shown notes associated with this category
-						SharedPreferences prefs = getSharedPreferences(Constants.PREFS_NAME, MODE_MULTI_PROCESS);
 						String navNotes = getResources().getStringArray(R.array.navigation_list_codes)[0];
-						String navigation = prefs.getString(Constants.PREF_NAVIGATION, navNotes);
+						String navigation = PrefUtils.getString(PrefUtils.PREF_NAVIGATION, navNotes);
 						if (String.valueOf(category.getId()).equals(navigation))
-							prefs.edit().putString(Constants.PREF_NAVIGATION, navNotes).commit();
+							PrefUtils.putString(PrefUtils.PREF_NAVIGATION, navNotes);
 						// Removes category and edit notes associated with it
 						DbHelper db = DbHelper.getInstance(mActivity);
 						db.deleteCategory(category);

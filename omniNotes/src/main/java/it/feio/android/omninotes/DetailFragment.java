@@ -16,7 +16,6 @@
  */
 package it.feio.android.omninotes;
 
-import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.DatePickerDialog.OnDateSetListener;
 import android.app.TimePickerDialog.OnTimeSetListener;
@@ -31,7 +30,6 @@ import android.graphics.Color;
 import android.graphics.Point;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
-import android.graphics.drawable.TransitionDrawable;
 import android.media.MediaPlayer;
 import android.media.MediaPlayer.OnCompletionListener;
 import android.media.MediaRecorder;
@@ -94,7 +92,6 @@ import de.keyboardsurfer.android.widget.crouton.Style;
 import it.feio.android.checklistview.ChecklistManager;
 import it.feio.android.checklistview.exceptions.ViewNotSupportedException;
 import it.feio.android.checklistview.interfaces.CheckListChangedListener;
-import it.feio.android.checklistview.models.CheckListViewItem;
 import it.feio.android.omninotes.async.AttachmentTask;
 import it.feio.android.omninotes.async.SaveNoteTask;
 import it.feio.android.omninotes.db.DbHelper;
@@ -117,6 +114,7 @@ import it.feio.android.omninotes.utils.FileHelper;
 import it.feio.android.omninotes.utils.GeocodeHelper;
 import it.feio.android.omninotes.utils.IntentChecker;
 import it.feio.android.omninotes.utils.KeyboardUtils;
+import it.feio.android.omninotes.utils.PrefUtils;
 import it.feio.android.omninotes.utils.StorageManager;
 import it.feio.android.omninotes.utils.date.DateHelper;
 import it.feio.android.omninotes.utils.date.ReminderPickers;
@@ -170,7 +168,6 @@ public class DetailFragment extends Fragment implements
 	private boolean swiping;
 	private ViewGroup root;
 	private int startSwipeX;
-	private SharedPreferences prefs;
 	private View timestampsView;
 	private boolean orientationChanged;
 	private long audioRecordingTimeStart;
@@ -185,7 +182,6 @@ public class DetailFragment extends Fragment implements
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		mFragment = this;
-		prefs = getMainActivity().prefs;
 	}
 
 	@Override
@@ -338,7 +334,7 @@ public class DetailFragment extends Fragment implements
 			if (i.hasExtra(Constants.INTENT_WIDGET)) {
 				String widgetId = i.getExtras().get(Constants.INTENT_WIDGET).toString();
 				if (widgetId != null) {
-					String sqlCondition = prefs.getString(Constants.PREF_WIDGET_PREFIX + widgetId, "");
+					String sqlCondition = PrefUtils.getString(PrefUtils.PREF_WIDGET_PREFIX + widgetId, "");
 					String pattern = DbHelper.KEY_CATEGORY + " = ";
 					if (sqlCondition.lastIndexOf(pattern) != -1) {
 						String tagId = sqlCondition.substring(sqlCondition.lastIndexOf(pattern) + pattern.length()).trim();
@@ -568,7 +564,7 @@ public class DetailFragment extends Fragment implements
 		reminder_layout.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				int pickerType = prefs.getBoolean("settings_simple_calendar", false) ? ReminderPickers.TYPE_AOSP : ReminderPickers.TYPE_GOOGLE;
+				int pickerType = PrefUtils.getBoolean("settings_simple_calendar", false) ? ReminderPickers.TYPE_AOSP : ReminderPickers.TYPE_GOOGLE;
 				ReminderPickers reminderPicker = new ReminderPickers(getActivity(), mFragment, pickerType);
 				Long presetDateTime = noteTmp.getAlarm() != null ? Long.parseLong(noteTmp.getAlarm()) : null;
 				reminderPicker.pick(presetDateTime);
@@ -690,7 +686,7 @@ public class DetailFragment extends Fragment implements
 	 */
 	private void setTagMarkerColor(Category tag) {
 
-		String colorsPref = prefs.getString("settings_colors_app", Constants.PREF_COLORS_APP_DEFAULT);
+		String colorsPref = PrefUtils.getString("settings_colors_app", PrefUtils.PREF_COLORS_APP_DEFAULT);
 
 		// Checking preference
 		if (!colorsPref.equals("disabled")) {
@@ -953,8 +949,8 @@ public class DetailFragment extends Fragment implements
 		// Retrieves options checkboxes and initialize their values
 		final CheckBox keepChecked = (CheckBox) layout.findViewById(R.id.checklist_keep_checked);
 		final CheckBox keepCheckmarks = (CheckBox) layout.findViewById(R.id.checklist_keep_checkmarks);
-		keepChecked.setChecked(prefs.getBoolean(Constants.PREF_KEEP_CHECKED, true));
-		keepCheckmarks.setChecked(prefs.getBoolean(Constants.PREF_KEEP_CHECKMARKS, true));
+		keepChecked.setChecked(PrefUtils.getBoolean(PrefUtils.PREF_KEEP_CHECKED, true));
+		keepCheckmarks.setChecked(PrefUtils.getBoolean(PrefUtils.PREF_KEEP_CHECKMARKS, true));
 
 		new MaterialDialog.Builder(getActivity())
 				.customView(layout)
@@ -962,10 +958,8 @@ public class DetailFragment extends Fragment implements
 				.callback(new MaterialDialog.SimpleCallback() {
 					@Override
 					public void onPositive(MaterialDialog materialDialog) {
-						prefs.edit()
-								.putBoolean(Constants.PREF_KEEP_CHECKED, keepChecked.isChecked())
-								.putBoolean(Constants.PREF_KEEP_CHECKMARKS, keepCheckmarks.isChecked())
-								.commit();
+						PrefUtils.putBoolean(PrefUtils.PREF_KEEP_CHECKED, keepChecked.isChecked());
+						PrefUtils.putBoolean(PrefUtils.PREF_KEEP_CHECKMARKS, keepCheckmarks.isChecked());
 
 						toggleChecklist2();
 					}
@@ -977,15 +971,15 @@ public class DetailFragment extends Fragment implements
 	 * Toggles checklist view
 	 */
 	private void toggleChecklist2() {
-		boolean keepChecked = prefs.getBoolean(Constants.PREF_KEEP_CHECKED, true);
-		boolean showChecks = prefs.getBoolean(Constants.PREF_KEEP_CHECKMARKS, true);
+		boolean keepChecked = PrefUtils.getBoolean(PrefUtils.PREF_KEEP_CHECKED, true);
+		boolean showChecks = PrefUtils.getBoolean(PrefUtils.PREF_KEEP_CHECKMARKS, true);
 		toggleChecklist2(keepChecked, showChecks);
 	}
 
 	private void toggleChecklist2(final boolean keepChecked, final boolean showChecks) {
 		// Get instance and set options to convert EditText to CheckListView
 		mChecklistManager = ChecklistManager.getInstance(getActivity());
-		mChecklistManager.setMoveCheckedOnBottom(Integer.valueOf(prefs.getString("settings_checked_items_behavior",
+		mChecklistManager.setMoveCheckedOnBottom(Integer.valueOf(PrefUtils.getString("settings_checked_items_behavior",
 				String.valueOf(it.feio.android.checklistview.Settings.CHECKED_HOLD))));
 		mChecklistManager.setShowChecks(true);
 		mChecklistManager.setNewEntryHint(getString(R.string.checklist_item_hint));
@@ -1154,7 +1148,7 @@ public class DetailFragment extends Fragment implements
 			attachmentUri = Uri.fromFile(f);
 			takeVideoIntent.putExtra(MediaStore.EXTRA_OUTPUT, attachmentUri);
 
-		String maxVideoSizeStr = "".equals(prefs.getString("settings_max_video_size", "")) ? "0" : prefs.getString("settings_max_video_size", "");
+		String maxVideoSizeStr = "".equals(PrefUtils.getString("settings_max_video_size", "")) ? "0" : PrefUtils.getString("settings_max_video_size", "");
 		int maxVideoSize = Integer.parseInt(maxVideoSizeStr);
 		takeVideoIntent.putExtra(MediaStore.EXTRA_SIZE_LIMIT, Long.valueOf(maxVideoSize * 1024 * 1024));
 		startActivityForResult(takeVideoIntent, TAKE_VIDEO);
@@ -1368,7 +1362,7 @@ public class DetailFragment extends Fragment implements
 
 	@Override
 	public void onNoteSaved(Note noteSaved) {
-		MainActivity.notifyAppWidgets(OmniNotes.getAppContext());
+		MainActivity.notifyAppWidgets(MainApplication.getContext());
 		note = new Note(noteSaved);
 		if (goBack) {
 			goHome();

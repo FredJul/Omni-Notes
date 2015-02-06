@@ -35,6 +35,7 @@ import it.feio.android.omninotes.ListFragment;
 import it.feio.android.omninotes.R;
 import it.feio.android.omninotes.models.Category;
 import it.feio.android.omninotes.utils.Constants;
+import it.feio.android.omninotes.utils.PrefUtils;
 
 import java.util.ArrayList;
 
@@ -119,7 +120,7 @@ public class NavDrawerCategoryAdapter extends BaseAdapter {
 		}
 		
 		// Sets category count if set in preferences
-		if (mActivity.getSharedPreferences(Constants.PREFS_NAME, Context.MODE_MULTI_PROCESS).getBoolean("settings_show_category_count", false)) {
+		if (PrefUtils.getBoolean("settings_show_category_count", false)) {
 			holder.count.setText(String.valueOf(category.getCount()));
 		}
 
@@ -140,8 +141,7 @@ public class NavDrawerCategoryAdapter extends BaseAdapter {
 				: null;
 				
 		String navigation = navigationTmp != null ? navigationTmp
-				: mActivity.getSharedPreferences(Constants.PREFS_NAME, Context.MODE_MULTI_PROCESS)
-						.getString(Constants.PREF_NAVIGATION,
+				: PrefUtils.getString(PrefUtils.PREF_NAVIGATION,
 								navigationListCodes[0]);
 		
 		if (navigation.equals(String.valueOf(categories.get(position).getId()))) {

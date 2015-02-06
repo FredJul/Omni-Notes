@@ -22,7 +22,7 @@ import android.content.Context;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-import it.feio.android.omninotes.OmniNotes;
+import it.feio.android.omninotes.MainApplication;
 import it.feio.android.omninotes.R;
 import it.feio.android.omninotes.models.Category;
 
@@ -38,10 +38,9 @@ public class Navigation {
 	 * Returns actual navigation status
 	 */
 	public static int getNavigation() {
-		Context mContext = OmniNotes.getAppContext();
+		Context mContext = MainApplication.getContext();
 		String[] navigationListCodes = mContext.getResources().getStringArray(R.array.navigation_list_codes);
-		@SuppressWarnings("static-access")
-        String navigation = mContext.getSharedPreferences(Constants.PREFS_NAME, mContext.MODE_MULTI_PROCESS).getString(Constants.PREF_NAVIGATION, navigationListCodes[0]);
+        String navigation = PrefUtils.getString(PrefUtils.PREF_NAVIGATION, navigationListCodes[0]);
 
         if (navigationListCodes[NOTES].equals(navigation)) {
 			return NOTES;
@@ -65,8 +64,7 @@ public class Navigation {
 	 */
 	public static String getCategory() {
 		if (getNavigation() == CATEGORY) {
-			Context mContext = OmniNotes.getAppContext();
-			return mContext.getSharedPreferences(Constants.PREFS_NAME, mContext.MODE_MULTI_PROCESS).getString(Constants.PREF_NAVIGATION, "");
+			return PrefUtils.getString(PrefUtils.PREF_NAVIGATION, "");
 		} else {
 			return null;
 		}
@@ -98,9 +96,9 @@ public class Navigation {
 	 * Checks if passed parameters is the category user is actually navigating in
 	 */
 	public static boolean checkNavigationCategory(Category categoryToCheck) {
-		Context mContext = OmniNotes.getAppContext();
+		Context mContext = MainApplication.getContext();
 		String[] navigationListCodes = mContext.getResources().getStringArray(R.array.navigation_list_codes);
-		String navigation = mContext.getSharedPreferences(Constants.PREFS_NAME, mContext.MODE_MULTI_PROCESS).getString(Constants.PREF_NAVIGATION, navigationListCodes[0]);
+		String navigation = PrefUtils.getString(PrefUtils.PREF_NAVIGATION, navigationListCodes[0]);
 		return (categoryToCheck != null && navigation.equals(String.valueOf(categoryToCheck.getId())));
 	}
 

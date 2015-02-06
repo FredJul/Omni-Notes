@@ -50,6 +50,7 @@ import it.feio.android.omninotes.models.views.SquareImageView;
 import it.feio.android.omninotes.utils.BitmapHelper;
 import it.feio.android.omninotes.utils.Constants;
 import it.feio.android.omninotes.utils.Navigation;
+import it.feio.android.omninotes.utils.PrefUtils;
 import it.feio.android.omninotes.utils.TextHelper;
 
 
@@ -142,7 +143,7 @@ public class NoteAdapter extends ArrayAdapter<Note> implements Insertable {
 		// Attachment thumbnail
 		if (expandedView) {
 			// If note is locked or without attachments nothing is shown
-			if ((note.isLocked() && !mActivity.getSharedPreferences(Constants.PREFS_NAME, mActivity.MODE_MULTI_PROCESS).getBoolean("settings_password_access", false))
+			if ((note.isLocked() && !PrefUtils.getBoolean("settings_password_access", false))
 					|| note.getAttachmentsList().size() == 0) {
 				holder.attachmentThumbnail.setVisibility(View.GONE);
 			}
@@ -215,13 +216,12 @@ public class NoteAdapter extends ArrayAdapter<Note> implements Insertable {
 	public static String getDateText(Context mContext, Note note) {
 		String dateText;
 		String sort_column;
-		SharedPreferences prefs = mContext.getSharedPreferences(Constants.PREFS_NAME, mContext.MODE_MULTI_PROCESS);
 
 		// Reminder screen forces sorting
 		if (Navigation.checkNavigation(Navigation.REMINDERS)) {
 			sort_column = DbHelper.KEY_REMINDER;
 		} else {
-			sort_column = prefs.getString(Constants.PREF_SORTING_COLUMN, "");
+			sort_column = PrefUtils.getString(PrefUtils.PREF_SORTING_COLUMN, "");
 		}
 
 		// Creation
@@ -288,8 +288,7 @@ public class NoteAdapter extends ArrayAdapter<Note> implements Insertable {
 	 */
 	private void colorNote(Note note, View v, NoteViewHolder holder) {
 
-		String colorsPref = mActivity.getSharedPreferences(Constants.PREFS_NAME, mActivity.MODE_MULTI_PROCESS)
-				.getString("settings_colors_app", Constants.PREF_COLORS_APP_DEFAULT);
+		String colorsPref = PrefUtils.getString("settings_colors_app", PrefUtils.PREF_COLORS_APP_DEFAULT);
 
 		// Checking preference
 		if (!colorsPref.equals("disabled")) {

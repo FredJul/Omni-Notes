@@ -27,19 +27,15 @@ import android.content.SharedPreferences;
 import it.feio.android.omninotes.utils.BitmapCache;
 import it.feio.android.omninotes.utils.Constants;
 
-public class OmniNotes extends Application {
+public class MainApplication extends Application {
 
 	private static Context mContext;
-
-	static SharedPreferences prefs;
 	private static BitmapCache mBitmapCache;
 
 
 	@Override
 	public void onCreate() {
 		mContext = getApplicationContext();
-		prefs = getSharedPreferences(Constants.PREFS_NAME, MODE_MULTI_PROCESS);
-
 
 		// Instantiate bitmap cache
 		mBitmapCache = new BitmapCache(getApplicationContext(), 0, 0, getExternalCacheDir());
@@ -47,8 +43,8 @@ public class OmniNotes extends Application {
 		super.onCreate();
 	}
 
-	public static Context getAppContext() {
-		return OmniNotes.mContext;
+	public static Context getContext() {
+		return MainApplication.mContext;
 	}
 
 	/*
@@ -57,25 +53,4 @@ public class OmniNotes extends Application {
 	public static BitmapCache getBitmapCache() {
 		return mBitmapCache;
 	}
-
-
-	/**
-	 * Performs a full app restart
-	 */
-	public static void restartApp(final Context mContext) {
-
-		if (MainActivity.getInstance() != null) {
-			MainActivity.getInstance().finish();
-			Intent intent = new Intent(mContext, MainActivity.class);
-			intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-			intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-			int mPendingIntentId = 123456;
-			PendingIntent mPendingIntent = PendingIntent.getActivity(mContext, mPendingIntentId, intent,
-					PendingIntent.FLAG_CANCEL_CURRENT);
-			AlarmManager mgr = (AlarmManager) mContext.getSystemService(Context.ALARM_SERVICE);
-			mgr.set(AlarmManager.RTC, System.currentTimeMillis() + 100, mPendingIntent);
-			System.exit(0);
-		}
-	}
-
 }

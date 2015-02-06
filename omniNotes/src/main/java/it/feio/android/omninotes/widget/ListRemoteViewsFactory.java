@@ -17,14 +17,12 @@
 
 package it.feio.android.omninotes.widget;
 
-import android.annotation.TargetApi;
 import android.app.Application;
 import android.appwidget.AppWidgetManager;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Color;
-import android.os.Build;
 import android.os.Bundle;
 import android.text.Spanned;
 import android.view.View;
@@ -33,7 +31,7 @@ import android.widget.RemoteViewsService.RemoteViewsFactory;
 
 import java.util.List;
 
-import it.feio.android.omninotes.OmniNotes;
+import it.feio.android.omninotes.MainApplication;
 import it.feio.android.omninotes.R;
 import it.feio.android.omninotes.db.DbHelper;
 import it.feio.android.omninotes.models.Attachment;
@@ -41,6 +39,7 @@ import it.feio.android.omninotes.models.Note;
 import it.feio.android.omninotes.models.adapters.NoteAdapter;
 import it.feio.android.omninotes.utils.BitmapHelper;
 import it.feio.android.omninotes.utils.Constants;
+import it.feio.android.omninotes.utils.PrefUtils;
 import it.feio.android.omninotes.utils.TextHelper;
 
 public class ListRemoteViewsFactory implements RemoteViewsFactory {
@@ -50,13 +49,13 @@ public class ListRemoteViewsFactory implements RemoteViewsFactory {
 
 	private static boolean showThumbnails = true;
 
-	private OmniNotes app;
+	private MainApplication app;
 	private int appWidgetId;
 	private List<Note> notes;
 
 
 	public ListRemoteViewsFactory(Application app, Intent intent) {
-		this.app = (OmniNotes) app;
+		this.app = (MainApplication) app;
 		appWidgetId = intent.getIntExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, AppWidgetManager.INVALID_APPWIDGET_ID);
 	}
 
@@ -64,10 +63,9 @@ public class ListRemoteViewsFactory implements RemoteViewsFactory {
 	@Override
 	public void onCreate() {
 
-		String condition = app.getSharedPreferences(Constants.PREFS_NAME, app.MODE_MULTI_PROCESS)
-				.getString(
-						Constants.PREF_WIDGET_PREFIX
-								+ String.valueOf(appWidgetId), "");
+		String condition = PrefUtils.getString(
+				PrefUtils.PREF_WIDGET_PREFIX
+						+ String.valueOf(appWidgetId), "");
 		notes = DbHelper.getInstance(app).getNotes(condition, true);
 	}
 
@@ -75,9 +73,8 @@ public class ListRemoteViewsFactory implements RemoteViewsFactory {
 	@Override
 	public void onDataSetChanged() {
 
-		String condition = app.getSharedPreferences(Constants.PREFS_NAME, app.MODE_MULTI_PROCESS)
-				.getString(
-						Constants.PREF_WIDGET_PREFIX
+		String condition = PrefUtils.getString(
+				PrefUtils.PREF_WIDGET_PREFIX
 								+ String.valueOf(appWidgetId), "");
 		notes = DbHelper.getInstance(app).getNotes(condition, true);
 	}
@@ -85,10 +82,8 @@ public class ListRemoteViewsFactory implements RemoteViewsFactory {
 
 	@Override
 	public void onDestroy() {
-		app.getSharedPreferences(Constants.PREFS_NAME, app.MODE_MULTI_PROCESS)
-				.edit()
-				.remove(Constants.PREF_WIDGET_PREFIX
-						+ String.valueOf(appWidgetId)).commit();
+		PrefUtils.remove(PrefUtils.PREF_WIDGET_PREFIX
+						+ String.valueOf(appWidgetId));
 	}
 
 
@@ -160,23 +155,19 @@ public class ListRemoteViewsFactory implements RemoteViewsFactory {
 
 	@Override
 	public boolean hasStableIds() {
-		// TODO Auto-generated method stub
 		return false;
 	}
 
 	public static void updateConfiguration(Context mContext, int mAppWidgetId, String sqlCondition, boolean thumbnails) {
-
-		mContext.getSharedPreferences(Constants.PREFS_NAME, mContext.MODE_MULTI_PROCESS).edit()
-				.putString(Constants.PREF_WIDGET_PREFIX + String.valueOf(mAppWidgetId), sqlCondition).commit();
+		PrefUtils.putString(PrefUtils.PREF_WIDGET_PREFIX + String.valueOf(mAppWidgetId), sqlCondition);
 		showThumbnails = thumbnails;
 	}
 
 
 	private void color(Note note, RemoteViews row) {
 
-		String colorsPref = app.getSharedPreferences(Constants.PREFS_NAME, app.MODE_MULTI_PROCESS)
-				.getString("settings_colors_widget",
-						Constants.PREF_COLORS_APP_DEFAULT);
+		String colorsPref = PrefUtils.getString("settings_colors_widget",
+				PrefUtils.PREF_COLORS_APP_DEFAULT);
 
 		// Checking preference
 		if (!colorsPref.equals("disabled")) {

@@ -48,6 +48,7 @@ import it.feio.android.omninotes.models.views.NonScrollableListView;
 import it.feio.android.omninotes.utils.Constants;
 import it.feio.android.omninotes.utils.Display;
 import it.feio.android.omninotes.utils.Navigation;
+import it.feio.android.omninotes.utils.PrefUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -333,9 +334,7 @@ public class NavigationDrawerFragment extends Fragment {
 
     private boolean checkSkippableItem(int i) {
         boolean skippable = false;
-        SharedPreferences prefs = mActivity.getSharedPreferences(Constants.PREFS_NAME,
-                getActivity().MODE_MULTI_PROCESS);
-        boolean dynamicMenu = prefs.getBoolean(Constants.PREF_DYNAMIC_MENU, true);
+        boolean dynamicMenu = PrefUtils.getBoolean(PrefUtils.PREF_DYNAMIC_MENU, true);
         switch (i) {
             case Navigation.REMINDERS:
                 if (DbHelper.getInstance(getActivity()).getNotesWithReminder(false).size() == 0 && dynamicMenu)

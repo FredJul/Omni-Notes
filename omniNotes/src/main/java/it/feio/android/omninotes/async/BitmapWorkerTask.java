@@ -28,7 +28,7 @@ import android.os.AsyncTask;
 
 import java.lang.ref.WeakReference;
 
-import it.feio.android.omninotes.OmniNotes;
+import it.feio.android.omninotes.MainApplication;
 import it.feio.android.omninotes.models.Attachment;
 import it.feio.android.omninotes.models.listeners.OnAttachingFileListener;
 import it.feio.android.omninotes.models.views.SquareImageView;
@@ -66,14 +66,14 @@ public class BitmapWorkerTask extends AsyncTask<Attachment, Void, Bitmap> {
 		String cacheKey = path + width + height;
 
 		// Fetch from cache if possible
-		Bitmap bmp = OmniNotes.getBitmapCache().getBitmap(cacheKey);
+		Bitmap bmp = MainApplication.getBitmapCache().getBitmap(cacheKey);
 
 		// Creates thumbnail
 		if (bmp == null) {
 			wasCached = false;
 			bmp = BitmapHelper.getBitmapFromAttachment(context, mAttachment, width, height);
 			if (bmp != null) {
-				OmniNotes.getBitmapCache().addBitmap(cacheKey, bmp);
+				MainApplication.getBitmapCache().addBitmap(cacheKey, bmp);
 			}
 		}
 		return bmp;

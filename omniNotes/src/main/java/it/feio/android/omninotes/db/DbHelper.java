@@ -36,6 +36,7 @@ import it.feio.android.omninotes.models.Note;
 import it.feio.android.omninotes.utils.AssetUtils;
 import it.feio.android.omninotes.utils.Constants;
 import it.feio.android.omninotes.utils.Navigation;
+import it.feio.android.omninotes.utils.PrefUtils;
 
 public class DbHelper extends SQLiteOpenHelper {
 
@@ -89,7 +90,6 @@ public class DbHelper extends SQLiteOpenHelper {
 
 
 	private final Context mContext;
-	private final SharedPreferences prefs;
 
 	private static DbHelper instance = null;
 
@@ -104,7 +104,6 @@ public class DbHelper extends SQLiteOpenHelper {
 	private DbHelper(Context mContext) {
 		super(mContext, DATABASE_NAME, null, DATABASE_VERSION);
 		this.mContext = mContext;
-		this.prefs = mContext.getSharedPreferences(Constants.PREFS_NAME, mContext.MODE_MULTI_PROCESS);
 	}
 
 
@@ -278,7 +277,7 @@ public class DbHelper extends SQLiteOpenHelper {
 				case Navigation.NOTES:
 					return getNotesActive();
 				case Navigation.REMINDERS:
-					return getNotesWithReminder(prefs.getBoolean(Constants.PREF_FILTER_PAST_REMINDERS, false));
+					return getNotesWithReminder(PrefUtils.getBoolean(PrefUtils.PREF_FILTER_PAST_REMINDERS, false));
 				case Navigation.TRASH:
 					return getNotesTrashed();
 				case Navigation.CATEGORY:
@@ -370,7 +369,7 @@ public class DbHelper extends SQLiteOpenHelper {
 		if (Navigation.checkNavigation(Navigation.REMINDERS)) {
 			sort_column = KEY_REMINDER;
 		} else {
-			sort_column = prefs.getString(Constants.PREF_SORTING_COLUMN, KEY_TITLE);
+			sort_column = PrefUtils.getString(PrefUtils.PREF_SORTING_COLUMN, KEY_TITLE);
 		}
 		if (order) {
 			sort_order = KEY_TITLE.equals(sort_column) || KEY_REMINDER.equals(sort_column) ? " ASC " : " DESC ";

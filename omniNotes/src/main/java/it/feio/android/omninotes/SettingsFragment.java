@@ -34,11 +34,10 @@ import android.text.TextUtils;
 import android.view.MenuItem;
 
 import it.feio.android.omninotes.utils.Constants;
+import it.feio.android.omninotes.utils.PrefUtils;
 
 
 public class SettingsFragment extends PreferenceFragment {
-
-	private SharedPreferences prefs;
 
 	private final int RINGTONE_REQUEST_CODE = 100;
 
@@ -47,7 +46,6 @@ public class SettingsFragment extends PreferenceFragment {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		addPreferencesFromResource(R.xml.settings);
-		prefs = getActivity().getSharedPreferences(Constants.PREFS_NAME, Context.MODE_MULTI_PROCESS);
 	}
 
 	@Override
@@ -67,7 +65,7 @@ public class SettingsFragment extends PreferenceFragment {
 		// Maximum video attachment size
 		final EditTextPreference maxVideoSize = (EditTextPreference) findPreference("settings_max_video_size");
 		if (maxVideoSize != null) {
-			String maxVideoSizeValue = prefs.getString("settings_max_video_size", getString(R.string.not_set));
+			String maxVideoSizeValue = PrefUtils.getString("settings_max_video_size", getString(R.string.not_set));
 			maxVideoSize.setSummary(getString(R.string.settings_max_video_size_summary) + ": " + String.valueOf
 					(maxVideoSizeValue));
 			maxVideoSize.setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
@@ -75,7 +73,7 @@ public class SettingsFragment extends PreferenceFragment {
 				public boolean onPreferenceChange(Preference preference, Object newValue) {
 					maxVideoSize.setSummary(getString(R.string.settings_max_video_size_summary) + ": " + String
 							.valueOf(newValue));
-					prefs.edit().putString("settings_max_video_size", newValue.toString()).commit();
+					PrefUtils.putString("settings_max_video_size", newValue.toString());
 					return false;
 				}
 			});
@@ -84,8 +82,8 @@ public class SettingsFragment extends PreferenceFragment {
 		// Application's colors
 		final ListPreference colorsApp = (ListPreference) findPreference("settings_colors_app");
 		if (colorsApp != null) {
-			int colorsAppIndex = colorsApp.findIndexOfValue(prefs.getString("settings_colors_app",
-					Constants.PREF_COLORS_APP_DEFAULT));
+			int colorsAppIndex = colorsApp.findIndexOfValue(PrefUtils.getString("settings_colors_app",
+					PrefUtils.PREF_COLORS_APP_DEFAULT));
 			String colorsAppString = getResources().getStringArray(R.array.colors_app)[colorsAppIndex];
 			colorsApp.setSummary(colorsAppString);
 			colorsApp.setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
@@ -94,7 +92,7 @@ public class SettingsFragment extends PreferenceFragment {
 					int colorsAppIndex = colorsApp.findIndexOfValue(newValue.toString());
 					String colorsAppString = getResources().getStringArray(R.array.colors_app)[colorsAppIndex];
 					colorsApp.setSummary(colorsAppString);
-					prefs.edit().putString("settings_colors_app", newValue.toString()).commit();
+					PrefUtils.putString("settings_colors_app", newValue.toString());
 					colorsApp.setValueIndex(colorsAppIndex);
 					return false;
 				}
@@ -105,7 +103,7 @@ public class SettingsFragment extends PreferenceFragment {
 		// Checklists
 		final ListPreference checklist = (ListPreference) findPreference("settings_checked_items_behavior");
 		if (checklist != null) {
-			int checklistIndex = checklist.findIndexOfValue(prefs.getString("settings_checked_items_behavior", "0"));
+			int checklistIndex = checklist.findIndexOfValue(PrefUtils.getString("settings_checked_items_behavior", "0"));
 			String checklistString = getResources().getStringArray(R.array.checked_items_behavior)[checklistIndex];
 			checklist.setSummary(checklistString);
 			checklist.setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
@@ -115,7 +113,7 @@ public class SettingsFragment extends PreferenceFragment {
 					String checklistString = getResources().getStringArray(R.array.checked_items_behavior)
 							[checklistIndex];
 					checklist.setSummary(checklistString);
-					prefs.edit().putString("settings_checked_items_behavior", newValue.toString()).commit();
+					PrefUtils.putString("settings_checked_items_behavior", newValue.toString());
 					checklist.setValueIndex(checklistIndex);
 					return false;
 				}
@@ -126,8 +124,8 @@ public class SettingsFragment extends PreferenceFragment {
 		// Widget's colors
 		final ListPreference colorsWidget = (ListPreference) findPreference("settings_colors_widget");
 		if (colorsWidget != null) {
-			int colorsWidgetIndex = colorsWidget.findIndexOfValue(prefs.getString("settings_colors_widget",
-					Constants.PREF_COLORS_APP_DEFAULT));
+			int colorsWidgetIndex = colorsWidget.findIndexOfValue(PrefUtils.getString("settings_colors_widget",
+					PrefUtils.PREF_COLORS_APP_DEFAULT));
 			String colorsWidgetString = getResources().getStringArray(R.array.colors_widget)[colorsWidgetIndex];
 			colorsWidget.setSummary(colorsWidgetString);
 			colorsWidget.setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
@@ -136,7 +134,7 @@ public class SettingsFragment extends PreferenceFragment {
 					int colorsWidgetIndex = colorsWidget.findIndexOfValue(newValue.toString());
 					String colorsWidgetString = getResources().getStringArray(R.array.colors_widget)[colorsWidgetIndex];
 					colorsWidget.setSummary(colorsWidgetString);
-					prefs.edit().putString("settings_colors_widget", newValue.toString()).commit();
+					PrefUtils.putString("settings_colors_widget", newValue.toString());
 					colorsWidget.setValueIndex(colorsWidgetIndex);
 					return false;
 				}
@@ -148,13 +146,13 @@ public class SettingsFragment extends PreferenceFragment {
 		final EditTextPreference snoozeDelay = (EditTextPreference) findPreference
 				("settings_notification_snooze_delay");
 		if (snoozeDelay != null) {
-			String snoozeDelayValue = prefs.getString("settings_notification_snooze_delay", "10");
+			String snoozeDelayValue = PrefUtils.getString("settings_notification_snooze_delay", "10");
 			snoozeDelay.setSummary(String.valueOf(snoozeDelayValue) + " " + getString(R.string.minutes));
 			snoozeDelay.setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
 				@Override
 				public boolean onPreferenceChange(Preference preference, Object newValue) {
 					snoozeDelay.setSummary(String.valueOf(newValue) + " " + getString(R.string.minutes));
-					prefs.edit().putString("settings_notification_snooze_delay", newValue.toString()).apply();
+					PrefUtils.putString("settings_notification_snooze_delay", newValue.toString());
 					return false;
 				}
 			});
@@ -168,7 +166,7 @@ public class SettingsFragment extends PreferenceFragment {
 
 				case RINGTONE_REQUEST_CODE:
 					Uri uri = intent.getParcelableExtra(RingtoneManager.EXTRA_RINGTONE_PICKED_URI);
-					prefs.edit().putString("settings_notification_ringtone", uri.toString()).commit();
+					PrefUtils.putString("settings_notification_ringtone", uri.toString());
 					break;
 			}
 		}

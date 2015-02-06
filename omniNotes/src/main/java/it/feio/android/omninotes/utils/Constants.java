@@ -20,8 +20,6 @@ public interface Constants {
 
 	final String TAG = "Omni Notes";
 	final String DATABASE_NAME = "omni-notes";
-	final String PACKAGE = "it.feio.android.omninotes";
-	final String PREFS_NAME = PACKAGE + "_preferences";
 	final String APP_STORAGE_DIRECTORY_SB_SYNC = "db_sync";
 
 	// Notes swipe
@@ -33,8 +31,6 @@ public interface Constants {
 
 	final int THUMBNAIL_SIZE = 300;
 
-	final String TIME_SEPARATOR = ":";
-
 	final String DATE_FORMAT_SHORT_DATE = "d MMM yyyy";
 	final String DATE_FORMAT_SORTABLE = "yyyyMMdd_HHmmss_S";
 	final String DATE_FORMAT_SORTABLE_OLD = "yyyyMMddHHmmss";
@@ -43,9 +39,6 @@ public interface Constants {
 
 	final String INTENT_KEY = "note_id";
 	final String INTENT_NOTE = "note";
-	final String GALLERY_TITLE = "gallery_title";
-	final String GALLERY_CLICKED_IMAGE = "gallery_clicked_image";
-	final String GALLERY_IMAGES = "gallery_images";
 	final int INTENT_ALARM_CODE = 12345;
 	final String INTENT_TAG = "tag";
 	final String INTENT_GOOGLE_NOW = "com.google.android.gm.action.AUTO_SEND";
@@ -53,7 +46,6 @@ public interface Constants {
 
 	// Custom intent actions
 	final String ACTION_START_APP = "action_start_app";
-	final String ACTION_RESTART_APP = "action_restart_app";
 	final String ACTION_DISMISS = "action_dismiss";
 	final String ACTION_SNOOZE = "action_snooze";
 	final String ACTION_POSTPONE = "action_postpone";
@@ -67,16 +59,6 @@ public interface Constants {
 	 * Used to quickly add a note, save, and perform backPress (eg. Tasker+Pushbullet) *
 	 */
 	final String ACTION_SEND_AND_EXIT = "action_send_and_exit";
-
-	final String PREF_NAVIGATION = "navigation";
-	final String PREF_SORTING_COLUMN = "sorting_column";
-	final String PREF_KEEP_CHECKED = "keep_checked";
-	final String PREF_KEEP_CHECKMARKS = "show_checkmarks";
-	final String PREF_EXPANDED_VIEW = "expanded_view";
-	final String PREF_COLORS_APP_DEFAULT = "strip";
-	final String PREF_WIDGET_PREFIX = "widget_";
-	final String PREF_FILTER_PAST_REMINDERS = "settings_filter_past_reminders";
-	final String PREF_DYNAMIC_MENU = "settings_dynamic_menu";
 
 	final String MIME_TYPE_IMAGE = "image/jpeg";
 	final String MIME_TYPE_AUDIO = "audio/mp3";
