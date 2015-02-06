@@ -41,31 +41,14 @@ public class SettingsFragment extends PreferenceFragment {
 	private SharedPreferences prefs;
 
 	private final int RINGTONE_REQUEST_CODE = 100;
-	public final static String XML_NAME = "xmlName";
 
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		addPreferencesFromResource(R.xml.settings);
-		setTitle();
 		prefs = getActivity().getSharedPreferences(Constants.PREFS_NAME, Context.MODE_MULTI_PROCESS);
 	}
-
-
-	private void setTitle() {
-		String title = getString(R.string.settings_category_preferences);
-		if (getArguments() != null && getArguments().containsKey(XML_NAME)) {
-			String xmlName = getArguments().getString(XML_NAME);
-			if (!TextUtils.isEmpty(xmlName)) {
-				int stringResourceId = getActivity().getResources().getIdentifier(xmlName.replace("settings_", "settings_screen_"), "string",
-						getActivity().getPackageName());
-				title = stringResourceId != 0 ? getString(stringResourceId) : title;
-			}
-		}
-		((Toolbar) getActivity().findViewById(R.id.toolbar)).setTitle(title);
-	}
-
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
@@ -77,7 +60,6 @@ public class SettingsFragment extends PreferenceFragment {
 		return super.onOptionsItemSelected(item);
 	}
 
-	@SuppressWarnings("deprecation")
 	@Override
 	public void onResume() {
 		super.onResume();

@@ -32,7 +32,6 @@ public class TimePickerFragment extends DialogFragment {
 
 	public static final String DEFAULT_TIME = "default_time";
 
-	TextView timer_label;
 	private Activity mActivity;
 	private OnTimeSetListener mListener;
 	private Long defaultTime = null;

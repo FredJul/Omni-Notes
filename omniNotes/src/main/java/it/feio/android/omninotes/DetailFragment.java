@@ -80,6 +80,7 @@ import android.widget.Toast;
 
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
+import com.bumptech.glide.load.resource.bitmap.GlideBitmapDrawable;
 import com.neopixl.pixlui.components.edittext.EditText;
 import com.neopixl.pixlui.components.textview.TextView;
 
@@ -247,9 +248,6 @@ public class DetailFragment extends Fragment implements
 		super.onSaveInstanceState(outState);
 	}
 
-
-	@SuppressLint("NewApi")
-	@SuppressWarnings("deprecation")
 	@Override
 	public void onPause() {
 		super.onPause();
@@ -499,10 +497,11 @@ public class DetailFragment extends Fragment implements
 			public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
 				Attachment attachment = (Attachment) parent.getAdapter().getItem(position);
 				Uri uri = attachment.getUri();
-				Intent attachmentIntent;
-				if (Constants.MIME_TYPE_FILES.equals(attachment.getMime_type())) {
-
-					attachmentIntent = new Intent(Intent.ACTION_VIEW);
+				if (Constants.MIME_TYPE_AUDIO.equals(attachment.getMime_type())) {
+					playback(v, uri);
+				}
+				else {
+					Intent attachmentIntent = new Intent(Intent.ACTION_VIEW);
 					attachmentIntent.setDataAndType(uri, StorageManager.getMimeType(getActivity(), attachment.getUri()));
 					attachmentIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
 					if (IntentChecker.isAvailable(getActivity().getApplicationContext(), attachmentIntent, null)) {
@@ -510,37 +509,6 @@ public class DetailFragment extends Fragment implements
 					} else {
 						getMainActivity().showMessage(R.string.feature_not_available_on_this_device, ONStyle.WARN);
 					}
-
-					// Media files will be opened in internal gallery
-				} else if (Constants.MIME_TYPE_IMAGE.equals(attachment.getMime_type())
-						|| Constants.MIME_TYPE_SKETCH.equals(attachment.getMime_type())
-						|| Constants.MIME_TYPE_VIDEO.equals(attachment.getMime_type())) {
-					// Title
-					noteTmp.setTitle(getNoteTitle());
-					noteTmp.setContent(getNoteContent());
-					String title = it.feio.android.omninotes.utils.TextHelper.parseTitleAndContent(getActivity(), noteTmp)[0].toString();
-					// Images
-					int clickedImage = 0;
-					ArrayList<Attachment> images = new ArrayList<Attachment>();
-					for (Attachment mAttachment : noteTmp.getAttachmentsList()) {
-						if (Constants.MIME_TYPE_IMAGE.equals(mAttachment.getMime_type())
-								|| Constants.MIME_TYPE_SKETCH.equals(mAttachment.getMime_type())
-								|| Constants.MIME_TYPE_VIDEO.equals(mAttachment.getMime_type())) {
-							images.add(mAttachment);
-							if (mAttachment.equals(attachment)) {
-								clickedImage = images.size() - 1;
-							}
-						}
-					}
-					// Intent
-					attachmentIntent = new Intent(getActivity(), GalleryActivity.class);
-					attachmentIntent.putExtra(Constants.GALLERY_TITLE, title);
-					attachmentIntent.putParcelableArrayListExtra(Constants.GALLERY_IMAGES, images);
-					attachmentIntent.putExtra(Constants.GALLERY_CLICKED_IMAGE, clickedImage);
-					startActivity(attachmentIntent);
-
-				} else if (Constants.MIME_TYPE_AUDIO.equals(attachment.getMime_type())) {
-					playback(v, attachment.getUri());
 				}
 
 			}
@@ -749,8 +717,6 @@ public class DetailFragment extends Fragment implements
 		}
 	}
 
-
-	@SuppressLint("NewApi")
 	private void setAddress() {
 		if (!ConnectionManager.internetAvailable(getActivity())) {
 			noteTmp.setLatitude(getMainActivity().currentLatitude);
@@ -1017,71 +983,6 @@ public class DetailFragment extends Fragment implements
 	}
 
 	private void toggleChecklist2(final boolean keepChecked, final boolean showChecks) {
-
-		// AsyncTask processing doesn't work on some OS versions because in native classes
-		// (maybe TextView) another thread is launched and this brings to the folowing error:
-		// java.lang.RuntimeException: Can't create handler inside thread that has not called Looper.prepare()
-
-//		class ChecklistTask extends AsyncTask<Void, Void, View> {
-//			private View targetView;
-//
-//			public ChecklistTask(View targetView) {
-//				this.targetView = targetView;
-//			}
-//
-//			@Override
-//			protected View doInBackground(Void... params) {
-//
-//				// Get instance and set options to convert EditText to CheckListView
-//				mChecklistManager = ChecklistManager.getInstance(getActivity());
-//				mChecklistManager.setMoveCheckedOnBottom(Integer.valueOf(prefs.getString("settings_checked_items_behavior",
-//						String.valueOf(it.feio.android.checklistview.interfaces.Constants.CHECKED_HOLD))));
-//				mChecklistManager.setShowChecks(true);
-//				mChecklistManager.setNewEntryHint(getString(R.string.checklist_item_hint));
-//				// Set the textChangedListener on the replaced view
-//				mChecklistManager.setCheckListChangedListener(mFragment);
-//				mChecklistManager.addTextChangedListener(mFragment);
-//
-//				// Links parsing options
-//				mChecklistManager.setOnTextLinkClickListener(mFragment);
-//
-//				// Options for converting back to simple text
-//				mChecklistManager.setKeepChecked(keepChecked);
-//				mChecklistManager.setShowChecks(showChecks);
-//
-//				// Switches the views
-//				View newView = null;
-//				try {
-//					newView = mChecklistManager.convert(this.targetView);
-//				} catch (ViewNotSupportedException e) {
-//
-//				}
-//
-//				return newView;
-//			}
-//
-//			@Override
-//			protected void onPostExecute(View newView) {
-//				super.onPostExecute(newView);
-//				// Switches the views
-//				if (newView != null) {
-//					mChecklistManager.replaceViews(this.targetView, newView);
-//					toggleChecklistView = newView;
-////					fade(toggleChecklistView, true);
-//					animate(this.targetView).alpha(1).scaleXBy(0).scaleX(1).scaleYBy(0).scaleY(1);
-//					noteTmp.setChecklist(!noteTmp.isChecklist());
-//				}
-//			}
-//		}
-//
-//		ChecklistTask task = new ChecklistTask(toggleChecklistView);
-//		if (Build.VERSION.SDK_INT >= 11) {
-//			task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-//		} else {
-//			task.execute();
-//		}
-
-
 		// Get instance and set options to convert EditText to CheckListView
 		mChecklistManager = ChecklistManager.getInstance(getActivity());
 		mChecklistManager.setMoveCheckedOnBottom(Integer.valueOf(prefs.getString("settings_checked_items_behavior",
@@ -1162,7 +1063,6 @@ public class DetailFragment extends Fragment implements
 
 
 	// The method that displays the popup.
-	@SuppressWarnings("deprecation")
 	private void showPopup(View anchor) {
 		DisplayMetrics metrics = new DisplayMetrics();
 		getActivity().getWindowManager().getDefaultDisplay().getMetrics(metrics);
@@ -1245,7 +1145,6 @@ public class DetailFragment extends Fragment implements
 			return;
 		}
 		// File is stored in custom ON folder to speedup the attachment
-		if (Build.VERSION.SDK_INT > Build.VERSION_CODES.GINGERBREAD_MR1) {
 			File f = StorageManager.createNewAttachmentFile(getActivity(), Constants.MIME_TYPE_VIDEO_EXT);
 			if (f == null) {
 				getMainActivity().showMessage(R.string.error, ONStyle.ALERT);
@@ -1254,7 +1153,7 @@ public class DetailFragment extends Fragment implements
 			}
 			attachmentUri = Uri.fromFile(f);
 			takeVideoIntent.putExtra(MediaStore.EXTRA_OUTPUT, attachmentUri);
-		}
+
 		String maxVideoSizeStr = "".equals(prefs.getString("settings_max_video_size", "")) ? "0" : prefs.getString("settings_max_video_size", "");
 		int maxVideoSize = Integer.parseInt(maxVideoSizeStr);
 		takeVideoIntent.putExtra(MediaStore.EXTRA_SIZE_LIMIT, Long.valueOf(maxVideoSize * 1024 * 1024));
@@ -1300,12 +1199,7 @@ public class DetailFragment extends Fragment implements
 					mGridView.autoresize();
 					break;
 				case TAKE_VIDEO:
-					// Gingerbread doesn't allow custom folder so data are retrieved from intent
-					if (Build.VERSION.SDK_INT > Build.VERSION_CODES.GINGERBREAD_MR1) {
 						attachment = new Attachment(attachmentUri, Constants.MIME_TYPE_VIDEO);
-					} else {
-						attachment = new Attachment(intent.getData(), Constants.MIME_TYPE_VIDEO);
-					}
 					noteTmp.getAttachmentsList().add(attachment);
 					mAttachmentAdapter.notifyDataSetChanged();
 					mGridView.autoresize();
@@ -1334,7 +1228,7 @@ public class DetailFragment extends Fragment implements
 
 	private void onActivityResultManageReceivedFiles(Intent intent) {
 		List<Uri> uris = new ArrayList<Uri>();
-		if (Build.VERSION.SDK_INT < 16 || intent.getClipData() != null) {
+		if (intent.getClipData() != null) {
 			for (int i = 0; i < intent.getClipData().getItemCount(); i++) {
 				uris.add(intent.getClipData().getItemAt(i).getUri());
 			}
@@ -1370,11 +1264,7 @@ public class DetailFragment extends Fragment implements
 				goHome();
 			} else {
 				SaveNoteTask saveNoteTask = new SaveNoteTask(this, this, false);
-				if (Build.VERSION.SDK_INT >= 11) {
 					saveNoteTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, noteOriginal);
-				} else {
-					saveNoteTask.execute(noteOriginal);
-				}
 			}
 			MainActivity.notifyAppWidgets(getActivity());
 		} else {
@@ -1499,9 +1389,6 @@ public class DetailFragment extends Fragment implements
 	private String getNoteContent() {
 		String content = "";
 		if (!noteTmp.isChecklist()) {
-			// Due to checklist library introduction the returned EditText class is no more
-			// a com.neopixl.pixlui.components.edittext.EditText but a standard
-			// android.widget.EditText
 			try {
 				try {
 					content = ((EditText) getActivity().findViewById(R.id.detail_content)).getText().toString();
@@ -1568,7 +1455,7 @@ public class DetailFragment extends Fragment implements
 			if (BitmapDrawable.class.isAssignableFrom(d.getClass())) {
 				recordingBitmap = ((BitmapDrawable) d).getBitmap();
 			} else {
-				recordingBitmap = ((BitmapDrawable) ((TransitionDrawable) d).getDrawable(1)).getBitmap();
+				recordingBitmap = ((GlideBitmapDrawable)d.getCurrent()).getBitmap();
 			}
 			((ImageView) v.findViewById(R.id.gridview_item_picture)).setImageBitmap(ThumbnailUtils.extractThumbnail(BitmapFactory.decodeResource(getActivity().getResources(), R.drawable.stop), Constants.THUMBNAIL_SIZE, Constants.THUMBNAIL_SIZE));
 		}
@@ -1830,20 +1717,6 @@ public class DetailFragment extends Fragment implements
 		}
 	}
 
-
-	private int getCursorIndex() {
-		if (!noteTmp.isChecklist()) {
-			return content.getSelectionStart();
-		} else {
-			CheckListViewItem mCheckListViewItem = mChecklistManager.getFocusedItemView();
-			if (mCheckListViewItem != null) {
-				return mCheckListViewItem.getEditText().getSelectionStart();
-			} else {
-				return 0;
-			}
-		}
-	}
-
 	/**
 	 * Used to check currently opened note from activity to avoid openind multiple times the same one
 	 */
@@ -1861,7 +1734,6 @@ public class DetailFragment extends Fragment implements
 	/**
 	 * Manages clicks on attachment dialog
 	 */
-	@SuppressLint("InlinedApi")
 	private class AttachmentOnClickListener implements OnClickListener {
 
 		@Override

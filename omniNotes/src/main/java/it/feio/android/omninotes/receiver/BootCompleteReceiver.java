@@ -27,14 +27,9 @@ public class BootCompleteReceiver extends BroadcastReceiver {
 
 	@Override
 	public void onReceive(Context ctx, Intent intent) {
-
-
-		if (intent.getAction().equals("android.intent.action.BOOT_COMPLETED")) {
+		if (intent.getAction().equals(Intent.ACTION_BOOT_COMPLETED)) {
 			Intent service = new Intent(ctx, AlarmRestoreOnRebootService.class);
 			ctx.startService(service);
 		}
-
 	}
-
-
 }

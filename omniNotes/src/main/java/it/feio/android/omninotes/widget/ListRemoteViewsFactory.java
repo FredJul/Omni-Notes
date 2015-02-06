@@ -43,8 +43,6 @@ import it.feio.android.omninotes.utils.BitmapHelper;
 import it.feio.android.omninotes.utils.Constants;
 import it.feio.android.omninotes.utils.TextHelper;
 
-
-@TargetApi(Build.VERSION_CODES.HONEYCOMB)
 public class ListRemoteViewsFactory implements RemoteViewsFactory {
 
 	private final int WIDTH = 80;

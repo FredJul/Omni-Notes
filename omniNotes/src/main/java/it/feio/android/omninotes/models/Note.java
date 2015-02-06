@@ -23,31 +23,76 @@ import android.os.Parcelable;
 import java.util.ArrayList;
 import java.util.List;
 
+import it.feio.android.omninotes.utils.EqualityChecker;
 import it.feio.android.omninotes.utils.date.DateHelper;
 
-public class Note extends it.feio.android.omninotes.commons.models.Note implements Parcelable {
+public class Note implements Parcelable {
+	private int _id;
+	private String title;
+	private String content;
+	private Long creation;
+	private Long lastModification;
+	private Boolean trashed;
+	private String alarm;
+	private Double latitude;
+	private Double longitude;
+	private String address;
+	private Category category;
+	private Boolean locked;
+	private Boolean checklist;
+	private List<Attachment> attachmentsList = new ArrayList<Attachment>();
+	private List<Attachment> attachmentsListOld = new ArrayList<Attachment>();
 
-	// Not saved in DB
-	private boolean passwordChecked = false;
 
 
-	public Note() {
-		super();
-	}
-
-
-	public Note(int _id, Long creation, Long lastModification, String title, String content, Integer trashed, String alarm, String latitude, String longitude, Category category, Integer locked,
-			Integer checklist) {
-		super(_id, creation, lastModification, title, content, trashed, alarm, latitude, longitude, category,
-				locked, checklist);
+	public Note(int _id, Long creation, Long lastModification, String title, String content,
+				Integer trashed, String alarm, String latitude, String longitude, Category category, Integer locked,
+				Integer checklist) {
+		this._id = _id;
+		this.title = title;
+		this.content = content;
+		this.creation = creation;
+		this.lastModification = lastModification;
+		this.trashed = trashed == 1 ? true : false;
+		this.alarm = alarm;
+		setLatitude(latitude);
+		setLongitude(longitude);
+		setAddress(address);
+		setLocked(locked == 1 ? true : false);
+		setChecklist(checklist == 1 ? true : false);
 	}
 
 
 	public Note(Note note) {
-		super(note);
+		set_id(note.get_id());
+		setTitle(note.getTitle());
+		setContent(note.getContent());
+		setCreation(note.getCreation());
+		setLastModification(note.getLastModification());
+		setTrashed(note.isTrashed());
+		setAlarm(note.getAlarm());
+		setLatitude(note.getLatitude());
+		setLongitude(note.getLongitude());
+		setAddress(note.getAddress());
+		setCategory(note.getCategory());
+		setLocked(note.isLocked());
+		setChecklist(note.isChecklist());
+		ArrayList<Attachment> list = new ArrayList<Attachment>();
+		for (Attachment mAttachment : note.getAttachmentsList()) {
+			list.add(mAttachment);
+		}
+		setAttachmentsList(list);
 		setPasswordChecked(note.isPasswordChecked());
 	}
 
+
+	public Note() {
+		this.title = "";
+		this.content = "";
+		this.trashed = false;
+		this.locked = false;
+		this.checklist = false;
+	}
 
 	private Note(Parcel in) {
 		set_id(in.readInt());
@@ -66,6 +111,253 @@ public class Note extends it.feio.android.omninotes.commons.models.Note implemen
 		in.readList(getAttachmentsList(), Attachment.class.getClassLoader());
 	}
 
+	public void set_id(int _id) {
+		this._id = _id;
+	}
+
+
+	public int get_id() {
+		return _id;
+	}
+
+
+	public String getTitle() {
+		if (title == null) return "";
+		return title;
+	}
+
+
+	public void setTitle(String title) {
+		this.title = title == null ? "" : title;
+	}
+
+
+	public String getContent() {
+		if (content == null) return "";
+		return content;
+	}
+
+
+	public void setContent(String content) {
+		this.content = content == null ? "" : content;
+	}
+
+
+	public Long getCreation() {
+		return creation;
+	}
+
+
+	public void setCreation(Long creation) {
+		this.creation = creation;
+	}
+
+
+	public void setCreation(String creation) {
+		Long creationLong;
+		try {
+			creationLong = Long.parseLong(creation);
+		} catch (NumberFormatException e) {
+			creationLong = null;
+		}
+		this.creation = creationLong;
+	}
+
+
+	public Long getLastModification() {
+		return lastModification;
+	}
+
+
+	public void setLastModification(Long lastModification) {
+		this.lastModification = lastModification;
+	}
+
+
+	public void setLastModification(String lastModification) {
+		Long lastModificationLong;
+		try {
+			lastModificationLong = Long.parseLong(lastModification);
+		} catch (NumberFormatException e) {
+			lastModificationLong = null;
+		}
+		this.lastModification = lastModificationLong;
+	}
+
+	public Boolean isTrashed() {
+		return trashed == null || trashed == false ? false : true;
+	}
+
+
+	public void setTrashed(Boolean trashed) {
+		this.trashed = trashed;
+	}
+
+
+	public void setTrashed(int trashed) {
+		this.trashed = trashed == 1 ? true : false;
+	}
+
+
+	public String getAlarm() {
+		return alarm;
+	}
+
+
+	public void setAlarm(String alarm) {
+		this.alarm = alarm;
+	}
+
+
+	public void setAlarm(long alarm) {
+		this.alarm = String.valueOf(alarm);
+	}
+
+
+	public Double getLatitude() {
+		return latitude;
+	}
+
+
+	public void setLatitude(Double latitude) {
+		this.latitude = latitude;
+	}
+
+
+	public void setLatitude(String latitude) {
+		try {
+			setLatitude(Double.parseDouble(latitude));
+		} catch (NumberFormatException e) {
+			this.latitude = null;
+		} catch (NullPointerException e) {
+			this.latitude = null;
+		}
+	}
+
+
+	public Double getLongitude() {
+		return longitude;
+	}
+
+
+	public void setLongitude(Double longitude) {
+		this.longitude = longitude;
+	}
+
+
+	public void setLongitude(String longitude) {
+		try {
+			setLongitude(Double.parseDouble(longitude));
+		} catch (NumberFormatException e) {
+			this.longitude = null;
+		} catch (NullPointerException e) {
+			this.longitude = null;
+		}
+	}
+
+
+	public Category getCategory() {
+		return category;
+	}
+
+
+	public void setCategory(Category category) {
+		this.category = category;
+	}
+
+
+	public Boolean isLocked() {
+		return locked == null || locked == false ? false : true;
+	}
+
+
+	public void setLocked(Boolean locked) {
+		this.locked = locked;
+	}
+
+
+	public void setLocked(int locked) {
+		this.locked = locked == 1 ? true : false;
+	}
+
+
+	public Boolean isChecklist() {
+		return checklist == null || checklist == false ? false : true;
+	}
+
+
+	public void setChecklist(Boolean checklist) {
+		this.checklist = checklist;
+	}
+
+
+	public void setChecklist(int checklist) {
+		this.checklist = checklist == 1 ? true : false;
+	}
+
+
+	public String getAddress() {
+		return address;
+	}
+
+
+	public void setAddress(String address) {
+		this.address = address;
+	}
+
+	public List<Attachment> getAttachmentsList() {
+		return attachmentsList;
+	}
+
+	public void setAttachmentsList(List<Attachment> attachmentsList) {
+		this.attachmentsList = attachmentsList;
+	}
+
+	public List<Attachment> getAttachmentsListOld() {
+		return attachmentsListOld;
+	}
+
+
+	public void setAttachmentsListOld(List<Attachment> attachmentsListOld) {
+		this.attachmentsListOld = attachmentsListOld;
+	}
+
+	public boolean equals(Object o) {
+		boolean res = false;
+		Note note;
+		try {
+			note = (Note) o;
+		} catch (Exception e) {
+			return res;
+		}
+
+		Object[] a = { get_id(), getTitle(), getContent(), getCreation(), getLastModification(),
+				isTrashed(), getAlarm(), getLatitude(), getLongitude(), getAddress(), isLocked(), getCategory() };
+		Object[] b = { note.get_id(), note.getTitle(), note.getContent(), note.getCreation(),
+				note.getLastModification(), note.isTrashed(), note.getAlarm(), note.getLatitude(),
+				note.getLongitude(), note.getAddress(), note.isLocked(), note.getCategory() };
+		if (EqualityChecker.check(a, b)) {
+			res = true;
+		}
+
+		return res;
+	}
+
+
+	public boolean isChanged(Note note) {
+		boolean res;
+		res = !equals(note) || !getAttachmentsList().equals(note.getAttachmentsList());
+		return res;
+	}
+
+	public String toString() {
+		return getTitle();
+	}
+
+	// Not saved in DB
+	private boolean passwordChecked = false;
+
+
 
 	public String getCreationShort(Context mContext) {
 		return DateHelper.getDateTimeShort(mContext, getCreation());
@@ -82,34 +374,6 @@ public class Note extends it.feio.android.omninotes.commons.models.Note implemen
 		return DateHelper.getDateTimeShort(mContext, Long.parseLong(getAlarm()));
 	}
 
-
-	public List<Attachment> getAttachmentsList() {
-		return (List<Attachment>)super.getAttachmentsList();
-	}
-
-
-	public void setAttachmentsList(ArrayList<Attachment> attachmentsList) {
-		super.setAttachmentsList(attachmentsList);
-	}
-
-
-	public void addAttachment(Attachment attachment) {
-        List<Attachment> attachmentsList = ((List<Attachment>)super.getAttachmentsList());
-        attachmentsList.add(attachment);
-        setAttachmentsList(attachmentsList);
-	}
-
-
-	public List<Attachment> getAttachmentsListOld() {
-        return (List<Attachment>)super.getAttachmentsListOld();
-	}
-
-
-	public void setAttachmentsListOld(ArrayList<Attachment> attachmentsListOld) {
-		super.setAttachmentsListOld(attachmentsListOld);
-	}
-
-
 	public boolean isPasswordChecked() {
 		return passwordChecked;
 	}
@@ -118,12 +382,6 @@ public class Note extends it.feio.android.omninotes.commons.models.Note implemen
 	public void setPasswordChecked(boolean passwordChecked) {
 		this.passwordChecked = passwordChecked;
 	}
-	
-	@Override
-	public Category getCategory() {
-		return (Category) super.getCategory();
-	}
-
 
 	@Override
 	public int describeContents() {

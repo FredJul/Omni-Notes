@@ -73,8 +73,6 @@ public class AttachmentAdapter extends BaseAdapter {
 
 
 	public View getView(int position, View convertView, ViewGroup parent) {
-
-
 		Attachment mAttachment = attachmentsList.get(position);
 
 		AttachmentHolder holder;
@@ -129,44 +127,6 @@ public class AttachmentAdapter extends BaseAdapter {
 
 		return convertView;
 	}
-
-
-	@SuppressLint("NewApi")
-	private void loadThumbnail(AttachmentHolder holder, Attachment mAttachment) {
-		if (cancelPotentialWork(mAttachment.getUri(), holder.image)) {
-			BitmapWorkerTask task = new BitmapWorkerTask(mActivity, holder.image, Constants.THUMBNAIL_SIZE,
-					Constants.THUMBNAIL_SIZE);
-			holder.image.setAsyncTask(task);
-			if (mOnAttachingFileErrorListener != null)
-				task.setOnErrorListener(mOnAttachingFileErrorListener);
-			if (Build.VERSION.SDK_INT >= 11) {
-				task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, mAttachment);
-			} else {
-				task.execute(mAttachment);
-			}
-		}
-	}
-
-
-	public static boolean cancelPotentialWork(Uri uri, SquareImageView imageView) {
-		final BitmapWorkerTask bitmapWorkerTask = (BitmapWorkerTask) imageView.getAsyncTask();
-
-		if (bitmapWorkerTask != null && bitmapWorkerTask.getAttachment() != null) {
-			final Uri bitmapData = bitmapWorkerTask.getAttachment().getUri();
-			// If bitmapData is not yet set or it differs from the new data
-			if (bitmapData == null || bitmapData != uri) {
-				// Cancel previous task
-				bitmapWorkerTask.cancel(true);
-			} else {
-				// The same work is already in progress
-				return false;
-			}
-		}
-		// No task associated with the ImageView, or an existing task was
-		// cancelled
-		return true;
-	}
-
 
 	public class AttachmentHolder {
 		TextView text;

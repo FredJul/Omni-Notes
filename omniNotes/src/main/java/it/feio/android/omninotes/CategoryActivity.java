@@ -56,7 +56,6 @@ public class CategoryActivity extends Activity {
 	ColorPicker picker;
 	Button deleteBtn;
 	Button saveBtn;
-	Button discardBtn;
 	private CategoryActivity mActivity;
 	private boolean colorChanged = false;
 
@@ -81,13 +80,6 @@ public class CategoryActivity extends Activity {
 			populateViews();
 		}
 	}
-
-
-//	@Override
-//	public void onBackPressed() {
-//		discard();
-//	}
-
 
 	private void initViews() {
 		title = (EditText) findViewById(R.id.category_title);
@@ -145,12 +137,6 @@ public class CategoryActivity extends Activity {
 				}
 			}
 		});
-//		discardBtn.setOnClickListener(new OnClickListener() {
-//			@Override
-//			public void onClick(View v) {
-//				discard();
-//			}
-//		});
 	}
 
 	private void populateViews() {
@@ -179,11 +165,6 @@ public class CategoryActivity extends Activity {
 		DbHelper db = DbHelper.getInstance(this);
 		category = db.updateCategory(category);
 
-		// If category has no its an insertion and id is filled from db
-//		if (category.getId() == null) {
-//			category.setId((int)n);
-//		}		
-
 		// Sets result to show proper message
 		getIntent().putExtra(Constants.INTENT_TAG, category);
 		setResult(RESULT_OK, getIntent());
@@ -200,37 +181,6 @@ public class CategoryActivity extends Activity {
 			msg = getString(R.string.delete_category_confirmation).replace("$1$", String.valueOf(count));
 		else
 			msg = getString(R.string.delete_unused_category_confirmation);
-
-		// Showing dialog
-//		final AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
-//		alertDialogBuilder.setMessage(msg)
-//				.setPositiveButton(R.string.confirm, new DialogInterface.OnClickListener() {
-//
-//					@Override
-//					public void onClick(DialogInterface dialog, int id) {
-//						// Changes navigation if actually are shown notes associated with this category
-//						SharedPreferences prefs = getSharedPreferences(Constants.PREFS_NAME, MODE_MULTI_PROCESS);
-//						String navNotes = getResources().getStringArray(R.array.navigation_list_codes)[0];
-//						String navigation = prefs.getString(Constants.PREF_NAVIGATION, navNotes);
-//						if (String.valueOf(category.getId()).equals(navigation))
-//							prefs.edit().putString(Constants.PREF_NAVIGATION, navNotes).commit();
-//						// Removes category and edit notes associated with it
-//						DbHelper db = DbHelper.getInstance(mActivity);
-//						db.deleteCategory(category);
-//
-//						// Sets result to show proper message
-//						setResult(RESULT_CANCELED);
-//						finish();
-//					}
-//				}).setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
-//
-//					@Override
-//					public void onClick(DialogInterface dialog, int id) {
-//						dialog.dismiss();
-//					}
-//				});
-//		dialog = alertDialogBuilder.create();
-//		dialog.show();
 
 		new MaterialDialog.Builder(this)
 				.content(msg)
@@ -253,54 +203,5 @@ public class CategoryActivity extends Activity {
 						finish();
 					}
 				}).build().show();
-	}
-
-//	private void discard() {
-//		// Sets result to show proper message
-//		setResult(RESULT_FIRST_USER);
-//		finish();
-//	}
-
-
-	public boolean goHome() {
-
-		// In this case the caller activity is DetailActivity
-		if (getIntent().getBooleanExtra("noHome", false)) {
-			setResult(RESULT_OK);
-			super.finish();
-			return true;
-		}
-
-		NavUtils.navigateUpFromSameTask(this);
-		return true;
-	}
-
-
-	public void save(Bitmap bitmap) {
-
-		if (bitmap == null) {
-			setResult(RESULT_CANCELED);
-			super.finish();
-		}
-
-		try {
-			Uri uri = getIntent().getParcelableExtra(MediaStore.EXTRA_OUTPUT);
-			File bitmapFile = new File(uri.getPath());
-			FileOutputStream out = new FileOutputStream(bitmapFile);
-			bitmap.compress(Bitmap.CompressFormat.PNG, 90, out);
-
-			if (bitmapFile.exists()) {
-				Intent localIntent = new Intent().setData(Uri
-						.fromFile(bitmapFile));
-				setResult(RESULT_OK, localIntent);
-			} else {
-				setResult(RESULT_CANCELED);
-			}
-			super.finish();
-
-		} catch (Exception e) {
-			e.printStackTrace();
-
-		}
 	}
 }

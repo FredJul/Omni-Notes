@@ -16,12 +16,9 @@
  */
 package it.feio.android.omninotes;
 
-import android.annotation.SuppressLint;
-import android.annotation.TargetApi;
 import android.appwidget.AppWidgetManager;
 import android.content.ComponentName;
 import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.graphics.Typeface;
@@ -31,7 +28,6 @@ import android.location.LocationManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
-import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -145,19 +141,13 @@ public class BaseActivity extends ActionBarActivity implements LocationListener 
 	/**
 	 * Notifies App Widgets about data changes so they can update theirselves
 	 */
-	@TargetApi(Build.VERSION_CODES.HONEYCOMB)
 	public static void notifyAppWidgets(Context mActivity) {
 		// Home widgets
 		AppWidgetManager mgr = AppWidgetManager.getInstance(mActivity);
 		int[] ids = mgr.getAppWidgetIds(new ComponentName(mActivity, ListWidgetProvider.class));
 		mgr.notifyAppWidgetViewDataChanged(ids, R.id.widget_list);
-
-		// Dashclock
-		LocalBroadcastManager.getInstance(mActivity).sendBroadcast(new Intent(Constants.INTENT_UPDATE_DASHCLOCK));
 	}
 
-
-	@SuppressLint("InlinedApi")
 	protected void animateTransition(FragmentTransaction transaction, int direction) {
 		if (direction == TRANSITION_HORIZONTAL) {
 			transaction.setCustomAnimations(R.animator.fade_in_support, R.animator.fade_out_support, R.animator.fade_in_support, R.animator.fade_out_support);

@@ -31,7 +31,6 @@ import it.feio.android.omninotes.MainActivity;
 import it.feio.android.omninotes.R;
 import it.feio.android.omninotes.utils.Constants;
 
-@TargetApi(Build.VERSION_CODES.ICE_CREAM_SANDWICH)
 public class ListWidgetProvider extends WidgetProvider {
 
 	@Override

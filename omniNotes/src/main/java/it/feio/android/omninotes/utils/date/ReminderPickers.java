@@ -57,13 +57,6 @@ public class ReminderPickers implements OnDateSetListener, OnTimeSetListener {
 		this.pickerType = pickerType;
 	}
 
-
-
-	public void pick(){
-		pick(null);
-	}
-
-
 	public void pick(Long presetDateTime){
 		this.presetDateTime = DateHelper.getCalendar(presetDateTime).getTimeInMillis();
 		if (pickerType == TYPE_AOSP) {
@@ -74,44 +67,6 @@ public class ReminderPickers implements OnDateSetListener, OnTimeSetListener {
 			showDateTimeSelectors(this.presetDateTime);
 		}
 	}
-
-
-//    /**
-//     * Show date and time pickers
-//     */
-//    protected void showDateTimeSelectors(long reminder) {
-//
-//        // Sets actual time or previously saved in note
-//        final Calendar now = DateHelper.getCalendar(reminder);
-//        CalendarDatePickerDialog mCalendarDatePickerDialog = CalendarDatePickerDialog.newInstance(
-//                new CalendarDatePickerDialog.OnDateSetListener() {
-//
-//                    @Override
-//                    public void onDateSet(CalendarDatePickerDialog dialog, int year, int monthOfYear, int dayOfMonth) {
-//                        reminderYear = year;
-//                        reminderMonth = monthOfYear;
-//                        reminderDay = dayOfMonth;
-//                        RadialTimePickerDialog mRadialTimePickerDialog = RadialTimePickerDialog.newInstance(
-//                                new RadialTimePickerDialog.OnTimeSetListener() {
-//                                    @Override
-//                                    public void onTimeSet(
-//                                            RadialPickerLayout radialPickerLayout,
-//                                            int hourOfDay, int minute) {
-//                                        // Setting alarm time in milliseconds
-//                                        Calendar c = Calendar.getInstance();
-//                                        c.set(reminderYear, reminderMonth, reminderDay, hourOfDay, minute);
-//                                        if (mOnReminderPickedListener != null) {
-//                                            mOnReminderPickedListener.onReminderPicked(c.getTimeInMillis());
-//                                        }
-//                                    }
-//                                }, now.get(Calendar.HOUR_OF_DAY), now.get(Calendar.MINUTE), DateHelper.is24HourMode(mActivity));
-//                        mRadialTimePickerDialog.show(mActivity.getSupportFragmentManager(), Constants.TAG);
-//                    }
-//
-//                }, now.get(Calendar.YEAR), now.get(Calendar.MONTH), now.get(Calendar.DAY_OF_MONTH));
-//        mCalendarDatePickerDialog.show(mActivity.getSupportFragmentManager(), Constants.TAG);
-//    }
-
 
     /**
      * Show date and time pickers

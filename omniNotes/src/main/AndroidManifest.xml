@@ -107,13 +107,6 @@
 
         </activity>
 
-        <!-- Gallery -->
-        <activity
-            android:name="it.feio.android.omninotes.GalleryActivity"
-            android:configChanges="orientation|keyboardHidden|screenSize"
-            android:supportsRtl="true"
-            android:theme="@style/OmniNotesFullscreenTheme.ApiSpec"/>
-
         <activity
             android:name="it.feio.android.omninotes.CategoryActivity"
             android:label="@string/title_activity_category"

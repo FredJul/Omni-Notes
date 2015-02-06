@@ -1,4 +1,4 @@
-package it.feio.android.omninotes.commons.utils;
+package it.feio.android.omninotes.utils;
 
 public class EqualityChecker {
 	public static synchronized boolean check(Object a, Object b) {

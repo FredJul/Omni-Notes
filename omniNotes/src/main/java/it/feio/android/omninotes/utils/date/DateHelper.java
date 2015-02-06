@@ -34,14 +34,6 @@ import it.feio.android.omninotes.utils.Constants;
  */
 public class DateHelper {
 
-	public static String getSortableDate() {
-		String result;
-		SimpleDateFormat sdf = new SimpleDateFormat(Constants.DATE_FORMAT_SORTABLE);
-		Date now = Calendar.getInstance().getTime();
-		result = sdf.format(now);
-		return result;
-	}
-
 	public static String getString(long date, String format) {
 		Date d = new Date(date);
 		return getString(d, format);

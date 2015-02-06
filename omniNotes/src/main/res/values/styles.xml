@@ -38,14 +38,6 @@
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
     </style>
 
-    <style name="OmniNotesFullscreenTheme" parent="@style/Theme.AppCompat">
-        <item name="actionBarStyle">@style/FullscreenActionBarStyle</item>
-        <item name="windowActionBarOverlay">true</item>
-        <item name="background">@color/black_overlay</item>
-    </style>
-
-    <style name="OmniNotesFullscreenTheme.ApiSpec"></style>
-
     <!-- ShowcaseView styles -->
     <!--<style name="CustomShowcaseTheme" parent="ShowcaseView.Light">-->
     <!--<item name="sv_backgroundColor">#ee2d2d2d</item>-->

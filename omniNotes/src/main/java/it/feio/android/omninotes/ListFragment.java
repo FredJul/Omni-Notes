@@ -108,13 +108,11 @@ import static android.support.v4.view.ViewCompat.animate;
 
 public class ListFragment extends Fragment implements OnNotesLoadedListener, OnViewTouchedListener, UndoBarController.UndoListener {
 
-	static final int REQUEST_CODE_DETAIL = 1;
 	private static final int REQUEST_CODE_CATEGORY = 2;
 	private static final int REQUEST_CODE_CATEGORY_NOTES = 3;
 
 	private DynamicListView list;
 	private List<Note> selectedNotes = new ArrayList<Note>();
-	private Note swipedNote;
 	private List<Note> modifiedNotes = new ArrayList<Note>();
 	private SearchView searchView;
 	private MenuItem searchMenuItem;
@@ -123,7 +121,6 @@ public class ListFragment extends Fragment implements OnNotesLoadedListener, OnV
 	private AnimationDrawable jinglesAnimation;
 	private int listViewPosition;
 	private int listViewPositionOffset;
-	private boolean sendToArchive;
 	private SharedPreferences prefs;
 	private ListFragment mFragment;
 	private android.support.v7.view.ActionMode actionMode;
@@ -133,7 +130,6 @@ public class ListFragment extends Fragment implements OnNotesLoadedListener, OnV
 	private boolean undoTrash = false;
 	private boolean undoCategorize = false;
 	private Category undoCategorizeCategory = null;
-	// private Category removedCategory;
 	private SparseArray<Note> undoNotesList = new SparseArray<Note>();
 	// Used to remember removed categories from notes
 	private Map<Note, Category> undoCategoryMap = new HashMap<Note, Category>();
@@ -144,15 +140,12 @@ public class ListFragment extends Fragment implements OnNotesLoadedListener, OnV
 	private boolean goBackOnToggleSearchLabel = false;
 	private TextView listFooter;
 
-	//    private NoteCardArrayMultiChoiceAdapter listAdapter;
 	private NoteAdapter listAdapter;
 	private int layoutSelected;
 	private UndoBarController ubc;
 
 	//    Fab
 	private FloatingActionsMenu fab;
-	private FloatingActionButton fabAddNote;
-	private FloatingActionButton fabAddChecklist;
 	private boolean fabAllowed;
 	private boolean fabHidden = true;
 
@@ -197,7 +190,6 @@ public class ListFragment extends Fragment implements OnNotesLoadedListener, OnV
 
 		// Listview initialization
 		initListView();
-//        list = (CardListView) getActivity().findViewById(R.id.list);
 
 		initFab();
 
@@ -1070,22 +1062,6 @@ public class ListFragment extends Fragment implements OnNotesLoadedListener, OnV
 	 * Empties trash deleting all the notes
 	 */
 	private void emptyTrash() {
-//		AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(getActivity());
-//		alertDialogBuilder.setMessage(R.string.empty_trash_confirmation)
-//				.setPositiveButton(R.string.confirm, new DialogInterface.OnClickListener() {
-//                    @Override
-//                    public void onClick(DialogInterface dialog, int id) {
-//                        for (int i = 0; i < listAdapter.getCount(); i++) {
-//                            getSelectedNotes().add(getSelectedNotes().get(i));
-//                        }
-//                        deleteNotesExecute();
-//                    }
-//                }).setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
-//            @Override
-//            public void onClick(DialogInterface dialog, int id) {
-//            }
-//        });
-//		alertDialogBuilder.create().show();
 		MaterialDialog dialog = new MaterialDialog.Builder(getActivity())
 				.content(R.string.empty_trash_confirmation)
 				.positiveText(R.string.ok)
@@ -1106,8 +1082,6 @@ public class ListFragment extends Fragment implements OnNotesLoadedListener, OnV
 	 * Notes list adapter initialization and association to view
 	 */
 	void initNotesList(Intent intent) {
-
-
 		NoteLoaderTask mNoteLoaderTask = new NoteLoaderTask(mFragment, mFragment);
 
 		// Search for a tag
@@ -1331,7 +1305,6 @@ public class ListFragment extends Fragment implements OnNotesLoadedListener, OnV
 	 *
 	 * @param note Note to be deleted
 	 */
-	@SuppressLint("NewApi")
 	protected void trashNote(Note note, boolean trash) {
 		DbHelper.getInstance(getActivity()).trashNote(note, trash);
 		// Update adapter content
@@ -1367,26 +1340,6 @@ public class ListFragment extends Fragment implements OnNotesLoadedListener, OnV
 	 */
 	private void deleteNotes() {
 		// Confirm dialog creation
-//		AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(getActivity());
-//		alertDialogBuilder.setMessage(R.string.delete_note_confirmation)
-//				.setPositiveButton(R.string.confirm, new DialogInterface.OnClickListener() {
-//					@Override
-//					public void onClick(DialogInterface dialog, int id) {
-//                        ((MainActivity)getActivity()).requestPassword(getActivity(), getSelectedNotes(), new PasswordValidator() {
-//                            @Override
-//                            public void onPasswordValidated(boolean passwordConfirmed) {
-//                                if (passwordConfirmed) {
-//                                    deleteNotesExecute();
-//                                }
-//                            }
-//                        });
-//					}
-//				}).setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
-//					@Override
-//					public void onClick(DialogInterface dialog, int id) {}
-//				});
-//		alertDialogBuilder.create().show();
-
 		new MaterialDialog.Builder(getActivity())
 				.content(R.string.delete_note_confirmation)
 				.positiveText(R.string.ok)
@@ -1456,11 +1409,6 @@ public class ListFragment extends Fragment implements OnNotesLoadedListener, OnV
 						startActivityForResult(intent, REQUEST_CODE_CATEGORY_NOTES);
 					}
 
-					//                    @Override
-//                    public void onNegative(MaterialDialog materialDialog) {
-//                        selectedNotes.clear();
-//                        finishActionMode();
-//                    }
 					@Override
 					public void onNegative(MaterialDialog dialog) {
 						categorizeNotesExecute(null);
@@ -1474,27 +1422,6 @@ public class ListFragment extends Fragment implements OnNotesLoadedListener, OnV
 				categorizeNotesExecute(categories.get(position));
 			}
 		});
-
-//        dialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
-//            @Override
-//            public void onCancel(DialogInterface dialog) {
-//                selectedNotes.clear();
-//                finishActionMode();
-//            }
-//        });
-
-
-//        }).setNeutralButton(R.string.remove_category, new DialogInterface.OnClickListener() {
-//					@Override
-//					public void onClick(DialogInterface dialog, int id) {
-//                        categorizeNotesExecute(null);
-//					}
-//				}).setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
-//					@Override
-//					public void onClick(DialogInterface dialog, int id) {
-//
-//					}
-//				});
 
 		dialog.show();
 	}

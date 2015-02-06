@@ -153,10 +153,6 @@ public class MainActivity extends BaseActivity implements OnDateSetListener, OnT
 	public void initNotesList(Intent intent) {
 		Fragment f = checkFragmentInstance(R.id.fragment_container, ListFragment.class);
 		if (f != null) {
-//			List view is set as transparent to perform a fade in animation and give a smoother sensation
-//			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-//				AlphaManager.setAlpha(findViewById(R.id.notes_list), 0);
-//			}
 			((ListFragment) f).toggleSearchLabel(false);
 			((ListFragment) f).initNotesList(intent);
 		}
@@ -168,13 +164,6 @@ public class MainActivity extends BaseActivity implements OnDateSetListener, OnT
 			((ListFragment) f).commitPending();
 		}
 	}
-
-//	public void editNote(Note note) {
-//		Fragment f = checkFragmentInstance(R.id.fragment_container, ListFragment.class);
-//		if (f != null) {
-//			((ListFragment)f).editNote(note, view);
-//		}
-//	}
 
 	public void initNavigationDrawer() {
 		Fragment f = checkFragmentInstance(R.id.navigation_drawer, NavigationDrawerFragment.class);
@@ -404,10 +393,6 @@ public class MainActivity extends BaseActivity implements OnDateSetListener, OnT
 			transaction.replace(R.id.fragment_container, mDetailFragment, FRAGMENT_DETAIL_TAG).addToBackStack(FRAGMENT_DETAIL_TAG).commitAllowingStateLoss();
 		}
 
-//		if (getDrawerToggle() != null) {
-//			getDrawerToggle().setDrawerIndicatorEnabled(false);
-//		}
-
 		animateBurger(ARROW);
 	}
 
@@ -471,7 +456,6 @@ public class MainActivity extends BaseActivity implements OnDateSetListener, OnT
 	 *
 	 * @param note Note to be deleted
 	 */
-	@SuppressLint("NewApi")
 	public void deleteNote(Note note) {
 
 		// Saving changes to the note

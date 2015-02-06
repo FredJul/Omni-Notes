@@ -89,8 +89,7 @@ public class DatePickerDialogFragment extends DialogFragment {
         this.mListener = null;
         super.onDetach();
     }
-    
-    @TargetApi(11)
+
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         // Use the current date as the default date in the picker

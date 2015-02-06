@@ -170,29 +170,6 @@ public class NavigationDrawerFragment extends Fragment {
                 mActivity.getSupportActionBar().setTitle(mActivity.getApplicationContext().getString(R.string
                         .app_name));
                 mActivity.supportInvalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
-
-                // Show instructions on first launch
-//				final String instructionName = Constants.PREF_TOUR_PREFIX + "navdrawer";
-//				if (AppTourHelper.isStepTurn(mActivity, instructionName)) {
-//					ArrayList<Integer[]> list = new ArrayList<Integer[]>();
-////					list.add(new Integer[] { R.id.menu_add_category, R.string.tour_listactivity_tag_title,
-////							R.string.tour_listactivity_tag_detail, ShowcaseView.ITEM_ACTION_ITEM });
-//					mActivity.showCaseView(list, new OnShowcaseAcknowledged() {
-//						@Override
-//						public void onShowCaseAcknowledged(ShowcaseView showcaseView) {
-//							AppTourHelper.completeStep(mActivity, instructionName);
-//							mDrawerLayout.closeDrawer(GravityCompat.START);
-//
-//							// Attaches a dummy image as example
-//							Note note = new Note();
-//							Attachment attachment = new Attachment(BitmapHelper.getUri(mActivity,
-//									R.drawable.ic_launcher), Constants.MIME_TYPE_IMAGE);
-//							note.getAttachmentsList().add(attachment);
-//							note.setTitle("http://www.opensource.org");
-//							mActivity.editNote(note);
-//						}
-//					});
-//				}
             }
         };
 

@@ -20,20 +20,21 @@ import android.net.Uri;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-public class Attachment extends it.feio.android.omninotes.commons.models.Attachment implements Parcelable {
-	
+public class Attachment implements Parcelable {
+	private int id;
+	private String name;
+	private long size;
+	private long length;
+	private String mime_type;
+
 	private Uri uri;
 
-
 	public Attachment(Uri uri, String mime_type) {
-		super();
 		setUri(uri);
 		setMime_type(mime_type);
 	}
 
-
 	public Attachment(int id, Uri uri, String name, int size, long length, String mime_type) {
-		super();
 		setId(id);
 		setUri(uri);
 		setName(name);
@@ -42,7 +43,6 @@ public class Attachment extends it.feio.android.omninotes.commons.models.Attachm
 		setMime_type(mime_type);
 	}
 
-
 	private Attachment(Parcel in) {
 		setId(in.readInt());
 		setUri(Uri.parse(in.readString()));
@@ -50,14 +50,52 @@ public class Attachment extends it.feio.android.omninotes.commons.models.Attachm
 	}
 
 
+	public int getId() {
+		return id;
+	}
+
+	public void setId(int id) {
+		this.id = id;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public long getSize() {
+		return size;
+	}
+
+	public void setSize(long size) {
+		this.size = size;
+	}
+
+	public long getLength() {
+		return length;
+	}
+
+	public void setLength(long length) {
+		this.length = length;
+	}
+
+	public String getMime_type() {
+		return mime_type;
+	}
+
+	public void setMime_type(String mime_type) {
+		this.mime_type = mime_type;
+	}
+
 	public Uri getUri() {
 		return uri;
 	}
 
-
 	public void setUri(Uri uri) {
 		this.uri = uri;
-		setUriPath(uri.getPath());
 	}
 
 
