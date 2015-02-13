@@ -20,7 +20,6 @@ import android.app.Activity;
 import android.app.DatePickerDialog.OnDateSetListener;
 import android.app.TimePickerDialog.OnTimeSetListener;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
@@ -466,8 +465,8 @@ public class DetailFragment extends Fragment implements
 				builder.callback(new MaterialDialog.SimpleCallback() {
 					@Override
 					public void onPositive(MaterialDialog materialDialog) {
-						noteTmp.setLatitude("");
-						noteTmp.setLongitude("");
+						noteTmp.setLatitude(0.);
+						noteTmp.setLongitude(0.);
 						fade(locationTextView, false);
 					}
 				});
@@ -495,8 +494,7 @@ public class DetailFragment extends Fragment implements
 				Uri uri = attachment.getUri();
 				if (Constants.MIME_TYPE_AUDIO.equals(attachment.getMime_type())) {
 					playback(v, uri);
-				}
-				else {
+				} else {
 					Intent attachmentIntent = new Intent(Intent.ACTION_VIEW);
 					attachmentIntent.setDataAndType(uri, StorageManager.getMimeType(getActivity(), attachment.getUri()));
 					attachmentIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
@@ -1139,14 +1137,14 @@ public class DetailFragment extends Fragment implements
 			return;
 		}
 		// File is stored in custom ON folder to speedup the attachment
-			File f = StorageManager.createNewAttachmentFile(getActivity(), Constants.MIME_TYPE_VIDEO_EXT);
-			if (f == null) {
-				getMainActivity().showMessage(R.string.error, ONStyle.ALERT);
+		File f = StorageManager.createNewAttachmentFile(getActivity(), Constants.MIME_TYPE_VIDEO_EXT);
+		if (f == null) {
+			getMainActivity().showMessage(R.string.error, ONStyle.ALERT);
 
-				return;
-			}
-			attachmentUri = Uri.fromFile(f);
-			takeVideoIntent.putExtra(MediaStore.EXTRA_OUTPUT, attachmentUri);
+			return;
+		}
+		attachmentUri = Uri.fromFile(f);
+		takeVideoIntent.putExtra(MediaStore.EXTRA_OUTPUT, attachmentUri);
 
 		String maxVideoSizeStr = "".equals(PrefUtils.getString("settings_max_video_size", "")) ? "0" : PrefUtils.getString("settings_max_video_size", "");
 		int maxVideoSize = Integer.parseInt(maxVideoSizeStr);
@@ -1193,7 +1191,7 @@ public class DetailFragment extends Fragment implements
 					mGridView.autoresize();
 					break;
 				case TAKE_VIDEO:
-						attachment = new Attachment(attachmentUri, Constants.MIME_TYPE_VIDEO);
+					attachment = new Attachment(attachmentUri, Constants.MIME_TYPE_VIDEO);
 					noteTmp.getAttachmentsList().add(attachment);
 					mAttachmentAdapter.notifyDataSetChanged();
 					mGridView.autoresize();
@@ -1258,7 +1256,7 @@ public class DetailFragment extends Fragment implements
 				goHome();
 			} else {
 				SaveNoteTask saveNoteTask = new SaveNoteTask(this, this, false);
-					saveNoteTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, noteOriginal);
+				saveNoteTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, noteOriginal);
 			}
 			MainActivity.notifyAppWidgets(getActivity());
 		} else {
@@ -1449,7 +1447,7 @@ public class DetailFragment extends Fragment implements
 			if (BitmapDrawable.class.isAssignableFrom(d.getClass())) {
 				recordingBitmap = ((BitmapDrawable) d).getBitmap();
 			} else {
-				recordingBitmap = ((GlideBitmapDrawable)d.getCurrent()).getBitmap();
+				recordingBitmap = ((GlideBitmapDrawable) d.getCurrent()).getBitmap();
 			}
 			((ImageView) v.findViewById(R.id.gridview_item_picture)).setImageBitmap(ThumbnailUtils.extractThumbnail(BitmapFactory.decodeResource(getActivity().getResources(), R.drawable.stop), Constants.THUMBNAIL_SIZE, Constants.THUMBNAIL_SIZE));
 		}

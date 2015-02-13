@@ -43,10 +43,8 @@ public class Note implements Parcelable {
 	private List<Attachment> attachmentsList = new ArrayList<Attachment>();
 	private List<Attachment> attachmentsListOld = new ArrayList<Attachment>();
 
-
-
 	public Note(int _id, Long creation, Long lastModification, String title, String content,
-				Integer trashed, String alarm, String latitude, String longitude, Category category, Integer locked,
+				Integer trashed, String alarm, Double latitude, Double longitude, Integer locked,
 				Integer checklist) {
 		this._id = _id;
 		this.title = title;
@@ -96,14 +94,14 @@ public class Note implements Parcelable {
 
 	private Note(Parcel in) {
 		set_id(in.readInt());
-		setCreation(in.readString());
-		setLastModification(in.readString());
+		setCreation(in.readLong());
+		setLastModification(in.readLong());
 		setTitle(in.readString());
 		setContent(in.readString());
 		setTrashed(in.readInt());
 		setAlarm(in.readString());
-		setLatitude(in.readString());
-		setLongitude(in.readString());
+		setLatitude(in.readDouble());
+		setLongitude(in.readDouble());
 		setAddress(in.readString());
 		setCategory((Category) in.readParcelable(Category.class.getClassLoader()));
 		setLocked(in.readInt());
@@ -152,18 +150,6 @@ public class Note implements Parcelable {
 		this.creation = creation;
 	}
 
-
-	public void setCreation(String creation) {
-		Long creationLong;
-		try {
-			creationLong = Long.parseLong(creation);
-		} catch (NumberFormatException e) {
-			creationLong = null;
-		}
-		this.creation = creationLong;
-	}
-
-
 	public Long getLastModification() {
 		return lastModification;
 	}
@@ -171,17 +157,6 @@ public class Note implements Parcelable {
 
 	public void setLastModification(Long lastModification) {
 		this.lastModification = lastModification;
-	}
-
-
-	public void setLastModification(String lastModification) {
-		Long lastModificationLong;
-		try {
-			lastModificationLong = Long.parseLong(lastModification);
-		} catch (NumberFormatException e) {
-			lastModificationLong = null;
-		}
-		this.lastModification = lastModificationLong;
 	}
 
 	public Boolean isTrashed() {
@@ -223,18 +198,6 @@ public class Note implements Parcelable {
 		this.latitude = latitude;
 	}
 
-
-	public void setLatitude(String latitude) {
-		try {
-			setLatitude(Double.parseDouble(latitude));
-		} catch (NumberFormatException e) {
-			this.latitude = null;
-		} catch (NullPointerException e) {
-			this.latitude = null;
-		}
-	}
-
-
 	public Double getLongitude() {
 		return longitude;
 	}
@@ -243,18 +206,6 @@ public class Note implements Parcelable {
 	public void setLongitude(Double longitude) {
 		this.longitude = longitude;
 	}
-
-
-	public void setLongitude(String longitude) {
-		try {
-			setLongitude(Double.parseDouble(longitude));
-		} catch (NumberFormatException e) {
-			this.longitude = null;
-		} catch (NullPointerException e) {
-			this.longitude = null;
-		}
-	}
-
 
 	public Category getCategory() {
 		return category;
@@ -331,11 +282,11 @@ public class Note implements Parcelable {
 			return res;
 		}
 
-		Object[] a = { get_id(), getTitle(), getContent(), getCreation(), getLastModification(),
-				isTrashed(), getAlarm(), getLatitude(), getLongitude(), getAddress(), isLocked(), getCategory() };
-		Object[] b = { note.get_id(), note.getTitle(), note.getContent(), note.getCreation(),
+		Object[] a = {get_id(), getTitle(), getContent(), getCreation(), getLastModification(),
+				isTrashed(), getAlarm(), getLatitude(), getLongitude(), getAddress(), isLocked(), getCategory()};
+		Object[] b = {note.get_id(), note.getTitle(), note.getContent(), note.getCreation(),
 				note.getLastModification(), note.isTrashed(), note.getAlarm(), note.getLatitude(),
-				note.getLongitude(), note.getAddress(), note.isLocked(), note.getCategory() };
+				note.getLongitude(), note.getAddress(), note.isLocked(), note.getCategory()};
 		if (EqualityChecker.check(a, b)) {
 			res = true;
 		}
@@ -356,7 +307,6 @@ public class Note implements Parcelable {
 
 	// Not saved in DB
 	private boolean passwordChecked = false;
-
 
 
 	public String getCreationShort(Context mContext) {
@@ -388,18 +338,17 @@ public class Note implements Parcelable {
 		return 0;
 	}
 
-
 	@Override
 	public void writeToParcel(Parcel parcel, int flags) {
 		parcel.writeInt(get_id());
-		parcel.writeString(String.valueOf(getCreation()));
-		parcel.writeString(String.valueOf(getLastModification()));
+		parcel.writeLong(getCreation());
+		parcel.writeLong(getLastModification());
 		parcel.writeString(getTitle());
 		parcel.writeString(getContent());
 		parcel.writeInt(isTrashed() ? 1 : 0);
 		parcel.writeString(getAlarm());
-		parcel.writeString(String.valueOf(getLatitude()));
-		parcel.writeString(String.valueOf(getLongitude()));
+		parcel.writeDouble(getLatitude());
+		parcel.writeDouble(getLongitude());
 		parcel.writeString(getAddress());
 		parcel.writeParcelable(getCategory(), 0);
 		parcel.writeInt(isLocked() ? 1 : 0);
