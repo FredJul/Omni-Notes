@@ -19,8 +19,6 @@ package it.feio.android.omninotes.utils;
 public interface Constants {
 
 	final String TAG = "Omni Notes";
-	final String DATABASE_NAME = "omni-notes";
-	final String APP_STORAGE_DIRECTORY_SB_SYNC = "db_sync";
 
 	// Notes swipe
 	final int SWIPE_MARGIN = 30;

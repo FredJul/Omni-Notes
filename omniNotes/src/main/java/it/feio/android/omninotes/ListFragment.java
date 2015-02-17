@@ -96,7 +96,6 @@ import it.feio.android.omninotes.utils.Constants;
 import it.feio.android.omninotes.utils.Display;
 import it.feio.android.omninotes.utils.Navigation;
 import it.feio.android.omninotes.utils.PrefUtils;
-import it.feio.android.pixlui.links.UrlCompleter;
 
 import static android.support.v4.view.ViewCompat.animate;
 
@@ -107,8 +106,8 @@ public class ListFragment extends Fragment implements OnNotesLoadedListener, OnV
 	private static final int REQUEST_CODE_CATEGORY_NOTES = 3;
 
 	private DynamicListView list;
-	private List<Note> selectedNotes = new ArrayList<Note>();
-	private List<Note> modifiedNotes = new ArrayList<Note>();
+	private List<Note> selectedNotes = new ArrayList<>();
+	private List<Note> modifiedNotes = new ArrayList<>();
 	private SearchView searchView;
 	private MenuItem searchMenuItem;
 	private Menu menu;
@@ -124,13 +123,12 @@ public class ListFragment extends Fragment implements OnNotesLoadedListener, OnV
 	private boolean undoTrash = false;
 	private boolean undoCategorize = false;
 	private Category undoCategorizeCategory = null;
-	private SparseArray<Note> undoNotesList = new SparseArray<Note>();
+	private SparseArray<Note> undoNotesList = new SparseArray<>();
 	// Used to remember removed categories from notes
-	private Map<Note, Category> undoCategoryMap = new HashMap<Note, Category>();
+	private Map<Note, Category> undoCategoryMap = new HashMap<>();
 
 	// Search variables
 	private String searchQuery;
-	private String searchTags;
 	private boolean goBackOnToggleSearchLabel = false;
 	private TextView listFooter;
 
@@ -161,7 +159,6 @@ public class ListFragment extends Fragment implements OnNotesLoadedListener, OnV
 				listViewPosition = savedInstanceState.getInt("listViewPosition");
 				listViewPositionOffset = savedInstanceState.getInt("listViewPositionOffset");
 				searchQuery = savedInstanceState.getString("searchQuery");
-				searchTags = savedInstanceState.getString("searchTags");
 			}
 			keepActionMode = false;
 		}
@@ -349,7 +346,6 @@ public class ListFragment extends Fragment implements OnNotesLoadedListener, OnV
 		outState.putInt("listViewPosition", listViewPosition);
 		outState.putInt("listViewPositionOffset", listViewPositionOffset);
 		outState.putString("searchQuery", searchQuery);
-		outState.putString("searchTags", searchTags);
 	}
 
 
@@ -825,18 +821,15 @@ public class ListFragment extends Fragment implements OnNotesLoadedListener, OnV
 				searchView.setOnQueryTextListener(new OnQueryTextListener() {
 					@Override
 					public boolean onQueryTextSubmit(String arg0) {
-						return PrefUtils.getBoolean("settings_instant_search", false);
+						return true;
 					}
 
 					@Override
 					public boolean onQueryTextChange(String pattern) {
 						View searchLayout = getActivity().findViewById(R.id.search_layout);
-						if (PrefUtils.getBoolean("settings_instant_search", false) && searchLayout != null) {
-							searchTags = null;
+						if (searchLayout != null) {
 							searchQuery = pattern;
-							//TODO
-//							NoteLoaderTask noteLoaderTask = new NoteLoaderTask(mFragment, mFragment);
-//							noteLoaderTask.execute("getNotesByPattern", pattern);
+							onNotesLoaded(DbHelper.getNotesByPattern(searchQuery));
 							return true;
 						} else {
 							return false;
@@ -1071,27 +1064,17 @@ public class ListFragment extends Fragment implements OnNotesLoadedListener, OnV
 		// A workaround to simplify it's to simulate normal search
 		if (Intent.ACTION_VIEW.equals(intent.getAction()) && intent.getCategories() != null
 				&& intent.getCategories().contains(Intent.CATEGORY_BROWSABLE)) {
-			searchTags = intent.getDataString().replace(UrlCompleter.HASHTAG_SCHEME, "");
 			goBackOnToggleSearchLabel = true;
 		}
 
 		// Searching
-		if (searchTags != null || searchQuery != null || Intent.ACTION_SEARCH.equals(intent.getAction())) {
+		if (searchQuery != null || Intent.ACTION_SEARCH.equals(intent.getAction())) {
 
-			// Using tags
-			if (searchTags != null && intent.getStringExtra(SearchManager.QUERY) == null) {
-				searchQuery = searchTags;
-				//TODO
-//				NoteLoaderTask noteLoaderTask = new NoteLoaderTask(mFragment, mFragment);
-//				noteLoaderTask.execute("getNotesByTag", searchQuery);
-			} else {
 				// Get the intent, verify the action and get the query
 				if (intent.getStringExtra(SearchManager.QUERY) != null) {
 					searchQuery = intent.getStringExtra(SearchManager.QUERY);
-					searchTags = null;
 				}
 				onNotesLoaded((ArrayList<Note>) DbHelper.getNotesByPattern(searchQuery));
-			}
 
 			toggleSearchLabel(true);
 
@@ -1134,7 +1117,6 @@ public class ListFragment extends Fragment implements OnNotesLoadedListener, OnV
 		} else {
 			if (isActive) {
 				getActivity().findViewById(R.id.search_layout).setVisibility(View.GONE);
-				searchTags = null;
 				searchQuery = null;
 				if (!goBackOnToggleSearchLabel) {
 					getActivity().getIntent().setAction(Intent.ACTION_MAIN);
@@ -1155,7 +1137,7 @@ public class ListFragment extends Fragment implements OnNotesLoadedListener, OnV
 
 
 	@Override
-	public void onNotesLoaded(ArrayList<Note> notes) {
+	public void onNotesLoaded(List<Note> notes) {
 		layoutSelected = PrefUtils.getBoolean(PrefUtils.PREF_EXPANDED_VIEW, true) ? R.layout.note_layout_expanded
 				: R.layout.note_layout;
 

@@ -17,10 +17,10 @@
 
 package it.feio.android.omninotes.models.listeners;
 
-import java.util.ArrayList;
+import java.util.List;
 
 import it.feio.android.omninotes.models.Note;
 
 public interface OnNotesLoadedListener {
-	public void onNotesLoaded(ArrayList<Note> notes);
+	public void onNotesLoaded(List<Note> notes);
 }

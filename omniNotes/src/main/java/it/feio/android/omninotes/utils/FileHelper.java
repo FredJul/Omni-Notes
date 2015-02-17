@@ -28,11 +28,6 @@ import android.provider.DocumentsContract;
 import android.provider.MediaStore;
 import android.text.TextUtils;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
-
 
 public class FileHelper {
 	/**
@@ -171,32 +166,6 @@ public class FileHelper {
 				.getAuthority());
 	}
 
-	public static InputStream getInputStream(Context mContext, Uri mUri) {
-		InputStream inputStream;
-		try {
-			inputStream = mContext.getContentResolver().openInputStream(mUri);
-			inputStream.close();
-			return inputStream;
-		} catch (FileNotFoundException e) {
-			return null;
-		} catch (IOException e) {
-			return null;
-		}
-	}
-
-
-//	public static File getFileFromUri(Context mContext, Uri uri) {
-//		File f = null;
-//		try {
-//			InputStream is = mContext.getContentResolver().openInputStream(uri);			
-//			f = getFileFromInputStream(mContext, is, getNameFromUri(mContext, uri));
-//		} catch (FileNotFoundException e) {
-//
-//		}
-//		return f;
-//	}
-
-
 	public static String getNameFromUri(Context mContext, Uri uri) {
 		String fileName = "";
 		// Trying to retrieve file name from content resolver
@@ -217,80 +186,6 @@ public class FileHelper {
 			return null;
 		}
 		return fileName;
-	}
-
-
-//	public static File getFileFromInputStream(Context mContext, InputStream inputStream, String fileName) {
-//		File file = null;
-//		File f = null;
-//		
-//		try {
-////			String name = !TextUtils.isEmpty(getFilePrefix(fileName)) ? getFilePrefix(fileName) : String
-////					.valueOf(Calendar.getInstance().getTimeInMillis());
-////			String extension = !TextUtils.isEmpty(getFileExtension(fileName)) ? getFileExtension(fileName) : "";
-////			f = File.createTempFile(name, extension);
-//			f = new File(StorageManager.getCacheDir(mContext), fileName);
-//			f = StorageManager.createExternalStoragePrivateFile(mContext, uri, extension)
-//			f.deleteOnExit();
-//		} catch (IOException e1) {
-//
-//			return file;
-//		}
-//		OutputStream outputStream = null;
-//
-//		try {
-//
-//			outputStream = new FileOutputStream(f);
-//
-//			int read = 0;
-//			byte[] bytes = new byte[1024];
-//			while ((read = inputStream.read(bytes)) != -1) {
-//				outputStream.write(bytes, 0, read);
-//			}
-//
-//		} catch (IOException e) {
-//			e.printStackTrace();
-//		} finally {
-//			if (inputStream != null) {
-//				try {
-//					inputStream.close();
-//				} catch (IOException e) {
-//
-//							"Error closing InputStream", e);
-//				}
-//			}
-//			if (outputStream != null) {
-//				try {
-//					// outputStream.flush();
-//					file = f;
-//					outputStream.close();
-//				} catch (IOException e) {
-//
-//							"Error closing OutputStream", e);
-//				}
-//
-//			}
-//		}
-//		return file;
-//	}
-
-
-	public static String getFilePrefix(File file) {
-		return getFilePrefix(file.getName());
-	}
-
-	public static String getFilePrefix(String fileName) {
-		String prefix = fileName;
-		int index = fileName.indexOf(".");
-		if (index != -1) {
-			prefix = fileName.substring(0, index);
-		}
-		return prefix;
-	}
-
-
-	public static String getFileExtension(File file) {
-		return getFileExtension(file.getName());
 	}
 
 	public static String getFileExtension(String fileName) {

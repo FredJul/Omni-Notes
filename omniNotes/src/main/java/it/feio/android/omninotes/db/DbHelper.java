@@ -176,7 +176,7 @@ public class DbHelper {
 			queryBuilder.putCondition(Condition.column(Note$Table.CATEGORYID).eq(Navigation.getCategory()));
 		}
 
-		queryBuilder.putCondition(Condition.column(Note$Table.TITLE).like("'%" + pattern + "%'")).or(Condition.column(Note$Table.CONTENT).like("'%" + pattern + "%'"));
+		queryBuilder.putCondition(Condition.column(Note$Table.TITLE).like("%" + pattern + "%")).or(Condition.column(Note$Table.CONTENT).like("%" + pattern + "%"));
 
 		return getNotes(queryBuilder);
 	}
@@ -228,14 +228,8 @@ public class DbHelper {
 		return new Select().from(Category.class).where().groupBy(groupBy).orderBy("IFNULL(NULLIF(" + Category$Table.NAME + ", ''),'zzzzzzzz')").queryList();
 	}
 
-	/**
-	 * Get note Category
-	 *
-	 * @param id
-	 * @return
-	 */
-	public static Category getCategory(Integer id) {
-		return new Select().from(Category.class).where(Condition.column(Category$Table.ID).eq(id)).querySingle();
+	public static Category getCategory(int categoryId) {
+		return new Select().from(Category.class).where(Condition.column(Category$Table.ID).eq(categoryId)).querySingle();
 	}
 
 
