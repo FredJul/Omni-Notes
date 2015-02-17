@@ -17,7 +17,6 @@
 
 package it.feio.android.omninotes.utils;
 
-import android.content.Context;
 import android.text.Html;
 import android.text.Spanned;
 import android.text.SpannedString;
@@ -32,7 +31,7 @@ public class TextHelper {
 	 * @param note
 	 * @return
 	 */
-	public static Spanned[] parseTitleAndContent(Context mContext, Note note) {
+	public static Spanned[] parseTitleAndContent(Note note) {
 
 		final int CONTENT_SUBSTRING_LENGTH = 300;
 		final int TITLE_SUBSTRING_OF_CONTENT_LIMIT = 50;
@@ -48,18 +47,6 @@ public class TextHelper {
 		} else {
 			titleText = limit(content, 0, TITLE_SUBSTRING_OF_CONTENT_LIMIT, true, false);
 			contentText = limit(content.replace(titleText, "").trim(), 0, CONTENT_SUBSTRING_LENGTH, false, false);
-		}
-		content = null;
-
-		// Masking title and content string if note is locked
-		if (note.isLocked()
-				&& !PrefUtils.getBoolean(
-				"settings_password_access", false)) {
-			// This checks if a part of content is used as title and should be partially masked
-			if (!note.getTitle().equals(titleText) && titleText.length() > 3) {
-				titleText = limit(titleText, 0, 4, false, false);
-			}
-			contentText = "";
 		}
 
 		// Replacing checkmarks symbols with html entities

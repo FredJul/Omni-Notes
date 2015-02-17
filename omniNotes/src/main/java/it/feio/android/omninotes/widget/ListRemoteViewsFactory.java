@@ -19,7 +19,6 @@ package it.feio.android.omninotes.widget;
 
 import android.app.Application;
 import android.appwidget.AppWidgetManager;
-import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Color;
@@ -29,6 +28,8 @@ import android.view.View;
 import android.widget.RemoteViews;
 import android.widget.RemoteViewsService.RemoteViewsFactory;
 
+import com.raizlabs.android.dbflow.sql.builder.ConditionQueryBuilder;
+
 import java.util.List;
 
 import it.feio.android.omninotes.MainApplication;
@@ -36,6 +37,7 @@ import it.feio.android.omninotes.R;
 import it.feio.android.omninotes.db.DbHelper;
 import it.feio.android.omninotes.models.Attachment;
 import it.feio.android.omninotes.models.Note;
+import it.feio.android.omninotes.models.Note$Table;
 import it.feio.android.omninotes.models.adapters.NoteAdapter;
 import it.feio.android.omninotes.utils.BitmapHelper;
 import it.feio.android.omninotes.utils.Constants;
@@ -62,28 +64,30 @@ public class ListRemoteViewsFactory implements RemoteViewsFactory {
 
 	@Override
 	public void onCreate() {
-
-		String condition = PrefUtils.getString(
-				PrefUtils.PREF_WIDGET_PREFIX
-						+ String.valueOf(appWidgetId), "");
-		notes = DbHelper.getInstance(app).getNotes(condition, true);
+		getNotes();
 	}
 
 
 	@Override
 	public void onDataSetChanged() {
+		getNotes();
+	}
 
-		String condition = PrefUtils.getString(
-				PrefUtils.PREF_WIDGET_PREFIX
-								+ String.valueOf(appWidgetId), "");
-		notes = DbHelper.getInstance(app).getNotes(condition, true);
+	private void getNotes() {
+		int categoryId = PrefUtils.getInt(PrefUtils.PREF_WIDGET_PREFIX + appWidgetId, -1);
+		if (categoryId != -1) {
+			ConditionQueryBuilder<Note> queryBuilder = new ConditionQueryBuilder<>(Note.class, com.raizlabs.android.dbflow.sql.builder.Condition.column(Note$Table.CATEGORYID).eq(categoryId));
+			notes = DbHelper.getNotes(queryBuilder);
+		} else {
+			notes = DbHelper.getNotes();
+		}
 	}
 
 
 	@Override
 	public void onDestroy() {
 		PrefUtils.remove(PrefUtils.PREF_WIDGET_PREFIX
-						+ String.valueOf(appWidgetId));
+				+ String.valueOf(appWidgetId));
 	}
 
 
@@ -99,7 +103,7 @@ public class ListRemoteViewsFactory implements RemoteViewsFactory {
 
 		Note note = notes.get(position);
 
-		Spanned[] titleAndContent = TextHelper.parseTitleAndContent(app, note);
+		Spanned[] titleAndContent = TextHelper.parseTitleAndContent(note);
 
 		row.setTextViewText(R.id.note_title, titleAndContent[0]);
 		row.setTextViewText(R.id.note_content, titleAndContent[1]);
@@ -109,7 +113,7 @@ public class ListRemoteViewsFactory implements RemoteViewsFactory {
 		if (note.getAttachmentsList().size() > 0 && showThumbnails) {
 			Attachment mAttachment = note.getAttachmentsList().get(0);
 			// Fetch from cache if possible
-			String cacheKey = mAttachment.getUri().getPath() + WIDTH + HEIGHT;
+			String cacheKey = mAttachment.uri.getPath() + WIDTH + HEIGHT;
 			Bitmap bmp = app.getBitmapCache().getBitmap(cacheKey);
 
 			if (bmp == null) {
@@ -158,8 +162,8 @@ public class ListRemoteViewsFactory implements RemoteViewsFactory {
 		return false;
 	}
 
-	public static void updateConfiguration(Context mContext, int mAppWidgetId, String sqlCondition, boolean thumbnails) {
-		PrefUtils.putString(PrefUtils.PREF_WIDGET_PREFIX + String.valueOf(mAppWidgetId), sqlCondition);
+	public static void updateConfiguration(int mAppWidgetId, int categoryId, boolean thumbnails) {
+		PrefUtils.putInt(PrefUtils.PREF_WIDGET_PREFIX + String.valueOf(mAppWidgetId), categoryId);
 		showThumbnails = thumbnails;
 	}
 
@@ -176,11 +180,11 @@ public class ListRemoteViewsFactory implements RemoteViewsFactory {
 			row.setInt(R.id.tag_marker, "setBackgroundColor", Color.parseColor("#00000000"));
 
 			// If tag is set the color will be applied on the appropriate target
-			if (note.getCategory() != null && note.getCategory().getColor() != null) {
+			if (note.getCategory() != null && note.getCategory().color != null) {
 				if (colorsPref.equals("list")) {
-					row.setInt(R.id.card_layout, "setBackgroundColor", Integer.parseInt(note.getCategory().getColor()));
+					row.setInt(R.id.card_layout, "setBackgroundColor", Integer.parseInt(note.getCategory().color));
 				} else {
-					row.setInt(R.id.tag_marker, "setBackgroundColor", Integer.parseInt(note.getCategory().getColor()));
+					row.setInt(R.id.tag_marker, "setBackgroundColor", Integer.parseInt(note.getCategory().color));
 				}
 			} else {
 				row.setInt(R.id.tag_marker, "setBackgroundColor", 0);

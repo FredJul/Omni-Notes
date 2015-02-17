@@ -29,7 +29,7 @@ import android.widget.RadioGroup;
 import android.widget.RadioGroup.OnCheckedChangeListener;
 import android.widget.Spinner;
 
-import java.util.ArrayList;
+import java.util.List;
 
 import it.feio.android.omninotes.R;
 import it.feio.android.omninotes.db.DbHelper;
@@ -42,8 +42,7 @@ public class WidgetConfigurationActivity extends Activity {
 	private Button configOkButton;
 	private Spinner categorySpinner;
 	private int mAppWidgetId = AppWidgetManager.INVALID_APPWIDGET_ID;
-	private ArrayList<Category> categories;
-	private String sqlCondition;
+	private List<Category> categories;
 	private RadioGroup mRadioGroup;
 
 	@Override
@@ -60,21 +59,20 @@ public class WidgetConfigurationActivity extends Activity {
 			@Override
 			public void onCheckedChanged(RadioGroup group, int checkedId) {
 				switch (checkedId) {
-				case R.id.widget_config_notes:
-					categorySpinner.setEnabled(false);
-					break;
+					case R.id.widget_config_notes:
+						categorySpinner.setEnabled(false);
+						break;
 
-				case R.id.widget_config_categories:
-					categorySpinner.setEnabled(true);
-					break;
+					case R.id.widget_config_categories:
+						categorySpinner.setEnabled(true);
+						break;
 				}
 			}
 		});
 
 		categorySpinner = (Spinner) findViewById(R.id.widget_config_spinner);
 		categorySpinner.setEnabled(false);
-		DbHelper db = DbHelper.getInstance(mActivity);
-		categories = db.getCategories();
+		categories = DbHelper.getCategories();
 		categorySpinner.setAdapter(new NavDrawerCategoryAdapter(mActivity, categories));
 
 		configOkButton = (Button) findViewById(R.id.widget_config_confirm);
@@ -83,22 +81,18 @@ public class WidgetConfigurationActivity extends Activity {
 			@Override
 			public void onClick(View v) {
 
-				if (mRadioGroup.getCheckedRadioButtonId() == R.id.widget_config_notes) {
-					sqlCondition = " WHERE " + DbHelper.KEY_TRASHED + " IS NOT 1 ";
-					
-				} else {
+				int categoryId = -1;
+				if (mRadioGroup.getCheckedRadioButtonId() != R.id.widget_config_notes) {
 					Category tag = (Category) categorySpinner.getSelectedItem();
-					sqlCondition = " WHERE " + DbHelper.TABLE_NOTES + "."
-							+ DbHelper.KEY_CATEGORY + " = " + tag.getId()
-							+ " AND " + DbHelper.KEY_TRASHED + " IS NOT 1";
+					categoryId = tag.id;
 				}
 
 				CheckBox showThumbnailsCheckBox = (CheckBox) findViewById(R.id.show_thumbnails);
 
 				// Updating the ListRemoteViewsFactory parameter to get the list
 				// of notes
-				ListRemoteViewsFactory.updateConfiguration(mActivity, mAppWidgetId,
-						sqlCondition, showThumbnailsCheckBox.isChecked());
+				ListRemoteViewsFactory.updateConfiguration(mAppWidgetId,
+						categoryId, showThumbnailsCheckBox.isChecked());
 
 				Intent resultValue = new Intent();
 				resultValue.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID,
@@ -108,7 +102,7 @@ public class WidgetConfigurationActivity extends Activity {
 				finish();
 			}
 		});
-				
+
 		// Checks if no tags are available and then disable that option
 		if (categories.size() == 0) {
 			mRadioGroup.setVisibility(View.GONE);

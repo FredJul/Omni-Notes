@@ -35,8 +35,6 @@ public interface Constants {
 	final String DATE_FORMAT_SORTABLE = "yyyyMMdd_HHmmss_S";
 	final String DATE_FORMAT_SORTABLE_OLD = "yyyyMMddHHmmss";
 
-	final boolean LOAD_NOTES_SYNC = true;
-
 	final String INTENT_KEY = "note_id";
 	final String INTENT_NOTE = "note";
 	final int INTENT_ALARM_CODE = 12345;

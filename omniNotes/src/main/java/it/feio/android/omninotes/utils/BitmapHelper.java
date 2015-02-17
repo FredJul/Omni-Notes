@@ -320,16 +320,15 @@ public class BitmapHelper {
 	 */
 	public static Bitmap getBitmapFromAttachment(Context mContext, Attachment mAttachment, int width, int height) {
 		Bitmap bmp = null;
-		String path = mAttachment.getUri().getPath();
 
 		// Video
-		if (Constants.MIME_TYPE_VIDEO.equals(mAttachment.getMime_type())) {
+		if (Constants.MIME_TYPE_VIDEO.equals(mAttachment.mimeType)) {
 			// Tries to retrieve full path from ContentResolver if is a new video
-			path = StorageManager.getRealPathFromURI(mContext,
-					mAttachment.getUri());
+			String path = StorageManager.getRealPathFromURI(mContext,
+					mAttachment.uri);
 			// .. or directly from local directory otherwise
 			if (path == null) {
-				path = FileHelper.getPath(mContext, mAttachment.getUri());
+				path = FileHelper.getPath(mContext, mAttachment.uri);
 			}
 			bmp = ThumbnailUtils.createVideoThumbnail(path,
 					Thumbnails.MINI_KIND);
@@ -340,22 +339,22 @@ public class BitmapHelper {
 			}
 
 			// Image
-		} else if (Constants.MIME_TYPE_IMAGE.equals(mAttachment.getMime_type())
-				|| Constants.MIME_TYPE_SKETCH.equals(mAttachment.getMime_type())) {
+		} else if (Constants.MIME_TYPE_IMAGE.equals(mAttachment.mimeType)
+				|| Constants.MIME_TYPE_SKETCH.equals(mAttachment.mimeType)) {
 			try {
-				bmp = BitmapHelper.getThumbnail(mContext, mAttachment.getUri(), width, height);
+				bmp = BitmapHelper.getThumbnail(mContext, mAttachment.uri, width, height);
 			} catch (NullPointerException e) {
 				bmp = null;
 			}
 
 			// Audio
-		} else if (Constants.MIME_TYPE_AUDIO.equals(mAttachment.getMime_type())) {
+		} else if (Constants.MIME_TYPE_AUDIO.equals(mAttachment.mimeType)) {
 			bmp = ThumbnailUtils.extractThumbnail(
 					decodeSampledBitmapFromResourceMemOpt(mContext.getResources().openRawResource(R.drawable.play),
 							width, height), width, height);
 
 			// File
-		} else if (Constants.MIME_TYPE_FILES.equals(mAttachment.getMime_type())) {
+		} else if (Constants.MIME_TYPE_FILES.equals(mAttachment.mimeType)) {
 			bmp = ThumbnailUtils.extractThumbnail(
 					decodeSampledBitmapFromResourceMemOpt(mContext.getResources().openRawResource(R.drawable.files),
 							width, height), width, height);
@@ -366,7 +365,7 @@ public class BitmapHelper {
 
 
 	public static Uri getThumbnailUri(Context mContext, Attachment mAttachment) {
-		Uri uri = mAttachment.getUri();
+		Uri uri = mAttachment.uri;
 		String mimeType = StorageManager.getMimeType(uri.toString());
 		if (!TextUtils.isEmpty(mimeType)) {
 			String type = mimeType.replaceFirst("/.*", "");
@@ -386,10 +385,6 @@ public class BitmapHelper {
 
 	/**
 	 * Draws a watermark on ImageView to highlight videos
-	 *
-	 * @param bmp
-	 * @param overlay
-	 * @return
 	 */
 	public static Bitmap createVideoThumbnail(Context mContext, Bitmap video, int width, int height) {
 		video = ThumbnailUtils.extractThumbnail(video, width, height);
@@ -408,25 +403,6 @@ public class BitmapHelper {
 		return thumbnail;
 	}
 
-
-	/**
-	 * Checks if a bitmap is null and returns a placeholder in its place
-	 *
-	 * @param mContext
-	 * @param bmp
-	 * @param width
-	 * @param height
-	 * @return
-	 */
-//	private static Bitmap checkIfBroken(Context mContext, Bitmap bmp, int width, int height) {
-//		// In case no thumbnail can be extracted from video
-//		if (bmp == null) {
-//			bmp = ThumbnailUtils.extractThumbnail(BitmapFactory.decodeResource(
-//					mContext.getResources(), R.drawable.attachment_broken),
-//					width, height);
-//		}
-//		return bmp;
-//	}
 	private static int dpToPx(Context mContext, int dp) {
 		float density = mContext.getResources().getDisplayMetrics().density;
 		return Math.round((float) dp * density);

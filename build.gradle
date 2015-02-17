@@ -19,10 +19,14 @@
 buildscript {
     repositories {
         jcenter()
+        maven { url "https://raw.github.com/Raizlabs/maven-releases/master/releases" }
     }
+
     dependencies {
         classpath 'com.android.tools.build:gradle:+'
         classpath 'com.droidtitan:lint-cleaner-plugin:+'
+        classpath 'com.raizlabs:Griddle:1.0.2'
+        classpath 'com.neenbedankt.gradle.plugins:android-apt:1.4'
     }
 }
 
@@ -30,8 +34,7 @@ allprojects {
     repositories {
         mavenLocal()
         jcenter()
-        maven {
-            url "https://github.com/federicoiosue/repository/raw/master/"
-        }
+        maven { url "https://raw.github.com/Raizlabs/maven-releases/master/releases" }
+        maven { url "https://github.com/federicoiosue/repository/raw/master/" }
     }
 }

@@ -31,35 +31,32 @@ public class Navigation {
 	public static final int NOTES = 0;
 	public static final int REMINDERS = 1;
 	public static final int TRASH = 2;
-    public static final int CATEGORY = 3;
-	
-	
+	public static final int CATEGORY = 3;
+
+
 	/**
 	 * Returns actual navigation status
 	 */
 	public static int getNavigation() {
 		Context mContext = MainApplication.getContext();
 		String[] navigationListCodes = mContext.getResources().getStringArray(R.array.navigation_list_codes);
-        String navigation = PrefUtils.getString(PrefUtils.PREF_NAVIGATION, navigationListCodes[0]);
+		String navigation = PrefUtils.getString(PrefUtils.PREF_NAVIGATION, navigationListCodes[0]);
 
-        if (navigationListCodes[NOTES].equals(navigation)) {
+		if (navigationListCodes[NOTES].equals(navigation)) {
 			return NOTES;
-		}
-		else if (navigationListCodes[REMINDERS].equals(navigation)) {
+		} else if (navigationListCodes[REMINDERS].equals(navigation)) {
 			return REMINDERS;
-		}
-        else if (navigationListCodes[TRASH].equals(navigation)) {
-            return TRASH;
-        }
-		else {
+		} else if (navigationListCodes[TRASH].equals(navigation)) {
+			return TRASH;
+		} else {
 			return CATEGORY;
-		} 
+		}
 	}
-	
-	
-	
+
+
 	/**
 	 * Retrieves category currently shown
+	 *
 	 * @return id of category or 0 if current navigation is not a category
 	 */
 	public static String getCategory() {
@@ -69,16 +66,15 @@ public class Navigation {
 			return null;
 		}
 	}
-	
-	
-	
+
+
 	/**
 	 * Checks if passed parameters is the actual navigation status
 	 */
 	public static boolean checkNavigation(int navigationToCheck) {
 		return checkNavigation(new Integer[]{navigationToCheck});
 	}
-	
+
 	public static boolean checkNavigation(Integer[] navigationsToCheck) {
 		boolean res = false;
 		int navigation = getNavigation();
@@ -90,8 +86,8 @@ public class Navigation {
 		}
 		return res;
 	}
-	
-	
+
+
 	/**
 	 * Checks if passed parameters is the category user is actually navigating in
 	 */
@@ -99,7 +95,7 @@ public class Navigation {
 		Context mContext = MainApplication.getContext();
 		String[] navigationListCodes = mContext.getResources().getStringArray(R.array.navigation_list_codes);
 		String navigation = PrefUtils.getString(PrefUtils.PREF_NAVIGATION, navigationListCodes[0]);
-		return (categoryToCheck != null && navigation.equals(String.valueOf(categoryToCheck.getId())));
+		return (categoryToCheck != null && navigation.equals(String.valueOf(categoryToCheck.id)));
 	}
 
 }

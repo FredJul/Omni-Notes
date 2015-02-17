@@ -50,7 +50,7 @@ public class TextWorkerTask extends AsyncTask<Note, Void, Spanned[]> {
 	@Override
 	protected Spanned[] doInBackground(Note... params) {
 		Note note = params[0];
-		Spanned[] titleAndContent = TextHelper.parseTitleAndContent(mActivity, note);
+		Spanned[] titleAndContent = TextHelper.parseTitleAndContent(note);
 		return titleAndContent;
 	}
 

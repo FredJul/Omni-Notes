@@ -25,13 +25,11 @@ import android.app.Activity;
 import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.Point;
 import android.graphics.Rect;
 import android.graphics.drawable.AnimationDrawable;
-import android.nfc.Tag;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Parcelable;
@@ -46,7 +44,6 @@ import android.support.v7.widget.SearchView;
 import android.support.v7.widget.SearchView.OnQueryTextListener;
 import android.text.Html;
 import android.text.TextUtils;
-import android.util.Pair;
 import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -69,7 +66,6 @@ import android.widget.ListView;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.getbase.floatingactionbutton.AddFloatingActionButton;
-import com.getbase.floatingactionbutton.FloatingActionButton;
 import com.getbase.floatingactionbutton.FloatingActionsMenu;
 import com.neopixl.pixlui.components.textview.TextView;
 import com.nhaarman.listviewanimations.itemmanipulation.DynamicListView;
@@ -83,7 +79,6 @@ import java.util.Map;
 
 import de.keyboardsurfer.android.widget.crouton.Crouton;
 import it.feio.android.checklistview.utils.DensityUtil;
-import it.feio.android.omninotes.async.NoteLoaderTask;
 import it.feio.android.omninotes.db.DbHelper;
 import it.feio.android.omninotes.models.Attachment;
 import it.feio.android.omninotes.models.Category;
@@ -99,7 +94,6 @@ import it.feio.android.omninotes.models.views.InterceptorLinearLayout;
 import it.feio.android.omninotes.utils.BitmapHelper;
 import it.feio.android.omninotes.utils.Constants;
 import it.feio.android.omninotes.utils.Display;
-import it.feio.android.omninotes.utils.KeyboardUtils;
 import it.feio.android.omninotes.utils.Navigation;
 import it.feio.android.omninotes.utils.PrefUtils;
 import it.feio.android.pixlui.links.UrlCompleter;
@@ -118,7 +112,7 @@ public class ListFragment extends Fragment implements OnNotesLoadedListener, OnV
 	private SearchView searchView;
 	private MenuItem searchMenuItem;
 	private Menu menu;
-	private TextView empyListItem;
+	private TextView emptyListItem;
 	private AnimationDrawable jinglesAnimation;
 	private int listViewPosition;
 	private int listViewPositionOffset;
@@ -282,9 +276,9 @@ public class ListFragment extends Fragment implements OnNotesLoadedListener, OnV
 		if (index >= 0 && index < navigationListCodes.length) {
 			title = navigationList[index];
 		} else {
-			ArrayList<Category> categories = DbHelper.getInstance(getActivity()).getCategories();
+			List<Category> categories = DbHelper.getCategories();
 			for (Category tag : categories) {
-				if (navigation.equals(String.valueOf(tag.getId()))) title = tag.getName();
+				if (navigation.equals(String.valueOf(tag.id))) title = tag.name;
 			}
 		}
 
@@ -297,14 +291,14 @@ public class ListFragment extends Fragment implements OnNotesLoadedListener, OnV
 	 * Starts a little animation on Mr.Jingles!
 	 */
 	private void initEasterEgg() {
-		empyListItem = (TextView) getActivity().findViewById(R.id.empty_list);
-		empyListItem.setOnClickListener(new OnClickListener() {
+		emptyListItem = (TextView) getActivity().findViewById(R.id.empty_list);
+		emptyListItem.setOnClickListener(new OnClickListener() {
 
 			@Override
 			public void onClick(View v) {
 				if (jinglesAnimation == null) {
-					jinglesAnimation = (AnimationDrawable) empyListItem.getCompoundDrawables()[1];
-					empyListItem.post(new Runnable() {
+					jinglesAnimation = (AnimationDrawable) emptyListItem.getCompoundDrawables()[1];
+					emptyListItem.post(new Runnable() {
 						public void run() {
 							if (jinglesAnimation != null) jinglesAnimation.start();
 						}
@@ -321,7 +315,7 @@ public class ListFragment extends Fragment implements OnNotesLoadedListener, OnV
 		if (jinglesAnimation != null) {
 			jinglesAnimation.stop();
 			jinglesAnimation = null;
-			empyListItem.setCompoundDrawablesWithIntrinsicBounds(0, R.animator.jingles_animation, 0, 0);
+			emptyListItem.setCompoundDrawablesWithIntrinsicBounds(0, R.animator.jingles_animation, 0, 0);
 
 		}
 	}
@@ -840,8 +834,9 @@ public class ListFragment extends Fragment implements OnNotesLoadedListener, OnV
 						if (PrefUtils.getBoolean("settings_instant_search", false) && searchLayout != null) {
 							searchTags = null;
 							searchQuery = pattern;
-							NoteLoaderTask mNoteLoaderTask = new NoteLoaderTask(mFragment, mFragment);
-							mNoteLoaderTask.execute("getNotesByPattern", pattern);
+							//TODO
+//							NoteLoaderTask noteLoaderTask = new NoteLoaderTask(mFragment, mFragment);
+//							noteLoaderTask.execute("getNotesByPattern", pattern);
 							return true;
 						} else {
 							return false;
@@ -970,7 +965,7 @@ public class ListFragment extends Fragment implements OnNotesLoadedListener, OnV
 
 
 	void editNote2(Note note) {
-		if (note.get_id() == 0) {
+		if (note.getId() == 0) {
 
 			// if navigation is a tag it will be set into note
 			try {
@@ -980,7 +975,7 @@ public class ListFragment extends Fragment implements OnNotesLoadedListener, OnV
 				} else {
 					tagId = Integer.parseInt(getMainActivity().navigation);
 				}
-				note.setCategory(DbHelper.getInstance(getActivity()).getCategory(tagId));
+				note.setCategory(DbHelper.getCategory(tagId));
 			} catch (NumberFormatException e) {
 			}
 		} else {
@@ -1072,8 +1067,6 @@ public class ListFragment extends Fragment implements OnNotesLoadedListener, OnV
 	 * Notes list adapter initialization and association to view
 	 */
 	void initNotesList(Intent intent) {
-		NoteLoaderTask mNoteLoaderTask = new NoteLoaderTask(mFragment, mFragment);
-
 		// Search for a tag
 		// A workaround to simplify it's to simulate normal search
 		if (Intent.ACTION_VIEW.equals(intent.getAction()) && intent.getCategories() != null
@@ -1088,19 +1081,16 @@ public class ListFragment extends Fragment implements OnNotesLoadedListener, OnV
 			// Using tags
 			if (searchTags != null && intent.getStringExtra(SearchManager.QUERY) == null) {
 				searchQuery = searchTags;
-				mNoteLoaderTask.execute("getNotesByTag", searchQuery);
+				//TODO
+//				NoteLoaderTask noteLoaderTask = new NoteLoaderTask(mFragment, mFragment);
+//				noteLoaderTask.execute("getNotesByTag", searchQuery);
 			} else {
 				// Get the intent, verify the action and get the query
 				if (intent.getStringExtra(SearchManager.QUERY) != null) {
 					searchQuery = intent.getStringExtra(SearchManager.QUERY);
 					searchTags = null;
 				}
-				if (getMainActivity().loadNotesSync) {
-					onNotesLoaded((ArrayList<Note>) DbHelper.getInstance(getActivity()).getNotesByPattern(searchQuery));
-				} else {
-					mNoteLoaderTask.execute("getNotesByPattern", searchQuery);
-				}
-				getMainActivity().loadNotesSync = Constants.LOAD_NOTES_SYNC;
+				onNotesLoaded((ArrayList<Note>) DbHelper.getNotesByPattern(searchQuery));
 			}
 
 			toggleSearchLabel(true);
@@ -1113,31 +1103,16 @@ public class ListFragment extends Fragment implements OnNotesLoadedListener, OnV
 				String widgetId = intent.hasExtra(Constants.INTENT_WIDGET) ? intent.getExtras()
 						.get(Constants.INTENT_WIDGET).toString() : null;
 				if (widgetId != null) {
-					String sqlCondition = PrefUtils.getString(PrefUtils.PREF_WIDGET_PREFIX + widgetId, "");
-					String pattern = DbHelper.KEY_CATEGORY + " = ";
-					if (sqlCondition.lastIndexOf(pattern) != -1) {
-						String tagId = sqlCondition.substring(sqlCondition.lastIndexOf(pattern) + pattern.length())
-								.trim();
-						getMainActivity().navigationTmp = !TextUtils.isEmpty(tagId) ? tagId : null;
-					}
+					int categoryId = PrefUtils.getInt(PrefUtils.PREF_WIDGET_PREFIX + widgetId, -1);
+					getMainActivity().navigationTmp = (categoryId != -1 ? String.valueOf(categoryId) : null);
 				}
 				intent.removeExtra(Constants.INTENT_WIDGET);
-				if (getMainActivity().loadNotesSync) {
-					onNotesLoaded((ArrayList<Note>) DbHelper.getInstance(getActivity()).getNotesByCategory(
-							getMainActivity().navigationTmp));
-				} else {
-					mNoteLoaderTask.execute("getNotesByTag", getMainActivity().navigationTmp);
-				}
-				getMainActivity().loadNotesSync = Constants.LOAD_NOTES_SYNC;
+				onNotesLoaded((ArrayList<Note>) DbHelper.getNotesByCategory(
+						getMainActivity().navigationTmp));
 
 				// Gets all notes
 			} else {
-				if (getMainActivity().loadNotesSync) {
-					onNotesLoaded((ArrayList<Note>) DbHelper.getInstance(getActivity()).getAllNotes(true));
-				} else {
-					mNoteLoaderTask.execute("getAllNotes", true);
-				}
-				getMainActivity().loadNotesSync = Constants.LOAD_NOTES_SYNC;
+				onNotesLoaded((ArrayList<Note>) DbHelper.getAllNotes());
 			}
 		}
 	}
@@ -1212,7 +1187,7 @@ public class ListFragment extends Fragment implements OnNotesLoadedListener, OnV
 					else if (Navigation.checkNavigation(Navigation.CATEGORY)) {
 						categorizeNotesExecute(null);
 					} else {
-							trashNotes(true);
+						trashNotes(true);
 					}
 				}
 			}
@@ -1296,7 +1271,7 @@ public class ListFragment extends Fragment implements OnNotesLoadedListener, OnV
 	 * @param note Note to be deleted
 	 */
 	protected void trashNote(Note note, boolean trash) {
-		DbHelper.getInstance(getActivity()).trashNote(note, trash);
+		DbHelper.trashNote(note, trash);
 		// Update adapter content
 		listAdapter.remove(note);
 		// Informs about update
@@ -1382,7 +1357,7 @@ public class ListFragment extends Fragment implements OnNotesLoadedListener, OnV
 	 */
 	private void categorizeNotes() {
 		// Retrieves all available categories
-		final ArrayList<Category> categories = DbHelper.getInstance(getActivity()).getCategories();
+		final List<Category> categories = DbHelper.getCategories();
 
 		final MaterialDialog dialog = new MaterialDialog.Builder(getActivity())
 				.title(R.string.categorize_as)
@@ -1464,7 +1439,7 @@ public class ListFragment extends Fragment implements OnNotesLoadedListener, OnV
 		// Advice to user
 		String msg;
 		if (category != null) {
-			msg = getResources().getText(R.string.notes_categorized_as) + " '" + category.getName() + "'";
+			msg = getResources().getText(R.string.notes_categorized_as) + " '" + category.name + "'";
 		} else {
 			msg = getResources().getText(R.string.notes_category_removed).toString();
 		}
@@ -1484,7 +1459,7 @@ public class ListFragment extends Fragment implements OnNotesLoadedListener, OnV
 
 	private void categorizeNote(Note note, Category category) {
 		note.setCategory(category);
-		DbHelper.getInstance(getActivity()).updateNote(note, false);
+		DbHelper.updateNote(note, false);
 	}
 
 	@Override
@@ -1576,7 +1551,6 @@ public class ListFragment extends Fragment implements OnNotesLoadedListener, OnV
 	public void merge() {
 
 		Note mergedNote = null;
-		boolean locked = false;
 		StringBuilder content = new StringBuilder();
 		ArrayList<Attachment> attachments = new ArrayList<Attachment>();
 
@@ -1605,18 +1579,16 @@ public class ListFragment extends Fragment implements OnNotesLoadedListener, OnV
 				}
 			}
 
-			locked = locked || note.isLocked();
 			attachments.addAll(note.getAttachmentsList());
 		}
 
 		// Resets all the attachments id to force their note re-assign when saved
 		for (Attachment attachment : attachments) {
-			attachment.setId(0);
+			attachment.id = 0;
 		}
 
 		// Sets content text and attachments list
 		mergedNote.setContent(content.toString());
-		mergedNote.setLocked(locked);
 		mergedNote.setAttachmentsList(attachments);
 
 		getSelectedNotes().clear();

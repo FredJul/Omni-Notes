@@ -214,8 +214,10 @@ public class DetailFragment extends Fragment implements
 
 		// Added the sketched image if present returning from SketchFragment
 		if (getMainActivity().sketchUri != null) {
-			Attachment mAttachment = new Attachment(getMainActivity().sketchUri, Constants.MIME_TYPE_SKETCH);
-			noteTmp.getAttachmentsList().add(mAttachment);
+			Attachment attachment = new Attachment();
+			attachment.uri = getMainActivity().sketchUri;
+			attachment.mimeType = Constants.MIME_TYPE_SKETCH;
+			noteTmp.getAttachmentsList().add(attachment);
 			getMainActivity().sketchUri = null;
 			// Removes previous version of edited image
 			if (sketchEdited != null) {
@@ -312,7 +314,7 @@ public class DetailFragment extends Fragment implements
 		if (Constants.ACTION_SHORTCUT.equals(i.getAction())
 				|| Constants.ACTION_NOTIFICATION_CLICK.equals(i.getAction())) {
 			afterSavedReturnsToList = false;
-			noteOriginal = DbHelper.getInstance(getActivity()).getNote(i.getIntExtra(Constants.INTENT_KEY, 0));
+			noteOriginal = DbHelper.getNote(i.getIntExtra(Constants.INTENT_KEY, 0));
 			// Checks if the note pointed from the shortcut has been deleted
 			if (noteOriginal == null) {
 				getMainActivity().showToast(getText(R.string.shortcut_note_deleted), Toast.LENGTH_LONG);
@@ -333,13 +335,10 @@ public class DetailFragment extends Fragment implements
 			if (i.hasExtra(Constants.INTENT_WIDGET)) {
 				String widgetId = i.getExtras().get(Constants.INTENT_WIDGET).toString();
 				if (widgetId != null) {
-					String sqlCondition = PrefUtils.getString(PrefUtils.PREF_WIDGET_PREFIX + widgetId, "");
-					String pattern = DbHelper.KEY_CATEGORY + " = ";
-					if (sqlCondition.lastIndexOf(pattern) != -1) {
-						String tagId = sqlCondition.substring(sqlCondition.lastIndexOf(pattern) + pattern.length()).trim();
-						Category tag;
+					int categoryId = PrefUtils.getInt(PrefUtils.PREF_WIDGET_PREFIX + widgetId, -1);
+					if (categoryId != -1) {
 						try {
-							tag = DbHelper.getInstance(getActivity()).getCategory(Integer.parseInt(tagId));
+							Category tag = DbHelper.getCategory(categoryId);
 							noteTmp = new Note();
 							noteTmp.setCategory(tag);
 						} catch (NumberFormatException e) {
@@ -491,12 +490,11 @@ public class DetailFragment extends Fragment implements
 		mGridView.setOnItemClickListener(new OnItemClickListener() {
 			public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
 				Attachment attachment = (Attachment) parent.getAdapter().getItem(position);
-				Uri uri = attachment.getUri();
-				if (Constants.MIME_TYPE_AUDIO.equals(attachment.getMime_type())) {
-					playback(v, uri);
+				if (Constants.MIME_TYPE_AUDIO.equals(attachment.mimeType)) {
+					playback(v, attachment.uri);
 				} else {
 					Intent attachmentIntent = new Intent(Intent.ACTION_VIEW);
-					attachmentIntent.setDataAndType(uri, StorageManager.getMimeType(getActivity(), attachment.getUri()));
+					attachmentIntent.setDataAndType(attachment.uri, StorageManager.getMimeType(getActivity(), attachment.uri));
 					attachmentIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
 					if (IntentChecker.isAvailable(getActivity().getApplicationContext(), attachmentIntent, null)) {
 						startActivity(attachmentIntent);
@@ -520,7 +518,7 @@ public class DetailFragment extends Fragment implements
 						.positiveText(R.string.delete);
 
 				// If is an image user could want to sketch it!
-				if (Constants.MIME_TYPE_SKETCH.equals(mAttachmentAdapter.getItem(position).getMime_type())) {
+				if (Constants.MIME_TYPE_SKETCH.equals(mAttachmentAdapter.getItem(position).mimeType)) {
 					dialogBuilder
 							.content(R.string.delete_selected_image)
 							.negativeText(R.string.edit)
@@ -627,7 +625,7 @@ public class DetailFragment extends Fragment implements
 		title.setText(noteTmp.getTitle());
 		title.gatherLinksForText();
 		title.setOnTextLinkClickListener(this);
-		// To avoid dropping here the  dragged checklist items
+		// To avoid dropping here the dragged checklist items
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
 			title.setOnDragListener(new OnDragListener() {
 				@Override
@@ -654,7 +652,7 @@ public class DetailFragment extends Fragment implements
 		content.setText(noteTmp.getContent());
 		content.gatherLinksForText();
 		content.setOnTextLinkClickListener(this);
-		// Avoids focused line goes under the keyboard
+		// Avoid focused line goes under the keyboard
 		content.addTextChangedListener(this);
 
 		// Restore checklist
@@ -673,7 +671,7 @@ public class DetailFragment extends Fragment implements
 	 * Force focus and shows soft keyboard
 	 */
 	private void requestFocus(final EditText view) {
-		if (note.get_id() == 0 && !noteTmp.isChanged(note)) {
+		if (note.getId() == 0 && !noteTmp.isChanged(note)) {
 			KeyboardUtils.showKeyboard(view);
 		}
 	}
@@ -699,9 +697,9 @@ public class DetailFragment extends Fragment implements
 			}
 
 			// Coloring the target
-			if (tag != null && tag.getColor() != null) {
+			if (tag != null && tag.color != null) {
 				for (View view : target) {
-					view.setBackgroundColor(Integer.parseInt(tag.getColor()));
+					view.setBackgroundColor(Integer.parseInt(tag.color));
 				}
 			} else {
 				for (View view : target) {
@@ -831,7 +829,7 @@ public class DetailFragment extends Fragment implements
 			MenuItemCompat.collapseActionView(searchMenuItem);
 		}
 
-		boolean newNote = noteTmp.get_id() == 0;
+		boolean newNote = noteTmp.getId() == 0;
 
 		menu.findItem(R.id.menu_checklist_on).setVisible(!noteTmp.isChecklist());
 		menu.findItem(R.id.menu_checklist_off).setVisible(noteTmp.isChecklist());
@@ -1018,7 +1016,7 @@ public class DetailFragment extends Fragment implements
 	 */
 	private void categorizeNote() {
 		// Retrieves all available categories
-		final ArrayList<Category> categories = DbHelper.getInstance(getActivity()).getCategories();
+		final List<Category> categories = DbHelper.getCategories();
 
 		final MaterialDialog dialog = new MaterialDialog.Builder(getActivity())
 				.title(R.string.categorize_as)
@@ -1161,7 +1159,7 @@ public class DetailFragment extends Fragment implements
 		}
 		attachmentUri = Uri.fromFile(f);
 
-		// Forces potrait orientation to this fragment only
+		// Forces portrait orientation to this fragment only
 		getActivity().setRequestedOrientation(
 				ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 
@@ -1172,7 +1170,7 @@ public class DetailFragment extends Fragment implements
 		Bundle b = new Bundle();
 		b.putParcelable(MediaStore.EXTRA_OUTPUT, attachmentUri);
 		if (attachment != null) {
-			b.putParcelable("base", attachment.getUri());
+			b.putParcelable("base", attachment.uri);
 		}
 		mSketchFragment.setArguments(b);
 		transaction.replace(R.id.fragment_container, mSketchFragment, getMainActivity().FRAGMENT_SKETCH_TAG).addToBackStack(getMainActivity().FRAGMENT_DETAIL_TAG).commit();
@@ -1181,17 +1179,19 @@ public class DetailFragment extends Fragment implements
 	@Override
 	public void onActivityResult(int requestCode, int resultCode, Intent intent) {
 		// Fetch uri from activities, store into adapter and refresh adapter
-		Attachment attachment;
+		Attachment attachment = new Attachment();
+		attachment.uri = attachmentUri;
+
 		if (resultCode == Activity.RESULT_OK) {
 			switch (requestCode) {
 				case TAKE_PHOTO:
-					attachment = new Attachment(attachmentUri, Constants.MIME_TYPE_IMAGE);
+					attachment.mimeType = Constants.MIME_TYPE_IMAGE;
 					noteTmp.getAttachmentsList().add(attachment);
 					mAttachmentAdapter.notifyDataSetChanged();
 					mGridView.autoresize();
 					break;
 				case TAKE_VIDEO:
-					attachment = new Attachment(attachmentUri, Constants.MIME_TYPE_VIDEO);
+					attachment.mimeType = Constants.MIME_TYPE_VIDEO;
 					noteTmp.getAttachmentsList().add(attachment);
 					mAttachmentAdapter.notifyDataSetChanged();
 					mGridView.autoresize();
@@ -1200,7 +1200,7 @@ public class DetailFragment extends Fragment implements
 					onActivityResultManageReceivedFiles(intent);
 					break;
 				case SKETCH:
-					attachment = new Attachment(attachmentUri, Constants.MIME_TYPE_SKETCH);
+					attachment.mimeType = Constants.MIME_TYPE_SKETCH;
 					noteTmp.getAttachmentsList().add(attachment);
 					mAttachmentAdapter.notifyDataSetChanged();
 					mGridView.autoresize();
@@ -1219,7 +1219,7 @@ public class DetailFragment extends Fragment implements
 	}
 
 	private void onActivityResultManageReceivedFiles(Intent intent) {
-		List<Uri> uris = new ArrayList<Uri>();
+		List<Uri> uris = new ArrayList<>();
 		if (intent.getClipData() != null) {
 			for (int i = 0; i < intent.getClipData().getItemCount(); i++) {
 				uris.add(intent.getClipData().getItemAt(i).getUri());
@@ -1242,7 +1242,7 @@ public class DetailFragment extends Fragment implements
 		if (!noteTmp.getAttachmentsList().equals(note.getAttachmentsList())) {
 			for (Attachment newAttachment : noteTmp.getAttachmentsList()) {
 				if (!note.getAttachmentsList().contains(newAttachment)) {
-					StorageManager.delete(getActivity(), newAttachment.getUri().getPath());
+					StorageManager.delete(getActivity(), newAttachment.uri.getPath());
 				}
 			}
 		}
@@ -1251,7 +1251,7 @@ public class DetailFragment extends Fragment implements
 
 		if (!noteTmp.equals(noteOriginal)) {
 			// Restore original status of the note
-			if (noteOriginal.get_id() == 0) {
+			if (noteOriginal.getId() == 0) {
 				getMainActivity().deleteNote(noteTmp);
 				goHome();
 			} else {
@@ -1266,7 +1266,7 @@ public class DetailFragment extends Fragment implements
 
 	private void trashNote(boolean trash) {
 		// Simply go back if is a new note
-		if (noteTmp.get_id() == 0) {
+		if (noteTmp.getId() == 0) {
 			goHome();
 			return;
 		}
@@ -1353,7 +1353,6 @@ public class DetailFragment extends Fragment implements
 	private boolean lastModificationUpdatedNeeded() {
 		note.setCategory(noteTmp.getCategory());
 		note.setTrashed(noteTmp.isTrashed());
-		note.setLocked(noteTmp.isLocked());
 		return noteTmp.isChanged(note);
 	}
 
@@ -1746,8 +1745,10 @@ public class DetailFragment extends Fragment implements
 					} else {
 						isRecording = false;
 						stopRecording();
-						Attachment attachment = new Attachment(Uri.parse(recordName), Constants.MIME_TYPE_AUDIO);
-						attachment.setLength(audioRecordingTime);
+						Attachment attachment = new Attachment();
+						attachment.uri = Uri.parse(recordName);
+						attachment.mimeType = Constants.MIME_TYPE_AUDIO;
+						attachment.length = audioRecordingTime;
 						noteTmp.getAttachmentsList().add(attachment);
 						mAttachmentAdapter.notifyDataSetChanged();
 						mGridView.autoresize();

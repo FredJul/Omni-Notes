@@ -17,6 +17,8 @@
 
 apply plugin: 'com.android.application'
 apply plugin: 'com.droidtitan.lintcleaner'
+apply plugin: 'com.neenbedankt.android-apt'
+apply plugin: 'com.raizlabs.griddle'
 
 android {
     compileSdkVersion 21
@@ -54,6 +56,9 @@ android {
 dependencies {
     androidTestCompile 'junit:junit:4.+'
     compile fileTree(dir: 'libs', include: '*.jar')
+
+    apt 'com.raizlabs.android:DBFlow-Compiler:1.5.0'
+    mod "com.raizlabs.android:{DBFlow-Core, DBFlow}:1.5.0"
 
     compile 'com.github.flavienlaurent.datetimepicker:library:0.0.2'
     compile 'com.larswerkman:HoloColorPicker:1.4'

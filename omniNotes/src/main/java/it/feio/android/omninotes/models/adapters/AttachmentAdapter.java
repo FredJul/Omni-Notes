@@ -16,12 +16,8 @@
  */
 package it.feio.android.omninotes.models.adapters;
 
-import android.annotation.SuppressLint;
 import android.app.Activity;
-import android.content.Context;
 import android.net.Uri;
-import android.os.AsyncTask;
-import android.os.Build;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -34,7 +30,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import it.feio.android.omninotes.R;
-import it.feio.android.omninotes.async.BitmapWorkerTask;
 import it.feio.android.omninotes.models.Attachment;
 import it.feio.android.omninotes.models.listeners.OnAttachingFileListener;
 import it.feio.android.omninotes.models.views.ExpandableHeightGridView;
@@ -88,16 +83,16 @@ public class AttachmentAdapter extends BaseAdapter {
 		}
 
 		// Draw name in case the type is an audio recording
-		if (mAttachment.getMime_type() != null && mAttachment.getMime_type().equals(Constants.MIME_TYPE_AUDIO)) {
+		if (mAttachment.mimeType != null && mAttachment.mimeType.equals(Constants.MIME_TYPE_AUDIO)) {
 			String text;
 
-			if (mAttachment.getLength() > 0) {
+			if (mAttachment.length > 0) {
 				// Recording duration
-				text = DateHelper.formatShortTime(mActivity, mAttachment.getLength());
+				text = DateHelper.formatShortTime(mActivity, mAttachment.length);
 			} else {
 				// Recording date otherwise
 				text = DateHelper.getLocalizedDateTime(mActivity, mAttachment
-								.getUri().getLastPathSegment().split("\\.")[0],
+								.uri.getLastPathSegment().split("\\.")[0],
 						Constants.DATE_FORMAT_SORTABLE);
 			}
 
@@ -111,8 +106,8 @@ public class AttachmentAdapter extends BaseAdapter {
 		}
 
 		// Draw name in case the type is an audio recording (or file in the future)
-		if (mAttachment.getMime_type() != null && mAttachment.getMime_type().equals(Constants.MIME_TYPE_FILES)) {
-			holder.text.setText(mAttachment.getName());
+		if (mAttachment.mimeType != null && mAttachment.mimeType.equals(Constants.MIME_TYPE_FILES)) {
+			holder.text.setText(mAttachment.name);
 			holder.text.setVisibility(View.VISIBLE);
 		}
 

@@ -21,7 +21,6 @@ import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.NotificationCompat;
@@ -151,6 +150,6 @@ public class AlarmReceiver extends BroadcastReceiver {
 				.getSystemService(Context.NOTIFICATION_SERVICE);
 		// Builds an anonymous Notification object from the builder, and
 		// passes it to the NotificationManager
-		mNotificationManager.notify(note.get_id(), mBuilder.build());
+		mNotificationManager.notify(note.getId(), mBuilder.build());
 	}
 }

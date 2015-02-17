@@ -65,8 +65,6 @@ public class MainActivity extends BaseActivity implements OnDateSetListener, OnT
 	private static MainActivity instance;
 	private FragmentManager mFragmentManager;
 
-	public boolean loadNotesSync = Constants.LOAD_NOTES_SYNC;
-
 	public Uri sketchUri;
 	private ViewGroup croutonViewContainer;
 	private Toolbar toolbar;
@@ -305,7 +303,7 @@ public class MainActivity extends BaseActivity implements OnDateSetListener, OnT
 		if (receivedIntent(i)) {
 			Note note = i.getParcelableExtra(Constants.INTENT_NOTE);
 			if (note == null) {
-				note = DbHelper.getInstance(this).getNote(i.getIntExtra(Constants.INTENT_KEY, 0));
+				note = DbHelper.getNote(i.getIntExtra(Constants.INTENT_KEY, 0));
 			}
 			// Checks if the same note is already opened to avoid to open again
 			if (note != null && noteAlreadyOpened(note)) {
@@ -328,15 +326,11 @@ public class MainActivity extends BaseActivity implements OnDateSetListener, OnT
 		}
 	}
 
-
-	/**
-	 * Used to perform a quick text-only note saving (eg. Tasker+Pushbullet)
-	 */
 	private void saveAndExit(Intent i) {
 		Note note = new Note();
 		note.setTitle(i.getStringExtra(Intent.EXTRA_SUBJECT));
 		note.setContent(i.getStringExtra(Intent.EXTRA_TEXT));
-		DbHelper.getInstance(this).updateNote(note, true);
+		DbHelper.updateNote(note, true);
 		showToast(getString(R.string.note_updated), Toast.LENGTH_SHORT);
 		finish();
 	}
@@ -357,7 +351,7 @@ public class MainActivity extends BaseActivity implements OnDateSetListener, OnT
 
 	private boolean noteAlreadyOpened(Note note) {
 		DetailFragment detailFragment = (DetailFragment) mFragmentManager.findFragmentByTag(FRAGMENT_DETAIL_TAG);
-		if (detailFragment != null && detailFragment.getCurrentNote().get_id() == note.get_id()) {
+		if (detailFragment != null && detailFragment.getCurrentNote().getId() == note.getId()) {
 			return true;
 		}
 		return false;
@@ -416,8 +410,8 @@ public class MainActivity extends BaseActivity implements OnDateSetListener, OnT
 			// Intent with single image attachment
 		} else if (note.getAttachmentsList().size() == 1) {
 			shareIntent.setAction(Intent.ACTION_SEND);
-			shareIntent.setType(note.getAttachmentsList().get(0).getMime_type());
-			shareIntent.putExtra(Intent.EXTRA_STREAM, note.getAttachmentsList().get(0).getUri());
+			shareIntent.setType(note.getAttachmentsList().get(0).mimeType);
+			shareIntent.putExtra(Intent.EXTRA_STREAM, note.getAttachmentsList().get(0).uri);
 			shareIntent.putExtra(Intent.EXTRA_SUBJECT, titleText);
 			shareIntent.putExtra(Intent.EXTRA_TEXT, contentText);
 
@@ -428,8 +422,8 @@ public class MainActivity extends BaseActivity implements OnDateSetListener, OnT
 			// A check to decide the mime type of attachments to share is done here
 			HashMap<String, Boolean> mimeTypes = new HashMap<String, Boolean>();
 			for (Attachment attachment : note.getAttachmentsList()) {
-				uris.add(attachment.getUri());
-				mimeTypes.put(attachment.getMime_type(), true);
+				uris.add(attachment.uri);
+				mimeTypes.put(attachment.mimeType, true);
 			}
 			// If many mime types are present a general type is assigned to intent
 			if (mimeTypes.size() > 1) {
@@ -462,9 +456,6 @@ public class MainActivity extends BaseActivity implements OnDateSetListener, OnT
 //		} else {
 		deleteNoteTask.execute(note);
 //		}
-
-		// Informs about update
-
 	}
 
 

@@ -65,9 +65,8 @@ public class SaveNoteTask extends AsyncTask<Note, Void, Note> {
 		purgeRemovedAttachments(note);
 
 		if (!error) {
-			DbHelper db = DbHelper.getInstance(mActivity);
 			// Note updating on database
-			note = db.updateNote(note, updateLastModification);
+			note = DbHelper.updateNote(note, updateLastModification);
 		} else {
 			Toast.makeText(mActivity, mActivity.getString(R.string.error_saving_attachments), Toast.LENGTH_SHORT).show();
 		}
@@ -78,7 +77,7 @@ public class SaveNoteTask extends AsyncTask<Note, Void, Note> {
 	private void purgeRemovedAttachments(Note note) {
 		List<Attachment> deletedAttachments = note.getAttachmentsListOld();
 		for (Attachment attachment : note.getAttachmentsList()) {
-			if (attachment.getId() != 0) {
+			if (attachment.id != 0) {
 				// Workaround to prevent deleting attachments if instance is changed (app restart)
 				if (deletedAttachments.indexOf(attachment) == -1) {
 					attachment = getFixedAttachmentInstance(deletedAttachments, attachment);
@@ -88,14 +87,14 @@ public class SaveNoteTask extends AsyncTask<Note, Void, Note> {
 		}
 		// Remove from database deleted attachments
 		for (Attachment deletedAttachment : deletedAttachments) {
-			StorageManager.delete(mActivity, deletedAttachment.getUri().getPath());
+			StorageManager.delete(mActivity, deletedAttachment.uri.getPath());
 
 		}
 	}
 
 	private Attachment getFixedAttachmentInstance(List<Attachment> deletedAttachments, Attachment attachment) {
 		for (Attachment deletedAttachment : deletedAttachments) {
-			if (deletedAttachment.getId() == attachment.getId()) return deletedAttachment;
+			if (deletedAttachment.id == attachment.id) return deletedAttachment;
 		}
 		return attachment;
 	}
@@ -119,7 +118,7 @@ public class SaveNoteTask extends AsyncTask<Note, Void, Note> {
 
 	private void setAlarm(Note note) {
 		Intent intent = new Intent(mActivity, AlarmReceiver.class);
-		intent.putExtra(Constants.INTENT_NOTE, (android.os.Parcelable) note);
+		intent.putExtra(Constants.INTENT_NOTE, note);
 		PendingIntent sender = PendingIntent.getBroadcast(mActivity, note.getCreation().intValue(), intent,
 				PendingIntent.FLAG_CANCEL_CURRENT);
 		AlarmManager am = (AlarmManager) mActivity.getSystemService(Activity.ALARM_SERVICE);

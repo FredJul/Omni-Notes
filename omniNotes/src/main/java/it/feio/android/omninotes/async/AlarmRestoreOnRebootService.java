@@ -36,7 +36,6 @@ public class AlarmRestoreOnRebootService extends Service {
 
 	@Override
 	public IBinder onBind(Intent arg0) {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
@@ -56,8 +55,7 @@ public class AlarmRestoreOnRebootService extends Service {
 
 		// Retrieves all notes with reminder set
 		try {
-			DbHelper db = DbHelper.getInstance(mContext);
-			List<Note> notes = db.getNotesWithReminder(true);
+			List<Note> notes = DbHelper.getNotesWithReminder(true);
 
 			for (Note note : notes) {
 				setAlarm(mContext, note);
@@ -75,7 +73,7 @@ public class AlarmRestoreOnRebootService extends Service {
 
 	private void setAlarm(Context ctx, Note note) {
 		Intent intent = new Intent(ctx, AlarmReceiver.class);
-		intent.putExtra(Constants.INTENT_NOTE, (android.os.Parcelable) note);
+		intent.putExtra(Constants.INTENT_NOTE, note);
 		PendingIntent sender = PendingIntent.getBroadcast(ctx, Constants.INTENT_ALARM_CODE, intent,
 				PendingIntent.FLAG_CANCEL_CURRENT);
 		AlarmManager am = (AlarmManager) ctx.getSystemService(ctx.ALARM_SERVICE);

@@ -24,7 +24,6 @@ import android.app.PendingIntent;
 import android.app.TimePickerDialog.OnTimeSetListener;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.widget.DatePicker;
@@ -49,42 +48,38 @@ public class SnoozeActivity extends FragmentActivity implements OnReminderPicked
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		
+
 		note = getIntent().getParcelableExtra(Constants.INTENT_NOTE);
 
 		// If an alarm has been fired a notification must be generated
 		if (Constants.ACTION_DISMISS.equals(getIntent().getAction())) {
 			finish();
-		} 
-		else if (Constants.ACTION_SNOOZE.equals(getIntent().getAction())) {
+		} else if (Constants.ACTION_SNOOZE.equals(getIntent().getAction())) {
 			String snoozeDelay = PrefUtils.getString("settings_notification_snooze_delay", "10");
 			long newAlarm = Calendar.getInstance().getTimeInMillis() + Integer.parseInt(snoozeDelay) * 60 * 1000;
 			setAlarm(note, newAlarm);
 			finish();
-		}		
-		else if (Constants.ACTION_POSTPONE.equals(getIntent().getAction())) {
+		} else if (Constants.ACTION_POSTPONE.equals(getIntent().getAction())) {
 			int pickerType = PrefUtils.getBoolean("settings_simple_calendar", false) ? ReminderPickers.TYPE_AOSP : ReminderPickers.TYPE_GOOGLE;
 			ReminderPickers reminderPicker = new ReminderPickers(this, this, pickerType);
 			reminderPicker.pick(Long.parseLong(note.getAlarm()));
 			mOnDateSetListener = reminderPicker;
 			mOnTimeSetListener = reminderPicker;
-		}
-		else {
+		} else {
 			Intent intent = new Intent(this, MainActivity.class);
-			intent.putExtra(Constants.INTENT_KEY, note.get_id());
+			intent.putExtra(Constants.INTENT_KEY, note.getId());
 			intent.setAction(Constants.ACTION_NOTIFICATION_CLICK);
 			startActivity(intent);
 		}
 		removeNotification(note);
 	}
-	
-	
+
 
 	private void removeNotification(Note note) {
-        NotificationManager manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-        manager.cancel(note.get_id());		
+		NotificationManager manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+		manager.cancel(note.getId());
 	}
-	
+
 	private void setAlarm(Note note, long newAlarm) {
 		Intent intent = new Intent(this, AlarmReceiver.class);
 		intent.putExtra(Constants.INTENT_NOTE, (android.os.Parcelable) note);
@@ -95,29 +90,25 @@ public class SnoozeActivity extends FragmentActivity implements OnReminderPicked
 	}
 
 
-
 	@Override
 	public void onReminderPicked(long reminder) {
-		note.setAlarm(reminder);	
+		note.setAlarm(reminder);
 		setAlarm(note, reminder);
 		finish();
 	}
 
 
-
 	@Override
 	public void onDateSet(DatePicker view, int year, int monthOfYear,
-			int dayOfMonth) {
+						  int dayOfMonth) {
 		mOnDateSetListener.onDateSet(view, year, monthOfYear, dayOfMonth);
 	}
-
 
 
 	@Override
 	public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
 		mOnTimeSetListener.onTimeSet(view, hourOfDay, minute);
 	}
-	
 
-	
+
 }

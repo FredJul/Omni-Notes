@@ -16,10 +16,8 @@
  */
 package it.feio.android.omninotes.models.adapters;
 
-import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -42,13 +40,12 @@ import java.util.concurrent.RejectedExecutionException;
 
 import it.feio.android.omninotes.R;
 import it.feio.android.omninotes.async.TextWorkerTask;
-import it.feio.android.omninotes.db.DbHelper;
 import it.feio.android.omninotes.models.Attachment;
 import it.feio.android.omninotes.models.Note;
+import it.feio.android.omninotes.models.Note$Table;
 import it.feio.android.omninotes.models.holders.NoteViewHolder;
 import it.feio.android.omninotes.models.views.SquareImageView;
 import it.feio.android.omninotes.utils.BitmapHelper;
-import it.feio.android.omninotes.utils.Constants;
 import it.feio.android.omninotes.utils.Navigation;
 import it.feio.android.omninotes.utils.PrefUtils;
 import it.feio.android.omninotes.utils.TextHelper;
@@ -81,7 +78,6 @@ public class NoteAdapter extends ArrayAdapter<Note> implements Insertable {
 		inflater = (LayoutInflater) mActivity.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 	}
 
-	@SuppressLint("NewApi")
 	@Override
 	public View getView(int position, View convertView, ViewGroup parent) {
 
@@ -140,24 +136,18 @@ public class NoteAdapter extends ArrayAdapter<Note> implements Insertable {
 
 
 	private void initThumbnail(Note note, NoteViewHolder holder) {
+		holder.attachmentThumbnail.setVisibility(View.GONE);
+
 		// Attachment thumbnail
-		if (expandedView) {
-			// If note is locked or without attachments nothing is shown
-			if ((note.isLocked() && !PrefUtils.getBoolean("settings_password_access", false))
-					|| note.getAttachmentsList().size() == 0) {
-				holder.attachmentThumbnail.setVisibility(View.GONE);
-			}
-			// Otherwise...
-			else {
-				holder.attachmentThumbnail.setVisibility(View.VISIBLE);
-				Attachment mAttachment = note.getAttachmentsList().get(0);
-				Uri thumbnailUri = BitmapHelper.getThumbnailUri(mActivity, mAttachment);
-				Glide.with(mActivity)
-						.load(thumbnailUri)
-						.centerCrop()
-						.crossFade()
-						.into(holder.attachmentThumbnail);
-			}
+		if (expandedView && note.getAttachmentsList() != null && !note.getAttachmentsList().isEmpty()) {
+			holder.attachmentThumbnail.setVisibility(View.VISIBLE);
+			Attachment mAttachment = note.getAttachmentsList().get(0);
+			Uri thumbnailUri = BitmapHelper.getThumbnailUri(mActivity, mAttachment);
+			Glide.with(mActivity)
+					.load(thumbnailUri)
+					.centerCrop()
+					.crossFade()
+					.into(holder.attachmentThumbnail);
 		}
 	}
 
@@ -187,7 +177,7 @@ public class NoteAdapter extends ArrayAdapter<Note> implements Insertable {
 				TextWorkerTask task = new TextWorkerTask(mActivity, holder.title, holder.content, expandedView);
 				task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, note);
 			} else {
-				Spanned[] titleAndContent = TextHelper.parseTitleAndContent(mActivity, note);
+				Spanned[] titleAndContent = TextHelper.parseTitleAndContent(note);
 				holder.title.setText(titleAndContent[0]);
 				holder.content.setText(titleAndContent[1]);
 				holder.title.setText(titleAndContent[0]);
@@ -219,17 +209,17 @@ public class NoteAdapter extends ArrayAdapter<Note> implements Insertable {
 
 		// Reminder screen forces sorting
 		if (Navigation.checkNavigation(Navigation.REMINDERS)) {
-			sort_column = DbHelper.KEY_REMINDER;
+			sort_column = Note$Table.ALARM;
 		} else {
 			sort_column = PrefUtils.getString(PrefUtils.PREF_SORTING_COLUMN, "");
 		}
 
 		// Creation
-		if (sort_column.equals(DbHelper.KEY_CREATION)) {
+		if (sort_column.equals(Note$Table.CREATION)) {
 			dateText = mContext.getString(R.string.creation) + " " + note.getCreationShort(mContext);
 		}
 		// Reminder
-		else if (sort_column.equals(DbHelper.KEY_REMINDER)) {
+		else if (sort_column.equals(Note$Table.ALARM)) {
 			String alarmShort = note.getAlarmShort(mContext);
 
 			if (alarmShort.length() == 0) {
@@ -297,14 +287,14 @@ public class NoteAdapter extends ArrayAdapter<Note> implements Insertable {
 			v.setBackgroundColor(Color.parseColor("#00000000"));
 
 			// If category is set the color will be applied on the appropriate target
-			if (note.getCategory() != null && note.getCategory().getColor() != null) {
+			if (note.getCategory() != null && note.getCategory().color != null) {
 				if (colorsPref.equals("complete") || colorsPref.equals("list")) {
-					v.setBackgroundColor(Integer.parseInt(note.getCategory().getColor()));
+					v.setBackgroundColor(Integer.parseInt(note.getCategory().color));
 				} else {
 					if (holder != null) {
-						holder.categoryMarker.setBackgroundColor(Integer.parseInt(note.getCategory().getColor()));
+						holder.categoryMarker.setBackgroundColor(Integer.parseInt(note.getCategory().color));
 					} else {
-						v.findViewById(R.id.category_marker).setBackgroundColor(Integer.parseInt(note.getCategory().getColor()));
+						v.findViewById(R.id.category_marker).setBackgroundColor(Integer.parseInt(note.getCategory().color));
 					}
 				}
 			} else {

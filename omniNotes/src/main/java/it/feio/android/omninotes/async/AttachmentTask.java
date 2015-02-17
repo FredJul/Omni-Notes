@@ -50,12 +50,12 @@ public class AttachmentTask extends AsyncTask<Void, Void, Attachment> {
 		this.mActivity = mFragment.getActivity();
 	}
 
-	
+
 	@Override
 	protected Attachment doInBackground(Void... params) {
 		return StorageManager.createAttachmentFromUri(mActivity, uri);
 	}
-	
+
 
 	@Override
 	protected void onPostExecute(Attachment mAttachment) {
@@ -67,13 +67,12 @@ public class AttachmentTask extends AsyncTask<Void, Void, Attachment> {
 			}
 		} else {
 			if (mAttachment != null) {
-				StorageManager.delete(mActivity, mAttachment.getUri().getPath());
+				StorageManager.delete(mActivity, mAttachment.uri.getPath());
 			}
 		}
 	}
 
-	
-	
+
 	private boolean isAlive() {
 		if (mFragmentWeakReference != null
 				&& mFragmentWeakReference.get() != null

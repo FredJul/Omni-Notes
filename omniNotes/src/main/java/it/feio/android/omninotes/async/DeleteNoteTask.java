@@ -21,11 +21,9 @@ import android.os.AsyncTask;
 
 import it.feio.android.omninotes.BaseActivity;
 import it.feio.android.omninotes.db.DbHelper;
-import it.feio.android.omninotes.models.Attachment;
 import it.feio.android.omninotes.models.Note;
-import it.feio.android.omninotes.utils.StorageManager;
 
-public class DeleteNoteTask extends AsyncTask<Note, Void, Integer> {
+public class DeleteNoteTask extends AsyncTask<Note, Void, Void> {
 
 	private final Context mContext;
 
@@ -36,28 +34,18 @@ public class DeleteNoteTask extends AsyncTask<Note, Void, Integer> {
 
 
 	@Override
-	protected Integer doInBackground(Note... params) {
-		Integer result = null;
+	protected Void doInBackground(Note... params) {
 		Note note = params[0];
 
 		// Deleting note using DbHelper
-		DbHelper db = DbHelper.getInstance(mContext);
-		boolean deleted = db.deleteNote(note);
+		DbHelper.deleteNote(mContext, note);
 
-		if (deleted) {
-			// Attachment deletion from storage
-			boolean attachmentsDeleted = false;
-			for (Attachment mAttachment : note.getAttachmentsList()) {
-				StorageManager.deleteExternalStoragePrivateFile(mContext, mAttachment.getUri().getLastPathSegment());
-			}
-			result = deleted && attachmentsDeleted ? note.get_id() : null;
-		}
-		return result;
+		return null;
 	}
 
 
 	@Override
-	protected void onPostExecute(Integer result) {
+	protected void onPostExecute(Void result) {
 		super.onPostExecute(result);
 		BaseActivity.notifyAppWidgets(mContext);
 	}

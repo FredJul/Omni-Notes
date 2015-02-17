@@ -19,88 +19,31 @@ package it.feio.android.omninotes.models;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-public class Category implements Parcelable {
-	private Integer id;
-	private String name;
-	private String description;
-	private String color;
-	private int count;
+import com.raizlabs.android.dbflow.annotation.Column;
+import com.raizlabs.android.dbflow.annotation.Table;
+import com.raizlabs.android.dbflow.structure.BaseModel;
+
+@Table
+public class Category extends BaseModel implements Parcelable {
+	@Column(columnType = Column.PRIMARY_KEY_AUTO_INCREMENT)
+	public int id;
+	@Column
+	public String name;
+	@Column
+	public String description;
+	@Column
+	public String color;
+	@Column
+	public int count;
 
 	public Category() {
 	}
 
 	private Category(Parcel in) {
-		setId(in.readInt());
-		setName(in.readString());
-		setDescription(in.readString());
-		setColor(in.readString());
-	}
-
-	public Category(Integer id, String title, String description, String color) {
-		super();
-		this.id = id;
-		this.name = title;
-		this.description = description;
-		this.color = color;
-	}
-
-
-	public Category(Integer id, String title, String description, String color, int count) {
-		super();
-		this.id = id;
-		this.name = title;
-		this.description = description;
-		this.color = color;
-		this.count = count;
-	}
-
-	public Integer getId() {
-		return id;
-	}
-
-
-	public void setId(Integer id) {
-		this.id = id;
-	}
-
-
-	public String getName() {
-		return name;
-	}
-
-
-	public void setName(String title) {
-		this.name = title;
-	}
-
-
-	public String getDescription() {
-		return description;
-	}
-
-
-	public void setDescription(String description) {
-		this.description = description;
-	}
-
-
-	public String getColor() {
-		return color;
-	}
-
-
-	public void setColor(String color) {
-		this.color = color;
-	}
-
-
-	public int getCount() {
-		return count;
-	}
-
-
-	public void setCount(int count) {
-		this.count = count;
+		id = in.readInt();
+		name = in.readString();
+		description = in.readString();
+		color = in.readString();
 	}
 
 	@Override
@@ -111,16 +54,16 @@ public class Category implements Parcelable {
 
 	@Override
 	public void writeToParcel(Parcel parcel, int flags) {
-		parcel.writeInt(getId());
-		parcel.writeString(getName());
-		parcel.writeString(getDescription());
-		parcel.writeString(getColor());
+		parcel.writeInt(id);
+		parcel.writeString(name);
+		parcel.writeString(description);
+		parcel.writeString(color);
 	}
 
 
 	@Override
 	public String toString() {
-		return getName();
+		return name;
 	}
 
 	/*

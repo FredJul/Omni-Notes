@@ -18,75 +18,24 @@ package it.feio.android.omninotes.models;
 
 import android.net.Uri;
 
-public class Attachment {
-	private int id;
-	private String name;
-	private long size;
-	private long length;
-	private String mime_type;
+import com.raizlabs.android.dbflow.annotation.Column;
+import com.raizlabs.android.dbflow.annotation.Table;
+import com.raizlabs.android.dbflow.structure.BaseModel;
 
-	private Uri uri;
-
-	public Attachment(Uri uri, String mime_type) {
-		setUri(uri);
-		setMime_type(mime_type);
-	}
-
-	public Attachment(int id, Uri uri, String name, int size, long length, String mime_type) {
-		setId(id);
-		setUri(uri);
-		setName(name);
-		setSize(size);
-		setLength(length);
-		setMime_type(mime_type);
-	}
-
-	public int getId() {
-		return id;
-	}
-
-	public void setId(int id) {
-		this.id = id;
-	}
-
-	public String getName() {
-		return name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
-	}
-
-	public long getSize() {
-		return size;
-	}
-
-	public void setSize(long size) {
-		this.size = size;
-	}
-
-	public long getLength() {
-		return length;
-	}
-
-	public void setLength(long length) {
-		this.length = length;
-	}
-
-	public String getMime_type() {
-		return mime_type;
-	}
-
-	public void setMime_type(String mime_type) {
-		this.mime_type = mime_type;
-	}
-
-	public Uri getUri() {
-		return uri;
-	}
-
-	public void setUri(Uri uri) {
-		this.uri = uri;
-	}
-
+@Table
+public class Attachment extends BaseModel {
+	@Column(columnType = Column.PRIMARY_KEY_AUTO_INCREMENT)
+	public int id;
+	@Column
+	public int noteId;
+	@Column
+	public String name;
+	@Column
+	public long size;
+	@Column
+	public long length;
+	@Column
+	public String mimeType;
+	@Column
+	public Uri uri;
 }

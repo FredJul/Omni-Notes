@@ -17,30 +17,34 @@
 
 package it.feio.android.omninotes;
 
-import android.app.AlarmManager;
 import android.app.Application;
-import android.app.PendingIntent;
 import android.content.Context;
-import android.content.Intent;
-import android.content.SharedPreferences;
+
+import com.raizlabs.android.dbflow.config.FlowManager;
 
 import it.feio.android.omninotes.utils.BitmapCache;
-import it.feio.android.omninotes.utils.Constants;
 
 public class MainApplication extends Application {
 
 	private static Context mContext;
 	private static BitmapCache mBitmapCache;
 
-
 	@Override
 	public void onCreate() {
+		super.onCreate();
+
 		mContext = getApplicationContext();
 
 		// Instantiate bitmap cache
 		mBitmapCache = new BitmapCache(getApplicationContext(), 0, 0, getExternalCacheDir());
 
-		super.onCreate();
+		FlowManager.init(this);
+	}
+
+	@Override
+	public void onTerminate() {
+		super.onTerminate();
+		FlowManager.destroy();
 	}
 
 	public static Context getContext() {

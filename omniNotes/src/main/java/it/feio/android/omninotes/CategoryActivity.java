@@ -18,14 +18,8 @@
 package it.feio.android.omninotes;
 
 import android.app.Activity;
-import android.content.Intent;
-import android.content.SharedPreferences;
-import android.graphics.Bitmap;
 import android.graphics.Color;
-import android.net.Uri;
 import android.os.Bundle;
-import android.provider.MediaStore;
-import android.support.v4.app.NavUtils;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.View.OnLongClickListener;
@@ -37,9 +31,6 @@ import com.larswerkman.holocolorpicker.ColorPicker;
 import com.larswerkman.holocolorpicker.ColorPicker.OnColorChangedListener;
 import com.larswerkman.holocolorpicker.SaturationBar;
 import com.larswerkman.holocolorpicker.ValueBar;
-
-import java.io.File;
-import java.io.FileOutputStream;
 
 import it.feio.android.omninotes.db.DbHelper;
 import it.feio.android.omninotes.models.Category;
@@ -141,10 +132,10 @@ public class CategoryActivity extends Activity {
 	}
 
 	private void populateViews() {
-		title.setText(category.getName());
-		description.setText(category.getDescription());
+		title.setText(category.name);
+		description.setText(category.description);
 		// Reset picker to saved color
-		String color = category.getColor();
+		String color = category.color;
 		if (color != null && color.length() > 0) {
 			picker.setColor(Integer.parseInt(color));
 			picker.setOldCenterColor(Integer.parseInt(color));
@@ -157,14 +148,13 @@ public class CategoryActivity extends Activity {
 	 * Category saving
 	 */
 	private void saveCategory() {
-		category.setName(title.getText().toString());
-		category.setDescription(description.getText().toString());
-		if (colorChanged || category.getColor() == null)
-			category.setColor(String.valueOf(picker.getColor()));
+		category.name = title.getText().toString();
+		category.description = description.getText().toString();
+		if (colorChanged || category.color == null)
+			category.color = String.valueOf(picker.getColor());
 
 		// Saved to DB and new id or update result catched
-		DbHelper db = DbHelper.getInstance(this);
-		category = db.updateCategory(category);
+		category.save(true);
 
 		// Sets result to show proper message
 		getIntent().putExtra(Constants.INTENT_TAG, category);
@@ -175,8 +165,7 @@ public class CategoryActivity extends Activity {
 	private void deleteCategory() {
 
 		// Retrieving how many notes are categorized with category to be deleted
-		DbHelper db = DbHelper.getInstance(this);
-		int count = db.getCategorizedCount(category);
+		long count = DbHelper.getCategorizedCount(category);
 		String msg;
 		if (count > 0)
 			msg = getString(R.string.delete_category_confirmation).replace("$1$", String.valueOf(count));
@@ -192,11 +181,10 @@ public class CategoryActivity extends Activity {
 						// Changes navigation if actually are shown notes associated with this category
 						String navNotes = getResources().getStringArray(R.array.navigation_list_codes)[0];
 						String navigation = PrefUtils.getString(PrefUtils.PREF_NAVIGATION, navNotes);
-						if (String.valueOf(category.getId()).equals(navigation))
+						if (String.valueOf(category.id).equals(navigation))
 							PrefUtils.putString(PrefUtils.PREF_NAVIGATION, navNotes);
 						// Removes category and edit notes associated with it
-						DbHelper db = DbHelper.getInstance(mActivity);
-						db.deleteCategory(category);
+						DbHelper.deleteCategory(category);
 
 						// Sets result to show proper message
 						setResult(RESULT_FIRST_USER);

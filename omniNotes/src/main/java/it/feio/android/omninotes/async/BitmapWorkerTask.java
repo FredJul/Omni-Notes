@@ -36,8 +36,8 @@ import it.feio.android.omninotes.utils.BitmapHelper;
 
 public class BitmapWorkerTask extends AsyncTask<Attachment, Void, Bitmap> {
 
-    private final int FADE_IN_TIME = 200;
-    private final int QUALITY_FACTOR = 90;
+	private final int FADE_IN_TIME = 200;
+	private final int QUALITY_FACTOR = 90;
 
 	private final Context context;
 	private final WeakReference<SquareImageView> imageViewReference;
@@ -60,7 +60,7 @@ public class BitmapWorkerTask extends AsyncTask<Attachment, Void, Bitmap> {
 	protected Bitmap doInBackground(Attachment... params) {
 		mAttachment = params[0];
 
-		String path = mAttachment.getUri().getPath();
+		String path = mAttachment.uri.getPath();
 		// Creating a key based on path and thumbnail size to re-use the same
 		// AsyncTask both for list and detail
 		String cacheKey = path + width + height;
@@ -78,19 +78,6 @@ public class BitmapWorkerTask extends AsyncTask<Attachment, Void, Bitmap> {
 		}
 		return bmp;
 	}
-
-
-	// @Override
-	// protected void onCancelled() {
-	// // TODO Auto-generated method stub
-	// super.onCancelled();
-	// }
-
-	// @Override
-	// protected void onCancelled(Bitmap result) {
-	// // TODO Auto-generated method stub
-	// super.onCancelled(result);
-	// }
 
 	@Override
 	protected void onPostExecute(Bitmap bitmap) {
@@ -117,8 +104,8 @@ public class BitmapWorkerTask extends AsyncTask<Attachment, Void, Bitmap> {
 				else {
 					// Transition with transparent drawabale and the final bitmap
 					final TransitionDrawable td = new TransitionDrawable(
-							new Drawable[] { new ColorDrawable(Color.TRANSPARENT),
-									new BitmapDrawable(context.getResources(), bitmap) });
+							new Drawable[]{new ColorDrawable(Color.TRANSPARENT),
+									new BitmapDrawable(context.getResources(), bitmap)});
 					if (td != null) {
 						imageView.setImageDrawable(td);
 						td.startTransition(FADE_IN_TIME);
