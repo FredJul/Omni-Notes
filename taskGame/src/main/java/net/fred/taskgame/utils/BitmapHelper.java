@@ -60,8 +60,7 @@ public class BitmapHelper {
 		options.inJustDecodeBounds = false;
 
 		// Bitmap is now decoded for real using calculated inSampleSize
-		Bitmap bmp = BitmapFactory.decodeStream(mContext.getContentResolver().openInputStream(uri), null, options);
-		return bmp;
+		return BitmapFactory.decodeStream(mContext.getContentResolver().openInputStream(uri), null, options);
 	}
 
 
@@ -133,7 +132,7 @@ public class BitmapHelper {
 		} catch (FileNotFoundException e) {
 
 		}
-		srcBmp = null;
+
 		return dstBmp;
 	}
 
@@ -167,17 +166,14 @@ public class BitmapHelper {
 
 		// Create a new bitmap and convert it to a format understood by the
 		// ImageView
-		Bitmap scaledBitmap = Bitmap.createBitmap(bitmap, 0, 0, width, height, matrix, true);
-
-		return scaledBitmap;
+		return Bitmap.createBitmap(bitmap, 0, 0, width, height, matrix, true);
 	}
 
 	public static InputStream getBitmapInputStream(Bitmap bitmap) {
 		ByteArrayOutputStream bos = new ByteArrayOutputStream();
 		bitmap.compress(CompressFormat.PNG, 0 /*ignored for PNG*/, bos);
 		byte[] bitmapdata = bos.toByteArray();
-		ByteArrayInputStream bs = new ByteArrayInputStream(bitmapdata);
-		return bs;
+		return new ByteArrayInputStream(bitmapdata);
 	}
 
 

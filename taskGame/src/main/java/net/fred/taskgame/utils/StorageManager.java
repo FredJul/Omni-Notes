@@ -112,14 +112,13 @@ public class StorageManager {
 	}
 
 	public static boolean deleteExternalStoragePrivateFile(Context mContext, String name) {
-		boolean res = false;
-
 		// Checks for external storage availability
 		if (!checkStorage()) {
 			Toast.makeText(mContext, mContext.getString(R.string.storage_not_available), Toast.LENGTH_SHORT).show();
-			return res;
+			return false;
 		}
 
+		boolean res = false;
 		File file = new File(mContext.getExternalFilesDir(null), name);
 		if (file != null) {
 			file.delete();
@@ -147,14 +146,13 @@ public class StorageManager {
 	}
 
 	public static boolean delete(Context mContext, String name) {
-		boolean res = false;
-
 		// Checks for external storage availability
 		if (!checkStorage()) {
 			Toast.makeText(mContext, mContext.getString(R.string.storage_not_available), Toast.LENGTH_SHORT).show();
-			return res;
+			return false;
 		}
 
+		boolean res = false;
 		File file = new File(name);
 		if (file != null) {
 			if (file.isFile()) {
@@ -162,7 +160,7 @@ public class StorageManager {
 			} else if (file.isDirectory()) {
 				File[] files = file.listFiles();
 				for (File file2 : files) {
-					res = delete(mContext, file2.getAbsolutePath());
+					delete(mContext, file2.getAbsolutePath());
 				}
 				res = file.delete();
 			}
@@ -176,7 +174,7 @@ public class StorageManager {
 		String[] proj = {MediaStore.Images.Media.DATA};
 		Cursor cursor = null;
 		try {
-			mContext.getContentResolver().query(contentUri, proj, null, null, null);
+			cursor = mContext.getContentResolver().query(contentUri, proj, null, null, null);
 		} catch (Exception e) {
 		}
 		if (cursor == null) {
@@ -184,7 +182,9 @@ public class StorageManager {
 		}
 		int column_index = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
 		cursor.moveToFirst();
-		return cursor.getString(column_index);
+		String path = cursor.getString(column_index);
+		cursor.close();
+		return path;
 	}
 
 
@@ -298,19 +298,18 @@ public class StorageManager {
 			try {
 				FileUtils.moveFile(new File(uri.getPath()), f);
 			} catch (IOException e) {
-
 			}
 		} else {
 			f = StorageManager.createExternalStoragePrivateFile(mContext, uri, extension);
 		}
-		Attachment mAttachment = null;
+		Attachment attachment = null;
 		if (f != null) {
-			mAttachment = new Attachment();
-			mAttachment.uri = Uri.fromFile(f);
-			mAttachment.mimeType = StorageManager.getMimeTypeInternal(mContext, uri);
-			mAttachment.name = name;
-			mAttachment.size = f.length();
+			attachment = new Attachment();
+			attachment.uri = Uri.fromFile(f);
+			attachment.mimeType = StorageManager.getMimeTypeInternal(mContext, uri);
+			attachment.name = name;
+			attachment.size = f.length();
 		}
-		return mAttachment;
+		return attachment;
 	}
 }

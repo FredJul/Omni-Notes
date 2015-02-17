@@ -82,10 +82,10 @@ public class SnoozeActivity extends FragmentActivity implements OnReminderPicked
 
 	private void setAlarm(Task task, long newAlarm) {
 		Intent intent = new Intent(this, AlarmReceiver.class);
-		intent.putExtra(Constants.INTENT_NOTE, (android.os.Parcelable) task);
+		intent.putExtra(Constants.INTENT_NOTE, task);
 		PendingIntent sender = PendingIntent.getBroadcast(this, Constants.INTENT_ALARM_CODE, intent,
 				PendingIntent.FLAG_CANCEL_CURRENT);
-		AlarmManager am = (AlarmManager) this.getSystemService(this.ALARM_SERVICE);
+		AlarmManager am = (AlarmManager) this.getSystemService(ALARM_SERVICE);
 		am.set(AlarmManager.RTC_WAKEUP, newAlarm, sender);
 	}
 

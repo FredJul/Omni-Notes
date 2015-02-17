@@ -40,16 +40,12 @@ import net.fred.taskgame.utils.PrefUtils;
 
 public class CategoryActivity extends Activity {
 
-	private final float SATURATION = 0.4f;
-	private final float VALUE = 0.9f;
-
 	Category category;
 	EditText title;
 	EditText description;
 	ColorPicker picker;
 	Button deleteBtn;
 	Button saveBtn;
-	private CategoryActivity mActivity;
 	private boolean colorChanged = false;
 
 	@Override
@@ -57,7 +53,7 @@ public class CategoryActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_category);
 
-		mActivity = this;
+		CategoryActivity mActivity = this;
 
 		// Retrieving intent
 		category = getIntent().getParcelableExtra(Constants.INTENT_TAG);
@@ -102,9 +98,11 @@ public class CategoryActivity extends Activity {
 
 		// Added invisible saturation and value bars to get achieve pastel colors
 		SaturationBar saturationbar = (SaturationBar) findViewById(R.id.saturationbar_category);
+		float SATURATION = 0.4f;
 		saturationbar.setSaturation(SATURATION);
 		picker.addSaturationBar(saturationbar);
 		ValueBar valuebar = (ValueBar) findViewById(R.id.valuebar_category);
+		float VALUE = 0.9f;
 		valuebar.setValue(VALUE);
 		picker.addValueBar(valuebar);
 

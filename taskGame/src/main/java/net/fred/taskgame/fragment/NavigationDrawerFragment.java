@@ -299,7 +299,7 @@ public class NavigationDrawerFragment extends Fragment {
 		mNavigationIconsArray = getResources().obtainTypedArray(R.array.navigation_list_icons);
 		mNavigationIconsSelectedArray = getResources().obtainTypedArray(R.array.navigation_list_icons_selected);
 
-		final List<NavigationItem> items = new ArrayList<NavigationItem>();
+		final List<NavigationItem> items = new ArrayList<>();
 		for (int i = 0; i < mNavigationArray.length; i++) {
 			if (!checkSkippableItem(i)) {
 				NavigationItem item = new NavigationItem(i, mNavigationArray[i], mNavigationIconsArray.getResourceId(i,

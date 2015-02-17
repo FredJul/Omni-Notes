@@ -96,20 +96,15 @@ public class AlarmReceiver extends BroadcastReceiver {
 
 		// Sets up the Snooze and Dismiss action buttons that will appear in the
 		// big view of the notification.
-		Intent dismissIntent = new Intent(mContext, SnoozeActivity.class);
-		dismissIntent.setAction(Constants.ACTION_DISMISS);
-		dismissIntent.putExtra(Constants.INTENT_NOTE, (android.os.Parcelable) task);
-		PendingIntent piDismiss = PendingIntent.getActivity(mContext, 0, dismissIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-
 		Intent snoozeIntent = new Intent(mContext, SnoozeActivity.class);
 		snoozeIntent.setAction(Constants.ACTION_SNOOZE);
-		snoozeIntent.putExtra(Constants.INTENT_NOTE, (android.os.Parcelable) task);
+		snoozeIntent.putExtra(Constants.INTENT_NOTE, task);
 		snoozeIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 		PendingIntent piSnooze = PendingIntent.getActivity(mContext, 0, snoozeIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
 		Intent postponeIntent = new Intent(mContext, SnoozeActivity.class);
 		postponeIntent.setAction(Constants.ACTION_POSTPONE);
-		postponeIntent.putExtra(Constants.INTENT_NOTE, (android.os.Parcelable) task);
+		postponeIntent.putExtra(Constants.INTENT_NOTE, task);
 		snoozeIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 		PendingIntent piPostpone = PendingIntent.getActivity(mContext, 0, postponeIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 

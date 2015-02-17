@@ -80,8 +80,8 @@ public abstract class WidgetProvider extends AppWidgetProvider {
 				PendingIntent.FLAG_UPDATE_CURRENT);
 
 		// Check various dimensions aspect of widget to choose between layouts
-		boolean isSmall = false;
-		boolean isSingleLine = true;
+		boolean isSmall;
+		boolean isSingleLine;
 		Bundle options = appWidgetManager.getAppWidgetOptions(widgetId);
 		// Width check
 		isSmall = options.getInt(AppWidgetManager.OPTION_APPWIDGET_MIN_WIDTH) < 110;
@@ -89,7 +89,7 @@ public abstract class WidgetProvider extends AppWidgetProvider {
 		isSingleLine = options.getInt(AppWidgetManager.OPTION_APPWIDGET_MIN_HEIGHT) < 110;
 
 		// Creation of a map to associate PendingIntent(s) to views
-		SparseArray<PendingIntent> map = new SparseArray<PendingIntent>();
+		SparseArray<PendingIntent> map = new SparseArray<>();
 		map.put(R.id.list, pendingIntentList);
 		map.put(R.id.add, pendingIntentDetail);
 		map.put(R.id.camera, pendingIntentDetailPhoto);

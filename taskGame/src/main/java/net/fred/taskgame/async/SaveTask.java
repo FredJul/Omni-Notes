@@ -41,7 +41,6 @@ import java.util.List;
 public class SaveTask extends AsyncTask<Task, Void, Task> {
 
 	private final Activity mActivity;
-	private boolean error = false;
 	private boolean updateLastModification = true;
 	private OnTaskSaved mOnTaskSaved;
 
@@ -64,6 +63,7 @@ public class SaveTask extends AsyncTask<Task, Void, Task> {
 		Task task = params[0];
 		purgeRemovedAttachments(task);
 
+		boolean error = false;
 		if (!error) {
 			// Note updating on database
 			task = DbHelper.updateTask(task, updateLastModification);

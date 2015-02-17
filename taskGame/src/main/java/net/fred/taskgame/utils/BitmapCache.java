@@ -39,11 +39,6 @@ public class BitmapCache extends LruCache<String, Bitmap> {
 	 */
 	public static int MEMORY_CACHE_DEFAULT_SIZE = (int) (Runtime.getRuntime().maxMemory() / 1024) / 4;
 
-	/**
-	 * Default size of space used for store data on physical disk cache. 20 Megabytes.
-	 */
-	private final int DISK_CACHE_DEFAULT_SIZE = 1024 * 1024 * 20;
-
 	private Context mContext;
 	private SimpleDiskCache mDiskLruCache;
 	private final Object mDiskCacheLock = new Object();
@@ -59,6 +54,10 @@ public class BitmapCache extends LruCache<String, Bitmap> {
 	public BitmapCache(Context mContext, int maxMemorySize, int maxDiskSize, File diskCacheDirectory) {
 		super(maxMemorySize <= 0 ? MEMORY_CACHE_DEFAULT_SIZE : maxMemorySize);
 		this.mContext = mContext;
+		/*
+	  Default size of space used for store data on physical disk cache. 20 Megabytes.
+	 */
+		int DISK_CACHE_DEFAULT_SIZE = 1024 * 1024 * 20;
 		InitCacheTask mInitCacheTask = new InitCacheTask(maxDiskSize <= 0 ? DISK_CACHE_DEFAULT_SIZE : maxDiskSize);
 		mInitCacheTask.execute(diskCacheDirectory);
 	}
@@ -84,9 +83,7 @@ public class BitmapCache extends LruCache<String, Bitmap> {
 				}
 				try {
 					mDiskLruCache = SimpleDiskCache.open(params[0], version, maxDiskSize);
-				} catch (IOException e) {
-
-				} catch (NullPointerException e) {
+				} catch (IOException | NullPointerException e) {
 
 				}
 				mDiskCacheStarting = false; // Finished initialization

@@ -17,6 +17,7 @@
 package net.fred.taskgame.model.adapters;
 
 import android.app.Activity;
+import android.content.Context;
 import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -42,16 +43,14 @@ import java.util.List;
 public class AttachmentAdapter extends BaseAdapter {
 
 	private Activity mActivity;
-	private List<Attachment> attachmentsList = new ArrayList<Attachment>();
-	private ExpandableHeightGridView mGridView;
+	private List<Attachment> attachmentsList = new ArrayList<>();
 	private LayoutInflater inflater;
-	private OnAttachingFileListener mOnAttachingFileErrorListener;
 
 	public AttachmentAdapter(Activity mActivity, List<Attachment> attachmentsList, ExpandableHeightGridView mGridView) {
 		this.mActivity = mActivity;
 		this.attachmentsList = attachmentsList;
-		this.mGridView = mGridView;
-		this.inflater = (LayoutInflater) mActivity.getSystemService(mActivity.LAYOUT_INFLATER_SERVICE);
+		ExpandableHeightGridView mGridView1 = mGridView;
+		this.inflater = (LayoutInflater) mActivity.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 	}
 
 	public int getCount() {
@@ -130,7 +129,7 @@ public class AttachmentAdapter extends BaseAdapter {
 
 
 	public void setOnErrorListener(OnAttachingFileListener listener) {
-		this.mOnAttachingFileErrorListener = listener;
+		OnAttachingFileListener mOnAttachingFileErrorListener = listener;
 	}
 
 }

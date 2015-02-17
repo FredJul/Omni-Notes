@@ -178,6 +178,8 @@ public class FileHelper {
 					}
 
 				} catch (Exception e) {
+				} finally {
+					c.close();
 				}
 			} else {
 				fileName = uri.getLastPathSegment();

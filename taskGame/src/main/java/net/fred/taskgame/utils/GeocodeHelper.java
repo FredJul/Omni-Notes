@@ -170,8 +170,6 @@ public class GeocodeHelper {
 	}
 
 	public static ArrayList<String> autocomplete(String input) {
-		ArrayList<String> resultList = null;
-
 		HttpURLConnection conn = null;
 		StringBuilder jsonResults = new StringBuilder();
 		try {
@@ -187,24 +185,23 @@ public class GeocodeHelper {
 				jsonResults.append(buff, 0, read);
 			}
 		} catch (MalformedURLException e) {
-
-			return resultList;
+			return null;
 		} catch (IOException e) {
-
-			return resultList;
+			return null;
 		} finally {
 			if (conn != null) {
 				conn.disconnect();
 			}
 		}
 
+		ArrayList<String> resultList = null;
 		try {
 			// Create a JSON object hierarchy from the results
 			JSONObject jsonObj = new JSONObject(jsonResults.toString());
 			JSONArray predsJsonArray = jsonObj.getJSONArray("predictions");
 
 			// Extract the Place descriptions from the results
-			resultList = new ArrayList<String>(predsJsonArray.length());
+			resultList = new ArrayList<>(predsJsonArray.length());
 			for (int i = 0; i < predsJsonArray.length(); i++) {
 				resultList.add(predsJsonArray.getJSONObject(i).getString("description"));
 			}

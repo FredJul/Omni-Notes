@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package it.feio.android;
+package net.fred.taskgame;
 
 import android.annotation.TargetApi;
 import android.app.Activity;

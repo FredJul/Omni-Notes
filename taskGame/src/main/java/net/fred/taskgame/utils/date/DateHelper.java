@@ -50,10 +50,8 @@ public class DateHelper {
 		SimpleDateFormat sdf = new SimpleDateFormat(format);
 		try {
 			cal.setTime(sdf.parse(str));
-		} catch (ParseException e) {
+		} catch (ParseException | NullPointerException e) {
 
-
-		} catch (NullPointerException e) {
 
 		}
 		return cal;

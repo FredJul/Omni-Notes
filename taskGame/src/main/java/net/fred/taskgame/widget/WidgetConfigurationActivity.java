@@ -38,17 +38,14 @@ import java.util.List;
 
 public class WidgetConfigurationActivity extends Activity {
 
-	private Activity mActivity;
-	private Button configOkButton;
 	private Spinner categorySpinner;
 	private int mAppWidgetId = AppWidgetManager.INVALID_APPWIDGET_ID;
-	private List<Category> categories;
 	private RadioGroup mRadioGroup;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		mActivity = this;
+		Activity mActivity = this;
 
 		setResult(RESULT_CANCELED);
 
@@ -72,10 +69,10 @@ public class WidgetConfigurationActivity extends Activity {
 
 		categorySpinner = (Spinner) findViewById(R.id.widget_config_spinner);
 		categorySpinner.setEnabled(false);
-		categories = DbHelper.getCategories();
+		List<Category> categories = DbHelper.getCategories();
 		categorySpinner.setAdapter(new NavDrawerCategoryAdapter(mActivity, categories));
 
-		configOkButton = (Button) findViewById(R.id.widget_config_confirm);
+		Button configOkButton = (Button) findViewById(R.id.widget_config_confirm);
 		configOkButton.setOnClickListener(new OnClickListener() {
 
 			@Override

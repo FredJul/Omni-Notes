@@ -1027,11 +1027,11 @@ public class ListFragment extends Fragment implements OnTasksLoadedListener, OnV
 		// Searching
 		if (searchQuery != null || Intent.ACTION_SEARCH.equals(intent.getAction())) {
 
-				// Get the intent, verify the action and get the query
-				if (intent.getStringExtra(SearchManager.QUERY) != null) {
-					searchQuery = intent.getStringExtra(SearchManager.QUERY);
-				}
-			onTasksLoaded((ArrayList<Task>) DbHelper.getTasksByPattern(searchQuery));
+			// Get the intent, verify the action and get the query
+			if (intent.getStringExtra(SearchManager.QUERY) != null) {
+				searchQuery = intent.getStringExtra(SearchManager.QUERY);
+			}
+			onTasksLoaded(DbHelper.getTasksByPattern(searchQuery));
 
 			toggleSearchLabel(true);
 
@@ -1047,12 +1047,12 @@ public class ListFragment extends Fragment implements OnTasksLoadedListener, OnV
 					getMainActivity().navigationTmp = (categoryId != -1 ? String.valueOf(categoryId) : null);
 				}
 				intent.removeExtra(Constants.INTENT_WIDGET);
-				onTasksLoaded((ArrayList<Task>) DbHelper.getTasksByCategory(
+				onTasksLoaded(DbHelper.getTasksByCategory(
 						getMainActivity().navigationTmp));
 
 				// Gets all tasks
 			} else {
-				onTasksLoaded((ArrayList<Task>) DbHelper.getAllTasks());
+				onTasksLoaded(DbHelper.getAllTasks());
 			}
 		}
 	}
@@ -1386,7 +1386,7 @@ public class ListFragment extends Fragment implements OnTasksLoadedListener, OnV
 			ubc.showUndoBar(false, getString(R.string.tasks_category_removed), null);
 			hideFab();
 			undoCategorize = true;
-			undoCategorizeCategory = category;
+			undoCategorizeCategory = null;
 		} else {
 			getSelectedTasks().clear();
 		}

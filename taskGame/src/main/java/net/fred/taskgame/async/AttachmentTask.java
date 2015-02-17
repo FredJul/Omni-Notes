@@ -21,7 +21,6 @@ import android.app.Activity;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.support.v4.app.Fragment;
-import android.text.TextUtils;
 
 import net.fred.taskgame.model.Attachment;
 import net.fred.taskgame.model.listeners.OnAttachingFileListener;
@@ -36,16 +35,10 @@ public class AttachmentTask extends AsyncTask<Void, Void, Attachment> {
 	private final Activity mActivity;
 	private OnAttachingFileListener mOnAttachingFileListener;
 	private Uri uri;
-	private String fileName;
 
 	public AttachmentTask(Fragment mFragment, Uri uri, OnAttachingFileListener mOnAttachingFileListener) {
-		this(mFragment, uri, null, mOnAttachingFileListener);
-	}
-
-	public AttachmentTask(Fragment mFragment, Uri uri, String fileName, OnAttachingFileListener mOnAttachingFileListener) {
 		mFragmentWeakReference = new WeakReference<>(mFragment);
 		this.uri = uri;
-		this.fileName = TextUtils.isEmpty(fileName) ? "" : fileName;
 		this.mOnAttachingFileListener = mOnAttachingFileListener;
 		this.mActivity = mFragment.getActivity();
 	}
@@ -58,30 +51,27 @@ public class AttachmentTask extends AsyncTask<Void, Void, Attachment> {
 
 
 	@Override
-	protected void onPostExecute(Attachment mAttachment) {
+	protected void onPostExecute(Attachment attachment) {
 		if (isAlive()) {
-			if (mAttachment != null) {
-				mOnAttachingFileListener.onAttachingFileFinished(mAttachment);
+			if (attachment != null) {
+				mOnAttachingFileListener.onAttachingFileFinished(attachment);
 			} else {
-				mOnAttachingFileListener.onAttachingFileErrorOccurred(mAttachment);
+				mOnAttachingFileListener.onAttachingFileErrorOccurred(attachment);
 			}
 		} else {
-			if (mAttachment != null) {
-				StorageManager.delete(mActivity, mAttachment.uri.getPath());
+			if (attachment != null) {
+				StorageManager.delete(mActivity, attachment.uri.getPath());
 			}
 		}
 	}
 
 
 	private boolean isAlive() {
-		if (mFragmentWeakReference != null
+		return mFragmentWeakReference != null
 				&& mFragmentWeakReference.get() != null
 				&& mFragmentWeakReference.get().isAdded()
 				&& mFragmentWeakReference.get().getActivity() != null
-				&& !mFragmentWeakReference.get().getActivity().isFinishing()) {
-			return true;
-		}
-		return false;
+				&& !mFragmentWeakReference.get().getActivity().isFinishing();
 	}
 
 }

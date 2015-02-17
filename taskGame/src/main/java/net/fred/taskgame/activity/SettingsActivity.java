@@ -11,8 +11,6 @@ import net.fred.taskgame.fragment.SettingsFragment;
 
 public class SettingsActivity extends ActionBarActivity {
 
-	private Toolbar toolbar;
-
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -23,7 +21,7 @@ public class SettingsActivity extends ActionBarActivity {
 
 
 	void initUI() {
-		toolbar = (android.support.v7.widget.Toolbar) findViewById(R.id.toolbar);
+		Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
 		setSupportActionBar(toolbar);
 		toolbar.setNavigationOnClickListener(new View.OnClickListener() {
 			@Override

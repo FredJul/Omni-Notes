@@ -47,7 +47,6 @@ public class UndoBarController {
 	// State objects
 	private Parcelable mUndoToken;
 	private CharSequence mUndoMessage;
-	private Button mButtonView;
 	private boolean isVisible;
 
 
@@ -63,7 +62,7 @@ public class UndoBarController {
 
 		mMessageView = (TextView) mBarView.findViewById(R.id.undobar_message);
 
-		mButtonView = (Button) mBarView.findViewById(R.id.undobar_button);
+		Button mButtonView = (Button) mBarView.findViewById(R.id.undobar_button);
 		mButtonView.setText(mButtonView.getText().toString().toUpperCase(Locale.getDefault()));
 		mButtonView.setOnClickListener(new View.OnClickListener() {
 			@Override

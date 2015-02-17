@@ -195,7 +195,7 @@ public class Task extends BaseModel implements Parcelable {
 	}
 
 	public boolean isTrashed() {
-		return trashed == false ? false : true;
+		return trashed;
 	}
 
 
@@ -205,7 +205,7 @@ public class Task extends BaseModel implements Parcelable {
 
 
 	public void setTrashed(int trashed) {
-		this.trashed = trashed == 1 ? true : false;
+		this.trashed = trashed == 1;
 	}
 
 
@@ -244,7 +244,7 @@ public class Task extends BaseModel implements Parcelable {
 
 
 	public boolean isChecklist() {
-		return checklist == false ? false : true;
+		return checklist;
 	}
 
 
@@ -253,7 +253,7 @@ public class Task extends BaseModel implements Parcelable {
 	}
 
 	public void setChecklist(int checklist) {
-		this.checklist = checklist == 1 ? true : false;
+		this.checklist = checklist == 1;
 	}
 
 	public String getAddress() {

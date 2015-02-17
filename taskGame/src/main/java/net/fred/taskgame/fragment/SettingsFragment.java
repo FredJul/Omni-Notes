@@ -15,10 +15,6 @@
  ******************************************************************************/
 package net.fred.taskgame.fragment;
 
-import android.app.Activity;
-import android.content.Intent;
-import android.media.RingtoneManager;
-import android.net.Uri;
 import android.os.Bundle;
 import android.preference.EditTextPreference;
 import android.preference.ListPreference;
@@ -32,8 +28,6 @@ import net.fred.taskgame.utils.PrefUtils;
 
 
 public class SettingsFragment extends PreferenceFragment {
-
-	private final int RINGTONE_REQUEST_CODE = 100;
 
 
 	@Override
@@ -150,19 +144,6 @@ public class SettingsFragment extends PreferenceFragment {
 					return false;
 				}
 			});
-		}
-	}
-
-	@Override
-	public void onActivityResult(int requestCode, int resultCode, Intent intent) {
-		if (resultCode == Activity.RESULT_OK) {
-			switch (requestCode) {
-
-				case RINGTONE_REQUEST_CODE:
-					Uri uri = intent.getParcelableExtra(RingtoneManager.EXTRA_RINGTONE_PICKED_URI);
-					PrefUtils.putString("settings_notification_ringtone", uri.toString());
-					break;
-			}
 		}
 	}
 }

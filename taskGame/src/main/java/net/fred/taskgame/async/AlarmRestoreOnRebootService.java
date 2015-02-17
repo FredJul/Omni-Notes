@@ -76,7 +76,7 @@ public class AlarmRestoreOnRebootService extends Service {
 		intent.putExtra(Constants.INTENT_NOTE, task);
 		PendingIntent sender = PendingIntent.getBroadcast(ctx, Constants.INTENT_ALARM_CODE, intent,
 				PendingIntent.FLAG_CANCEL_CURRENT);
-		AlarmManager am = (AlarmManager) ctx.getSystemService(ctx.ALARM_SERVICE);
+		AlarmManager am = (AlarmManager) ctx.getSystemService(ALARM_SERVICE);
 		am.set(AlarmManager.RTC_WAKEUP, Long.parseLong(task.getAlarm()), sender);
 	}
 

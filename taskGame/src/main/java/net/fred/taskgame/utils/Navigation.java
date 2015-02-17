@@ -78,7 +78,7 @@ public class Navigation {
 	public static boolean checkNavigation(Integer[] navigationsToCheck) {
 		boolean res = false;
 		int navigation = getNavigation();
-		for (int navigationToCheck : new ArrayList<Integer>(Arrays.asList(navigationsToCheck))) {
+		for (int navigationToCheck : new ArrayList<>(Arrays.asList(navigationsToCheck))) {
 			if (navigation == navigationToCheck) {
 				res = true;
 				break;

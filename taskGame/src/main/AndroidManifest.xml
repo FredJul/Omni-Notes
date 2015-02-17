@@ -153,7 +153,7 @@
         </receiver>
 
         <!-- Restore on reboot alarm service -->
-        <service android:name="net.fred.taskgame.async.AlarmRestoreOnRebootService"></service>
+        <service android:name="net.fred.taskgame.async.AlarmRestoreOnRebootService"/>
 
         <!-- Widget configuration Activity -->
         <activity

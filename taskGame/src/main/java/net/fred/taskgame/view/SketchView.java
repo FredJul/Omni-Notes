@@ -46,7 +46,6 @@ public class SketchView extends View implements OnTouchListener {
 	private float strokeSize = DEFAULT_STROKE_SIZE;
 	private int strokeColor = Color.BLACK;
 	private float eraserSize = DEFAULT_ERASER_SIZE;
-	private int background = Color.WHITE;
 
 	//	private Canvas mCanvas;
 	private Path m_Path;
@@ -54,9 +53,8 @@ public class SketchView extends View implements OnTouchListener {
 	private float mX, mY;
 	private int width, height;
 
-	private ArrayList<Pair<Path, Paint>> paths = new ArrayList<Pair<Path, Paint>>();
-	private ArrayList<Pair<Path, Paint>> undonePaths = new ArrayList<Pair<Path, Paint>>();
-	private Context mContext;
+	private ArrayList<Pair<Path, Paint>> paths = new ArrayList<>();
+	private ArrayList<Pair<Path, Paint>> undonePaths = new ArrayList<>();
 
 	private Bitmap bitmap;
 
@@ -68,7 +66,7 @@ public class SketchView extends View implements OnTouchListener {
 	public SketchView(Context context, AttributeSet attr) {
 		super(context, attr);
 
-		this.mContext = context;
+		Context mContext = context;
 
 		setFocusable(true);
 		setFocusableInTouchMode(true);
@@ -193,7 +191,7 @@ public class SketchView extends View implements OnTouchListener {
 
 		// Avoids that a sketch with just erasures is saved
 		if (!(paths.size() == 0 && mode == ERASER && bitmap == null)) {
-			paths.add(new Pair<Path, Paint>(m_Path, newPaint));
+			paths.add(new Pair<>(m_Path, newPaint));
 		}
 
 		m_Path.reset();
@@ -218,7 +216,7 @@ public class SketchView extends View implements OnTouchListener {
 
 		// Avoids that a sketch with just erasures is saved
 		if (!(paths.size() == 0 && mode == ERASER && bitmap == null)) {
-			paths.add(new Pair<Path, Paint>(m_Path, newPaint));
+			paths.add(new Pair<>(m_Path, newPaint));
 		}
 
 		// kill this so we don't double draw
@@ -237,6 +235,7 @@ public class SketchView extends View implements OnTouchListener {
 
 		if (bitmap == null) {
 			bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
+			int background = Color.WHITE;
 			bitmap.eraseColor(background);
 		}
 		Canvas canvas = new Canvas(bitmap);

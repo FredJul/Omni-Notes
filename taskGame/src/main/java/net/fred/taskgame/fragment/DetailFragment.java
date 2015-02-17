@@ -102,7 +102,6 @@ import net.fred.taskgame.utils.Constants;
 import net.fred.taskgame.utils.CroutonHelper;
 import net.fred.taskgame.utils.DbHelper;
 import net.fred.taskgame.utils.Display;
-import net.fred.taskgame.utils.FileHelper;
 import net.fred.taskgame.utils.GeocodeHelper;
 import net.fred.taskgame.utils.IntentChecker;
 import net.fred.taskgame.utils.KeyboardUtils;
@@ -142,7 +141,6 @@ public class DetailFragment extends Fragment implements
 	MediaRecorder mRecorder = null;
 	// Toggle checklist view
 	View toggleChecklistView;
-	private LinearLayout reminder_layout;
 	private TextView datetime;
 	private Uri attachmentUri;
 	private AttachmentAdapter mAttachmentAdapter;
@@ -170,9 +168,7 @@ public class DetailFragment extends Fragment implements
 	// and in the last case a Toast will be shown instead than Crouton
 	private boolean afterSavedReturnsToList = true;
 	private boolean swiping;
-	private ViewGroup root;
 	private int startSwipeX;
-	private View timestampsView;
 	private boolean orientationChanged;
 	private long audioRecordingTimeStart;
 	private long audioRecordingTime;
@@ -396,8 +392,7 @@ public class DetailFragment extends Fragment implements
 //			    	mAttachment.setName(uri.getLastPathSegment());
 //		    	}
 //		    	noteTmp.addAttachment(mAttachment);
-				String name = FileHelper.getNameFromUri(getActivity(), uri);
-				AttachmentTask task = new AttachmentTask(this, uri, name, this);
+				AttachmentTask task = new AttachmentTask(this, uri, this);
 				task.execute();
 			}
 
@@ -405,8 +400,7 @@ public class DetailFragment extends Fragment implements
 			ArrayList<Uri> uris = i.getParcelableArrayListExtra(Intent.EXTRA_STREAM);
 			if (uris != null) {
 				for (Uri uriSingle : uris) {
-					String name = FileHelper.getNameFromUri(getActivity(), uriSingle);
-					AttachmentTask task = new AttachmentTask(this, uriSingle, name, this);
+					AttachmentTask task = new AttachmentTask(this, uriSingle, this);
 					task.execute();
 				}
 			}
@@ -419,7 +413,7 @@ public class DetailFragment extends Fragment implements
 	private void initViews() {
 
 		// Sets onTouchListener to the whole activity to swipe tasks
-		root = (ViewGroup) getView().findViewById(R.id.detail_root);
+		ViewGroup root = (ViewGroup) getView().findViewById(R.id.detail_root);
 		root.setOnTouchListener(this);
 
 		// ScrollView container
@@ -561,7 +555,7 @@ public class DetailFragment extends Fragment implements
 
 
 		// Preparation for reminder icon
-		reminder_layout = (LinearLayout) getView().findViewById(R.id.reminder_layout);
+		LinearLayout reminder_layout = (LinearLayout) getView().findViewById(R.id.reminder_layout);
 		reminder_layout.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
@@ -599,7 +593,7 @@ public class DetailFragment extends Fragment implements
 		datetime.setText(dateTimeText);
 
 		// Timestamps view
-		timestampsView = getActivity().findViewById(R.id.detail_timestamps);
+		View timestampsView = getActivity().findViewById(R.id.detail_timestamps);
 		// Bottom padding set for translucent navbar in Kitkat
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
 			int navBarHeight = Display.getNavigationBarHeightKitkat(getActivity());
@@ -693,7 +687,7 @@ public class DetailFragment extends Fragment implements
 		if (!colorsPref.equals("disabled")) {
 
 			// Choosing target view depending on another preference
-			ArrayList<View> target = new ArrayList<View>();
+			ArrayList<View> target = new ArrayList<>();
 			if (colorsPref.equals("complete")) {
 				target.add(getView().findViewById(R.id.title_wrapper));
 				target.add(getView().findViewById(R.id.content_wrapper));
@@ -877,7 +871,7 @@ public class DetailFragment extends Fragment implements
 		}
 
 		if (getActivity().getSupportFragmentManager().getBackStackEntryCount() == 1) {
-			getMainActivity().animateBurger(getMainActivity().BURGER);
+			getMainActivity().animateBurger(MainActivity.BURGER);
 		}
 
 		return true;
@@ -1233,8 +1227,7 @@ public class DetailFragment extends Fragment implements
 			uris.add(intent.getData());
 		}
 		for (Uri uri : uris) {
-			String name = FileHelper.getNameFromUri(getActivity(), uri);
-			new AttachmentTask(this, uri, name, this).execute();
+			new AttachmentTask(this, uri, this).execute();
 		}
 	}
 
@@ -1611,7 +1604,6 @@ public class DetailFragment extends Fragment implements
 	@Override
 	public boolean onTouch(View v, MotionEvent event) {
 		int x = (int) event.getX();
-		int y = (int) event.getY();
 
 		switch (event.getAction()) {
 

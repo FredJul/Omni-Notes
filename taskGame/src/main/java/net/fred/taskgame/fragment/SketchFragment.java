@@ -66,7 +66,6 @@ public class SketchFragment extends Fragment implements OnDrawChangedListener {
 	private SketchView mSketchView;
 	private ImageView undo;
 	private ImageView redo;
-	private ImageView erase;
 	private int seekBarStrokeProgress, seekBarEraserProgress;
 	private View popupLayout, popupEraserLayout;
 	private ImageView strokeImageView, eraserImageView;
@@ -160,7 +159,7 @@ public class SketchFragment extends Fragment implements OnDrawChangedListener {
 			}
 		});
 
-		erase = (ImageView) getActivity().findViewById(R.id.sketch_erase);
+		ImageView erase = (ImageView) getActivity().findViewById(R.id.sketch_erase);
 		erase.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {

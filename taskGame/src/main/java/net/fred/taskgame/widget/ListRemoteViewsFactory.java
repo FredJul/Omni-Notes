@@ -46,9 +46,6 @@ import java.util.List;
 
 public class ListRemoteViewsFactory implements RemoteViewsFactory {
 
-	private final int WIDTH = 80;
-	private final int HEIGHT = 80;
-
 	private static boolean showThumbnails = true;
 
 	private MainApplication app;
@@ -113,8 +110,10 @@ public class ListRemoteViewsFactory implements RemoteViewsFactory {
 		if (task.getAttachmentsList().size() > 0 && showThumbnails) {
 			Attachment mAttachment = task.getAttachmentsList().get(0);
 			// Fetch from cache if possible
+			int HEIGHT = 80;
+			int WIDTH = 80;
 			String cacheKey = mAttachment.uri.getPath() + WIDTH + HEIGHT;
-			Bitmap bmp = app.getBitmapCache().getBitmap(cacheKey);
+			Bitmap bmp = MainApplication.getBitmapCache().getBitmap(cacheKey);
 
 			if (bmp == null) {
 				bmp = BitmapHelper.getBitmapFromAttachment(app, mAttachment,
