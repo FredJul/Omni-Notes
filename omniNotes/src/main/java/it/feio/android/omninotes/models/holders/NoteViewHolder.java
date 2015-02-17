@@ -26,17 +26,16 @@ import it.feio.android.omninotes.models.views.SquareImageView;
 
 public class NoteViewHolder {
 
-    public View root;
-    public View cardLayout;
-    public View categoryMarker;
+	public View root;
+	public View cardLayout;
+	public View categoryMarker;
 
-    public TextView title;
-    public TextView content;
-    public TextView date;
+	public TextView title;
+	public TextView content;
+	public TextView date;
 
-    public ImageView locationIcon;
-    public ImageView alarmIcon;
-    public ImageView attachmentIcon;
+	public ImageView locationIcon;
+	public ImageView alarmIcon;
 
-    public SquareImageView attachmentThumbnail;
+	public SquareImageView attachmentThumbnail;
 }

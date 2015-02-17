@@ -80,7 +80,6 @@ import java.util.Map;
 import de.keyboardsurfer.android.widget.crouton.Crouton;
 import it.feio.android.checklistview.utils.DensityUtil;
 import it.feio.android.omninotes.db.DbHelper;
-import it.feio.android.omninotes.models.Attachment;
 import it.feio.android.omninotes.models.Category;
 import it.feio.android.omninotes.models.Note;
 import it.feio.android.omninotes.models.ONStyle;
@@ -115,7 +114,6 @@ public class ListFragment extends Fragment implements OnNotesLoadedListener, OnV
 	private AnimationDrawable jinglesAnimation;
 	private int listViewPosition;
 	private int listViewPositionOffset;
-	private ListFragment mFragment;
 	private android.support.v7.view.ActionMode actionMode;
 	private boolean keepActionMode = false;
 
@@ -133,7 +131,6 @@ public class ListFragment extends Fragment implements OnNotesLoadedListener, OnV
 	private TextView listFooter;
 
 	private NoteAdapter listAdapter;
-	private int layoutSelected;
 	private UndoBarController ubc;
 
 	//    Fab
@@ -145,8 +142,6 @@ public class ListFragment extends Fragment implements OnNotesLoadedListener, OnV
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-
-		mFragment = this;
 
 		setHasOptionsMenu(true);
 		setRetainInstance(false);
@@ -393,8 +388,8 @@ public class ListFragment extends Fragment implements OnNotesLoadedListener, OnV
 			// Here you can make any necessary updates to the activity when
 			// the CAB is removed. By default, selected items are
 			// deselected/unchecked.
-			for (int i = 0; i < listAdapter.getSelectedItems().size(); i++) {
-				int key = listAdapter.getSelectedItems().keyAt(i);
+			for (int i = 0; i < listAdapter.getmSelectedItems().size(); i++) {
+				int key = listAdapter.getmSelectedItems().keyAt(i);
 				View v = list.getChildAt(key - list.getFirstVisiblePosition());
 				if (listAdapter.getCount() > key && listAdapter.getItem(key) != null && v != null) {
 					listAdapter.restoreDrawable(listAdapter.getItem(key), v.findViewById(R.id.card_layout));
@@ -745,10 +740,8 @@ public class ListFragment extends Fragment implements OnNotesLoadedListener, OnV
 		} else {
 			if (getSelectedCount() == 1) {
 				menu.findItem(R.id.menu_share).setVisible(true);
-				menu.findItem(R.id.menu_merge).setVisible(false);
 			} else {
 				menu.findItem(R.id.menu_share).setVisible(false);
-				menu.findItem(R.id.menu_merge).setVisible(true);
 			}
 			menu.findItem(R.id.menu_category).setVisible(true);
 			menu.findItem(R.id.menu_trash).setVisible(true);
@@ -846,7 +839,6 @@ public class ListFragment extends Fragment implements OnNotesLoadedListener, OnV
 		// Defines the conditions to set actionbar items visible or not
 		boolean drawerOpen = (getMainActivity().getDrawerLayout() != null && getMainActivity()
 				.getDrawerLayout().isDrawerOpen(GravityCompat.START));
-		boolean expandedView = PrefUtils.getBoolean(PrefUtils.PREF_EXPANDED_VIEW, true);
 		boolean filterPastReminders = PrefUtils.getBoolean(PrefUtils.PREF_FILTER_PAST_REMINDERS, true);
 		boolean navigationReminders = Navigation.checkNavigation(Navigation.REMINDERS);
 		boolean navigationTrash = Navigation.checkNavigation(Navigation.TRASH);
@@ -864,8 +856,6 @@ public class ListFragment extends Fragment implements OnNotesLoadedListener, OnV
 		menu.findItem(R.id.menu_filter).setVisible(!drawerOpen && !filterPastReminders && navigationReminders && !searchViewHasFocus);
 		menu.findItem(R.id.menu_filter_remove).setVisible(!drawerOpen && filterPastReminders && navigationReminders && !searchViewHasFocus);
 		menu.findItem(R.id.menu_sort).setVisible(!drawerOpen && !navigationReminders && !searchViewHasFocus);
-		menu.findItem(R.id.menu_expanded_view).setVisible(!drawerOpen && !expandedView && !searchViewHasFocus);
-		menu.findItem(R.id.menu_contracted_view).setVisible(!drawerOpen && expandedView && !searchViewHasFocus);
 		menu.findItem(R.id.menu_empty_trash).setVisible(!drawerOpen && navigationTrash);
 	}
 
@@ -899,12 +889,6 @@ public class ListFragment extends Fragment implements OnNotesLoadedListener, OnV
 				case R.id.menu_sort:
 					initSortingSubmenu();
 					break;
-				case R.id.menu_expanded_view:
-					switchNotesView();
-					break;
-				case R.id.menu_contracted_view:
-					switchNotesView();
-					break;
 				case R.id.menu_empty_trash:
 					emptyTrash();
 					break;
@@ -916,9 +900,6 @@ public class ListFragment extends Fragment implements OnNotesLoadedListener, OnV
 					break;
 				case R.id.menu_share:
 					share();
-					break;
-				case R.id.menu_merge:
-					merge();
 					break;
 				case R.id.menu_trash:
 					trashNotes(true);
@@ -939,17 +920,6 @@ public class ListFragment extends Fragment implements OnNotesLoadedListener, OnV
 
 		return super.onOptionsItemSelected(item);
 	}
-
-
-	private void switchNotesView() {
-		boolean expandedView = PrefUtils.getBoolean(PrefUtils.PREF_EXPANDED_VIEW, true);
-		PrefUtils.putBoolean(PrefUtils.PREF_EXPANDED_VIEW, !expandedView);
-		// Change list view
-		initNotesList(getActivity().getIntent());
-		// Called to switch menu voices
-		getActivity().supportInvalidateOptionsMenu();
-	}
-
 
 	void editNote(final Note note, final View view) {
 		hideFab();
@@ -1138,10 +1108,7 @@ public class ListFragment extends Fragment implements OnNotesLoadedListener, OnV
 
 	@Override
 	public void onNotesLoaded(List<Note> notes) {
-		layoutSelected = PrefUtils.getBoolean(PrefUtils.PREF_EXPANDED_VIEW, true) ? R.layout.note_layout_expanded
-				: R.layout.note_layout;
-
-		listAdapter = new NoteAdapter(getActivity(), layoutSelected, notes);
+		listAdapter = new NoteAdapter(getActivity(), notes);
 
 		list.enableSwipeToDismiss(new OnDismissCallback() {
 			@Override
@@ -1525,64 +1492,6 @@ public class ListFragment extends Fragment implements OnNotesLoadedListener, OnV
 			getActionMode().finish();
 		}
 	}
-
-
-	/**
-	 * Merges all the selected notes
-	 */
-	public void merge() {
-
-		Note mergedNote = null;
-		StringBuilder content = new StringBuilder();
-		ArrayList<Attachment> attachments = new ArrayList<Attachment>();
-
-		for (Note note : getSelectedNotes()) {
-
-			if (mergedNote == null) {
-				mergedNote = new Note();
-				mergedNote.setTitle(note.getTitle());
-				content.append(note.getContent());
-
-			} else {
-				if (content.length() > 0
-						&& (!TextUtils.isEmpty(note.getTitle()) || !TextUtils.isEmpty(note.getContent()))) {
-					content.append(System.getProperty("line.separator")).append(System.getProperty("line.separator"))
-							.append("----------------------").append(System.getProperty("line.separator"))
-							.append(System.getProperty("line.separator"));
-				}
-				if (!TextUtils.isEmpty(note.getTitle())) {
-					content.append(note.getTitle());
-				}
-				if (!TextUtils.isEmpty(note.getTitle()) && !TextUtils.isEmpty(note.getContent())) {
-					content.append(System.getProperty("line.separator")).append(System.getProperty("line.separator"));
-				}
-				if (!TextUtils.isEmpty(note.getContent())) {
-					content.append(note.getContent());
-				}
-			}
-
-			attachments.addAll(note.getAttachmentsList());
-		}
-
-		// Resets all the attachments id to force their note re-assign when saved
-		for (Attachment attachment : attachments) {
-			attachment.id = 0;
-		}
-
-		// Sets content text and attachments list
-		mergedNote.setContent(content.toString());
-		mergedNote.setAttachmentsList(attachments);
-
-		getSelectedNotes().clear();
-		if (getActionMode() != null) {
-			getActionMode().finish();
-		}
-
-		// Sets the intent action to be recognized from DetailFragment and switch fragment
-		getActivity().getIntent().setAction(Constants.ACTION_MERGE);
-		getMainActivity().switchToDetail(mergedNote);
-	}
-
 
 	/**
 	 * Excludes past reminders

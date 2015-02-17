@@ -56,36 +56,27 @@ public class NoteAdapter extends ArrayAdapter<Note> implements Insertable {
 	private final Activity mActivity;
 
 
-	public List<Note> getNotes() {
-		return notes;
-	}
+	private List<Note> motes = new ArrayList<>();
+	private SparseBooleanArray mSelectedItems = new SparseBooleanArray();
+	private LayoutInflater mInflater;
 
 
-	private List<Note> notes = new ArrayList<Note>();
-	private SparseBooleanArray selectedItems = new SparseBooleanArray();
-	private boolean expandedView;
-	private int layout;
-	private LayoutInflater inflater;
-
-
-	public NoteAdapter(Activity activity, int layout, List<Note> notes) {
+	public NoteAdapter(Activity activity, List<Note> notes) {
 		super(activity, R.layout.note_layout_expanded, notes);
 		this.mActivity = activity;
-		this.notes = notes;
-		this.layout = layout;
+		this.motes = notes;
 
-		expandedView = layout == R.layout.note_layout_expanded;
-		inflater = (LayoutInflater) mActivity.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+		mInflater = mActivity.getLayoutInflater();
 	}
 
 	@Override
 	public View getView(int position, View convertView, ViewGroup parent) {
 
-		Note note = notes.get(position);
+		Note note = motes.get(position);
 
 		NoteViewHolder holder;
 		if (convertView == null) {
-			convertView = inflater.inflate(layout, parent, false);
+			convertView = mInflater.inflate(R.layout.note_layout_expanded, parent, false);
 
 			holder = new NoteViewHolder();
 
@@ -99,8 +90,6 @@ public class NoteAdapter extends ArrayAdapter<Note> implements Insertable {
 
 			holder.locationIcon = (ImageView) convertView.findViewById(R.id.locationIcon);
 			holder.alarmIcon = (ImageView) convertView.findViewById(R.id.alarmIcon);
-			if (!expandedView)
-				holder.attachmentIcon = (ImageView) convertView.findViewById(R.id.attachmentIcon);
 
 			holder.attachmentThumbnail = (SquareImageView) convertView.findViewById(R.id.attachmentThumbnail);
 
@@ -118,7 +107,7 @@ public class NoteAdapter extends ArrayAdapter<Note> implements Insertable {
 
 
 		// Highlighted if is part of multiselection of notes. Remember to search for child with card ui
-		if (selectedItems.get(position)) {
+		if (mSelectedItems.get(position)) {
 			holder.cardLayout.setBackgroundColor(mActivity.getResources().getColor(
 					R.color.list_bg_selected));
 		} else {
@@ -134,12 +123,15 @@ public class NoteAdapter extends ArrayAdapter<Note> implements Insertable {
 		return convertView;
 	}
 
+	public List<Note> getNotes() {
+		return motes;
+	}
 
 	private void initThumbnail(Note note, NoteViewHolder holder) {
 		holder.attachmentThumbnail.setVisibility(View.GONE);
 
 		// Attachment thumbnail
-		if (expandedView && note.getAttachmentsList() != null && !note.getAttachmentsList().isEmpty()) {
+		if (note.getAttachmentsList() != null && !note.getAttachmentsList().isEmpty()) {
 			holder.attachmentThumbnail.setVisibility(View.VISIBLE);
 			Attachment mAttachment = note.getAttachmentsList().get(0);
 			Uri thumbnailUri = BitmapHelper.getThumbnailUri(mActivity, mAttachment);
@@ -164,17 +156,13 @@ public class NoteAdapter extends ArrayAdapter<Note> implements Insertable {
 
 		// ...the presence of an alarm
 		holder.alarmIcon.setVisibility(note.getAlarm() != null ? View.VISIBLE : View.GONE);
-		// ...the attachment icon for contracted view
-		if (!expandedView) {
-			holder.attachmentIcon.setVisibility(note.getAttachmentsList().size() > 0 ? View.VISIBLE : View.GONE);
-		}
 	}
 
 
 	private void initText(Note note, NoteViewHolder holder) {
 		try {
 			if (note.isChecklist()) {
-				TextWorkerTask task = new TextWorkerTask(mActivity, holder.title, holder.content, expandedView);
+				TextWorkerTask task = new TextWorkerTask(mActivity, holder.title, holder.content);
 				task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, note);
 			} else {
 				Spanned[] titleAndContent = TextHelper.parseTitleAndContent(note);
@@ -185,11 +173,7 @@ public class NoteAdapter extends ArrayAdapter<Note> implements Insertable {
 					holder.content.setText(titleAndContent[1]);
 					holder.content.setVisibility(View.VISIBLE);
 				} else {
-					if (expandedView) {
-						holder.content.setVisibility(View.INVISIBLE);
-					} else {
-						holder.content.setVisibility(View.GONE);
-					}
+					holder.content.setVisibility(View.INVISIBLE);
 				}
 			}
 		} catch (RejectedExecutionException e) {
@@ -238,20 +222,20 @@ public class NoteAdapter extends ArrayAdapter<Note> implements Insertable {
 	}
 
 
-	public SparseBooleanArray getSelectedItems() {
-		return selectedItems;
+	public SparseBooleanArray getmSelectedItems() {
+		return mSelectedItems;
 	}
 
 	public void addSelectedItem(Integer selectedItem) {
-		this.selectedItems.put(selectedItem, true);
+		this.mSelectedItems.put(selectedItem, true);
 	}
 
 	public void removeSelectedItem(Integer selectedItem) {
-		this.selectedItems.delete(selectedItem);
+		this.mSelectedItems.delete(selectedItem);
 	}
 
 	public void clearSelectedItems() {
-		this.selectedItems.clear();
+		this.mSelectedItems.clear();
 	}
 
 
@@ -308,12 +292,12 @@ public class NoteAdapter extends ArrayAdapter<Note> implements Insertable {
 	 * Replaces notes
 	 */
 	public void replace(Note note, int index) {
-		if (notes.indexOf(note) != -1) {
-			notes.remove(index);
+		if (motes.indexOf(note) != -1) {
+			motes.remove(index);
 		} else {
-			index = notes.size();
+			index = motes.size();
 		}
-		notes.add(index, note);
+		motes.add(index, note);
 	}
 
 

@@ -48,7 +48,6 @@
     <color name="warning">#ff9800</color>
     <color name="alert">#e51c23</color>
     <color name="info">#ee33B5E5</color>
-    <color name="black_overlay">#33000000</color>
 
     <!--Undo bar-->
     <color name="card_undobar_material_background_color">#323232</color>
