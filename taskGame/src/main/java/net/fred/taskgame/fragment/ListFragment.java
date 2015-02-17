@@ -250,15 +250,6 @@ public class ListFragment extends Fragment implements OnTasksLoadedListener, OnV
 				editNote(new Task(), v);
 			}
 		});
-
-		// In KitKat bottom padding is added by navbar height
-		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-			int navBarHeight = Display.getNavigationBarHeightKitkat(getActivity());
-			FrameLayout.LayoutParams params = (FrameLayout.LayoutParams) fab.getLayoutParams();
-			params.setMargins(params.leftMargin, params.topMargin, params.rightMargin,
-					navBarHeight + DensityUtil.pxToDp(params.bottomMargin, getActivity()));
-			fab.setLayoutParams(params);
-		}
 	}
 
 

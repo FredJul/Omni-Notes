@@ -28,10 +28,7 @@ import de.keyboardsurfer.android.widget.crouton.Style;
 
 public class CroutonHelper {
 
-	public static final int DURATION_INFINITE = -1;
-	public static final int DURATION_SHORT = 1000;
-	public static final int DURATION_MEDIUM = 1650;
-	public static final int DURATION_LONG = 2300;
+	public static final int CROUTON_DURATION = 1000;
 
 	public static final Configuration CONFIGURATION;
 	public static final Style ALERT;
@@ -47,7 +44,7 @@ public class CroutonHelper {
 
 	static {
 		CONFIGURATION = new Configuration.Builder()
-				.setDuration(DURATION_MEDIUM)
+				.setDuration(CROUTON_DURATION)
 				.setInAnimation(R.animator.fade_in_support)
 				.setOutAnimation(R.animator.fade_out_support)
 				.build();
