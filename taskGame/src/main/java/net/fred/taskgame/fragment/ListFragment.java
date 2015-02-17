@@ -782,6 +782,8 @@ public class ListFragment extends Fragment implements OnTasksLoadedListener, OnV
 
 		MenuItemCompat.setOnActionExpandListener(searchMenuItem, new MenuItemCompat.OnActionExpandListener() {
 
+			private boolean mSearchPerformed = false;
+
 			@Override
 			public boolean onMenuItemActionCollapse(MenuItem item) {
 				// Reinitialize tasks list to all tasks when search is collapsed
@@ -807,11 +809,12 @@ public class ListFragment extends Fragment implements OnTasksLoadedListener, OnV
 					@Override
 					public boolean onQueryTextChange(String pattern) {
 						View searchLayout = getActivity().findViewById(R.id.search_layout);
-						if (searchLayout != null) {
+						if (searchLayout != null && mSearchPerformed) {
 							searchQuery = pattern;
 							onTasksLoaded(DbHelper.getTasksByPattern(searchQuery));
 							return true;
 						} else {
+							mSearchPerformed = true;
 							return false;
 						}
 					}
