@@ -14,5 +14,28 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+package net.fred.taskgame.model;
 
-include ':taskGame'
+import android.net.Uri;
+
+import com.raizlabs.android.dbflow.annotation.Column;
+import com.raizlabs.android.dbflow.annotation.Table;
+import com.raizlabs.android.dbflow.structure.BaseModel;
+
+@Table
+public class Attachment extends BaseModel {
+	@Column(columnType = Column.PRIMARY_KEY_AUTO_INCREMENT)
+	public int id;
+	@Column
+	public int taskId;
+	@Column
+	public String name;
+	@Column
+	public long size;
+	@Column
+	public long length;
+	@Column
+	public String mimeType;
+	@Column
+	public Uri uri;
+}

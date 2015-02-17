@@ -14,5 +14,39 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+package net.fred.taskgame.async;
 
-include ':taskGame'
+import android.content.Context;
+import android.os.AsyncTask;
+
+import net.fred.taskgame.activity.BaseActivity;
+import net.fred.taskgame.model.Task;
+import net.fred.taskgame.utils.DbHelper;
+
+public class DeleteNoteTask extends AsyncTask<Task, Void, Void> {
+
+	private final Context mContext;
+
+
+	public DeleteNoteTask(Context mContext) {
+		this.mContext = mContext;
+	}
+
+
+	@Override
+	protected Void doInBackground(Task... params) {
+		Task task = params[0];
+
+		// Deleting note using DbHelper
+		DbHelper.deleteTask(mContext, task);
+
+		return null;
+	}
+
+
+	@Override
+	protected void onPostExecute(Void result) {
+		super.onPostExecute(result);
+		BaseActivity.notifyAppWidgets(mContext);
+	}
+}

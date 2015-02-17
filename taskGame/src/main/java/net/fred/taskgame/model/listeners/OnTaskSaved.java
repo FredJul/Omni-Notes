@@ -15,4 +15,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-include ':taskGame'
+package net.fred.taskgame.model.listeners;
+
+import net.fred.taskgame.model.Task;
+
+
+public interface OnTaskSaved {
+	public void onTaskSaved(Task taskSaved);
+}

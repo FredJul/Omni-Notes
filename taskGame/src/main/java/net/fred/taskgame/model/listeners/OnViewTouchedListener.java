@@ -15,4 +15,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-include ':taskGame'
+package net.fred.taskgame.model.listeners;
+
+import android.view.MotionEvent;
+
+public interface OnViewTouchedListener {
+	public void onViewTouchOccurred(MotionEvent ev);
+}

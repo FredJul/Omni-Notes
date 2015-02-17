@@ -15,4 +15,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-include ':taskGame'
+package net.fred.taskgame.model.listeners;
+
+
+public interface OnGeoUtilResultListener {
+	public void onAddressResolved(String address);
+
+	public void onCoordinatesResolved(double[] coords);
+}

@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!--
+  ~ Copyright (C) 2015 Federico Iosue (federico.iosue@gmail.com)
+  ~
+  ~ This program is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~ GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with this program.  If not, see <http://www.gnu.org/licenses/>.
+  -->
+<resources>
+    <!-- Activities -->
+    <string name="title_item_list">Tasks</string>
+    <string name="title">Title</string>
+    <string name="search">Search</string>
+    <string name="search_hint">Search in tasks</string>
+    <string name="content">Content</string>
+    <string name="share">Share</string>
+    <string name="undo">Undo</string>
+    <string name="trash">Trash</string>
+    <string name="trashed">trashed</string>
+    <string name="task_trashed">Task(s) trashed</string>
+    <string name="task_untrashed">Task(s) restored from trash</string>
+    <string name="untrash">Restore from trash</string>
+    <string name="delete">Delete</string>
+    <string name="task_deleted">Task(s) deleted permanently</string>
+    <string name="creation">Created:</string>
+    <string name="last_update">Updated:</string>
+    <string name="delete_task_confirmation">Confirm task deletion?</string>
+    <string name="confirm">Confirm</string>
+    <string name="ok">OK</string>
+    <string name="cancel">Cancel</string>
+    <string name="task_updated">Task updated</string>
+    <string name="empty_task_not_saved">Can\'t save an empty task</string>
+    <string name="share_message_chooser">Share with</string>
+    <string name="sort">Sort</string>
+    <string name="alarm_set_on">Reminder set for</string>
+    <string name="at_time">at</string>
+    <string name="discard_changes">Discard changes</string>
+    <string name="attachment">Attachment</string>
+    <string name="camera">Camera</string>
+    <string name="delete_selected_image">Delete selected attachment?</string>
+    <string name="gallery">Gallery</string>
+    <string name="location">Location</string>
+    <string name="remove_location">Remove location?</string>
+    <string name="remove_reminder">Remove reminder?</string>
+    <string name="add_reminder">Add reminder</string>
+    <string name="location_not_found">Location not found</string>
+    <string name="record">Record</string>
+    <string name="stop">Stop</string>
+    <string name="storage_not_available">Storage not available</string>
+    <string name="video">Video</string>
+    <string name="feature_not_available_on_this_device">Feature unavailable on this device, sorry</string>
+    <string name="categories">Categories</string>
+    <string name="add_category">Add category</string>
+    <string name="category_title">Title</string>
+    <string name="category_description">Description</string>
+    <string name="category_saved">Category saved</string>
+    <string name="category_deleted">Category deleted</string>
+    <string name="category_missing_title">Category title missing</string>
+    <string name="delete_this_category">Delete this category</string>
+    <string name="category">Category</string>
+    <string name="categorize_as">Categorize as</string>
+    <string name="title_activity_category">Edit category</string>
+    <string name="delete_unused_category_confirmation">Confirm category deletion?</string>
+    <string name="delete_category_confirmation">This category is used by $1$ task/s.\nConfirm tasks un-categorization and category deletion?</string>
+    <string name="remove_category">Remove category</string>
+    <string name="tasks_category_removed">Category removed from tasks</string>
+    <string name="tasks_categorized_as">Tasks categorized as</string>
+    <string name="no_items_in_list">Nothing here!</string>
+    <string name="checklist_on">Enable checklist</string>
+    <string name="checklist_off">Disable checklist</string>
+    <string name="checklist_item_hint">New item</string>
+    <string name="checklist_keep_checked">Keep checked items</string>
+    <string name="checklist_keep_symbols">Keep check marks</string>
+    <string name="sketch">Sketch</string>
+    <string name="title_activity_sketch">Sketch</string>
+    <string name="redo">Redo</string>
+    <string name="colors">Colors</string>
+    <string name="stroke">Stroke</string>
+    <string name="erase_sketch">Erase sketch?</string>
+    <string name="no_reminder_set">No reminder set</string>
+    <string name="saturation">Saturation</string>
+    <string name="opacity">Opacity</string>
+    <string name="snooze">Remind me later</string>
+    <string name="error_saving_attachments">Error saving attachments</string>
+    <string name="shortcut_task_deleted">Shortcut points to deleted task</string>
+    <string name="widget_simple_description">Simple widget with buttons</string>
+    <string name="widget_list_description">Scrolling list widget with buttons</string>
+    <string name="show_thumbnails">Show attachment\'s thumbnails</string>
+    <string name="edit">Edit</string>
+    <string name="open">Open</string>
+    <string name="copy">Copy</string>
+    <string name="no_application_can_perform_this_action">No application found for this action</string>
+    <string name="eraser">Eraser</string>
+    <string name="error">Error</string>
+    <string name="files">Files</string>
+    <string name="not_set">not set</string>
+    <string name="empty_trash">Empty trash</string>
+    <string name="empty_trash_confirmation">Confirm deleting all trashed tasks?</string>
+    <string name="select_all">Select all</string>
+    <string name="search_location">Search location</string>
+    <string name="use_current_location">Use current location</string>
+    <string name="filter">Filter</string>
+    <string name="remove_filter">Remove filter</string>
+
+    <!-- Settings -->
+    <string name="settings">Settings</string>
+    <string name="action_settings">Settings</string>
+    <string name="settings_enable_vibration">Vibration</string>
+    <string name="settings_max_video_size">Video attachments</string>
+    <string name="settings_max_video_size_summary">Maximum allowed size in MB</string>
+    <string name="settings_checked_items_behavior">Checklists</string>
+    <string name="settings_checked_items_behavior_summary">What to do when an item is checked?</string>
+    <string name="settings_notification_ringtone">Ringtone</string>
+    <string name="settings_notification_snooze_delay">Second reminder delay</string>
+    <string name="minutes">minutes</string>
+    <string name="colors_app">Application color scheme</string>
+    <string name="colors_widget">Widget color scheme</string>
+    <string name="settings_navdrawer_on_exit">Navigation menu on exit</string>
+    <string name="settings_navdrawer_on_exit_summary">Pressing \"back\" when in tasks list opens navigation menu instead of exiting</string>
+
+    <!-- Accessibility -->
+    <string name="drawer_open">drawer open</string>
+    <string name="drawer_close">drawer closed</string>
+    <string name="reminder">reminder</string>
+    <string name="stroke_size">stroke size</string>
+    <string name="task_thumbnail">task thumbnail</string>
+    <string name="task_reminder_symbol">task reminder symbol</string>
+
+</resources>

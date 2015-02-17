@@ -15,4 +15,28 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-include ':taskGame'
+package it.feio.android.utils;
+
+import android.test.InstrumentationTestCase;
+
+import net.fred.taskgame.MainApplication;
+import net.fred.taskgame.utils.ConnectionManager;
+import net.fred.taskgame.utils.GeocodeHelper;
+
+import org.junit.Test;
+
+import java.io.IOException;
+
+public class GeocodeHelperTest extends InstrumentationTestCase {
+
+	private final Double LAT = 43.799328;
+	private final Double LON = 11.171552;
+
+	@Test
+	public void testGetAddressFromCoordinates() throws IOException {
+		if (ConnectionManager.internetAvailable(MainApplication.getContext())) {
+			String address = GeocodeHelper.getAddressFromCoordinates(MainApplication.getContext(), LAT, LON);
+			assertTrue(address.length() > 0);
+		}
+	}
+}

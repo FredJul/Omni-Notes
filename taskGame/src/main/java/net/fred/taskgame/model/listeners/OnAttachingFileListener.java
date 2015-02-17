@@ -15,4 +15,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-include ':taskGame'
+package net.fred.taskgame.model.listeners;
+
+import net.fred.taskgame.model.Attachment;
+
+public interface OnAttachingFileListener {
+	public void onAttachingFileErrorOccurred(Attachment mAttachment);
+
+	public void onAttachingFileFinished(Attachment mAttachment);
+}

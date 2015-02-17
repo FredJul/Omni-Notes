@@ -15,4 +15,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-include ':taskGame'
+package net.fred.taskgame.model.listeners;
+
+import net.fred.taskgame.model.Task;
+
+import java.util.List;
+
+public interface OnTasksLoadedListener {
+	public void onTasksLoaded(List<Task> tasks);
+}

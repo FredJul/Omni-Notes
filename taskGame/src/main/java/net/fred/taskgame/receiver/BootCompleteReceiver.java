@@ -14,5 +14,22 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+package net.fred.taskgame.receiver;
 
-include ':taskGame'
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+
+import net.fred.taskgame.async.AlarmRestoreOnRebootService;
+
+
+public class BootCompleteReceiver extends BroadcastReceiver {
+
+	@Override
+	public void onReceive(Context ctx, Intent intent) {
+		if (intent.getAction().equals(Intent.ACTION_BOOT_COMPLETED)) {
+			Intent service = new Intent(ctx, AlarmRestoreOnRebootService.class);
+			ctx.startService(service);
+		}
+	}
+}

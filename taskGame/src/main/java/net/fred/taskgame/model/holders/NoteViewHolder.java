@@ -15,4 +15,27 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-include ':taskGame'
+package net.fred.taskgame.model.holders;
+
+import android.view.View;
+import android.widget.ImageView;
+
+import com.neopixl.pixlui.components.textview.TextView;
+
+import net.fred.taskgame.view.SquareImageView;
+
+public class NoteViewHolder {
+
+	public View root;
+	public View cardLayout;
+	public View categoryMarker;
+
+	public TextView title;
+	public TextView content;
+	public TextView date;
+
+	public ImageView locationIcon;
+	public ImageView alarmIcon;
+
+	public SquareImageView attachmentThumbnail;
+}
