@@ -308,7 +308,7 @@ public class MainActivity extends BaseActivity implements OnDateSetListener, OnT
 		if (i.getAction() == null) return;
 
 		if (receivedIntent(i)) {
-			Task task = i.getParcelableExtra(Constants.INTENT_NOTE);
+			Task task = i.getParcelableExtra(Constants.INTENT_TASK);
 			if (task == null) {
 				task = DbHelper.getTask(i.getIntExtra(Constants.INTENT_KEY, 0));
 			}
@@ -358,7 +358,7 @@ public class MainActivity extends BaseActivity implements OnDateSetListener, OnT
 
 	private boolean noteAlreadyOpened(Task task) {
 		DetailFragment detailFragment = (DetailFragment) mFragmentManager.findFragmentByTag(FRAGMENT_DETAIL_TAG);
-		return detailFragment != null && detailFragment.getCurrentNote().getId() == task.getId();
+		return detailFragment != null && detailFragment.getCurrentTask().getId() == task.getId();
 	}
 
 
@@ -379,7 +379,7 @@ public class MainActivity extends BaseActivity implements OnDateSetListener, OnT
 		animateTransition(transaction, TRANSITION_HORIZONTAL);
 		DetailFragment mDetailFragment = new DetailFragment();
 		Bundle b = new Bundle();
-		b.putParcelable(Constants.INTENT_NOTE, task);
+		b.putParcelable(Constants.INTENT_TASK, task);
 		mDetailFragment.setArguments(b);
 		if (mFragmentManager.findFragmentByTag(FRAGMENT_DETAIL_TAG) == null) {
 			transaction.replace(R.id.fragment_container, mDetailFragment, FRAGMENT_DETAIL_TAG).addToBackStack(FRAGMENT_LIST_TAG).commitAllowingStateLoss();

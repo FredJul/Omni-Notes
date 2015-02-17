@@ -1160,7 +1160,7 @@ public class ListFragment extends Fragment implements OnTasksLoadedListener, OnV
 				undoTasksList.put(listAdapter.getPosition(task) + undoTasksList.size(), task);
 				modifiedTasks.add(task);
 			} else {
-				trashNote(task, false);
+				trashTask(task, false);
 			}
 			// Removes note adapter
 			listAdapter.remove(task);
@@ -1206,7 +1206,7 @@ public class ListFragment extends Fragment implements OnTasksLoadedListener, OnV
 	 *
 	 * @param task Note to be deleted
 	 */
-	protected void trashNote(Task task, boolean trash) {
+	protected void trashTask(Task task, boolean trash) {
 		DbHelper.trashTask(task, trash);
 		// Update adapter content
 		listAdapter.remove(task);
@@ -1439,7 +1439,7 @@ public class ListFragment extends Fragment implements OnTasksLoadedListener, OnV
 
 			for (Task task : modifiedTasks) {
 				if (undoTrash)
-					trashNote(task, true);
+					trashTask(task, true);
 				else if (undoCategorize) categorizeNote(task, undoCategorizeCategory);
 			}
 			// Refreshes navigation drawer if is set to show categories count numbers

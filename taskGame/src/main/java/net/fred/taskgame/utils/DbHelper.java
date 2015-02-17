@@ -25,6 +25,7 @@ import com.raizlabs.android.dbflow.sql.language.Delete;
 import com.raizlabs.android.dbflow.sql.language.Select;
 import com.raizlabs.android.dbflow.sql.language.Update;
 
+import net.fred.taskgame.MainApplication;
 import net.fred.taskgame.model.Attachment;
 import net.fred.taskgame.model.Attachment$Table;
 import net.fred.taskgame.model.Category;
@@ -132,6 +133,7 @@ public class DbHelper {
 	 */
 	public static void trashTask(Task task, boolean trash) {
 		task.setTrashed(trash);
+		ReminderHelper.removeReminder(MainApplication.getContext(), task);
 		updateTask(task, false);
 	}
 

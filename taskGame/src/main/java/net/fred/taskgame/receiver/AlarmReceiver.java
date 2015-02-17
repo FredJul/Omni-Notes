@@ -47,7 +47,7 @@ public class AlarmReceiver extends BroadcastReceiver {
 //			wl.acquire();
 
 			try {
-				Task task = intent.getExtras().getParcelable(Constants.INTENT_NOTE);
+				Task task = intent.getExtras().getParcelable(Constants.INTENT_TASK);
 
 				createNotification(mContext, task);
 			}
@@ -98,13 +98,13 @@ public class AlarmReceiver extends BroadcastReceiver {
 		// big view of the notification.
 		Intent snoozeIntent = new Intent(mContext, SnoozeActivity.class);
 		snoozeIntent.setAction(Constants.ACTION_SNOOZE);
-		snoozeIntent.putExtra(Constants.INTENT_NOTE, task);
+		snoozeIntent.putExtra(Constants.INTENT_TASK, task);
 		snoozeIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 		PendingIntent piSnooze = PendingIntent.getActivity(mContext, 0, snoozeIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
 		Intent postponeIntent = new Intent(mContext, SnoozeActivity.class);
 		postponeIntent.setAction(Constants.ACTION_POSTPONE);
-		postponeIntent.putExtra(Constants.INTENT_NOTE, task);
+		postponeIntent.putExtra(Constants.INTENT_TASK, task);
 		snoozeIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 		PendingIntent piPostpone = PendingIntent.getActivity(mContext, 0, postponeIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
@@ -123,7 +123,7 @@ public class AlarmReceiver extends BroadcastReceiver {
 		// Next create the bundle and initialize it
 		Intent intent = new Intent(mContext, SnoozeActivity.class);
 		Bundle bundle = new Bundle();
-		bundle.putParcelable(Constants.INTENT_NOTE, task);
+		bundle.putParcelable(Constants.INTENT_TASK, task);
 		intent.putExtras(bundle);
 
 		// Sets the Activity to start in a new, empty task

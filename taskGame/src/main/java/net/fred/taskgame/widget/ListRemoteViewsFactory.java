@@ -131,7 +131,7 @@ public class ListRemoteViewsFactory implements RemoteViewsFactory {
 		// Next, set a fill-intent, which will be used to fill in the pending intent template
 		// that is set on the collection view in StackWidgetProvider.
 		Bundle extras = new Bundle();
-		extras.putParcelable(Constants.INTENT_NOTE, task);
+		extras.putParcelable(Constants.INTENT_TASK, task);
 		Intent fillInIntent = new Intent();
 		fillInIntent.putExtras(extras);
 		// Make it possible to distinguish the individual on-click

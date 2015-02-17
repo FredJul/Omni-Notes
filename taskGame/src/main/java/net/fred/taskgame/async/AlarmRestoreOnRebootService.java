@@ -29,6 +29,7 @@ import net.fred.taskgame.model.Task;
 import net.fred.taskgame.receiver.AlarmReceiver;
 import net.fred.taskgame.utils.Constants;
 import net.fred.taskgame.utils.DbHelper;
+import net.fred.taskgame.utils.ReminderHelper;
 
 import java.util.List;
 
@@ -41,43 +42,18 @@ public class AlarmRestoreOnRebootService extends Service {
 
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId) {
-
-
-		Context mContext = getApplicationContext();
-
-//		PowerManager pm = (PowerManager) ctx.getSystemService(Context.POWER_SERVICE);
-//		PowerManager.WakeLock wl = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, Constants.TAG);
-//		// Acquire the lock
-//		wl.acquire();
+		Context context = getApplicationContext();
 
 		// Refresh widgets data
-		BaseActivity.notifyAppWidgets(mContext);
+		BaseActivity.notifyAppWidgets(context);
 
 		// Retrieves all tasks with reminder set
-		try {
 			List<Task> tasks = DbHelper.getTasksWithReminder(true);
 
 			for (Task task : tasks) {
-				setAlarm(mContext, task);
+				ReminderHelper.addReminder(context, task);
 			}
-		}
-
-
-		// Release the lock
-		finally {
-//			wl.release();
-		}
 
 		return Service.START_NOT_STICKY;
 	}
-
-	private void setAlarm(Context ctx, Task task) {
-		Intent intent = new Intent(ctx, AlarmReceiver.class);
-		intent.putExtra(Constants.INTENT_NOTE, task);
-		PendingIntent sender = PendingIntent.getBroadcast(ctx, Constants.INTENT_ALARM_CODE, intent,
-				PendingIntent.FLAG_CANCEL_CURRENT);
-		AlarmManager am = (AlarmManager) ctx.getSystemService(ALARM_SERVICE);
-		am.set(AlarmManager.RTC_WAKEUP, Long.parseLong(task.getAlarm()), sender);
-	}
-
 }

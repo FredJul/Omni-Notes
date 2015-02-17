@@ -106,6 +106,7 @@ import net.fred.taskgame.utils.GeocodeHelper;
 import net.fred.taskgame.utils.IntentChecker;
 import net.fred.taskgame.utils.KeyboardUtils;
 import net.fred.taskgame.utils.PrefUtils;
+import net.fred.taskgame.utils.ReminderHelper;
 import net.fred.taskgame.utils.StorageManager;
 import net.fred.taskgame.utils.date.DateHelper;
 import net.fred.taskgame.utils.date.ReminderPickers;
@@ -236,8 +237,8 @@ public class DetailFragment extends Fragment implements
 
 	@Override
 	public void onSaveInstanceState(Bundle outState) {
-		taskTmp.setTitle(getNoteTitle());
-		taskTmp.setContent(getNoteContent());
+		taskTmp.setTitle(getTaskTitle());
+		taskTmp.setContent(getTaskContent());
 		outState.putParcelable("noteTmp", taskTmp);
 		outState.putParcelable("note", task);
 		outState.putParcelable("noteOriginal", taskOriginal);
@@ -252,7 +253,7 @@ public class DetailFragment extends Fragment implements
 
 		// Checks "goBack" value to avoid performing a double saving
 		if (!goBack) {
-			saveNote(this);
+			saveTask(this);
 		}
 
 		if (mRecorder != null) {
@@ -283,7 +284,7 @@ public class DetailFragment extends Fragment implements
 		handleIntents();
 
 		if (taskOriginal == null) {
-			taskOriginal = getArguments().getParcelable(Constants.INTENT_NOTE);
+			taskOriginal = getArguments().getParcelable(Constants.INTENT_TASK);
 		}
 
 		if (task == null) {
@@ -307,7 +308,7 @@ public class DetailFragment extends Fragment implements
 		if (Constants.ACTION_MERGE.equals(i.getAction())) {
 			taskOriginal = new Task();
 			task = new Task(taskOriginal);
-			taskTmp = getArguments().getParcelable(Constants.INTENT_NOTE);
+			taskTmp = getArguments().getParcelable(Constants.INTENT_TASK);
 			i.setAction(null);
 		}
 
@@ -431,7 +432,7 @@ public class DetailFragment extends Fragment implements
 		// Initialization of location TextView
 		locationTextView = (TextView) getView().findViewById(R.id.location);
 
-		if (isNoteLocationValid()) {
+		if (isTaskLocationValid()) {
 			if (!TextUtils.isEmpty(taskTmp.getAddress())) {
 				locationTextView.setVisibility(View.VISIBLE);
 				locationTextView.setText(taskTmp.getAddress());
@@ -772,7 +773,7 @@ public class DetailFragment extends Fragment implements
 	@Override
 	public void onAddressResolved(String address) {
 		if (TextUtils.isEmpty(address)) {
-			if (!isNoteLocationValid()) {
+			if (!isTaskLocationValid()) {
 				getMainActivity().showMessage(R.string.location_not_found, CroutonHelper.ALERT);
 				return;
 			}
@@ -891,7 +892,7 @@ public class DetailFragment extends Fragment implements
 				categorizeNote();
 				break;
 			case R.id.menu_share:
-				shareNote();
+				shareTask();
 				break;
 			case R.id.menu_checklist_on:
 				toggleChecklist();
@@ -900,16 +901,16 @@ public class DetailFragment extends Fragment implements
 				toggleChecklist();
 				break;
 			case R.id.menu_trash:
-				trashNote(true);
+				trashTask(true);
 				break;
 			case R.id.menu_untrash:
-				trashNote(false);
+				trashTask(false);
 				break;
 			case R.id.menu_discard_changes:
 				discard();
 				break;
 			case R.id.menu_delete:
-				deleteNote();
+				deleteTask();
 				break;
 		}
 		return super.onOptionsItemSelected(item);
@@ -1262,7 +1263,7 @@ public class DetailFragment extends Fragment implements
 		}
 	}
 
-	private void trashNote(boolean trash) {
+	private void trashTask(boolean trash) {
 		// Simply go back if is a new note
 		if (taskTmp.getId() == 0) {
 			goHome();
@@ -1273,10 +1274,15 @@ public class DetailFragment extends Fragment implements
 		goBack = true;
 		exitMessage = trash ? getString(R.string.task_trashed) : getString(R.string.task_untrashed);
 		exitCroutonStyle = trash ? CroutonHelper.WARN : CroutonHelper.INFO;
-		saveNote(this);
+		if (trash) {
+			ReminderHelper.removeReminder(MainApplication.getContext(), taskTmp);
+		} else {
+			ReminderHelper.addReminder(MainApplication.getContext(), task);
+		}
+		saveTask(this);
 	}
 
-	private void deleteNote() {
+	private void deleteTask() {
 		// Confirm dialog creation
 		new MaterialDialog.Builder(getActivity())
 				.content(R.string.delete_task_confirmation)
@@ -1297,18 +1303,18 @@ public class DetailFragment extends Fragment implements
 		exitMessage = getString(R.string.task_updated);
 		exitCroutonStyle = CroutonHelper.CONFIRM;
 		goBack = true;
-		saveNote(mOnTaskSaved);
+		saveTask(mOnTaskSaved);
 	}
 
 
 	/**
 	 * Save new tasks, modify them or archive
 	 */
-	void saveNote(OnTaskSaved mOnTaskSaved) {
+	void saveTask(OnTaskSaved mOnTaskSaved) {
 
 		// Changed fields
-		taskTmp.setTitle(getNoteTitle());
-		taskTmp.setContent(getNoteContent());
+		taskTmp.setTitle(getTaskTitle());
+		taskTmp.setContent(getTaskContent());
 
 		// Check if some text or attachments of any type have been inserted or
 		// is an empty note
@@ -1364,7 +1370,7 @@ public class DetailFragment extends Fragment implements
 		}
 	}
 
-	private String getNoteTitle() {
+	private String getTaskTitle() {
 		String res;
 		if (getActivity() != null && getActivity().findViewById(R.id.detail_title) != null) {
 			Editable editableTitle = ((EditText) getActivity().findViewById(R.id.detail_title)).getText();
@@ -1375,7 +1381,7 @@ public class DetailFragment extends Fragment implements
 		return res;
 	}
 
-	private String getNoteContent() {
+	private String getTaskContent() {
 		String content = "";
 		if (!taskTmp.isChecklist()) {
 			try {
@@ -1399,10 +1405,10 @@ public class DetailFragment extends Fragment implements
 	/**
 	 * Updates share intent
 	 */
-	private void shareNote() {
+	private void shareTask() {
 		Task sharedTask = new Task(taskTmp);
-		sharedTask.setTitle(getNoteTitle());
-		sharedTask.setContent(getNoteContent());
+		sharedTask.setTitle(getTaskTitle());
+		sharedTask.setContent(getTaskContent());
 		getMainActivity().shareTaskNote(sharedTask);
 	}
 
@@ -1636,7 +1642,7 @@ public class DetailFragment extends Fragment implements
 						getMainActivity().animateTransition(transaction, getMainActivity().TRANSITION_VERTICAL);
 						DetailFragment mDetailFragment = new DetailFragment();
 						Bundle b = new Bundle();
-						b.putParcelable(Constants.INTENT_NOTE, new Task());
+						b.putParcelable(Constants.INTENT_TASK, new Task());
 						mDetailFragment.setArguments(b);
 						transaction.replace(R.id.fragment_container, mDetailFragment, getMainActivity().FRAGMENT_DETAIL_TAG).addToBackStack(getMainActivity().FRAGMENT_DETAIL_TAG).commit();
 					}
@@ -1708,11 +1714,11 @@ public class DetailFragment extends Fragment implements
 	/**
 	 * Used to check currently opened note from activity to avoid openind multiple times the same one
 	 */
-	public Task getCurrentNote() {
+	public Task getCurrentTask() {
 		return task;
 	}
 
-	private boolean isNoteLocationValid() {
+	private boolean isTaskLocationValid() {
 		return taskTmp.getLatitude() != null
 				&& taskTmp.getLatitude() != 0
 				&& taskTmp.getLongitude() != null

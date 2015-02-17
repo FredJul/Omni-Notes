@@ -24,6 +24,7 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.widget.Toast;
 
+import net.fred.taskgame.MainApplication;
 import net.fred.taskgame.R;
 import net.fred.taskgame.fragment.DetailFragment;
 import net.fred.taskgame.model.Attachment;
@@ -32,6 +33,7 @@ import net.fred.taskgame.model.listeners.OnTaskSaved;
 import net.fred.taskgame.receiver.AlarmReceiver;
 import net.fred.taskgame.utils.Constants;
 import net.fred.taskgame.utils.DbHelper;
+import net.fred.taskgame.utils.ReminderHelper;
 import net.fred.taskgame.utils.StorageManager;
 
 import java.util.Calendar;
@@ -107,23 +109,11 @@ public class SaveTask extends AsyncTask<Task, Void, Task> {
 		// Set reminder if is not passed yet
 		long now = Calendar.getInstance().getTimeInMillis();
 		if (task.getAlarm() != null && Long.parseLong(task.getAlarm()) >= now) {
-			setAlarm(task);
+			ReminderHelper.addReminder(MainApplication.getContext(), task);
 		}
 
 		if (this.mOnTaskSaved != null) {
 			mOnTaskSaved.onTaskSaved(task);
 		}
 	}
-
-
-	private void setAlarm(Task task) {
-		Intent intent = new Intent(mActivity, AlarmReceiver.class);
-		intent.putExtra(Constants.INTENT_NOTE, task);
-		PendingIntent sender = PendingIntent.getBroadcast(mActivity, task.getCreation().intValue(), intent,
-				PendingIntent.FLAG_CANCEL_CURRENT);
-		AlarmManager am = (AlarmManager) mActivity.getSystemService(Activity.ALARM_SERVICE);
-		am.set(AlarmManager.RTC_WAKEUP, Long.parseLong(task.getAlarm()), sender);
-	}
-
-
 }
