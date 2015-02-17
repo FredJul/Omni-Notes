@@ -38,29 +38,11 @@ public class AlarmReceiver extends BroadcastReceiver {
 	@Override
 	public void onReceive(Context mContext, Intent intent) {
 		try {
-
-//			PowerManager pm = (PowerManager) mContext
-//					.getSystemService(Context.POWER_SERVICE);
-//			PowerManager.WakeLock wl = pm.newWakeLock(
-//					PowerManager.PARTIAL_WAKE_LOCK, Constants.TAG);
-//			// Acquire the lock
-//			wl.acquire();
-
-			try {
-				Task task = intent.getExtras().getParcelable(Constants.INTENT_TASK);
-
-				createNotification(mContext, task);
-			}
-
-			// Release the lock
-			finally {
-//				wl.release();
-			}
-
+			Task task = intent.getExtras().getParcelable(Constants.INTENT_TASK);
+			createNotification(mContext, task);
 		} catch (Exception e) {
 			Toast.makeText(mContext, e.getMessage(), Toast.LENGTH_LONG).show();
 		}
-
 	}
 
 	private void createNotification(Context mContext, Task task) {
