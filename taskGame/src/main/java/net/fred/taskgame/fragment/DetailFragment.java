@@ -340,9 +340,9 @@ public class DetailFragment extends Fragment implements
 					int categoryId = PrefUtils.getInt(PrefUtils.PREF_WIDGET_PREFIX + widgetId, -1);
 					if (categoryId != -1) {
 						try {
-							Category tag = DbHelper.getCategory(categoryId);
+							Category cat = DbHelper.getCategory(categoryId);
 							taskTmp = new Task();
-							taskTmp.setCategory(tag);
+							taskTmp.setCategory(cat);
 						} catch (NumberFormatException e) {
 						}
 					}
