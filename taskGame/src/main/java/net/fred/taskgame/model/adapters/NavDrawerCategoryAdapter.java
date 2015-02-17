@@ -92,12 +92,10 @@ public class NavDrawerCategoryAdapter extends BaseAdapter {
 		holder.txtTitle.setText(category.name);
 
 		if (isSelected(parent, position)) {
-//			holder.txtTitle.setTextColor(mActivity.getResources().getColor(
-//					R.color.drawer_text_selected));
+			holder.txtTitle.setTextColor(Color.BLACK);
 			holder.txtTitle.setTypeface(null, Typeface.BOLD);
 		} else {
-//			holder.txtTitle.setTextColor(mActivity.getResources().getColor(
-//					R.color.text_color));
+			holder.txtTitle.setTextColor(mActivity.getResources().getColor(R.color.drawer_text));
 			holder.txtTitle.setTypeface(null, Typeface.NORMAL);
 		}
 
