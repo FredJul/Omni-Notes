@@ -18,8 +18,6 @@ package net.fred.taskgame.fragment;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
-import android.animation.AnimatorSet;
-import android.animation.ObjectAnimator;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.SearchManager;
@@ -27,8 +25,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Color;
-import android.graphics.Point;
-import android.graphics.Rect;
 import android.graphics.drawable.AnimationDrawable;
 import android.os.Build;
 import android.os.Bundle;
@@ -56,10 +52,8 @@ import android.view.View.OnClickListener;
 import android.view.View.OnFocusChangeListener;
 import android.view.ViewGroup;
 import android.view.animation.AccelerateDecelerateInterpolator;
-import android.view.animation.DecelerateInterpolator;
 import android.view.inputmethod.EditorInfo;
 import android.widget.AdapterView;
-import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
@@ -100,7 +94,6 @@ import java.util.List;
 import java.util.Map;
 
 import de.keyboardsurfer.android.widget.crouton.Crouton;
-import it.feio.android.checklistview.utils.DensityUtil;
 
 import static android.support.v4.view.ViewCompat.animate;
 
@@ -237,8 +230,8 @@ public class ListFragment extends Fragment implements OnTasksLoadedListener, OnV
 			@Override
 			public void onClick(View v) {
 				Task task = new Task();
-				task.setChecklist(true);
-				editNote(task, v);
+                task.isChecklist = true;
+                editNote(task, v);
 			}
 		});
 		fab.findViewById(R.id.fab_camera).setOnClickListener(new OnClickListener() {
@@ -386,9 +379,9 @@ public class ListFragment extends Fragment implements OnTasksLoadedListener, OnV
 			// Here you can make any necessary updates to the activity when
 			// the CAB is removed. By default, selected items are
 			// deselected/unchecked.
-			for (int i = 0; i < listAdapter.getmSelectedItems().size(); i++) {
-				int key = listAdapter.getmSelectedItems().keyAt(i);
-				View v = list.getChildAt(key - list.getFirstVisiblePosition());
+            for (int i = 0; i < listAdapter.getSelectedItems().size(); i++) {
+                int key = listAdapter.getSelectedItems().keyAt(i);
+                View v = list.getChildAt(key - list.getFirstVisiblePosition());
 				if (listAdapter.getCount() > key && listAdapter.getItem(key) != null && v != null) {
 					listAdapter.restoreDrawable(listAdapter.getItem(key), v.findViewById(R.id.card_layout));
 				}
@@ -853,7 +846,7 @@ public class ListFragment extends Fragment implements OnTasksLoadedListener, OnV
 
 
 	void editNote2(Task task) {
-		if (task.getId() == 0) {
+        if (task.id == 0) {
 
 			// if navigation is a tag it will be set into note
 			try {

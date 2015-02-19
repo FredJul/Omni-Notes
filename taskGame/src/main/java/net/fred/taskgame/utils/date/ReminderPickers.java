@@ -57,8 +57,8 @@ public class ReminderPickers implements OnDateSetListener, OnTimeSetListener {
 		this.pickerType = pickerType;
 	}
 
-	public void pick(Long presetDateTime) {
-		this.presetDateTime = DateHelper.getCalendar(presetDateTime).getTimeInMillis();
+    public void pick(long presetDateTime) {
+        this.presetDateTime = DateHelper.getCalendar(presetDateTime).getTimeInMillis();
 		if (pickerType == TYPE_AOSP) {
 			timePickerCalledAlready = false;
 			// Timepicker will be automatically called after date is inserted by user

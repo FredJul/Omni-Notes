@@ -140,8 +140,8 @@ public class DetailFragment extends Fragment implements
 	public OnTimeSetListener onTimeSetListener;
 	public boolean goBack = false;
 	MediaRecorder mRecorder = null;
-	// Toggle checklist view
-	View toggleChecklistView;
+    // Toggle isChecklist view
+    View toggleChecklistView;
 	private TextView datetime;
 	private Uri attachmentUri;
 	private AttachmentAdapter mAttachmentAdapter;
@@ -237,9 +237,9 @@ public class DetailFragment extends Fragment implements
 
 	@Override
 	public void onSaveInstanceState(Bundle outState) {
-		taskTmp.setTitle(getTaskTitle());
-		taskTmp.setContent(getTaskContent());
-		outState.putParcelable("noteTmp", taskTmp);
+        taskTmp.title = getTaskTitle();
+        taskTmp.content = getTaskContent();
+        outState.putParcelable("noteTmp", taskTmp);
 		outState.putParcelable("note", task);
 		outState.putParcelable("noteOriginal", taskOriginal);
 		outState.putParcelable("attachmentUri", attachmentUri);
@@ -295,9 +295,9 @@ public class DetailFragment extends Fragment implements
 			taskTmp = new Task(task);
 		}
 
-		if (taskTmp.getAlarm() != null) {
-			dateTimeText = initReminder(Long.parseLong(taskTmp.getAlarm()));
-		}
+        if (taskTmp.alarmDate != 0) {
+            dateTimeText = initReminder(taskTmp.alarmDate);
+        }
 
 		initViews();
 	}
@@ -307,8 +307,8 @@ public class DetailFragment extends Fragment implements
 
 		if (Constants.ACTION_MERGE.equals(i.getAction())) {
 			taskOriginal = new Task();
-			task = new Task(taskOriginal);
-			taskTmp = getArguments().getParcelable(Constants.INTENT_TASK);
+            task = new Task();
+            taskTmp = getArguments().getParcelable(Constants.INTENT_TASK);
 			i.setAction(null);
 		}
 
@@ -373,14 +373,14 @@ public class DetailFragment extends Fragment implements
 			// Text title
 			String title = i.getStringExtra(Intent.EXTRA_SUBJECT);
 			if (title != null) {
-				taskTmp.setTitle(title);
-			}
+                taskTmp.title = title;
+            }
 
 			// Text content
 			String content = i.getStringExtra(Intent.EXTRA_TEXT);
 			if (content != null) {
-				taskTmp.setContent(content);
-			}
+                taskTmp.content = content;
+            }
 
 			// Single attachment data
 			Uri uri = i.getParcelableExtra(Intent.EXTRA_STREAM);
@@ -433,24 +433,24 @@ public class DetailFragment extends Fragment implements
 		locationTextView = (TextView) getView().findViewById(R.id.location);
 
 		if (isTaskLocationValid()) {
-			if (!TextUtils.isEmpty(taskTmp.getAddress())) {
-				locationTextView.setVisibility(View.VISIBLE);
-				locationTextView.setText(taskTmp.getAddress());
-			} else {
-				GeocodeHelper.getAddressFromCoordinates(getActivity(), taskTmp.getLatitude(), taskTmp.getLongitude(), mFragment);
-			}
+            if (!TextUtils.isEmpty(taskTmp.address)) {
+                locationTextView.setVisibility(View.VISIBLE);
+                locationTextView.setText(taskTmp.address);
+            } else {
+                GeocodeHelper.getAddressFromCoordinates(getActivity(), taskTmp.latitude, taskTmp.longitude, mFragment);
+            }
 		} else {
 		}
 
 		locationTextView.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				String uriString = "geo:" + taskTmp.getLatitude() + ',' + taskTmp.getLongitude()
-						+ "?q=" + taskTmp.getLatitude() + ',' + taskTmp.getLongitude();
-				Intent locationIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(uriString));
+                String uriString = "geo:" + taskTmp.latitude + ',' + taskTmp.longitude
+                        + "?q=" + taskTmp.latitude + ',' + taskTmp.longitude;
+                Intent locationIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(uriString));
 				if (!IntentChecker.isAvailable(getActivity(), locationIntent, null)) {
-					uriString = "http://maps.google.com/maps?q=" + taskTmp.getLatitude() + ',' + taskTmp.getLongitude();
-					locationIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(uriString));
+                    uriString = "http://maps.google.com/maps?q=" + taskTmp.latitude + ',' + taskTmp.longitude;
+                    locationIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(uriString));
 				}
 				startActivity(locationIntent);
 			}
@@ -464,9 +464,9 @@ public class DetailFragment extends Fragment implements
 				builder.callback(new MaterialDialog.SimpleCallback() {
 					@Override
 					public void onPositive(MaterialDialog materialDialog) {
-						taskTmp.setLatitude(0.);
-						taskTmp.setLongitude(0.);
-						fade(locationTextView, false);
+                        taskTmp.latitude = 0.;
+                        taskTmp.longitude = 0.;
+                        fade(locationTextView, false);
 					}
 				});
 				MaterialDialog dialog = builder.build();
@@ -562,9 +562,8 @@ public class DetailFragment extends Fragment implements
 			public void onClick(View v) {
 				int pickerType = PrefUtils.getBoolean("settings_simple_calendar", false) ? ReminderPickers.TYPE_AOSP : ReminderPickers.TYPE_GOOGLE;
 				ReminderPickers reminderPicker = new ReminderPickers(getActivity(), mFragment, pickerType);
-				Long presetDateTime = taskTmp.getAlarm() != null ? Long.parseLong(taskTmp.getAlarm()) : null;
-				reminderPicker.pick(presetDateTime);
-				onDateSetListener = reminderPicker;
+                reminderPicker.pick(taskTmp.alarmDate);
+                onDateSetListener = reminderPicker;
 				onTimeSetListener = reminderPicker;
 			}
 		});
@@ -579,8 +578,8 @@ public class DetailFragment extends Fragment implements
 							public void onPositive(MaterialDialog materialDialog) {
 								reminderDate = "";
 								reminderTime = "";
-								taskTmp.setAlarm(null);
-								datetime.setText("");
+                                taskTmp.alarmDate = 0;
+                                datetime.setText("");
 							}
 						}).build();
 				dialog.show();
@@ -622,11 +621,11 @@ public class DetailFragment extends Fragment implements
 
 	private EditText initTitle() {
 		EditText title = (EditText) getView().findViewById(R.id.detail_title);
-		title.setText(taskTmp.getTitle());
-		title.gatherLinksForText();
+        title.setText(taskTmp.title);
+        title.gatherLinksForText();
 		title.setOnTextLinkClickListener(this);
-		// To avoid dropping here the dragged checklist items
-		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+        // To avoid dropping here the dragged isChecklist items
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
 			title.setOnDragListener(new OnDragListener() {
 				@Override
 				public boolean onDrag(View v, DragEvent event) {
@@ -649,17 +648,17 @@ public class DetailFragment extends Fragment implements
 
 	private EditText initContent() {
 		EditText content = (EditText) getView().findViewById(R.id.detail_content);
-		content.setText(taskTmp.getContent());
-		content.gatherLinksForText();
+        content.setText(taskTmp.content);
+        content.gatherLinksForText();
 		content.setOnTextLinkClickListener(this);
 		// Avoid focused line goes under the keyboard
 		content.addTextChangedListener(this);
 
-		// Restore checklist
-		toggleChecklistView = content;
-		if (taskTmp.isChecklist()) {
-			taskTmp.setChecklist(false);
-			toggleChecklistView.setAlpha(0);
+        // Restore isChecklist
+        toggleChecklistView = content;
+        if (taskTmp.isChecklist) {
+            taskTmp.isChecklist = false;
+            toggleChecklistView.setAlpha(0);
 			toggleChecklist2();
 		}
 
@@ -671,8 +670,8 @@ public class DetailFragment extends Fragment implements
 	 * Force focus and shows soft keyboard
 	 */
 	private void requestFocus(final EditText view) {
-		if (task.getId() == 0 && !taskTmp.isChanged(task)) {
-			KeyboardUtils.showKeyboard(view);
+        if (task.id == 0 && !taskTmp.isChanged(task)) {
+            KeyboardUtils.showKeyboard(view);
 		}
 	}
 
@@ -711,9 +710,9 @@ public class DetailFragment extends Fragment implements
 
 	private void setAddress() {
 		if (!ConnectionManager.internetAvailable(getActivity())) {
-			taskTmp.setLatitude(getMainActivity().currentLatitude);
-			taskTmp.setLongitude(getMainActivity().currentLongitude);
-			onAddressResolved("");
+            taskTmp.latitude = getMainActivity().currentLatitude;
+            taskTmp.longitude = getMainActivity().currentLongitude;
+            onAddressResolved("");
 			return;
 		}
 		LayoutInflater inflater = getActivity().getLayoutInflater();
@@ -730,11 +729,11 @@ public class DetailFragment extends Fragment implements
 						if (TextUtils.isEmpty(autoCompView.getText().toString())) {
 							double lat = getMainActivity().currentLatitude;
 							double lon = getMainActivity().currentLongitude;
-							taskTmp.setLatitude(lat);
-							taskTmp.setLongitude(lon);
-							GeocodeHelper.getAddressFromCoordinates(getActivity(), taskTmp.getLatitude(),
-									taskTmp.getLongitude(), mFragment);
-						} else {
+                            taskTmp.latitude = lat;
+                            taskTmp.longitude = lon;
+                            GeocodeHelper.getAddressFromCoordinates(getActivity(), taskTmp.latitude,
+                                    taskTmp.longitude, mFragment);
+                        } else {
 							GeocodeHelper.getCoordinatesFromAddress(getActivity(), autoCompView.getText().toString(),
 									mFragment);
 						}
@@ -777,11 +776,11 @@ public class DetailFragment extends Fragment implements
 				getMainActivity().showMessage(R.string.location_not_found, CroutonHelper.ALERT);
 				return;
 			}
-			address = taskTmp.getLatitude() + ", " + taskTmp.getLongitude();
-		}
+            address = taskTmp.latitude + ", " + taskTmp.longitude;
+        }
 		if (!GeocodeHelper.areCoordinates(address)) {
-			taskTmp.setAddress(address);
-		}
+            taskTmp.address = address;
+        }
 		locationTextView.setVisibility(View.VISIBLE);
 		locationTextView.setText(address);
 		fade(locationTextView, true);
@@ -791,14 +790,14 @@ public class DetailFragment extends Fragment implements
 	@Override
 	public void onCoordinatesResolved(double[] coords) {
 		if (coords != null) {
-			taskTmp.setLatitude(coords[0]);
-			taskTmp.setLongitude(coords[1]);
-			GeocodeHelper.getAddressFromCoordinates(getActivity(), coords[0], coords[1], new OnGeoUtilResultListener() {
+            taskTmp.latitude = coords[0];
+            taskTmp.longitude = coords[1];
+            GeocodeHelper.getAddressFromCoordinates(getActivity(), coords[0], coords[1], new OnGeoUtilResultListener() {
 				@Override
 				public void onAddressResolved(String address) {
 					if (!GeocodeHelper.areCoordinates(address)) {
-						taskTmp.setAddress(address);
-					}
+                        taskTmp.address = address;
+                    }
 					locationTextView.setVisibility(View.VISIBLE);
 					locationTextView.setText(address);
 					fade(locationTextView, true);
@@ -829,13 +828,13 @@ public class DetailFragment extends Fragment implements
 			MenuItemCompat.collapseActionView(searchMenuItem);
 		}
 
-		boolean newNote = taskTmp.getId() == 0;
+        boolean newNote = taskTmp.id == 0;
 
-		menu.findItem(R.id.menu_checklist_on).setVisible(!taskTmp.isChecklist());
-		menu.findItem(R.id.menu_checklist_off).setVisible(taskTmp.isChecklist());
-		// If note is trashed only this options will be available from menu
-		if (taskTmp.isTrashed()) {
-			menu.findItem(R.id.menu_untrash).setVisible(true);
+        menu.findItem(R.id.menu_checklist_on).setVisible(!taskTmp.isChecklist);
+        menu.findItem(R.id.menu_checklist_off).setVisible(taskTmp.isChecklist);
+        // If note is isTrashed only this options will be available from menu
+        if (taskTmp.isTrashed) {
+            menu.findItem(R.id.menu_untrash).setVisible(true);
 			menu.findItem(R.id.menu_delete).setVisible(true);
 			// Otherwise all other actions will be available
 		} else {
@@ -924,15 +923,15 @@ public class DetailFragment extends Fragment implements
 
 	private void toggleChecklist() {
 
-		// In case checklist is active a prompt will ask about many options
-		// to decide hot to convert back to simple text
-		if (!taskTmp.isChecklist()) {
-			toggleChecklist2();
+        // In case isChecklist is active a prompt will ask about many options
+        // to decide hot to convert back to simple text
+        if (!taskTmp.isChecklist) {
+            toggleChecklist2();
 			return;
 		}
 
-		// If checklist is active but no items are checked the conversion in done automatically
-		// without prompting user
+        // If isChecklist is active but no items are checked the conversion in done automatically
+        // without prompting user
 		if (mChecklistManager.getCheckedCount() == 0) {
 			toggleChecklist2(true, false);
 			return;
@@ -964,8 +963,8 @@ public class DetailFragment extends Fragment implements
 
 
 	/**
-	 * Toggles checklist view
-	 */
+     * Toggles isChecklist view
+     */
 	private void toggleChecklist2() {
 		boolean keepChecked = PrefUtils.getBoolean(PrefUtils.PREF_KEEP_CHECKED, true);
 		boolean showChecks = PrefUtils.getBoolean(PrefUtils.PREF_KEEP_CHECKMARKS, true);
@@ -1006,8 +1005,8 @@ public class DetailFragment extends Fragment implements
 			toggleChecklistView = newView;
 //			fade(toggleChecklistView, true);
 			animate(toggleChecklistView).alpha(1).scaleXBy(0).scaleX(1).scaleYBy(0).scaleY(1);
-			taskTmp.setChecklist(!taskTmp.isChecklist());
-		}
+            taskTmp.isChecklist = !taskTmp.isChecklist;
+        }
 	}
 
 
@@ -1250,8 +1249,8 @@ public class DetailFragment extends Fragment implements
 
 		if (!taskTmp.equals(taskOriginal)) {
 			// Restore original status of the note
-			if (taskOriginal.getId() == 0) {
-				getMainActivity().deleteNote(taskTmp);
+            if (taskOriginal.id == 0) {
+                getMainActivity().deleteNote(taskTmp);
 				goHome();
 			} else {
 				SaveTask saveTask = new SaveTask(this, this, false);
@@ -1265,13 +1264,13 @@ public class DetailFragment extends Fragment implements
 
 	private void trashTask(boolean trash) {
 		// Simply go back if is a new note
-		if (taskTmp.getId() == 0) {
-			goHome();
+        if (taskTmp.id == 0) {
+            goHome();
 			return;
 		}
 
-		taskTmp.setTrashed(trash);
-		goBack = true;
+        taskTmp.isTrashed = trash;
+        goBack = true;
 		exitMessage = trash ? getString(R.string.task_trashed) : getString(R.string.task_untrashed);
 		exitCroutonStyle = trash ? CroutonHelper.WARN : CroutonHelper.INFO;
 		if (trash) {
@@ -1313,13 +1312,13 @@ public class DetailFragment extends Fragment implements
 	void saveTask(OnTaskSaved mOnTaskSaved) {
 
 		// Changed fields
-		taskTmp.setTitle(getTaskTitle());
-		taskTmp.setContent(getTaskContent());
+        taskTmp.title = getTaskTitle();
+        taskTmp.content = getTaskContent();
 
 		// Check if some text or attachments of any type have been inserted or
 		// is an empty note
-		if (goBack && TextUtils.isEmpty(taskTmp.getTitle()) && TextUtils.isEmpty(taskTmp.getContent())
-				&& taskTmp.getAttachmentsList().size() == 0) {
+        if (goBack && TextUtils.isEmpty(taskTmp.title) && TextUtils.isEmpty(taskTmp.content)
+                && taskTmp.getAttachmentsList().size() == 0) {
 
 			exitMessage = getString(R.string.empty_task_not_saved);
 			exitCroutonStyle = CroutonHelper.INFO;
@@ -1356,8 +1355,8 @@ public class DetailFragment extends Fragment implements
 	 */
 	private boolean lastModificationUpdatedNeeded() {
 		task.setCategory(taskTmp.getCategory());
-		task.setTrashed(taskTmp.isTrashed());
-		return taskTmp.isChanged(task);
+        task.isTrashed = taskTmp.isTrashed;
+        return taskTmp.isChanged(task);
 	}
 
 
@@ -1383,8 +1382,8 @@ public class DetailFragment extends Fragment implements
 
 	private String getTaskContent() {
 		String content = "";
-		if (!taskTmp.isChecklist()) {
-			try {
+        if (!taskTmp.isChecklist) {
+            try {
 				try {
 					content = ((EditText) getActivity().findViewById(R.id.detail_content)).getText().toString();
 				} catch (ClassCastException e) {
@@ -1407,9 +1406,9 @@ public class DetailFragment extends Fragment implements
 	 */
 	private void shareTask() {
 		Task sharedTask = new Task(taskTmp);
-		sharedTask.setTitle(getTaskTitle());
-		sharedTask.setContent(getTaskContent());
-		getMainActivity().shareTaskNote(sharedTask);
+        sharedTask.title = getTaskTitle();
+        sharedTask.content = getTaskContent();
+        getMainActivity().shareTaskNote(sharedTask);
 	}
 
 	/**
@@ -1672,8 +1671,8 @@ public class DetailFragment extends Fragment implements
 
 	@Override
 	public void onReminderPicked(long reminder) {
-		taskTmp.setAlarm(reminder);
-		if (mFragment.isAdded()) {
+        taskTmp.alarmDate = reminder;
+        if (mFragment.isAdded()) {
 			datetime.setText(getString(R.string.alarm_set_on) + " " + DateHelper.getDateTimeShort(getActivity(), reminder));
 		}
 	}
@@ -1698,8 +1697,8 @@ public class DetailFragment extends Fragment implements
 	}
 
 	private void scrollContent() {
-		if (taskTmp.isChecklist()) {
-			if (mChecklistManager.getCount() > contentLineCounter) {
+        if (taskTmp.isChecklist) {
+            if (mChecklistManager.getCount() > contentLineCounter) {
 				scrollView.scrollBy(0, 60);
 			}
 			contentLineCounter = mChecklistManager.getCount();
@@ -1719,11 +1718,9 @@ public class DetailFragment extends Fragment implements
 	}
 
 	private boolean isTaskLocationValid() {
-		return taskTmp.getLatitude() != null
-				&& taskTmp.getLatitude() != 0
-				&& taskTmp.getLongitude() != null
-				&& taskTmp.getLongitude() != 0;
-	}
+        return taskTmp.latitude != 0
+                && taskTmp.longitude != 0;
+    }
 
 	/**
 	 * Manages clicks on attachment dialog

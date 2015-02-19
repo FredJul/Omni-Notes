@@ -33,29 +33,30 @@ import java.util.List;
 
 @Table
 public class Task extends BaseModel implements Parcelable {
-	@Column(columnType = Column.PRIMARY_KEY_AUTO_INCREMENT)
+
+    @Column(columnType = Column.PRIMARY_KEY_AUTO_INCREMENT)
 	public int id;
 	@Column
 	public String title = "";
 	@Column
 	public String content = "";
 	@Column
-	public long creation;
-	@Column
-	public long lastModification;
-	@Column
-	public boolean trashed;
-	@Column
-	public String alarm;
-	@Column
+    public long creationDate;
+    @Column
+    public long lastModificationDate;
+    @Column
+    public boolean isTrashed;
+    @Column
+    public long alarmDate;
+    @Column
 	public double latitude;
 	@Column
 	public double longitude;
 	@Column
-	public String address;
-	@Column
-	public boolean checklist;
-	@Column
+    public String address = "";
+    @Column
+    public boolean isChecklist;
+    @Column
 	int categoryId;
 
 	private Category mCategory;
@@ -66,37 +67,38 @@ public class Task extends BaseModel implements Parcelable {
 	}
 
 	public Task(Task task) {
-		setId(task.getId());
-		setTitle(task.getTitle());
-		setContent(task.getContent());
-		setCreation(task.getCreation());
-		setLastModification(task.getLastModification());
-		setTrashed(task.isTrashed());
-		setAlarm(task.getAlarm());
-		setLatitude(task.getLatitude());
-		setLongitude(task.getLongitude());
-		setAddress(task.getAddress());
-		setCategory(task.getCategory());
-		setChecklist(task.isChecklist());
-		setAttachmentsList(task.getAttachmentsList());
-		setPasswordChecked(task.isPasswordChecked());
-	}
+        id = task.id;
+        title = task.title;
+        content = task.content;
+        creationDate = task.creationDate;
+        lastModificationDate = task.lastModificationDate;
+        isTrashed = task.isTrashed;
+        alarmDate = task.alarmDate;
+        latitude = task.latitude;
+        longitude = task.longitude;
+        address = task.address;
+        isChecklist = task.isChecklist;
+        categoryId = task.categoryId;
+        mCategory = task.mCategory;
+        mAttachmentsList = task.mAttachmentsList;
+    }
 
 	private Task(Parcel in) {
-		setId(in.readInt());
-		setCreation(in.readLong());
-		setLastModification(in.readLong());
-		setTitle(in.readString());
-		setContent(in.readString());
-		setTrashed(in.readInt());
-		setAlarm(in.readString());
-		setLatitude(in.readDouble());
-		setLongitude(in.readDouble());
-		setAddress(in.readString());
-		setCategory((Category) in.readParcelable(Category.class.getClassLoader()));
-		setChecklist(in.readInt());
-		in.readList(getAttachmentsList(), Attachment.class.getClassLoader());
-	}
+        id = in.readInt();
+        title = in.readString();
+        content = in.readString();
+        creationDate = in.readLong();
+        lastModificationDate = in.readLong();
+        isTrashed = in.readInt() == 1;
+        alarmDate = in.readLong();
+        latitude = in.readDouble();
+        longitude = in.readDouble();
+        address = in.readString();
+        isChecklist = in.readInt() == 1;
+        categoryId = in.readInt();
+        mCategory = in.readParcelable(Category.class.getClassLoader());
+        in.readList(mAttachmentsList, Attachment.class.getClassLoader());
+    }
 
 	public List<Attachment> getAttachmentsList() {
 		if (mAttachmentsList == null) {
@@ -138,131 +140,9 @@ public class Task extends BaseModel implements Parcelable {
 		return mCategory;
 	}
 
-
 	public void setCategory(Category category) {
 		categoryId = category != null ? category.id : 0;
 		mCategory = category;
-	}
-
-	public void setId(int id) {
-		this.id = id;
-	}
-
-
-	public int getId() {
-		return id;
-	}
-
-
-	public String getTitle() {
-		if (title == null) return "";
-		return title;
-	}
-
-
-	public void setTitle(String title) {
-		this.title = title == null ? "" : title;
-	}
-
-
-	public String getContent() {
-		if (content == null) return "";
-		return content;
-	}
-
-
-	public void setContent(String content) {
-		this.content = content == null ? "" : content;
-	}
-
-
-	public Long getCreation() {
-		return creation;
-	}
-
-
-	public void setCreation(Long creation) {
-		this.creation = creation;
-	}
-
-	public Long getLastModification() {
-		return lastModification;
-	}
-
-
-	public void setLastModification(Long lastModification) {
-		this.lastModification = lastModification;
-	}
-
-	public boolean isTrashed() {
-		return trashed;
-	}
-
-
-	public void setTrashed(boolean trashed) {
-		this.trashed = trashed;
-	}
-
-
-	public void setTrashed(int trashed) {
-		this.trashed = trashed == 1;
-	}
-
-
-	public String getAlarm() {
-		return alarm;
-	}
-
-
-	public void setAlarm(String alarm) {
-		this.alarm = alarm;
-	}
-
-
-	public void setAlarm(long alarm) {
-		this.alarm = String.valueOf(alarm);
-	}
-
-
-	public Double getLatitude() {
-		return latitude;
-	}
-
-
-	public void setLatitude(Double latitude) {
-		this.latitude = latitude;
-	}
-
-	public Double getLongitude() {
-		return longitude;
-	}
-
-
-	public void setLongitude(Double longitude) {
-		this.longitude = longitude;
-	}
-
-
-	public boolean isChecklist() {
-		return checklist;
-	}
-
-
-	public void setChecklist(boolean checklist) {
-		this.checklist = checklist;
-	}
-
-	public void setChecklist(int checklist) {
-		this.checklist = checklist == 1;
-	}
-
-	public String getAddress() {
-		return address;
-	}
-
-
-	public void setAddress(String address) {
-		this.address = address;
 	}
 
 	public boolean equals(Object o) {
@@ -271,15 +151,14 @@ public class Task extends BaseModel implements Parcelable {
 		try {
 			task = (Task) o;
 		} catch (Exception e) {
-			return res;
-		}
+            return res;
+        }
 
-		Object[] a = {getId(), getTitle(), getContent(), getCreation(), getLastModification(),
-				isTrashed(), getAlarm(), getLatitude(), getLongitude(), getAddress(), getCategory()};
-		Object[] b = {task.getId(), task.getTitle(), task.getContent(), task.getCreation(),
-				task.getLastModification(), task.isTrashed(), task.getAlarm(), task.getLatitude(),
-				task.getLongitude(), task.getAddress(), task.getCategory()};
-		if (EqualityChecker.check(a, b)) {
+        Object[] a = {id, title, content, creationDate, lastModificationDate,
+                isTrashed, alarmDate, latitude, longitude, address, isChecklist, categoryId};
+        Object[] b = {task.id, task.title, task.content, task.creationDate, task.lastModificationDate,
+                task.isTrashed, task.alarmDate, task.latitude, task.longitude, task.address, task.isChecklist, task.categoryId};
+        if (EqualityChecker.check(a, b)) {
 			res = true;
 		}
 
@@ -294,36 +173,22 @@ public class Task extends BaseModel implements Parcelable {
 	}
 
 	public String toString() {
-		return getTitle();
-	}
-
-	// Not saved in DB
-	private boolean passwordChecked = false;
-
+        return title;
+    }
 
 	public String getCreationShort(Context mContext) {
-		return DateHelper.getDateTimeShort(mContext, getCreation());
-	}
-
+        return DateHelper.getDateTimeShort(mContext, creationDate);
+    }
 
 	public String getLastModificationShort(Context mContext) {
-		return DateHelper.getDateTimeShort(mContext, getLastModification());
-	}
-
+        return DateHelper.getDateTimeShort(mContext, lastModificationDate);
+    }
 
 	public String getAlarmShort(Context mContext) {
-		if (getAlarm() == null) return "";
-		return DateHelper.getDateTimeShort(mContext, Long.parseLong(getAlarm()));
-	}
+        if (alarmDate == 0) return "";
+        return DateHelper.getDateTimeShort(mContext, alarmDate);
+    }
 
-	public boolean isPasswordChecked() {
-		return passwordChecked;
-	}
-
-
-	public void setPasswordChecked(boolean passwordChecked) {
-		this.passwordChecked = passwordChecked;
-	}
 
 	@Override
 	public int describeContents() {
@@ -332,18 +197,19 @@ public class Task extends BaseModel implements Parcelable {
 
 	@Override
 	public void writeToParcel(Parcel parcel, int flags) {
-		parcel.writeInt(getId());
-		parcel.writeLong(getCreation());
-		parcel.writeLong(getLastModification());
-		parcel.writeString(getTitle());
-		parcel.writeString(getContent());
-		parcel.writeInt(isTrashed() ? 1 : 0);
-		parcel.writeString(getAlarm());
-		parcel.writeDouble(getLatitude());
-		parcel.writeDouble(getLongitude());
-		parcel.writeString(getAddress());
-		parcel.writeParcelable(getCategory(), 0);
-		parcel.writeInt(isChecklist() ? 1 : 0);
+        parcel.writeInt(id);
+        parcel.writeString(title);
+        parcel.writeString(content);
+        parcel.writeLong(creationDate);
+        parcel.writeLong(lastModificationDate);
+        parcel.writeInt(isTrashed ? 1 : 0);
+        parcel.writeLong(alarmDate);
+        parcel.writeDouble(latitude);
+        parcel.writeDouble(longitude);
+        parcel.writeString(address);
+        parcel.writeInt(isChecklist ? 1 : 0);
+        parcel.writeInt(categoryId);
+        parcel.writeParcelable(getCategory(), 0);
 		parcel.writeList(getAttachmentsList());
 	}
 

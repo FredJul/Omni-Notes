@@ -17,25 +17,72 @@
 package net.fred.taskgame.model;
 
 import android.net.Uri;
+import android.os.Parcel;
+import android.os.Parcelable;
 
 import com.raizlabs.android.dbflow.annotation.Column;
 import com.raizlabs.android.dbflow.annotation.Table;
 import com.raizlabs.android.dbflow.structure.BaseModel;
 
 @Table
-public class Attachment extends BaseModel {
-	@Column(columnType = Column.PRIMARY_KEY_AUTO_INCREMENT)
-	public int id;
-	@Column
-	public int taskId;
-	@Column
-	public String name;
-	@Column
-	public long size;
-	@Column
-	public long length;
-	@Column
-	public String mimeType;
-	@Column
-	public Uri uri;
+public class Attachment extends BaseModel implements Parcelable {
+
+    @Column(columnType = Column.PRIMARY_KEY_AUTO_INCREMENT)
+    public int id;
+    @Column
+    public int taskId;
+    @Column
+    public String name = "";
+    @Column
+    public long size;
+    @Column
+    public long length;
+    @Column
+    public String mimeType = "";
+    @Column
+    public Uri uri = Uri.EMPTY;
+
+    public Attachment() {
+    }
+
+    private Attachment(Parcel in) {
+        id = in.readInt();
+        taskId = in.readInt();
+        name = in.readString();
+        size = in.readLong();
+        length = in.readLong();
+        mimeType = in.readString();
+        uri = Uri.parse(in.readString());
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel parcel, int flags) {
+        parcel.writeInt(id);
+        parcel.writeInt(taskId);
+        parcel.writeString(name);
+        parcel.writeLong(size);
+        parcel.writeLong(length);
+        parcel.writeString(mimeType);
+        parcel.writeString(uri.toString());
+    }
+
+    /*
+    * Parcelable interface must also have a static field called CREATOR, which is an object implementing the
+    * Parcelable.Creator interface. Used to un-marshal or de-serialize object from Parcel.
+    */
+    public static final Parcelable.Creator<Attachment> CREATOR = new Parcelable.Creator<Attachment>() {
+
+        public Attachment createFromParcel(Parcel in) {
+            return new Attachment(in);
+        }
+
+        public Attachment[] newArray(int size) {
+            return new Attachment[size];
+        }
+    };
 }

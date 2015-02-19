@@ -18,9 +18,6 @@
 package net.fred.taskgame.async;
 
 import android.app.Activity;
-import android.app.AlarmManager;
-import android.app.PendingIntent;
-import android.content.Intent;
 import android.os.AsyncTask;
 import android.widget.Toast;
 
@@ -30,8 +27,6 @@ import net.fred.taskgame.fragment.DetailFragment;
 import net.fred.taskgame.model.Attachment;
 import net.fred.taskgame.model.Task;
 import net.fred.taskgame.model.listeners.OnTaskSaved;
-import net.fred.taskgame.receiver.AlarmReceiver;
-import net.fred.taskgame.utils.Constants;
 import net.fred.taskgame.utils.DbHelper;
 import net.fred.taskgame.utils.ReminderHelper;
 import net.fred.taskgame.utils.StorageManager;
@@ -108,8 +103,8 @@ public class SaveTask extends AsyncTask<Task, Void, Task> {
 
 		// Set reminder if is not passed yet
 		long now = Calendar.getInstance().getTimeInMillis();
-		if (task.getAlarm() != null && Long.parseLong(task.getAlarm()) >= now) {
-			ReminderHelper.addReminder(MainApplication.getContext(), task);
+        if (task.alarmDate >= now) {
+            ReminderHelper.addReminder(MainApplication.getContext(), task);
 		}
 
 		if (this.mOnTaskSaved != null) {

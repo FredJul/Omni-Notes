@@ -23,6 +23,7 @@ import android.app.TimePickerDialog.OnTimeSetListener;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -335,9 +336,11 @@ public class MainActivity extends BaseActivity implements OnDateSetListener, OnT
 
 	private void saveAndExit(Intent i) {
 		Task task = new Task();
-		task.setTitle(i.getStringExtra(Intent.EXTRA_SUBJECT));
-		task.setContent(i.getStringExtra(Intent.EXTRA_TEXT));
-		DbHelper.updateTask(task, true);
+        String title = i.getStringExtra(Intent.EXTRA_SUBJECT);
+        task.title = title != null ? title : "";
+        String content = i.getStringExtra(Intent.EXTRA_TEXT);
+        task.content = content != null ? content : "";
+        DbHelper.updateTask(task, true);
 		showToast(getString(R.string.task_updated), Toast.LENGTH_SHORT);
 		finish();
 	}
@@ -358,8 +361,8 @@ public class MainActivity extends BaseActivity implements OnDateSetListener, OnT
 
 	private boolean noteAlreadyOpened(Task task) {
 		DetailFragment detailFragment = (DetailFragment) mFragmentManager.findFragmentByTag(FRAGMENT_DETAIL_TAG);
-		return detailFragment != null && detailFragment.getCurrentTask().getId() == task.getId();
-	}
+        return detailFragment != null && detailFragment.getCurrentTask().id == task.id;
+    }
 
 
 	public void switchToList() {
@@ -396,11 +399,11 @@ public class MainActivity extends BaseActivity implements OnDateSetListener, OnT
 	 */
 	public void shareTaskNote(Task task) {
 
-		String titleText = task.getTitle();
+        String titleText = task.title;
 
 		String contentText = titleText
 				+ System.getProperty("line.separator")
-				+ task.getContent();
+                + task.content;
 
 
 		Intent shareIntent = new Intent();
@@ -454,13 +457,8 @@ public class MainActivity extends BaseActivity implements OnDateSetListener, OnT
 
 		// Saving changes to the note
 		DeleteNoteTask deleteNoteTask = new DeleteNoteTask(getApplicationContext());
-		// Removed parallel computation to avoid concurrency on pool errors
-//		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-//			deleteNoteTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, note);
-//		} else {
-		deleteNoteTask.execute(task);
-//		}
-	}
+        deleteNoteTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, task);
+    }
 
 
 	public void showMessage(int messageId, Style style) {

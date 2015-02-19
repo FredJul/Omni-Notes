@@ -152,17 +152,17 @@ public class NoteAdapter extends ArrayAdapter<Task> implements Insertable {
 
 	private void initIcons(Task task, NoteViewHolder holder) {
 		// ...the location
-		holder.locationIcon.setVisibility(task.getLongitude() != null && task.getLongitude() != 0 ? View.VISIBLE : View.GONE);
+        holder.locationIcon.setVisibility(task.longitude != 0 ? View.VISIBLE : View.GONE);
 
 		// ...the presence of an alarm
-		holder.alarmIcon.setVisibility(task.getAlarm() != null ? View.VISIBLE : View.GONE);
-	}
+        holder.alarmIcon.setVisibility(task.alarmDate != 0 ? View.VISIBLE : View.GONE);
+    }
 
 
 	private void initText(Task note, NoteViewHolder holder) {
 		try {
-			if (note.isChecklist()) {
-				TextWorkerTask task = new TextWorkerTask(mActivity, holder.title, holder.content);
+            if (note.isChecklist) {
+                TextWorkerTask task = new TextWorkerTask(mActivity, holder.title, holder.content);
 				task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, note);
 			} else {
 				Spanned[] titleAndContent = TextHelper.parseTitleAndContent(note);
@@ -193,37 +193,35 @@ public class NoteAdapter extends ArrayAdapter<Task> implements Insertable {
 
 		// Reminder screen forces sorting
 		if (Navigation.checkNavigation(Navigation.REMINDERS)) {
-			sort_column = Task$Table.ALARM;
-		} else {
+            sort_column = Task$Table.ALARMDATE;
+        } else {
 			sort_column = PrefUtils.getString(PrefUtils.PREF_SORTING_COLUMN, "");
 		}
 
 		// Creation
-		if (sort_column.equals(Task$Table.CREATION)) {
-			dateText = mContext.getString(R.string.creation) + " " + task.getCreationShort(mContext);
+        if (sort_column.equals(Task$Table.CREATIONDATE)) {
+            dateText = mContext.getString(R.string.creation) + " " + task.getCreationShort(mContext);
 		}
 		// Reminder
-		else if (sort_column.equals(Task$Table.ALARM)) {
-			String alarmShort = task.getAlarmShort(mContext);
+        else if (sort_column.equals(Task$Table.ALARMDATE)) {
+            String alarmShort = task.getAlarmShort(mContext);
 
 			if (alarmShort.length() == 0) {
 				dateText = mContext.getString(R.string.no_reminder_set);
 			} else {
-				dateText = mContext.getString(R.string.alarm_set_on) + " "
-						+ task.getAlarmShort(mContext);
-			}
+                dateText = mContext.getString(R.string.alarm_set_on) + " " + task.getAlarmShort(mContext);
+            }
 		}
 		// Others
 		else {
-			dateText = mContext.getString(R.string.last_update) + " "
-					+ task.getLastModificationShort(mContext);
-		}
+            dateText = mContext.getString(R.string.last_update) + " " + task.getLastModificationShort(mContext);
+        }
 		return dateText;
 	}
 
 
-	public SparseBooleanArray getmSelectedItems() {
-		return mSelectedItems;
+    public SparseBooleanArray getSelectedItems() {
+        return mSelectedItems;
 	}
 
 	public void addSelectedItem(Integer selectedItem) {

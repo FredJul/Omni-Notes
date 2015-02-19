@@ -25,60 +25,62 @@ import com.raizlabs.android.dbflow.structure.BaseModel;
 
 @Table
 public class Category extends BaseModel implements Parcelable {
-	@Column(columnType = Column.PRIMARY_KEY_AUTO_INCREMENT)
-	public int id;
-	@Column
-	public String name;
-	@Column
-	public String description;
-	@Column
-	public String color;
-	@Column
-	public int count;
 
-	public Category() {
-	}
+    @Column(columnType = Column.PRIMARY_KEY_AUTO_INCREMENT)
+    public int id;
+    @Column
+    public String name = "";
+    @Column
+    public String description = "";
+    @Column
+    public String color = "";
+    @Column
+    public int count;
 
-	private Category(Parcel in) {
-		id = in.readInt();
-		name = in.readString();
-		description = in.readString();
-		color = in.readString();
-	}
+    public Category() {
+    }
 
-	@Override
-	public int describeContents() {
-		return 0;
-	}
+    private Category(Parcel in) {
+        id = in.readInt();
+        name = in.readString();
+        description = in.readString();
+        color = in.readString();
+        count = in.readInt();
+    }
 
-
-	@Override
-	public void writeToParcel(Parcel parcel, int flags) {
-		parcel.writeInt(id);
-		parcel.writeString(name);
-		parcel.writeString(description);
-		parcel.writeString(color);
-	}
+    @Override
+    public int describeContents() {
+        return 0;
+    }
 
 
-	@Override
-	public String toString() {
-		return name;
-	}
-
-	/*
-	 * Parcelable interface must also have a static field called CREATOR, which is an object implementing the
-	 * Parcelable.Creator interface. Used to un-marshal or de-serialize object from Parcel.
-	 */
-	public static final Parcelable.Creator<Category> CREATOR = new Parcelable.Creator<Category>() {
-
-		public Category createFromParcel(Parcel in) {
-			return new Category(in);
-		}
+    @Override
+    public void writeToParcel(Parcel parcel, int flags) {
+        parcel.writeInt(id);
+        parcel.writeString(name);
+        parcel.writeString(description);
+        parcel.writeString(color);
+        parcel.writeInt(count);
+    }
 
 
-		public Category[] newArray(int size) {
-			return new Category[size];
-		}
-	};
+    @Override
+    public String toString() {
+        return name;
+    }
+
+    /*
+     * Parcelable interface must also have a static field called CREATOR, which is an object implementing the
+     * Parcelable.Creator interface. Used to un-marshal or de-serialize object from Parcel.
+     */
+    public static final Parcelable.Creator<Category> CREATOR = new Parcelable.Creator<Category>() {
+
+        public Category createFromParcel(Parcel in) {
+            return new Category(in);
+        }
+
+        public Category[] newArray(int size) {
+            return new Category[size];
+        }
+    };
 }

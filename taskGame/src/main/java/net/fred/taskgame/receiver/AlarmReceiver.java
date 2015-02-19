@@ -24,6 +24,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.NotificationCompat;
+import android.text.TextUtils;
 import android.widget.Toast;
 
 import net.fred.taskgame.R;
@@ -35,98 +36,97 @@ import net.fred.taskgame.utils.date.DateHelper;
 
 public class AlarmReceiver extends BroadcastReceiver {
 
-	@Override
-	public void onReceive(Context mContext, Intent intent) {
-		try {
-			Task task = intent.getExtras().getParcelable(Constants.INTENT_TASK);
-			createNotification(mContext, task);
-		} catch (Exception e) {
-			Toast.makeText(mContext, e.getMessage(), Toast.LENGTH_LONG).show();
-		}
-	}
+    @Override
+    public void onReceive(Context mContext, Intent intent) {
+        try {
+            Task task = intent.getExtras().getParcelable(Constants.INTENT_TASK);
+            createNotification(mContext, task);
+        } catch (Exception e) {
+            Toast.makeText(mContext, e.getMessage(), Toast.LENGTH_LONG).show();
+        }
+    }
 
-	private void createNotification(Context mContext, Task task) {
-		// Prepare text contents
-		String title = task.getTitle().length() > 0 ? task.getTitle() : task
-				.getContent();
-		String alarmText = DateHelper.getString(
-				Long.parseLong(task.getAlarm()),
-				Constants.DATE_FORMAT_SHORT_DATE)
-				+ ", "
-				+ DateHelper.getDateTimeShort(mContext, Long.parseLong(task.getAlarm()));
-		String text = task.getTitle().length() > 0 && task.getContent().length() > 0 ? task.getContent() : alarmText;
+    private void createNotification(Context mContext, Task task) {
+        // Prepare text contents
+        String title = task.title.length() > 0 ? task.title : task.content;
+        String alarmText = DateHelper.getString(
+                task.alarmDate,
+                Constants.DATE_FORMAT_SHORT_DATE)
+                + ", "
+                + DateHelper.getDateTimeShort(mContext, task.alarmDate);
+        String text = !TextUtils.isEmpty(task.title) && !TextUtils.isEmpty(task.content) ? task.content : alarmText;
 
-		// Notification building
-		NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(
-				mContext).setSmallIcon(R.drawable.ic_stat_notification_icon)
-				.setContentTitle(title).setContentText(text)
-				.setAutoCancel(true);
-
-
-		// Ringtone options
-		String ringtone = PrefUtils.getString("settings_notification_ringtone", null);
-		if (ringtone != null) {
-			mBuilder.setSound(Uri.parse(ringtone));
-		}
+        // Notification building
+        NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(
+                mContext).setSmallIcon(R.drawable.ic_stat_notification_icon)
+                .setContentTitle(title).setContentText(text)
+                .setAutoCancel(true);
 
 
-		// Vibration options
-		long[] pattern = {500, 500};
-		if (PrefUtils.getBoolean("settings_notification_vibration", true))
-			mBuilder.setVibrate(pattern);
+        // Ringtone options
+        String ringtone = PrefUtils.getString("settings_notification_ringtone", null);
+        if (ringtone != null) {
+            mBuilder.setSound(Uri.parse(ringtone));
+        }
 
 
-		// Sets up the Snooze and Dismiss action buttons that will appear in the
-		// big view of the notification.
-		Intent snoozeIntent = new Intent(mContext, SnoozeActivity.class);
-		snoozeIntent.setAction(Constants.ACTION_SNOOZE);
-		snoozeIntent.putExtra(Constants.INTENT_TASK, task);
-		snoozeIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-		PendingIntent piSnooze = PendingIntent.getActivity(mContext, 0, snoozeIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+        // Vibration options
+        long[] pattern = {500, 500};
+        if (PrefUtils.getBoolean("settings_notification_vibration", true))
+            mBuilder.setVibrate(pattern);
 
-		Intent postponeIntent = new Intent(mContext, SnoozeActivity.class);
-		postponeIntent.setAction(Constants.ACTION_POSTPONE);
-		postponeIntent.putExtra(Constants.INTENT_TASK, task);
-		snoozeIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-		PendingIntent piPostpone = PendingIntent.getActivity(mContext, 0, postponeIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
-		String snoozeDelay = PrefUtils.getString("settings_notification_snooze_delay", "10");
+        // Sets up the Snooze and Dismiss action buttons that will appear in the
+        // big view of the notification.
+        Intent snoozeIntent = new Intent(mContext, SnoozeActivity.class);
+        snoozeIntent.setAction(Constants.ACTION_SNOOZE);
+        snoozeIntent.putExtra(Constants.INTENT_TASK, task);
+        snoozeIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        PendingIntent piSnooze = PendingIntent.getActivity(mContext, 0, snoozeIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
-		//Sets the big view "big text" style
-		mBuilder
+        Intent postponeIntent = new Intent(mContext, SnoozeActivity.class);
+        postponeIntent.setAction(Constants.ACTION_POSTPONE);
+        postponeIntent.putExtra(Constants.INTENT_TASK, task);
+        snoozeIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        PendingIntent piPostpone = PendingIntent.getActivity(mContext, 0, postponeIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+
+        String snoozeDelay = PrefUtils.getString("settings_notification_snooze_delay", "10");
+
+        //Sets the big view "big text" style
+        mBuilder
 //		.addAction (R.drawable.ic_action_cancel_dark,
 //       		mContext.getString(R.string.cancel), piDismiss)
-				.addAction(R.drawable.ic_snooze_reminder,
-						net.fred.taskgame.utils.TextHelper.capitalize(mContext.getString(R.string.snooze)) + ": " + snoozeDelay, piSnooze)
-				.addAction(R.drawable.ic_reminder,
-						net.fred.taskgame.utils.TextHelper.capitalize(mContext.getString(R.string.add_reminder)), piPostpone);
+                .addAction(R.drawable.ic_snooze_reminder,
+                        net.fred.taskgame.utils.TextHelper.capitalize(mContext.getString(R.string.snooze)) + ": " + snoozeDelay, piSnooze)
+                .addAction(R.drawable.ic_reminder,
+                        net.fred.taskgame.utils.TextHelper.capitalize(mContext.getString(R.string.add_reminder)), piPostpone);
 
 
-		// Next create the bundle and initialize it
-		Intent intent = new Intent(mContext, SnoozeActivity.class);
-		Bundle bundle = new Bundle();
-		bundle.putParcelable(Constants.INTENT_TASK, task);
-		intent.putExtras(bundle);
+        // Next create the bundle and initialize it
+        Intent intent = new Intent(mContext, SnoozeActivity.class);
+        Bundle bundle = new Bundle();
+        bundle.putParcelable(Constants.INTENT_TASK, task);
+        intent.putExtras(bundle);
 
-		// Sets the Activity to start in a new, empty task
-		intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-		// Workaround to fix problems with multiple notifications
-		intent.setAction(Constants.ACTION_NOTIFICATION_CLICK + Long.toString(System.currentTimeMillis()));
+        // Sets the Activity to start in a new, empty task
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        // Workaround to fix problems with multiple notifications
+        intent.setAction(Constants.ACTION_NOTIFICATION_CLICK + Long.toString(System.currentTimeMillis()));
 
-		// Creates the PendingIntent
-		PendingIntent notifyIntent = PendingIntent.getActivity(mContext, 0, intent,
-				PendingIntent.FLAG_UPDATE_CURRENT);
+        // Creates the PendingIntent
+        PendingIntent notifyIntent = PendingIntent.getActivity(mContext, 0, intent,
+                PendingIntent.FLAG_UPDATE_CURRENT);
 
-		// Puts the PendingIntent into the notification builder
-		mBuilder.setContentIntent(notifyIntent);
+        // Puts the PendingIntent into the notification builder
+        mBuilder.setContentIntent(notifyIntent);
 
 
-		// Notifications are issued by sending them to the
-		// NotificationManager system service.
-		NotificationManager mNotificationManager = (NotificationManager) mContext
-				.getSystemService(Context.NOTIFICATION_SERVICE);
-		// Builds an anonymous Notification object from the builder, and
-		// passes it to the NotificationManager
-		mNotificationManager.notify(task.getId(), mBuilder.build());
-	}
+        // Notifications are issued by sending them to the
+        // NotificationManager system service.
+        NotificationManager mNotificationManager = (NotificationManager) mContext
+                .getSystemService(Context.NOTIFICATION_SERVICE);
+        // Builds an anonymous Notification object from the builder, and
+        // passes it to the NotificationManager
+        mNotificationManager.notify(task.id, mBuilder.build());
+    }
 }
