@@ -35,29 +35,29 @@ import java.util.List;
 @Table
 public class Task extends BaseModel implements Parcelable {
 
-    @Column(columnType = Column.PRIMARY_KEY_AUTO_INCREMENT)
+	@Column(columnType = Column.PRIMARY_KEY_AUTO_INCREMENT)
 	public int id;
 	@Column
 	public String title = "";
 	@Column
 	public String content = "";
 	@Column
-    public long creationDate;
-    @Column
-    public long lastModificationDate;
-    @Column
-    public boolean isTrashed;
-    @Column
-    public long alarmDate;
-    @Column
+	public long creationDate;
+	@Column
+	public long lastModificationDate;
+	@Column
+	public boolean isTrashed;
+	@Column
+	public long alarmDate;
+	@Column
 	public double latitude;
 	@Column
 	public double longitude;
 	@Column
-    public String address = "";
-    @Column
-    public boolean isChecklist;
-    @Column
+	public String address = "";
+	@Column
+	public boolean isChecklist;
+	@Column
 	int categoryId;
 
 	private Category mCategory;
@@ -67,41 +67,41 @@ public class Task extends BaseModel implements Parcelable {
 	}
 
 	public Task(Task task) {
-        id = task.id;
-        title = task.title;
-        content = task.content;
-        creationDate = task.creationDate;
-        lastModificationDate = task.lastModificationDate;
-        isTrashed = task.isTrashed;
-        alarmDate = task.alarmDate;
-        latitude = task.latitude;
-        longitude = task.longitude;
-        address = task.address;
-        isChecklist = task.isChecklist;
-        categoryId = task.categoryId;
-        mCategory = task.mCategory;
+		id = task.id;
+		title = task.title;
+		content = task.content;
+		creationDate = task.creationDate;
+		lastModificationDate = task.lastModificationDate;
+		isTrashed = task.isTrashed;
+		alarmDate = task.alarmDate;
+		latitude = task.latitude;
+		longitude = task.longitude;
+		address = task.address;
+		isChecklist = task.isChecklist;
+		categoryId = task.categoryId;
+		mCategory = task.mCategory;
 
-        if (task.mAttachmentsList != null) {
-            mAttachmentsList = new ArrayList<>(task.mAttachmentsList);
-        }
-    }
+		if (task.mAttachmentsList != null) {
+			mAttachmentsList = new ArrayList<>(task.mAttachmentsList);
+		}
+	}
 
 	private Task(Parcel in) {
-        id = in.readInt();
-        title = in.readString();
-        content = in.readString();
-        creationDate = in.readLong();
-        lastModificationDate = in.readLong();
-        isTrashed = in.readInt() == 1;
-        alarmDate = in.readLong();
-        latitude = in.readDouble();
-        longitude = in.readDouble();
-        address = in.readString();
-        isChecklist = in.readInt() == 1;
-        categoryId = in.readInt();
-        mCategory = in.readParcelable(Category.class.getClassLoader());
-        in.readList(mAttachmentsList, Attachment.class.getClassLoader());
-    }
+		id = in.readInt();
+		title = in.readString();
+		content = in.readString();
+		creationDate = in.readLong();
+		lastModificationDate = in.readLong();
+		isTrashed = in.readInt() == 1;
+		alarmDate = in.readLong();
+		latitude = in.readDouble();
+		longitude = in.readDouble();
+		address = in.readString();
+		isChecklist = in.readInt() == 1;
+		categoryId = in.readInt();
+		mCategory = in.readParcelable(Category.class.getClassLoader());
+		in.readList(mAttachmentsList, Attachment.class.getClassLoader());
+	}
 
 	public List<Attachment> getAttachmentsList() {
 		if (mAttachmentsList == null) {
@@ -141,14 +141,14 @@ public class Task extends BaseModel implements Parcelable {
 		try {
 			task = (Task) o;
 		} catch (Exception e) {
-            return res;
-        }
+			return res;
+		}
 
-        Object[] a = {id, title, content, creationDate, lastModificationDate, isTrashed,
-                alarmDate, latitude, longitude, address, isChecklist, categoryId, getAttachmentsList()};
-        Object[] b = {task.id, task.title, task.content, task.creationDate, task.lastModificationDate, task.isTrashed,
-                task.alarmDate, task.latitude, task.longitude, task.address, task.isChecklist, task.categoryId, task.getAttachmentsList()};
-        if (EqualityChecker.check(a, b)) {
+		Object[] a = {id, title, content, creationDate, lastModificationDate, isTrashed,
+				alarmDate, latitude, longitude, address, isChecklist, categoryId, getAttachmentsList()};
+		Object[] b = {task.id, task.title, task.content, task.creationDate, task.lastModificationDate, task.isTrashed,
+				task.alarmDate, task.latitude, task.longitude, task.address, task.isChecklist, task.categoryId, task.getAttachmentsList()};
+		if (EqualityChecker.check(a, b)) {
 			res = true;
 		}
 
@@ -156,21 +156,29 @@ public class Task extends BaseModel implements Parcelable {
 	}
 
 	public String toString() {
-        return title;
-    }
+		return title;
+	}
 
 	public String getCreationShort(Context mContext) {
-        return DateHelper.getDateTimeShort(mContext, creationDate);
-    }
+		if (creationDate == 0) {
+			return "";
+		}
+		return DateHelper.getDateTimeShort(mContext, creationDate);
+	}
 
 	public String getLastModificationShort(Context mContext) {
-        return DateHelper.getDateTimeShort(mContext, lastModificationDate);
-    }
+		if (lastModificationDate == 0) {
+			return "";
+		}
+		return DateHelper.getDateTimeShort(mContext, lastModificationDate);
+	}
 
 	public String getAlarmShort(Context mContext) {
-        if (alarmDate == 0) return "";
-        return DateHelper.getDateTimeShort(mContext, alarmDate);
-    }
+		if (alarmDate == 0) {
+			return "";
+		}
+		return DateHelper.getDateTimeShort(mContext, alarmDate);
+	}
 
 
 	@Override
@@ -180,19 +188,19 @@ public class Task extends BaseModel implements Parcelable {
 
 	@Override
 	public void writeToParcel(Parcel parcel, int flags) {
-        parcel.writeInt(id);
-        parcel.writeString(title);
-        parcel.writeString(content);
-        parcel.writeLong(creationDate);
-        parcel.writeLong(lastModificationDate);
-        parcel.writeInt(isTrashed ? 1 : 0);
-        parcel.writeLong(alarmDate);
-        parcel.writeDouble(latitude);
-        parcel.writeDouble(longitude);
-        parcel.writeString(address);
-        parcel.writeInt(isChecklist ? 1 : 0);
-        parcel.writeInt(categoryId);
-        parcel.writeParcelable(getCategory(), 0);
+		parcel.writeInt(id);
+		parcel.writeString(title);
+		parcel.writeString(content);
+		parcel.writeLong(creationDate);
+		parcel.writeLong(lastModificationDate);
+		parcel.writeInt(isTrashed ? 1 : 0);
+		parcel.writeLong(alarmDate);
+		parcel.writeDouble(latitude);
+		parcel.writeDouble(longitude);
+		parcel.writeString(address);
+		parcel.writeInt(isChecklist ? 1 : 0);
+		parcel.writeInt(categoryId);
+		parcel.writeParcelable(getCategory(), 0);
 		parcel.writeList(getAttachmentsList());
 	}
 

@@ -38,17 +38,20 @@ public class DbHelper {
 
 	// Inserting or updating single task
 	public static void updateTask(Task task, boolean updateLastModification) {
+		if (task.creationDate == 0) {
+			task.creationDate = System.currentTimeMillis();
+		} else {    // If there already was a creation date, we put a last modification date
+			task.lastModificationDate = updateLastModification ? Calendar
+					.getInstance().getTimeInMillis() : (task.lastModificationDate != 0 ? task.lastModificationDate : Calendar
+					.getInstance().getTimeInMillis());
+		}
 
-        task.lastModificationDate = updateLastModification ? Calendar
-                .getInstance().getTimeInMillis() : (task.lastModificationDate != 0 ? task.lastModificationDate : Calendar
-                .getInstance().getTimeInMillis());
+		task.save(false);
 
-        task.save(false);
-
-        for (Attachment attachment : task.getAttachmentsList()) {
-            attachment.taskId = task.id;
-            attachment.save(false);
-        }
+		for (Attachment attachment : task.getAttachmentsList()) {
+			attachment.taskId = task.id;
+			attachment.save(false);
+		}
 	}
 
 	/**
@@ -85,12 +88,12 @@ public class DbHelper {
 
 
 	public static List<Task> getTasksActive() {
-        return new Select().from(Task.class).where(Condition.column(Task$Table.ISTRASHED).isNot(1)).queryList();
-    }
+		return new Select().from(Task.class).where(Condition.column(Task$Table.ISTRASHED).isNot(1)).queryList();
+	}
 
 	public static List<Task> getTasksTrashed() {
-        return new Select().from(Task.class).where(Condition.column(Task$Table.ISTRASHED).eq(1)).queryList();
-    }
+		return new Select().from(Task.class).where(Condition.column(Task$Table.ISTRASHED).eq(1)).queryList();
+	}
 
 
 	/**
@@ -112,8 +115,8 @@ public class DbHelper {
 
 		// Getting sorting criteria from preferences. Reminder screen forces sorting.
 		if (Navigation.checkNavigation(Navigation.REMINDERS)) {
-            sort_column = Task$Table.ALARMDATE;
-        } else {
+			sort_column = Task$Table.ALARMDATE;
+		} else {
 			sort_column = PrefUtils.getString(PrefUtils.PREF_SORTING_COLUMN, Task$Table.TITLE);
 		}
 
@@ -121,10 +124,10 @@ public class DbHelper {
 		sort_column = Task$Table.TITLE.equals(sort_column) ? Task$Table.TITLE + "||" + Task$Table.CONTENT : sort_column;
 
 		// In case of reminder sorting criteria the empty reminder tasks must be moved on bottom of results
-        sort_column = Task$Table.ALARMDATE.equals(sort_column) ? "IFNULL(" + Task$Table.ALARMDATE + ", " + Constants.TIMESTAMP_UNIX_EPOCH + ")" : sort_column;
+		sort_column = Task$Table.ALARMDATE.equals(sort_column) ? "IFNULL(" + Task$Table.ALARMDATE + ", " + Constants.TIMESTAMP_UNIX_EPOCH + ")" : sort_column;
 
-        boolean isAsc = Task$Table.TITLE.equals(sort_column) || Task$Table.ALARMDATE.equals(sort_column);
-        return new Select().from(Task.class).where(queryBuilder).orderBy(isAsc, sort_column).queryList();
+		boolean isAsc = Task$Table.TITLE.equals(sort_column) || Task$Table.ALARMDATE.equals(sort_column);
+		return new Select().from(Task.class).where(queryBuilder).orderBy(isAsc, sort_column).queryList();
 	}
 
 	/**
@@ -133,8 +136,8 @@ public class DbHelper {
 	 * @param task
 	 */
 	public static void trashTask(Task task, boolean trash) {
-        task.isTrashed = trash;
-        ReminderHelper.removeReminder(MainApplication.getContext(), task);
+		task.isTrashed = trash;
+		ReminderHelper.removeReminder(MainApplication.getContext(), task);
 		updateTask(task, false);
 	}
 
@@ -173,10 +176,10 @@ public class DbHelper {
 		ConditionQueryBuilder<Task> queryBuilder = new ConditionQueryBuilder<>(Task.class);
 
 		if (Navigation.checkNavigation(Navigation.TRASH)) {
-            queryBuilder.putCondition(Condition.column(Task$Table.ISTRASHED).is(1));
-        } else {
-            queryBuilder.putCondition(Condition.column(Task$Table.ISTRASHED).isNot(1));
-        }
+			queryBuilder.putCondition(Condition.column(Task$Table.ISTRASHED).is(1));
+		} else {
+			queryBuilder.putCondition(Condition.column(Task$Table.ISTRASHED).isNot(1));
+		}
 
 		if (Navigation.checkNavigation(Navigation.CATEGORY)) {
 			queryBuilder.putCondition(Condition.column(Task$Table.CATEGORYID).eq(Navigation.getCategory()));
@@ -197,13 +200,13 @@ public class DbHelper {
 	public static List<Task> getTasksWithReminder(boolean filterPastReminders) {
 		ConditionQueryBuilder<Task> queryBuilder = new ConditionQueryBuilder<>(Task.class);
 		if (filterPastReminders) {
-            queryBuilder.putCondition(Task$Table.ALARMDATE, ">=", Calendar.getInstance().getTimeInMillis());
-        } else {
-            queryBuilder.putCondition(Condition.column(Task$Table.ALARMDATE).isNotNull());
-        }
+			queryBuilder.putCondition(Task$Table.ALARMDATE, ">=", Calendar.getInstance().getTimeInMillis());
+		} else {
+			queryBuilder.putCondition(Condition.column(Task$Table.ALARMDATE).isNotNull());
+		}
 
-        queryBuilder.putCondition(Condition.column(Task$Table.ISTRASHED).isNot(1));
-        return getTasks(queryBuilder);
+		queryBuilder.putCondition(Condition.column(Task$Table.ISTRASHED).isNot(1));
+		return getTasks(queryBuilder);
 	}
 
 	/**
@@ -217,8 +220,8 @@ public class DbHelper {
 		try {
 			int id = Integer.parseInt(categoryId);
 			queryBuilder.putCondition(Condition.column(Task$Table.CATEGORYID).eq(id));
-            queryBuilder.putCondition(Condition.column(Task$Table.ISTRASHED).isNot(1));
-            return getTasks(queryBuilder);
+			queryBuilder.putCondition(Condition.column(Task$Table.ISTRASHED).isNot(1));
+			return getTasks(queryBuilder);
 		} catch (NumberFormatException e) {
 			return getAllTasks();
 		}
