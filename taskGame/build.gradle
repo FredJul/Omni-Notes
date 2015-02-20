@@ -57,8 +57,8 @@ dependencies {
     androidTestCompile 'junit:junit:4.+'
     compile fileTree(dir: 'libs', include: '*.jar')
 
-    apt 'com.raizlabs.android:DBFlow-Compiler:1.5.0'
-    mod "com.raizlabs.android:{DBFlow-Core, DBFlow}:1.5.0"
+    apt 'com.raizlabs.android:DBFlow-Compiler:1.5.3'
+    mod "com.raizlabs.android:{DBFlow-Core, DBFlow}:1.5.3"
 
     compile 'com.github.flavienlaurent.datetimepicker:library:+'
     compile 'com.larswerkman:HoloColorPicker:+'
