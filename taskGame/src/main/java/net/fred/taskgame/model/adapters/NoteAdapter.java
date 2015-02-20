@@ -198,24 +198,20 @@ public class NoteAdapter extends ArrayAdapter<Task> implements Insertable {
 			sort_column = PrefUtils.getString(PrefUtils.PREF_SORTING_COLUMN, "");
 		}
 
-		// Creation
-        if (sort_column.equals(Task$Table.CREATIONDATE)) {
-            dateText = mContext.getString(R.string.creation) + " " + task.getCreationShort(mContext);
-		}
-		// Reminder
-        else if (sort_column.equals(Task$Table.ALARMDATE)) {
-            String alarmShort = task.getAlarmShort(mContext);
+		if (sort_column.equals(Task$Table.ALARMDATE)) {
+			String alarmShort = task.getAlarmShort(mContext);
 
 			if (alarmShort.length() == 0) {
 				dateText = mContext.getString(R.string.no_reminder_set);
 			} else {
-                dateText = mContext.getString(R.string.alarm_set_on) + " " + task.getAlarmShort(mContext);
-            }
+				dateText = mContext.getString(R.string.alarm_set_on) + " " + task.getAlarmShort(mContext);
+			}
+		} else if (task.lastModificationDate != 0) {
+			dateText = mContext.getString(R.string.last_update) + " " + task.getLastModificationShort(mContext);
+		} else {
+			dateText = mContext.getString(R.string.creation) + " " + task.getCreationShort(mContext);
 		}
-		// Others
-		else {
-            dateText = mContext.getString(R.string.last_update) + " " + task.getLastModificationShort(mContext);
-        }
+
 		return dateText;
 	}
 
