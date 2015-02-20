@@ -30,6 +30,8 @@ import android.support.v4.app.Fragment;
 import android.support.v7.app.ActionBarActivity;
 import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -73,7 +75,6 @@ public class SketchFragment extends Fragment implements OnDrawChangedListener {
 	private ColorPicker mColorPicker;
 	private int oldColor;
 
-
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -86,7 +87,6 @@ public class SketchFragment extends Fragment implements OnDrawChangedListener {
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		return inflater.inflate(R.layout.fragment_sketch, container, false);
 	}
-
 
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
@@ -102,7 +102,6 @@ public class SketchFragment extends Fragment implements OnDrawChangedListener {
 				bmp = BitmapFactory.decodeStream(getActivity().getContentResolver().openInputStream(baseUri));
 				mSketchView.setBackgroundBitmap(getActivity(), bmp);
 			} catch (FileNotFoundException e) {
-
 			}
 		}
 
@@ -231,9 +230,12 @@ public class SketchFragment extends Fragment implements OnDrawChangedListener {
 		return super.onOptionsItemSelected(item);
 	}
 
-
+	@Override
+	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+		inflater.inflate(R.menu.menu_list, menu);
+		super.onCreateOptionsMenu(menu, inflater);
+	}
 	public void save() {
-
 		Bitmap bitmap = mSketchView.getBitmap();
 		if (bitmap != null) {
 
@@ -244,25 +246,18 @@ public class SketchFragment extends Fragment implements OnDrawChangedListener {
 				bitmap.compress(Bitmap.CompressFormat.PNG, 90, out);
 				out.close();
 				if (bitmapFile.exists()) {
-//					if (mOnSketchSavedListener != null) {
-//						mOnSketchSavedListener.onSketchSaved(uri);
-//					}					
 					getMainActivity().sketchUri = uri;
 				} else {
 					getMainActivity().showMessage(R.string.error, CroutonHelper.ALERT);
 				}
 
 			} catch (Exception e) {
-
 			}
 		}
-//		getActivity().getSupportFragmentManager().popBackStack(); 
 	}
-
 
 	// The method that displays the popup.
 	private void showPopup(View anchor, final int eraserOrStroke) {
-
 		boolean isErasing = eraserOrStroke == SketchView.ERASER;
 
 		oldColor = mColorPicker.getColor();
@@ -318,7 +313,6 @@ public class SketchFragment extends Fragment implements OnDrawChangedListener {
 		mSeekBar.setProgress(progress);
 	}
 
-
 	protected void setSeekbarProgress(int progress, int eraserOrStroke) {
 		// Avoid 
 		int calcProgress = progress > 1 ? progress : 1;
@@ -340,7 +334,6 @@ public class SketchFragment extends Fragment implements OnDrawChangedListener {
 		mSketchView.setSize(newSize, eraserOrStroke);
 	}
 
-
 	@Override
 	public void onDrawChanged() {
 		// Undo
@@ -359,6 +352,4 @@ public class SketchFragment extends Fragment implements OnDrawChangedListener {
 	private MainActivity getMainActivity() {
 		return (MainActivity) getActivity();
 	}
-
-
 }

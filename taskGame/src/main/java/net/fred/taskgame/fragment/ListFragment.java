@@ -900,7 +900,7 @@ public class ListFragment extends Fragment implements OnTasksLoadedListener, OnV
 
 			case REQUEST_CODE_CATEGORY_TASKS:
 				if (intent != null) {
-					Category tag = intent.getParcelableExtra(Constants.INTENT_TAG);
+					Category tag = intent.getParcelableExtra(Constants.INTENT_CATEGORY);
 					categorizeTasksExecute(tag);
 				}
 				break;
@@ -1219,7 +1219,7 @@ public class ListFragment extends Fragment implements OnTasksLoadedListener, OnV
 	 */
 	public void editCategory(Category category) {
 		Intent categoryIntent = new Intent(getActivity(), CategoryActivity.class);
-		categoryIntent.putExtra(Constants.INTENT_TAG, category);
+		categoryIntent.putExtra(Constants.INTENT_CATEGORY, category);
 		startActivityForResult(categoryIntent, REQUEST_CODE_CATEGORY);
 	}
 

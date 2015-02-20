@@ -98,7 +98,6 @@ public class MainActivity extends BaseActivity implements OnDateSetListener, OnT
 		return instance;
 	}
 
-
 	private void init() {
 		mFragmentManager = getSupportFragmentManager();
 
@@ -120,7 +119,6 @@ public class MainActivity extends BaseActivity implements OnDateSetListener, OnT
 
 	@Override
 	public void onLowMemory() {
-
 		MainApplication.getBitmapCache().evictAll();
 		super.onLowMemory();
 	}
@@ -196,8 +194,8 @@ public class MainActivity extends BaseActivity implements OnDateSetListener, OnT
 	 *
 	 * Overrides the onBackPressed behavior for the attached fragments
 	 */
+	@Override
 	public void onBackPressed() {
-
 		Fragment f;
 
 		// SketchFragment
@@ -242,7 +240,6 @@ public class MainActivity extends BaseActivity implements OnDateSetListener, OnT
 		super.onSaveInstanceState(outState);
 		outState.putString("navigationTmp", navigationTmp);
 	}
-
 
 	@Override
 	protected void onPause() {

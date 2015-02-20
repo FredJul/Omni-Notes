@@ -56,7 +56,7 @@ public class CategoryActivity extends Activity {
 		CategoryActivity mActivity = this;
 
 		// Retrieving intent
-		category = getIntent().getParcelableExtra(Constants.INTENT_TAG);
+		category = getIntent().getParcelableExtra(Constants.INTENT_CATEGORY);
 
 		// Getting Views from layout
 		initViews();
@@ -156,7 +156,7 @@ public class CategoryActivity extends Activity {
 		category.save(true);
 
 		// Sets result to show proper message
-		getIntent().putExtra(Constants.INTENT_TAG, category);
+		getIntent().putExtra(Constants.INTENT_CATEGORY, category);
 		setResult(RESULT_OK, getIntent());
 		finish();
 	}

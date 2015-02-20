@@ -133,10 +133,9 @@ public class DetailFragment extends Fragment implements
 
 	private static final int TAKE_PHOTO = 1;
 	private static final int TAKE_VIDEO = 2;
-	private static final int SKETCH = 4;
-	private static final int TAG = 5;
-	private static final int DETAIL = 6;
-	private static final int FILES = 7;
+	private static final int CATEGORY_CHANGE = 3;
+	private static final int FILES = 4;
+
 	public OnDateSetListener onDateSetListener;
 	public OnTimeSetListener onTimeSetListener;
 	MediaRecorder mRecorder = null;
@@ -214,6 +213,12 @@ public class DetailFragment extends Fragment implements
 
 		// Added the sketched image if present returning from SketchFragment
 		if (getMainActivity().sketchUri != null) {
+
+//			attachment.mimeType = Constants.MIME_TYPE_SKETCH;
+//			mTask.getAttachmentsList().add(attachment);
+//			mAttachmentAdapter.notifyDataSetChanged();
+//			mGridView.autoresize();
+
 			Attachment attachment = new Attachment();
 			attachment.uri = getMainActivity().sketchUri;
 			attachment.mimeType = Constants.MIME_TYPE_SKETCH;
@@ -455,13 +460,12 @@ public class DetailFragment extends Fragment implements
 		});
 
 
-		// Some fields can be filled by third party application and are always
-		// shown
+		// Some fields can be filled by third party application and are always shown
 		mGridView = (ExpandableHeightGridView) getView().findViewById(R.id.gridview);
 		mAttachmentAdapter = new AttachmentAdapter(getActivity(), mTask.getAttachmentsList(), mGridView);
 		mAttachmentAdapter.setOnErrorListener(this);
 
-		// Initialzation of gridview for images
+		// Initialization of gridview for images
 		mGridView.setAdapter(mAttachmentAdapter);
 		mGridView.autoresize();
 
@@ -1006,7 +1010,7 @@ public class DetailFragment extends Fragment implements
 					public void onPositive(MaterialDialog dialog) {
 						Intent intent = new Intent(getActivity(), CategoryActivity.class);
 						intent.putExtra("noHome", true);
-						startActivityForResult(intent, TAG);
+						startActivityForResult(intent, CATEGORY_CHANGE);
 					}
 
 					@Override
@@ -1129,7 +1133,6 @@ public class DetailFragment extends Fragment implements
 	}
 
 	private void takeSketch(Attachment attachment) {
-
 		File f = StorageManager.createNewAttachmentFile(getActivity(), Constants.MIME_TYPE_SKETCH_EXT);
 		if (f == null) {
 			getMainActivity().showMessage(R.string.error, CroutonHelper.ALERT);
@@ -1138,20 +1141,19 @@ public class DetailFragment extends Fragment implements
 		attachmentUri = Uri.fromFile(f);
 
 		// Forces portrait orientation to this fragment only
-		getActivity().setRequestedOrientation(
-				ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+		getActivity().setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 
 		// Fragments replacing
 		FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
 		getMainActivity().animateTransition(transaction, getMainActivity().TRANSITION_HORIZONTAL);
-		SketchFragment mSketchFragment = new SketchFragment();
+		SketchFragment sketchFragment = new SketchFragment();
 		Bundle b = new Bundle();
 		b.putParcelable(MediaStore.EXTRA_OUTPUT, attachmentUri);
 		if (attachment != null) {
 			b.putParcelable("base", attachment.uri);
 		}
-		mSketchFragment.setArguments(b);
-		transaction.replace(R.id.fragment_container, mSketchFragment, getMainActivity().FRAGMENT_SKETCH_TAG).addToBackStack(getMainActivity().FRAGMENT_DETAIL_TAG).commit();
+		sketchFragment.setArguments(b);
+		transaction.replace(R.id.fragment_container, sketchFragment, getMainActivity().FRAGMENT_SKETCH_TAG).addToBackStack(getMainActivity().FRAGMENT_DETAIL_TAG).commit();
 	}
 
 	@Override
@@ -1177,20 +1179,11 @@ public class DetailFragment extends Fragment implements
 				case FILES:
 					onActivityResultManageReceivedFiles(intent);
 					break;
-				case SKETCH:
-					attachment.mimeType = Constants.MIME_TYPE_SKETCH;
-					mTask.getAttachmentsList().add(attachment);
-					mAttachmentAdapter.notifyDataSetChanged();
-					mGridView.autoresize();
-					break;
-				case TAG:
+				case CATEGORY_CHANGE:
 					getMainActivity().showMessage(R.string.category_saved, CroutonHelper.CONFIRM);
-					Category tag = intent.getParcelableExtra("tag");
-					mTask.setCategory(tag);
-					setTagMarkerColor(tag);
-					break;
-				case DETAIL:
-					getMainActivity().showMessage(R.string.task_updated, CroutonHelper.CONFIRM);
+					Category category = intent.getParcelableExtra(Constants.INTENT_CATEGORY);
+					mTask.setCategory(category);
+					setTagMarkerColor(category);
 					break;
 			}
 		}
@@ -1274,7 +1267,6 @@ public class DetailFragment extends Fragment implements
 	 * Save new tasks, modify them or archive
 	 */
 	void saveTask(OnTaskSaved mOnTaskSaved) {
-
 		// Changed fields
 		mTask.title = getTaskTitle();
 		mTask.content = getTaskContent();

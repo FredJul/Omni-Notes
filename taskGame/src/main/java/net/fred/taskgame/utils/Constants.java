@@ -36,7 +36,7 @@ public interface Constants {
 	final String INTENT_KEY = "task_id";
 	final String INTENT_TASK = "task";
 	final int INTENT_ALARM_CODE = 12345;
-	final String INTENT_TAG = "tag";
+	final String INTENT_CATEGORY = "category";
 	final String INTENT_GOOGLE_NOW = "com.google.android.gm.action.AUTO_SEND";
 	final String INTENT_WIDGET = "widget_id";
 
