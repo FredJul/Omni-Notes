@@ -26,6 +26,7 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.drawable.AnimationDrawable;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Parcelable;
@@ -65,10 +66,12 @@ import com.neopixl.pixlui.components.textview.TextView;
 import com.nhaarman.listviewanimations.itemmanipulation.DynamicListView;
 import com.nhaarman.listviewanimations.itemmanipulation.swipedismiss.OnDismissCallback;
 
+import net.fred.taskgame.MainApplication;
 import net.fred.taskgame.R;
 import net.fred.taskgame.activity.BaseActivity;
 import net.fred.taskgame.activity.CategoryActivity;
 import net.fred.taskgame.activity.MainActivity;
+import net.fred.taskgame.async.DeleteNoteTask;
 import net.fred.taskgame.model.Category;
 import net.fred.taskgame.model.Task;
 import net.fred.taskgame.model.adapters.NavDrawerCategoryAdapter;
@@ -1191,7 +1194,8 @@ public class ListFragment extends Fragment implements OnTasksLoadedListener, OnV
 	private void deleteTasksExecute() {
 		for (Task task : getSelectedTasks()) {
 			listAdapter.remove(task);
-			getMainActivity().deleteNote(task);
+			DeleteNoteTask deleteNoteTask = new DeleteNoteTask(MainApplication.getContext());
+			deleteNoteTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, task);
 		}
 
 		// Clears data structures

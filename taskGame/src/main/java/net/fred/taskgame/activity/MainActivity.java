@@ -23,7 +23,6 @@ import android.app.TimePickerDialog.OnTimeSetListener;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -41,7 +40,6 @@ import android.widget.Toast;
 
 import net.fred.taskgame.MainApplication;
 import net.fred.taskgame.R;
-import net.fred.taskgame.async.DeleteNoteTask;
 import net.fred.taskgame.fragment.DetailFragment;
 import net.fred.taskgame.fragment.ListFragment;
 import net.fred.taskgame.fragment.NavigationDrawerFragment;
@@ -218,7 +216,6 @@ public class MainActivity extends BaseActivity implements OnDateSetListener, OnT
 		// DetailFragment
 		f = checkFragmentInstance(R.id.fragment_container, DetailFragment.class);
 		if (f != null) {
-			((DetailFragment) f).goBack = true;
 			((DetailFragment) f).saveAndExit((DetailFragment) f);
 			return;
 		}
@@ -336,11 +333,11 @@ public class MainActivity extends BaseActivity implements OnDateSetListener, OnT
 
 	private void saveAndExit(Intent i) {
 		Task task = new Task();
-        String title = i.getStringExtra(Intent.EXTRA_SUBJECT);
-        task.title = title != null ? title : "";
-        String content = i.getStringExtra(Intent.EXTRA_TEXT);
-        task.content = content != null ? content : "";
-        DbHelper.updateTask(task, true);
+		String title = i.getStringExtra(Intent.EXTRA_SUBJECT);
+		task.title = title != null ? title : "";
+		String content = i.getStringExtra(Intent.EXTRA_TEXT);
+		task.content = content != null ? content : "";
+		DbHelper.updateTask(task, true);
 		showToast(getString(R.string.task_updated), Toast.LENGTH_SHORT);
 		finish();
 	}
@@ -361,8 +358,8 @@ public class MainActivity extends BaseActivity implements OnDateSetListener, OnT
 
 	private boolean noteAlreadyOpened(Task task) {
 		DetailFragment detailFragment = (DetailFragment) mFragmentManager.findFragmentByTag(FRAGMENT_DETAIL_TAG);
-        return detailFragment != null && detailFragment.getCurrentTask().id == task.id;
-    }
+		return detailFragment != null && detailFragment.getCurrentTask().id == task.id;
+	}
 
 
 	public void switchToList() {
@@ -399,11 +396,11 @@ public class MainActivity extends BaseActivity implements OnDateSetListener, OnT
 	 */
 	public void shareTaskNote(Task task) {
 
-        String titleText = task.title;
+		String titleText = task.title;
 
 		String contentText = titleText
 				+ System.getProperty("line.separator")
-                + task.content;
+				+ task.content;
 
 
 		Intent shareIntent = new Intent();
@@ -446,20 +443,6 @@ public class MainActivity extends BaseActivity implements OnDateSetListener, OnT
 
 		startActivity(Intent.createChooser(shareIntent, getResources().getString(R.string.share_message_chooser)));
 	}
-
-
-	/**
-	 * Single note permanent deletion
-	 *
-	 * @param task Note to be deleted
-	 */
-	public void deleteNote(Task task) {
-
-		// Saving changes to the note
-		DeleteNoteTask deleteNoteTask = new DeleteNoteTask(getApplicationContext());
-        deleteNoteTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, task);
-    }
-
 
 	public void showMessage(int messageId, Style style) {
 		showMessage(getString(messageId), style);

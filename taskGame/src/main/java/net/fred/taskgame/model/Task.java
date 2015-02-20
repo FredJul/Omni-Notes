@@ -62,7 +62,6 @@ public class Task extends BaseModel implements Parcelable {
 
 	private Category mCategory;
 	private List<Attachment> mAttachmentsList;
-	private List<Attachment> mAttachmentsListOld;
 
 	public Task() {
 	}
@@ -113,22 +112,9 @@ public class Task extends BaseModel implements Parcelable {
 		return mAttachmentsList;
 	}
 
+	@SuppressWarnings("unused")
 	public void setAttachmentsList(List<Attachment> attachmentsList) {
 		mAttachmentsList = attachmentsList;
-	}
-
-	public List<Attachment> getAttachmentsListOld() {
-		if (mAttachmentsListOld == null) {
-			mAttachmentsListOld = Select.all(Attachment.class,
-					Condition.column(Attachment$Table.TASKID).is(id));
-		}
-
-		return mAttachmentsListOld;
-	}
-
-
-	public void setAttachmentsListOld(List<Attachment> attachmentsListOld) {
-		mAttachmentsListOld = attachmentsListOld;
 	}
 
 	public Category getCategory() {

@@ -38,7 +38,7 @@ public class DeleteNoteTask extends AsyncTask<Task, Void, Void> {
 		Task task = params[0];
 
 		// Deleting note using DbHelper
-		DbHelper.deleteTask(mContext, task);
+		DbHelper.deleteTask(task);
 
 		return null;
 	}

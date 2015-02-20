@@ -16,8 +16,6 @@
  */
 package net.fred.taskgame.utils;
 
-import android.content.Context;
-
 import com.raizlabs.android.dbflow.sql.QueryBuilder;
 import com.raizlabs.android.dbflow.sql.builder.Condition;
 import com.raizlabs.android.dbflow.sql.builder.ConditionQueryBuilder;
@@ -39,7 +37,7 @@ import java.util.List;
 public class DbHelper {
 
 	// Inserting or updating single task
-	public static Task updateTask(Task task, boolean updateLastModification) {
+	public static void updateTask(Task task, boolean updateLastModification) {
 
         task.lastModificationDate = updateLastModification ? Calendar
                 .getInstance().getTimeInMillis() : (task.lastModificationDate != 0 ? task.lastModificationDate : Calendar
@@ -51,8 +49,6 @@ public class DbHelper {
             attachment.taskId = task.id;
             attachment.save(false);
         }
-
-		return task;
 	}
 
 	/**
@@ -145,19 +141,26 @@ public class DbHelper {
 
 	/**
 	 * Deleting single task
-	 *
-	 * @param task
 	 */
-	public static void deleteTask(Context context, Task task) {
+	public static void deleteTask(Task task) {
 		// Attachment deletion from storage
-		for (Attachment mAttachment : task.getAttachmentsList()) {
-			StorageManager.deleteExternalStoragePrivateFile(context, mAttachment.uri.getLastPathSegment());
+		for (Attachment attachment : task.getAttachmentsList()) {
+			StorageManager.delete(MainApplication.getContext(), attachment.uri.getPath());
 		}
 
 		// Delete task's attachments
 		Delete.table(Attachment.class, Condition.column(Attachment$Table.TASKID).eq(task.id));
 
 		task.delete(true);
+	}
+
+	/**
+	 * Deleting single attachment
+	 */
+	public static void deleteAttachment(Attachment attachment) {
+		// Attachment deletion from storage
+		StorageManager.delete(MainApplication.getContext(), attachment.uri.getPath());
+		attachment.delete(true);
 	}
 
 	/**

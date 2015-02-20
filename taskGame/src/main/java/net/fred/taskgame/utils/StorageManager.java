@@ -111,23 +111,6 @@ public class StorageManager {
 		return file;
 	}
 
-	public static boolean deleteExternalStoragePrivateFile(Context mContext, String name) {
-		// Checks for external storage availability
-		if (!checkStorage()) {
-			Toast.makeText(mContext, mContext.getString(R.string.storage_not_available), Toast.LENGTH_SHORT).show();
-			return false;
-		}
-
-		boolean res = false;
-		File file = new File(mContext.getExternalFilesDir(null), name);
-		if (file != null) {
-			file.delete();
-			res = true;
-		}
-
-		return res;
-	}
-
 	public static boolean copyFile(InputStream is, OutputStream os) {
 		boolean res = false;
 		byte[] data = new byte[1024];

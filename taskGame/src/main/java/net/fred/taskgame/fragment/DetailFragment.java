@@ -86,6 +86,7 @@ import net.fred.taskgame.R;
 import net.fred.taskgame.activity.CategoryActivity;
 import net.fred.taskgame.activity.MainActivity;
 import net.fred.taskgame.async.AttachmentTask;
+import net.fred.taskgame.async.DeleteNoteTask;
 import net.fred.taskgame.async.SaveTask;
 import net.fred.taskgame.model.Attachment;
 import net.fred.taskgame.model.Category;
@@ -138,7 +139,6 @@ public class DetailFragment extends Fragment implements
 	private static final int FILES = 7;
 	public OnDateSetListener onDateSetListener;
 	public OnTimeSetListener onTimeSetListener;
-	public boolean goBack = false;
 	MediaRecorder mRecorder = null;
     // Toggle isChecklist view
     View toggleChecklistView;
@@ -149,9 +149,8 @@ public class DetailFragment extends Fragment implements
 	private PopupWindow attachmentDialog;
 	private EditText title, content;
 	private TextView locationTextView;
-	private Task task;
-	private Task taskTmp;
-	private Task taskOriginal;
+	private Task mTask;
+	private Task mOriginalTask;
 	// Reminder
 	private String reminderDate = "", reminderTime = "";
 	private String dateTimeText = "";
@@ -207,9 +206,8 @@ public class DetailFragment extends Fragment implements
 
 		// Restored temp note after orientation change
 		if (savedInstanceState != null) {
-			taskTmp = savedInstanceState.getParcelable("noteTmp");
-			task = savedInstanceState.getParcelable("note");
-			taskOriginal = savedInstanceState.getParcelable("noteOriginal");
+			mTask = savedInstanceState.getParcelable("note");
+			mOriginalTask = savedInstanceState.getParcelable("noteOriginal");
 			attachmentUri = savedInstanceState.getParcelable("attachmentUri");
 			orientationChanged = savedInstanceState.getBoolean("orientationChanged");
 		}
@@ -219,11 +217,11 @@ public class DetailFragment extends Fragment implements
 			Attachment attachment = new Attachment();
 			attachment.uri = getMainActivity().sketchUri;
 			attachment.mimeType = Constants.MIME_TYPE_SKETCH;
-			taskTmp.getAttachmentsList().add(attachment);
+			mTask.getAttachmentsList().add(attachment);
 			getMainActivity().sketchUri = null;
 			// Removes previous version of edited image
 			if (sketchEdited != null) {
-				taskTmp.getAttachmentsList().remove(sketchEdited);
+				mTask.getAttachmentsList().remove(sketchEdited);
 				sketchEdited = null;
 			}
 		}
@@ -237,11 +235,10 @@ public class DetailFragment extends Fragment implements
 
 	@Override
 	public void onSaveInstanceState(Bundle outState) {
-        taskTmp.title = getTaskTitle();
-        taskTmp.content = getTaskContent();
-        outState.putParcelable("noteTmp", taskTmp);
-		outState.putParcelable("note", task);
-		outState.putParcelable("noteOriginal", taskOriginal);
+		mTask.title = getTaskTitle();
+		mTask.content = getTaskContent();
+		outState.putParcelable("note", mTask);
+		outState.putParcelable("noteOriginal", mOriginalTask);
 		outState.putParcelable("attachmentUri", attachmentUri);
 		outState.putBoolean("orientationChanged", orientationChanged);
 		super.onSaveInstanceState(outState);
@@ -250,11 +247,6 @@ public class DetailFragment extends Fragment implements
 	@Override
 	public void onPause() {
 		super.onPause();
-
-		// Checks "goBack" value to avoid performing a double saving
-		if (!goBack) {
-			saveTask(this);
-		}
 
 		if (mRecorder != null) {
 			mRecorder.release();
@@ -283,21 +275,17 @@ public class DetailFragment extends Fragment implements
 		// Handling of Intent actions
 		handleIntents();
 
-		if (taskOriginal == null) {
-			taskOriginal = getArguments().getParcelable(Constants.INTENT_TASK);
+		if (mOriginalTask == null) {
+			mOriginalTask = getArguments().getParcelable(Constants.INTENT_TASK);
 		}
 
-		if (task == null) {
-			task = new Task(taskOriginal);
+		if (mTask == null) {
+			mTask = new Task(mOriginalTask);
 		}
 
-		if (taskTmp == null) {
-			taskTmp = new Task(task);
+		if (mTask.alarmDate != 0) {
+			dateTimeText = initReminder(mTask.alarmDate);
 		}
-
-        if (taskTmp.alarmDate != 0) {
-            dateTimeText = initReminder(taskTmp.alarmDate);
-        }
 
 		initViews();
 	}
@@ -305,25 +293,17 @@ public class DetailFragment extends Fragment implements
 	private void handleIntents() {
 		Intent i = getActivity().getIntent();
 
-		if (Constants.ACTION_MERGE.equals(i.getAction())) {
-			taskOriginal = new Task();
-            task = new Task();
-            taskTmp = getArguments().getParcelable(Constants.INTENT_TASK);
-			i.setAction(null);
-		}
-
 		// Action called from home shortcut
 		if (Constants.ACTION_SHORTCUT.equals(i.getAction())
 				|| Constants.ACTION_NOTIFICATION_CLICK.equals(i.getAction())) {
 			afterSavedReturnsToList = false;
-			taskOriginal = DbHelper.getTask(i.getIntExtra(Constants.INTENT_KEY, 0));
+			mOriginalTask = DbHelper.getTask(i.getIntExtra(Constants.INTENT_KEY, 0));
 			// Checks if the note pointed from the shortcut has been deleted
-			if (taskOriginal == null) {
+			if (mOriginalTask == null) {
 				getMainActivity().showToast(getText(R.string.shortcut_task_deleted), Toast.LENGTH_LONG);
 				getActivity().finish();
 			}
-			task = new Task(taskOriginal);
-			taskTmp = new Task(taskOriginal);
+			mTask = new Task(mOriginalTask);
 			i.setAction(null);
 		}
 
@@ -341,8 +321,8 @@ public class DetailFragment extends Fragment implements
 					if (categoryId != -1) {
 						try {
 							Category cat = DbHelper.getCategory(categoryId);
-							taskTmp = new Task();
-							taskTmp.setCategory(cat);
+							mTask = new Task();
+							mTask.setCategory(cat);
 						} catch (NumberFormatException e) {
 						}
 					}
@@ -368,19 +348,19 @@ public class DetailFragment extends Fragment implements
 
 			afterSavedReturnsToList = false;
 
-			if (taskTmp == null) taskTmp = new Task();
+			if (mTask == null) mTask = new Task();
 
 			// Text title
 			String title = i.getStringExtra(Intent.EXTRA_SUBJECT);
 			if (title != null) {
-                taskTmp.title = title;
-            }
+				mTask.title = title;
+			}
 
 			// Text content
 			String content = i.getStringExtra(Intent.EXTRA_TEXT);
 			if (content != null) {
-                taskTmp.content = content;
-            }
+				mTask.content = content;
+			}
 
 			// Single attachment data
 			Uri uri = i.getParcelableExtra(Intent.EXTRA_STREAM);
@@ -421,7 +401,7 @@ public class DetailFragment extends Fragment implements
 		scrollView = (ScrollView) getView().findViewById(R.id.content_wrapper);
 
 		// Color of tag marker if note is tagged a function is active in preferences
-		setTagMarkerColor(taskTmp.getCategory());
+		setTagMarkerColor(mTask.getCategory());
 
 		// Sets links clickable in title and content Views
 		title = initTitle();
@@ -433,24 +413,23 @@ public class DetailFragment extends Fragment implements
 		locationTextView = (TextView) getView().findViewById(R.id.location);
 
 		if (isTaskLocationValid()) {
-            if (!TextUtils.isEmpty(taskTmp.address)) {
-                locationTextView.setVisibility(View.VISIBLE);
-                locationTextView.setText(taskTmp.address);
-            } else {
-                GeocodeHelper.getAddressFromCoordinates(getActivity(), taskTmp.latitude, taskTmp.longitude, mFragment);
-            }
-		} else {
+			if (!TextUtils.isEmpty(mTask.address)) {
+				locationTextView.setVisibility(View.VISIBLE);
+				locationTextView.setText(mTask.address);
+			} else {
+				GeocodeHelper.getAddressFromCoordinates(getActivity(), mTask.latitude, mTask.longitude, mFragment);
+			}
 		}
 
 		locationTextView.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-                String uriString = "geo:" + taskTmp.latitude + ',' + taskTmp.longitude
-                        + "?q=" + taskTmp.latitude + ',' + taskTmp.longitude;
-                Intent locationIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(uriString));
+				String uriString = "geo:" + mTask.latitude + ',' + mTask.longitude
+						+ "?q=" + mTask.latitude + ',' + mTask.longitude;
+				Intent locationIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(uriString));
 				if (!IntentChecker.isAvailable(getActivity(), locationIntent, null)) {
-                    uriString = "http://maps.google.com/maps?q=" + taskTmp.latitude + ',' + taskTmp.longitude;
-                    locationIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(uriString));
+					uriString = "http://maps.google.com/maps?q=" + mTask.latitude + ',' + mTask.longitude;
+					locationIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(uriString));
 				}
 				startActivity(locationIntent);
 			}
@@ -464,9 +443,9 @@ public class DetailFragment extends Fragment implements
 				builder.callback(new MaterialDialog.SimpleCallback() {
 					@Override
 					public void onPositive(MaterialDialog materialDialog) {
-                        taskTmp.latitude = 0.;
-                        taskTmp.longitude = 0.;
-                        fade(locationTextView, false);
+						mTask.latitude = 0.;
+						mTask.longitude = 0.;
+						fade(locationTextView, false);
 					}
 				});
 				MaterialDialog dialog = builder.build();
@@ -479,7 +458,7 @@ public class DetailFragment extends Fragment implements
 		// Some fields can be filled by third party application and are always
 		// shown
 		mGridView = (ExpandableHeightGridView) getView().findViewById(R.id.gridview);
-		mAttachmentAdapter = new AttachmentAdapter(getActivity(), taskTmp.getAttachmentsList(), mGridView);
+		mAttachmentAdapter = new AttachmentAdapter(getActivity(), mTask.getAttachmentsList(), mGridView);
 		mAttachmentAdapter.setOnErrorListener(this);
 
 		// Initialzation of gridview for images
@@ -525,7 +504,7 @@ public class DetailFragment extends Fragment implements
 							.callback(new MaterialDialog.Callback() {
 								@Override
 								public void onPositive(MaterialDialog materialDialog) {
-									taskTmp.getAttachmentsList().remove(position);
+									mTask.getAttachmentsList().remove(position);
 									mAttachmentAdapter.notifyDataSetChanged();
 									mGridView.autoresize();
 								}
@@ -542,7 +521,7 @@ public class DetailFragment extends Fragment implements
 							.callback(new MaterialDialog.SimpleCallback() {
 								@Override
 								public void onPositive(MaterialDialog materialDialog) {
-									taskTmp.getAttachmentsList().remove(position);
+									mTask.getAttachmentsList().remove(position);
 									mAttachmentAdapter.notifyDataSetChanged();
 									mGridView.autoresize();
 								}
@@ -562,8 +541,8 @@ public class DetailFragment extends Fragment implements
 			public void onClick(View v) {
 				int pickerType = PrefUtils.getBoolean("settings_simple_calendar", false) ? ReminderPickers.TYPE_AOSP : ReminderPickers.TYPE_GOOGLE;
 				ReminderPickers reminderPicker = new ReminderPickers(getActivity(), mFragment, pickerType);
-                reminderPicker.pick(taskTmp.alarmDate);
-                onDateSetListener = reminderPicker;
+				reminderPicker.pick(mTask.alarmDate);
+				onDateSetListener = reminderPicker;
 				onTimeSetListener = reminderPicker;
 			}
 		});
@@ -578,8 +557,8 @@ public class DetailFragment extends Fragment implements
 							public void onPositive(MaterialDialog materialDialog) {
 								reminderDate = "";
 								reminderTime = "";
-                                taskTmp.alarmDate = 0;
-                                datetime.setText("");
+								mTask.alarmDate = 0;
+								datetime.setText("");
 							}
 						}).build();
 				dialog.show();
@@ -604,7 +583,7 @@ public class DetailFragment extends Fragment implements
 
 		// Footer dates of creation...
 		TextView creationTextView = (TextView) getView().findViewById(R.id.creation);
-		String creation = taskTmp.getCreationShort(getActivity());
+		String creation = mTask.getCreationShort(getActivity());
 		creationTextView.append(creation.length() > 0 ? getString(R.string.creation) + " "
 				+ creation : "");
 		if (creationTextView.getText().length() == 0)
@@ -612,7 +591,7 @@ public class DetailFragment extends Fragment implements
 
 		// ... and last modification
 		TextView lastModificationTextView = (TextView) getView().findViewById(R.id.last_modification);
-		String lastModification = taskTmp.getLastModificationShort(getActivity());
+		String lastModification = mTask.getLastModificationShort(getActivity());
 		lastModificationTextView.append(lastModification.length() > 0 ? getString(R.string.last_update) + " "
 				+ lastModification : "");
 		if (lastModificationTextView.getText().length() == 0)
@@ -621,8 +600,8 @@ public class DetailFragment extends Fragment implements
 
 	private EditText initTitle() {
 		EditText title = (EditText) getView().findViewById(R.id.detail_title);
-        title.setText(taskTmp.title);
-        title.gatherLinksForText();
+		title.setText(mTask.title);
+		title.gatherLinksForText();
 		title.setOnTextLinkClickListener(this);
         // To avoid dropping here the dragged isChecklist items
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
@@ -648,17 +627,17 @@ public class DetailFragment extends Fragment implements
 
 	private EditText initContent() {
 		EditText content = (EditText) getView().findViewById(R.id.detail_content);
-        content.setText(taskTmp.content);
-        content.gatherLinksForText();
+		content.setText(mTask.content);
+		content.gatherLinksForText();
 		content.setOnTextLinkClickListener(this);
 		// Avoid focused line goes under the keyboard
 		content.addTextChangedListener(this);
 
         // Restore isChecklist
         toggleChecklistView = content;
-        if (taskTmp.isChecklist) {
-            taskTmp.isChecklist = false;
-            toggleChecklistView.setAlpha(0);
+		if (mTask.isChecklist) {
+			mTask.isChecklist = false;
+			toggleChecklistView.setAlpha(0);
 			toggleChecklist2();
 		}
 
@@ -670,8 +649,8 @@ public class DetailFragment extends Fragment implements
 	 * Force focus and shows soft keyboard
 	 */
 	private void requestFocus(final EditText view) {
-        if (task.id == 0 && taskTmp.equals(task)) {
-            KeyboardUtils.showKeyboard(view);
+		if (mTask.equals(new Task())) { // if the current task is totally empty
+			KeyboardUtils.showKeyboard(view);
 		}
 	}
 
@@ -710,9 +689,9 @@ public class DetailFragment extends Fragment implements
 
 	private void setAddress() {
 		if (!ConnectionManager.internetAvailable(getActivity())) {
-            taskTmp.latitude = getMainActivity().currentLatitude;
-            taskTmp.longitude = getMainActivity().currentLongitude;
-            onAddressResolved("");
+			mTask.latitude = getMainActivity().currentLatitude;
+			mTask.longitude = getMainActivity().currentLongitude;
+			onAddressResolved("");
 			return;
 		}
 		LayoutInflater inflater = getActivity().getLayoutInflater();
@@ -729,11 +708,11 @@ public class DetailFragment extends Fragment implements
 						if (TextUtils.isEmpty(autoCompView.getText().toString())) {
 							double lat = getMainActivity().currentLatitude;
 							double lon = getMainActivity().currentLongitude;
-                            taskTmp.latitude = lat;
-                            taskTmp.longitude = lon;
-                            GeocodeHelper.getAddressFromCoordinates(getActivity(), taskTmp.latitude,
-                                    taskTmp.longitude, mFragment);
-                        } else {
+							mTask.latitude = lat;
+							mTask.longitude = lon;
+							GeocodeHelper.getAddressFromCoordinates(getActivity(), mTask.latitude,
+									mTask.longitude, mFragment);
+						} else {
 							GeocodeHelper.getCoordinatesFromAddress(getActivity(), autoCompView.getText().toString(),
 									mFragment);
 						}
@@ -776,11 +755,11 @@ public class DetailFragment extends Fragment implements
 				getMainActivity().showMessage(R.string.location_not_found, CroutonHelper.ALERT);
 				return;
 			}
-            address = taskTmp.latitude + ", " + taskTmp.longitude;
-        }
+			address = mTask.latitude + ", " + mTask.longitude;
+		}
 		if (!GeocodeHelper.areCoordinates(address)) {
-            taskTmp.address = address;
-        }
+			mTask.address = address;
+		}
 		locationTextView.setVisibility(View.VISIBLE);
 		locationTextView.setText(address);
 		fade(locationTextView, true);
@@ -790,14 +769,14 @@ public class DetailFragment extends Fragment implements
 	@Override
 	public void onCoordinatesResolved(double[] coords) {
 		if (coords != null) {
-            taskTmp.latitude = coords[0];
-            taskTmp.longitude = coords[1];
-            GeocodeHelper.getAddressFromCoordinates(getActivity(), coords[0], coords[1], new OnGeoUtilResultListener() {
+			mTask.latitude = coords[0];
+			mTask.longitude = coords[1];
+			GeocodeHelper.getAddressFromCoordinates(getActivity(), coords[0], coords[1], new OnGeoUtilResultListener() {
 				@Override
 				public void onAddressResolved(String address) {
 					if (!GeocodeHelper.areCoordinates(address)) {
-                        taskTmp.address = address;
-                    }
+						mTask.address = address;
+					}
 					locationTextView.setVisibility(View.VISIBLE);
 					locationTextView.setText(address);
 					fade(locationTextView, true);
@@ -828,13 +807,13 @@ public class DetailFragment extends Fragment implements
 			MenuItemCompat.collapseActionView(searchMenuItem);
 		}
 
-        boolean newNote = taskTmp.id == 0;
+		boolean newNote = mTask.id == 0;
 
-        menu.findItem(R.id.menu_checklist_on).setVisible(!taskTmp.isChecklist);
-        menu.findItem(R.id.menu_checklist_off).setVisible(taskTmp.isChecklist);
-        // If note is isTrashed only this options will be available from menu
-        if (taskTmp.isTrashed) {
-            menu.findItem(R.id.menu_untrash).setVisible(true);
+		menu.findItem(R.id.menu_checklist_on).setVisible(!mTask.isChecklist);
+		menu.findItem(R.id.menu_checklist_off).setVisible(mTask.isChecklist);
+		// If note is isTrashed only this options will be available from menu
+		if (mTask.isTrashed) {
+			menu.findItem(R.id.menu_untrash).setVisible(true);
 			menu.findItem(R.id.menu_delete).setVisible(true);
 			// Otherwise all other actions will be available
 		} else {
@@ -925,8 +904,8 @@ public class DetailFragment extends Fragment implements
 
         // In case isChecklist is active a prompt will ask about many options
         // to decide hot to convert back to simple text
-        if (!taskTmp.isChecklist) {
-            toggleChecklist2();
+		if (!mTask.isChecklist) {
+			toggleChecklist2();
 			return;
 		}
 
@@ -1005,8 +984,8 @@ public class DetailFragment extends Fragment implements
 			toggleChecklistView = newView;
 //			fade(toggleChecklistView, true);
 			animate(toggleChecklistView).alpha(1).scaleXBy(0).scaleX(1).scaleYBy(0).scaleY(1);
-            taskTmp.isChecklist = !taskTmp.isChecklist;
-        }
+			mTask.isChecklist = !mTask.isChecklist;
+		}
 	}
 
 
@@ -1032,7 +1011,7 @@ public class DetailFragment extends Fragment implements
 
 					@Override
 					public void onNegative(MaterialDialog dialog) {
-						taskTmp.setCategory(null);
+						mTask.setCategory(null);
 						setTagMarkerColor(null);
 					}
 				})
@@ -1041,7 +1020,7 @@ public class DetailFragment extends Fragment implements
 		dialog.getListView().setOnItemClickListener(new AdapterView.OnItemClickListener() {
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-				taskTmp.setCategory(categories.get(position));
+				mTask.setCategory(categories.get(position));
 				setTagMarkerColor(categories.get(position));
 				dialog.dismiss();
 			}
@@ -1185,13 +1164,13 @@ public class DetailFragment extends Fragment implements
 			switch (requestCode) {
 				case TAKE_PHOTO:
 					attachment.mimeType = Constants.MIME_TYPE_IMAGE;
-					taskTmp.getAttachmentsList().add(attachment);
+					mTask.getAttachmentsList().add(attachment);
 					mAttachmentAdapter.notifyDataSetChanged();
 					mGridView.autoresize();
 					break;
 				case TAKE_VIDEO:
 					attachment.mimeType = Constants.MIME_TYPE_VIDEO;
-					taskTmp.getAttachmentsList().add(attachment);
+					mTask.getAttachmentsList().add(attachment);
 					mAttachmentAdapter.notifyDataSetChanged();
 					mGridView.autoresize();
 					break;
@@ -1200,14 +1179,14 @@ public class DetailFragment extends Fragment implements
 					break;
 				case SKETCH:
 					attachment.mimeType = Constants.MIME_TYPE_SKETCH;
-					taskTmp.getAttachmentsList().add(attachment);
+					mTask.getAttachmentsList().add(attachment);
 					mAttachmentAdapter.notifyDataSetChanged();
 					mGridView.autoresize();
 					break;
 				case TAG:
 					getMainActivity().showMessage(R.string.category_saved, CroutonHelper.CONFIRM);
 					Category tag = intent.getParcelableExtra("tag");
-					taskTmp.setCategory(tag);
+					mTask.setCategory(tag);
 					setTagMarkerColor(tag);
 					break;
 				case DETAIL:
@@ -1237,46 +1216,31 @@ public class DetailFragment extends Fragment implements
 	 */
 	private void discard() {
 		// Checks if some new files have been attached and must be removed
-		if (!taskTmp.getAttachmentsList().equals(task.getAttachmentsList())) {
-			for (Attachment newAttachment : taskTmp.getAttachmentsList()) {
-				if (!task.getAttachmentsList().contains(newAttachment)) {
+		if (!mTask.getAttachmentsList().equals(mOriginalTask.getAttachmentsList())) {
+			for (Attachment newAttachment : mTask.getAttachmentsList()) {
+				if (!mOriginalTask.getAttachmentsList().contains(newAttachment)) {
 					StorageManager.delete(getActivity(), newAttachment.uri.getPath());
 				}
 			}
 		}
 
-		goBack = true;
-
-		if (!taskTmp.equals(taskOriginal)) {
-			// Restore original status of the note
-            if (taskOriginal.id == 0) {
-                getMainActivity().deleteNote(taskTmp);
-				goHome();
-			} else {
-				SaveTask saveTask = new SaveTask(this, this, false);
-				saveTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, taskOriginal);
-			}
-			MainActivity.notifyAppWidgets(getActivity());
-		} else {
-			goHome();
-		}
+		goHome();
 	}
 
 	private void trashTask(boolean trash) {
 		// Simply go back if is a new note
-        if (taskTmp.id == 0) {
-            goHome();
+		if (mTask.id == 0) {
+			goHome();
 			return;
 		}
 
-        taskTmp.isTrashed = trash;
-        goBack = true;
+		mTask.isTrashed = trash;
 		exitMessage = trash ? getString(R.string.task_trashed) : getString(R.string.task_untrashed);
 		exitCroutonStyle = trash ? CroutonHelper.WARN : CroutonHelper.INFO;
 		if (trash) {
-			ReminderHelper.removeReminder(MainApplication.getContext(), taskTmp);
+			ReminderHelper.removeReminder(MainApplication.getContext(), mTask);
 		} else {
-			ReminderHelper.addReminder(MainApplication.getContext(), task);
+			ReminderHelper.addReminder(MainApplication.getContext(), mTask);
 		}
 		saveTask(this);
 	}
@@ -1289,7 +1253,8 @@ public class DetailFragment extends Fragment implements
 				.callback(new MaterialDialog.SimpleCallback() {
 					@Override
 					public void onPositive(MaterialDialog materialDialog) {
-						getMainActivity().deleteNote(taskTmp);
+						DeleteNoteTask deleteNoteTask = new DeleteNoteTask(MainApplication.getContext());
+						deleteNoteTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, mTask);
 
 						getMainActivity().showMessage(R.string.task_deleted, CroutonHelper.ALERT);
 						MainActivity.notifyAppWidgets(getActivity());
@@ -1301,7 +1266,6 @@ public class DetailFragment extends Fragment implements
 	public void saveAndExit(OnTaskSaved mOnTaskSaved) {
 		exitMessage = getString(R.string.task_updated);
 		exitCroutonStyle = CroutonHelper.CONFIRM;
-		goBack = true;
 		saveTask(mOnTaskSaved);
 	}
 
@@ -1312,13 +1276,13 @@ public class DetailFragment extends Fragment implements
 	void saveTask(OnTaskSaved mOnTaskSaved) {
 
 		// Changed fields
-        taskTmp.title = getTaskTitle();
-        taskTmp.content = getTaskContent();
+		mTask.title = getTaskTitle();
+		mTask.content = getTaskContent();
 
 		// Check if some text or attachments of any type have been inserted or
 		// is an empty note
-        if (goBack && TextUtils.isEmpty(taskTmp.title) && TextUtils.isEmpty(taskTmp.content)
-                && taskTmp.getAttachmentsList().size() == 0) {
+		if (TextUtils.isEmpty(mTask.title) && TextUtils.isEmpty(mTask.content)
+				&& mTask.getAttachmentsList().size() == 0) {
 
 			exitMessage = getString(R.string.empty_task_not_saved);
 			exitCroutonStyle = CroutonHelper.INFO;
@@ -1328,11 +1292,9 @@ public class DetailFragment extends Fragment implements
 
 		if (saveNotNeeded()) return;
 
-		taskTmp.setAttachmentsListOld(task.getAttachmentsList());
-
 		// Saving changes to the note
-		SaveTask saveTask = new SaveTask(this, mOnTaskSaved, lastModificationUpdatedNeeded());
-		saveTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, taskTmp);
+		SaveTask saveTask = new SaveTask(this, mTask, mOriginalTask.getAttachmentsList(), mOnTaskSaved, lastModificationUpdatedNeeded());
+		saveTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 	}
 
 
@@ -1340,9 +1302,9 @@ public class DetailFragment extends Fragment implements
 	 * Checks if nothing is changed to avoid committing if possible (check)
 	 */
 	private boolean saveNotNeeded() {
-        if (taskTmp.equals(task)) {
-            exitMessage = "";
-			onTaskSaved(taskTmp);
+		if (mTask.equals(mOriginalTask)) {
+			exitMessage = "";
+			goHome();
 			return true;
 		}
 		return false;
@@ -1354,19 +1316,17 @@ public class DetailFragment extends Fragment implements
 	 * and then force to not update last modification date*
 	 */
 	private boolean lastModificationUpdatedNeeded() {
-		task.setCategory(taskTmp.getCategory());
-        task.isTrashed = taskTmp.isTrashed;
-        return !taskTmp.equals(task);
-    }
+		Task tmpTask = new Task(mTask);
+		tmpTask.setCategory(mTask.getCategory());
+		tmpTask.isTrashed = mTask.isTrashed;
+		return !tmpTask.equals(mOriginalTask);
+	}
 
 
 	@Override
 	public void onTaskSaved(Task taskSaved) {
 		MainActivity.notifyAppWidgets(MainApplication.getContext());
-		task = new Task(taskSaved);
-		if (goBack) {
-			goHome();
-		}
+		goHome();
 	}
 
 	private String getTaskTitle() {
@@ -1382,8 +1342,8 @@ public class DetailFragment extends Fragment implements
 
 	private String getTaskContent() {
 		String content = "";
-        if (!taskTmp.isChecklist) {
-            try {
+		if (!mTask.isChecklist) {
+			try {
 				try {
 					content = ((EditText) getActivity().findViewById(R.id.detail_content)).getText().toString();
 				} catch (ClassCastException e) {
@@ -1405,10 +1365,9 @@ public class DetailFragment extends Fragment implements
 	 * Updates share intent
 	 */
 	private void shareTask() {
-		Task sharedTask = new Task(taskTmp);
-        sharedTask.title = getTaskTitle();
-        sharedTask.content = getTaskContent();
-        getMainActivity().shareTaskNote(sharedTask);
+		mTask.title = getTaskTitle();
+		mTask.content = getTaskContent();
+		getMainActivity().shareTaskNote(mTask);
 	}
 
 	/**
@@ -1472,7 +1431,6 @@ public class DetailFragment extends Fragment implements
 				}
 			});
 		} catch (IOException e) {
-
 		}
 	}
 
@@ -1506,7 +1464,6 @@ public class DetailFragment extends Fragment implements
 			audioRecordingTimeStart = Calendar.getInstance().getTimeInMillis();
 			mRecorder.start();
 		} catch (IOException e) {
-
 		}
 	}
 
@@ -1653,8 +1610,8 @@ public class DetailFragment extends Fragment implements
 	@Override
 	public void onAttachingFileErrorOccurred(Attachment mAttachment) {
 		getMainActivity().showMessage(R.string.error_saving_attachments, CroutonHelper.ALERT);
-		if (taskTmp.getAttachmentsList().contains(mAttachment)) {
-			taskTmp.getAttachmentsList().remove(mAttachment);
+		if (mTask.getAttachmentsList().contains(mAttachment)) {
+			mTask.getAttachmentsList().remove(mAttachment);
 			mAttachmentAdapter.notifyDataSetChanged();
 			mGridView.autoresize();
 		}
@@ -1662,15 +1619,15 @@ public class DetailFragment extends Fragment implements
 
 	@Override
 	public void onAttachingFileFinished(Attachment mAttachment) {
-		taskTmp.getAttachmentsList().add(mAttachment);
+		mTask.getAttachmentsList().add(mAttachment);
 		mAttachmentAdapter.notifyDataSetChanged();
 		mGridView.autoresize();
 	}
 
 	@Override
 	public void onReminderPicked(long reminder) {
-        taskTmp.alarmDate = reminder;
-        if (mFragment.isAdded()) {
+		mTask.alarmDate = reminder;
+		if (mFragment.isAdded()) {
 			datetime.setText(getString(R.string.alarm_set_on) + " " + DateHelper.getDateTimeShort(getActivity(), reminder));
 		}
 	}
@@ -1695,8 +1652,8 @@ public class DetailFragment extends Fragment implements
 	}
 
 	private void scrollContent() {
-        if (taskTmp.isChecklist) {
-            if (mChecklistManager.getCount() > contentLineCounter) {
+		if (mTask.isChecklist) {
+			if (mChecklistManager.getCount() > contentLineCounter) {
 				scrollView.scrollBy(0, 60);
 			}
 			contentLineCounter = mChecklistManager.getCount();
@@ -1712,13 +1669,13 @@ public class DetailFragment extends Fragment implements
 	 * Used to check currently opened note from activity to avoid openind multiple times the same one
 	 */
 	public Task getCurrentTask() {
-		return task;
+		return mTask;
 	}
 
 	private boolean isTaskLocationValid() {
-        return taskTmp.latitude != 0
-                && taskTmp.longitude != 0;
-    }
+		return mTask.latitude != 0
+				&& mTask.longitude != 0;
+	}
 
 	/**
 	 * Manages clicks on attachment dialog
@@ -1747,7 +1704,7 @@ public class DetailFragment extends Fragment implements
 						attachment.uri = Uri.parse(recordName);
 						attachment.mimeType = Constants.MIME_TYPE_AUDIO;
 						attachment.length = audioRecordingTime;
-						taskTmp.getAttachmentsList().add(attachment);
+						mTask.getAttachmentsList().add(attachment);
 						mAttachmentAdapter.notifyDataSetChanged();
 						mGridView.autoresize();
 						attachmentDialog.dismiss();
