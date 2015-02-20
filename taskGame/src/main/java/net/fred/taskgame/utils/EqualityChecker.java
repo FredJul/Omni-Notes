@@ -2,10 +2,8 @@ package net.fred.taskgame.utils;
 
 public class EqualityChecker {
 	public static synchronized boolean check(Object[] aArr, Object[] bArr) {
-		boolean res = true;
-
 		// Array size test
-		res = aArr.length == bArr.length;
+        boolean res = aArr.length == bArr.length;
 
 		// If arrays have the same length
 		if (res) {
@@ -28,5 +26,4 @@ public class EqualityChecker {
 
 		return res;
 	}
-
 }

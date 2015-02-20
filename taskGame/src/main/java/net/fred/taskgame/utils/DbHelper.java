@@ -45,7 +45,12 @@ public class DbHelper {
                 .getInstance().getTimeInMillis() : (task.lastModificationDate != 0 ? task.lastModificationDate : Calendar
                 .getInstance().getTimeInMillis());
 
-		task.save(true);
+        task.save(false);
+
+        for (Attachment attachment : task.getAttachmentsList()) {
+            attachment.taskId = task.id;
+            attachment.save(false);
+        }
 
 		return task;
 	}

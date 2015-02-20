@@ -29,6 +29,7 @@ import com.raizlabs.android.dbflow.structure.BaseModel;
 import net.fred.taskgame.utils.EqualityChecker;
 import net.fred.taskgame.utils.date.DateHelper;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Table
@@ -80,7 +81,10 @@ public class Task extends BaseModel implements Parcelable {
         isChecklist = task.isChecklist;
         categoryId = task.categoryId;
         mCategory = task.mCategory;
-        mAttachmentsList = task.mAttachmentsList;
+
+        if (task.mAttachmentsList != null) {
+            mAttachmentsList = new ArrayList<>(task.mAttachmentsList);
+        }
     }
 
 	private Task(Parcel in) {
@@ -154,21 +158,14 @@ public class Task extends BaseModel implements Parcelable {
             return res;
         }
 
-        Object[] a = {id, title, content, creationDate, lastModificationDate,
-                isTrashed, alarmDate, latitude, longitude, address, isChecklist, categoryId};
-        Object[] b = {task.id, task.title, task.content, task.creationDate, task.lastModificationDate,
-                task.isTrashed, task.alarmDate, task.latitude, task.longitude, task.address, task.isChecklist, task.categoryId};
+        Object[] a = {id, title, content, creationDate, lastModificationDate, isTrashed,
+                alarmDate, latitude, longitude, address, isChecklist, categoryId, getAttachmentsList()};
+        Object[] b = {task.id, task.title, task.content, task.creationDate, task.lastModificationDate, task.isTrashed,
+                task.alarmDate, task.latitude, task.longitude, task.address, task.isChecklist, task.categoryId, task.getAttachmentsList()};
         if (EqualityChecker.check(a, b)) {
 			res = true;
 		}
 
-		return res;
-	}
-
-
-	public boolean isChanged(Task task) {
-		boolean res;
-		res = !equals(task) || !getAttachmentsList().equals(task.getAttachmentsList());
 		return res;
 	}
 

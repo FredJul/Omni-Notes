@@ -670,7 +670,7 @@ public class DetailFragment extends Fragment implements
 	 * Force focus and shows soft keyboard
 	 */
 	private void requestFocus(final EditText view) {
-        if (task.id == 0 && !taskTmp.isChanged(task)) {
+        if (task.id == 0 && taskTmp.equals(task)) {
             KeyboardUtils.showKeyboard(view);
 		}
 	}
@@ -1340,8 +1340,8 @@ public class DetailFragment extends Fragment implements
 	 * Checks if nothing is changed to avoid committing if possible (check)
 	 */
 	private boolean saveNotNeeded() {
-		if (!taskTmp.isChanged(task)) {
-			exitMessage = "";
+        if (taskTmp.equals(task)) {
+            exitMessage = "";
 			onTaskSaved(taskTmp);
 			return true;
 		}
@@ -1356,8 +1356,8 @@ public class DetailFragment extends Fragment implements
 	private boolean lastModificationUpdatedNeeded() {
 		task.setCategory(taskTmp.getCategory());
         task.isTrashed = taskTmp.isTrashed;
-        return taskTmp.isChanged(task);
-	}
+        return !taskTmp.equals(task);
+    }
 
 
 	@Override
@@ -1613,7 +1613,6 @@ public class DetailFragment extends Fragment implements
 		switch (event.getAction()) {
 
 			case MotionEvent.ACTION_DOWN:
-
 				int w;
 
 				Point displaySize = Display.getUsableSize(getActivity());
@@ -1627,7 +1626,6 @@ public class DetailFragment extends Fragment implements
 				break;
 
 			case MotionEvent.ACTION_UP:
-
 				if (swiping)
 					swiping = false;
 				break;

@@ -37,78 +37,77 @@ import java.util.List;
 
 public class SaveTask extends AsyncTask<Task, Void, Task> {
 
-	private final Activity mActivity;
-	private boolean updateLastModification = true;
-	private OnTaskSaved mOnTaskSaved;
+    private final Activity mActivity;
+    private boolean updateLastModification = true;
+    private OnTaskSaved mOnTaskSaved;
 
 
-	public SaveTask(DetailFragment activity, boolean updateLastModification) {
-		this(activity, null, updateLastModification);
-	}
+    public SaveTask(DetailFragment activity, boolean updateLastModification) {
+        this(activity, null, updateLastModification);
+    }
 
 
-	public SaveTask(DetailFragment activity, OnTaskSaved onTaskSaved, boolean updateLastModification) {
-		super();
-		mActivity = activity.getActivity();
-		this.mOnTaskSaved = onTaskSaved;
-		this.updateLastModification = updateLastModification;
-	}
+    public SaveTask(DetailFragment activity, OnTaskSaved onTaskSaved, boolean updateLastModification) {
+        super();
+        mActivity = activity.getActivity();
+        this.mOnTaskSaved = onTaskSaved;
+        this.updateLastModification = updateLastModification;
+    }
 
 
-	@Override
-	protected Task doInBackground(Task... params) {
-		Task task = params[0];
-		purgeRemovedAttachments(task);
+    @Override
+    protected Task doInBackground(Task... params) {
+        Task task = params[0];
+        purgeRemovedAttachments(task);
 
-		boolean error = false;
-		if (!error) {
-			// Note updating on database
-			task = DbHelper.updateTask(task, updateLastModification);
-		} else {
-			Toast.makeText(mActivity, mActivity.getString(R.string.error_saving_attachments), Toast.LENGTH_SHORT).show();
-		}
+        boolean error = false;
+        if (!error) {
+            // Note updating on database
+            task = DbHelper.updateTask(task, updateLastModification);
+        } else {
+            Toast.makeText(mActivity, mActivity.getString(R.string.error_saving_attachments), Toast.LENGTH_SHORT).show();
+        }
 
-		return task;
-	}
+        return task;
+    }
 
-	private void purgeRemovedAttachments(Task task) {
-		List<Attachment> deletedAttachments = task.getAttachmentsListOld();
-		for (Attachment attachment : task.getAttachmentsList()) {
-			if (attachment.id != 0) {
-				// Workaround to prevent deleting attachments if instance is changed (app restart)
-				if (deletedAttachments.indexOf(attachment) == -1) {
-					attachment = getFixedAttachmentInstance(deletedAttachments, attachment);
-				}
-				deletedAttachments.remove(attachment);
-			}
-		}
-		// Remove from database deleted attachments
-		for (Attachment deletedAttachment : deletedAttachments) {
-			StorageManager.delete(mActivity, deletedAttachment.uri.getPath());
+    private void purgeRemovedAttachments(Task task) {
+        List<Attachment> deletedAttachments = task.getAttachmentsListOld();
+        for (Attachment attachment : task.getAttachmentsList()) {
+            if (attachment.id != 0) {
+                // Workaround to prevent deleting attachments if instance is changed (app restart)
+                if (deletedAttachments.indexOf(attachment) == -1) {
+                    attachment = getFixedAttachmentInstance(deletedAttachments, attachment);
+                }
+                deletedAttachments.remove(attachment);
+            }
+        }
+        // Remove from database deleted attachments
+        for (Attachment deletedAttachment : deletedAttachments) {
+            StorageManager.delete(mActivity, deletedAttachment.uri.getPath());
+        }
+    }
 
-		}
-	}
-
-	private Attachment getFixedAttachmentInstance(List<Attachment> deletedAttachments, Attachment attachment) {
-		for (Attachment deletedAttachment : deletedAttachments) {
-			if (deletedAttachment.id == attachment.id) return deletedAttachment;
-		}
-		return attachment;
-	}
+    private Attachment getFixedAttachmentInstance(List<Attachment> deletedAttachments, Attachment attachment) {
+        for (Attachment deletedAttachment : deletedAttachments) {
+            if (deletedAttachment.id == attachment.id) return deletedAttachment;
+        }
+        return attachment;
+    }
 
 
-	@Override
-	protected void onPostExecute(Task task) {
-		super.onPostExecute(task);
+    @Override
+    protected void onPostExecute(Task task) {
+        super.onPostExecute(task);
 
-		// Set reminder if is not passed yet
-		long now = Calendar.getInstance().getTimeInMillis();
+        // Set reminder if is not passed yet
+        long now = Calendar.getInstance().getTimeInMillis();
         if (task.alarmDate >= now) {
             ReminderHelper.addReminder(MainApplication.getContext(), task);
-		}
+        }
 
-		if (this.mOnTaskSaved != null) {
-			mOnTaskSaved.onTaskSaved(task);
-		}
-	}
+        if (this.mOnTaskSaved != null) {
+            mOnTaskSaved.onTaskSaved(task);
+        }
+    }
 }
