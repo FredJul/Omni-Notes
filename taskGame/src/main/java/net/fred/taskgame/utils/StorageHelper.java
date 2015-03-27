@@ -42,7 +42,7 @@ import java.util.Calendar;
 import java.util.Locale;
 
 
-public class StorageManager {
+public class StorageHelper {
 
 	public static boolean checkStorage() {
 		boolean mExternalStorageAvailable;
@@ -283,13 +283,13 @@ public class StorageManager {
 			} catch (IOException e) {
 			}
 		} else {
-			f = StorageManager.createExternalStoragePrivateFile(mContext, uri, extension);
+			f = StorageHelper.createExternalStoragePrivateFile(mContext, uri, extension);
 		}
 		Attachment attachment = null;
 		if (f != null) {
 			attachment = new Attachment();
 			attachment.uri = Uri.fromFile(f);
-			attachment.mimeType = StorageManager.getMimeTypeInternal(mContext, uri);
+			attachment.mimeType = StorageHelper.getMimeTypeInternal(mContext, uri);
 			attachment.name = name;
 			attachment.size = f.length();
 		}

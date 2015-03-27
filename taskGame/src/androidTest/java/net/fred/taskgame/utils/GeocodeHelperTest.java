@@ -29,7 +29,7 @@ public class GeocodeHelperTest extends InstrumentationTestCase {
 
 	@Test
 	public void testGetAddressFromCoordinates() throws IOException {
-		if (ConnectionManager.internetAvailable(MainApplication.getContext())) {
+		if (ConnectionHelper.isInternetAvailable(MainApplication.getContext())) {
 			Double LON = 11.171552;
 			Double LAT = 43.799328;
 			String address = GeocodeHelper.getAddressFromCoordinates(MainApplication.getContext(), LAT, LON);

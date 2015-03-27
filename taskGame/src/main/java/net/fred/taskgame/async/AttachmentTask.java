@@ -24,7 +24,7 @@ import android.support.v4.app.Fragment;
 
 import net.fred.taskgame.model.Attachment;
 import net.fred.taskgame.model.listeners.OnAttachingFileListener;
-import net.fred.taskgame.utils.StorageManager;
+import net.fred.taskgame.utils.StorageHelper;
 
 import java.lang.ref.WeakReference;
 
@@ -46,7 +46,7 @@ public class AttachmentTask extends AsyncTask<Void, Void, Attachment> {
 
 	@Override
 	protected Attachment doInBackground(Void... params) {
-		return StorageManager.createAttachmentFromUri(mActivity, uri);
+		return StorageHelper.createAttachmentFromUri(mActivity, uri);
 	}
 
 
@@ -60,7 +60,7 @@ public class AttachmentTask extends AsyncTask<Void, Void, Attachment> {
 			}
 		} else {
 			if (attachment != null) {
-				StorageManager.delete(mActivity, attachment.uri.getPath());
+				StorageHelper.delete(mActivity, attachment.uri.getPath());
 			}
 		}
 	}

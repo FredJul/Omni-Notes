@@ -148,7 +148,7 @@ public class DbHelper {
 	public static void deleteTask(Task task) {
 		// Attachment deletion from storage
 		for (Attachment attachment : task.getAttachmentsList()) {
-			StorageManager.delete(MainApplication.getContext(), attachment.uri.getPath());
+			StorageHelper.delete(MainApplication.getContext(), attachment.uri.getPath());
 		}
 
 		// Delete task's attachments
@@ -162,7 +162,7 @@ public class DbHelper {
 	 */
 	public static void deleteAttachment(Attachment attachment) {
 		// Attachment deletion from storage
-		StorageManager.delete(MainApplication.getContext(), attachment.uri.getPath());
+		StorageHelper.delete(MainApplication.getContext(), attachment.uri.getPath());
 		attachment.delete(true);
 	}
 

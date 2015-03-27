@@ -98,7 +98,7 @@ import net.fred.taskgame.model.listeners.OnAttachingFileListener;
 import net.fred.taskgame.model.listeners.OnGeoUtilResultListener;
 import net.fred.taskgame.model.listeners.OnReminderPickedListener;
 import net.fred.taskgame.model.listeners.OnTaskSaved;
-import net.fred.taskgame.utils.ConnectionManager;
+import net.fred.taskgame.utils.ConnectionHelper;
 import net.fred.taskgame.utils.Constants;
 import net.fred.taskgame.utils.CroutonHelper;
 import net.fred.taskgame.utils.DbHelper;
@@ -108,7 +108,7 @@ import net.fred.taskgame.utils.IntentChecker;
 import net.fred.taskgame.utils.KeyboardUtils;
 import net.fred.taskgame.utils.PrefUtils;
 import net.fred.taskgame.utils.ReminderHelper;
-import net.fred.taskgame.utils.StorageManager;
+import net.fred.taskgame.utils.StorageHelper;
 import net.fred.taskgame.utils.date.DateHelper;
 import net.fred.taskgame.utils.date.ReminderPickers;
 import net.fred.taskgame.view.ExpandableHeightGridView;
@@ -372,7 +372,7 @@ public class DetailFragment extends Fragment implements
 			// Due to the fact that Google Now passes intent as text but with
 			// audio recording attached the case must be handled in specific way
 			if (uri != null && !Constants.INTENT_GOOGLE_NOW.equals(i.getAction())) {
-//		    	String mimeType = StorageManager.getMimeTypeInternal(((MainActivity)getActivity()), i.getType());
+//		    	String mimeType = StorageHelper.getMimeTypeInternal(((MainActivity)getActivity()), i.getType());
 //		    	Attachment mAttachment = new Attachment(uri, mimeType);
 //		    	if (Constants.MIME_TYPE_FILES.equals(mimeType)) {
 //			    	mAttachment.setName(uri.getLastPathSegment());
@@ -477,7 +477,7 @@ public class DetailFragment extends Fragment implements
 					playback(v, attachment.uri);
 				} else {
 					Intent attachmentIntent = new Intent(Intent.ACTION_VIEW);
-					attachmentIntent.setDataAndType(attachment.uri, StorageManager.getMimeType(getActivity(), attachment.uri));
+					attachmentIntent.setDataAndType(attachment.uri, StorageHelper.getMimeType(getActivity(), attachment.uri));
 					attachmentIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
 					if (IntentChecker.isAvailable(getActivity().getApplicationContext(), attachmentIntent, null)) {
 						startActivity(attachmentIntent);
@@ -692,7 +692,7 @@ public class DetailFragment extends Fragment implements
 	}
 
 	private void setAddress() {
-		if (!ConnectionManager.internetAvailable(getActivity())) {
+		if (!ConnectionHelper.isInternetAvailable(getActivity())) {
 			mTask.latitude = getMainActivity().currentLatitude;
 			mTask.longitude = getMainActivity().currentLongitude;
 			onAddressResolved("");
@@ -1098,7 +1098,7 @@ public class DetailFragment extends Fragment implements
 			return;
 		}
 		// Checks for created file validity
-		File f = StorageManager.createNewAttachmentFile(getActivity(), Constants.MIME_TYPE_IMAGE_EXT);
+		File f = StorageHelper.createNewAttachmentFile(getActivity(), Constants.MIME_TYPE_IMAGE_EXT);
 		if (f == null) {
 			getMainActivity().showMessage(R.string.error, CroutonHelper.ALERT);
 			return;
@@ -1117,7 +1117,7 @@ public class DetailFragment extends Fragment implements
 			return;
 		}
 		// File is stored in custom ON folder to speedup the attachment
-		File f = StorageManager.createNewAttachmentFile(getActivity(), Constants.MIME_TYPE_VIDEO_EXT);
+		File f = StorageHelper.createNewAttachmentFile(getActivity(), Constants.MIME_TYPE_VIDEO_EXT);
 		if (f == null) {
 			getMainActivity().showMessage(R.string.error, CroutonHelper.ALERT);
 
@@ -1133,7 +1133,7 @@ public class DetailFragment extends Fragment implements
 	}
 
 	private void takeSketch(Attachment attachment) {
-		File f = StorageManager.createNewAttachmentFile(getActivity(), Constants.MIME_TYPE_SKETCH_EXT);
+		File f = StorageHelper.createNewAttachmentFile(getActivity(), Constants.MIME_TYPE_SKETCH_EXT);
 		if (f == null) {
 			getMainActivity().showMessage(R.string.error, CroutonHelper.ALERT);
 			return;
@@ -1212,7 +1212,7 @@ public class DetailFragment extends Fragment implements
 		if (!mTask.getAttachmentsList().equals(mOriginalTask.getAttachmentsList())) {
 			for (Attachment newAttachment : mTask.getAttachmentsList()) {
 				if (!mOriginalTask.getAttachmentsList().contains(newAttachment)) {
-					StorageManager.delete(getActivity(), newAttachment.uri.getPath());
+					StorageHelper.delete(getActivity(), newAttachment.uri.getPath());
 				}
 			}
 		}
@@ -1437,7 +1437,7 @@ public class DetailFragment extends Fragment implements
 	}
 
 	private void startRecording() {
-		File f = StorageManager.createNewAttachmentFile(getActivity(), Constants.MIME_TYPE_AUDIO_EXT);
+		File f = StorageHelper.createNewAttachmentFile(getActivity(), Constants.MIME_TYPE_AUDIO_EXT);
 		if (f == null) {
 			getMainActivity().showMessage(R.string.error, CroutonHelper.ALERT);
 

@@ -192,7 +192,7 @@ public class BitmapHelper {
 		// Video
 		if (Constants.MIME_TYPE_VIDEO.equals(mAttachment.mimeType)) {
 			// Tries to retrieve full path from ContentResolver if is a new video
-			String path = StorageManager.getRealPathFromURI(mContext,
+			String path = StorageHelper.getRealPathFromURI(mContext,
 					mAttachment.uri);
 			// .. or directly from local directory otherwise
 			if (path == null) {
@@ -234,7 +234,7 @@ public class BitmapHelper {
 
 	public static Uri getThumbnailUri(Context mContext, Attachment mAttachment) {
 		Uri uri = mAttachment.uri;
-		String mimeType = StorageManager.getMimeType(uri.toString());
+		String mimeType = StorageHelper.getMimeType(uri.toString());
 		if (!TextUtils.isEmpty(mimeType)) {
 			String type = mimeType.replaceFirst("/.*", "");
 			if (type.equals("image") || type.equals("video")) {
