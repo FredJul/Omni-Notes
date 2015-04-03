@@ -66,17 +66,9 @@ public class BitmapHelper {
 
 	/**
 	 * Decoding with inJustDecodeBounds=true to check sampling index without breaking memory
-	 *
-	 * @param mContext
-	 * @param uri
-	 * @param reqWidth
-	 * @param reqHeight
-	 * @return
-	 * @throws FileNotFoundException
 	 */
 	private static int calculateInSampleSize(BitmapFactory.Options options, int reqWidth, int reqHeight) {
 
-		// Calcolo dell'inSampleSize e delle nuove dimensioni proporzionate
 		final int height = options.outHeight;
 		final int width = options.outWidth;
 		int inSampleSize = 1;
@@ -104,11 +96,11 @@ public class BitmapHelper {
 	 * @return
 	 * @throws FileNotFoundException
 	 */
-	public static Bitmap getThumbnail(Context mContext, Uri uri, int reqWidth, int reqHeight) {
+	public static Bitmap getThumbnail(Context ctx, Uri uri, int reqWidth, int reqHeight) {
 		Bitmap srcBmp;
 		Bitmap dstBmp = null;
 		try {
-			srcBmp = decodeSampledFromUri(mContext, uri, reqWidth, reqHeight);
+			srcBmp = decodeSampledFromUri(ctx, uri, reqWidth, reqHeight);
 
 			// If picture is smaller than required thumbnail
 			if (srcBmp.getWidth() < reqWidth && srcBmp.getHeight() < reqHeight) {
@@ -134,39 +126,6 @@ public class BitmapHelper {
 		}
 
 		return dstBmp;
-	}
-
-
-	/**
-	 * Scales a bitmap to fit required ratio
-	 *
-	 * @param bmp       Image to be scaled
-	 * @param reqWidth
-	 * @param reqHeight
-	 */
-	@SuppressWarnings("unused")
-	private static Bitmap scaleImage(Context mContext, Bitmap bitmap, int reqWidth, int reqHeight) {
-
-		// Get current dimensions AND the desired bounding box
-		int width = bitmap.getWidth();
-		int height = bitmap.getHeight();
-		int boundingX = dpToPx(mContext, reqWidth);
-		int boundingY = dpToPx(mContext, reqHeight);
-
-		// Determine how much to scale: the dimension requiring less scaling is
-		// closer to the its side. This way the image always stays inside your
-		// bounding box AND either x/y axis touches it.
-		float xScale = ((float) boundingX) / width;
-		float yScale = ((float) boundingY) / height;
-		float scale = (xScale >= yScale) ? xScale : yScale;
-
-		// Create a matrix for the scaling and add the scaling data
-		Matrix matrix = new Matrix();
-		matrix.postScale(scale, scale);
-
-		// Create a new bitmap and convert it to a format understood by the
-		// ImageView
-		return Bitmap.createBitmap(bitmap, 0, 0, width, height, matrix, true);
 	}
 
 	public static InputStream getBitmapInputStream(Bitmap bitmap) {
@@ -270,12 +229,6 @@ public class BitmapHelper {
 
 		return thumbnail;
 	}
-
-	private static int dpToPx(Context mContext, int dp) {
-		float density = mContext.getResources().getDisplayMetrics().density;
-		return Math.round((float) dp * density);
-	}
-
 
 	public static Bitmap decodeSampledBitmapFromResourceMemOpt(InputStream inputStream, int reqWidth, int reqHeight) {
 

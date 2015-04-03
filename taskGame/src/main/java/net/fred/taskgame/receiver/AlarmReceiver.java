@@ -16,22 +16,20 @@
  */
 package net.fred.taskgame.receiver;
 
-import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
-import android.support.v4.app.NotificationCompat;
-import android.text.TextUtils;
 import android.widget.Toast;
 
 import net.fred.taskgame.R;
 import net.fred.taskgame.activity.SnoozeActivity;
 import net.fred.taskgame.model.Task;
 import net.fred.taskgame.utils.Constants;
+import net.fred.taskgame.utils.NotificationsHelper;
 import net.fred.taskgame.utils.PrefUtils;
+import net.fred.taskgame.utils.TextHelper;
 import net.fred.taskgame.utils.date.DateHelper;
 
 public class AlarmReceiver extends BroadcastReceiver {
@@ -49,35 +47,11 @@ public class AlarmReceiver extends BroadcastReceiver {
     private void createNotification(Context mContext, Task task) {
         // Prepare text contents
         String title = task.title.length() > 0 ? task.title : task.content;
-        String alarmText = DateHelper.getString(
-                task.alarmDate,
-                Constants.DATE_FORMAT_SHORT_DATE)
-                + ", "
+        String alarmText = DateHelper.getString(task.alarmDate,
+                Constants.DATE_FORMAT_SHORT_DATE) + ", "
                 + DateHelper.getDateTimeShort(mContext, task.alarmDate);
-        String text = !TextUtils.isEmpty(task.title) && !TextUtils.isEmpty(task.content) ? task.content : alarmText;
+        String text = task.title.length() > 0 && task.content.length() > 0 ? task.content : alarmText;
 
-        // Notification building
-        NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(
-                mContext).setSmallIcon(R.drawable.ic_stat_notification_icon)
-                .setContentTitle(title).setContentText(text)
-                .setAutoCancel(true);
-
-
-        // Ringtone options
-        String ringtone = PrefUtils.getString("settings_notification_ringtone", null);
-        if (ringtone != null) {
-            mBuilder.setSound(Uri.parse(ringtone));
-        }
-
-
-        // Vibration options
-        long[] pattern = {500, 500};
-        if (PrefUtils.getBoolean("settings_notification_vibration", true))
-            mBuilder.setVibrate(pattern);
-
-
-        // Sets up the Snooze and Dismiss action buttons that will appear in the
-        // big view of the notification.
         Intent snoozeIntent = new Intent(mContext, SnoozeActivity.class);
         snoozeIntent.setAction(Constants.ACTION_SNOOZE);
         snoozeIntent.putExtra(Constants.INTENT_TASK, task);
@@ -88,19 +62,10 @@ public class AlarmReceiver extends BroadcastReceiver {
         postponeIntent.setAction(Constants.ACTION_POSTPONE);
         postponeIntent.putExtra(Constants.INTENT_TASK, task);
         snoozeIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        PendingIntent piPostpone = PendingIntent.getActivity(mContext, 0, postponeIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+        PendingIntent piPostpone = PendingIntent.getActivity(mContext, 0, postponeIntent,
+                PendingIntent.FLAG_UPDATE_CURRENT);
 
         String snoozeDelay = PrefUtils.getString("settings_notification_snooze_delay", "10");
-
-        //Sets the big view "big text" style
-        mBuilder
-//		.addAction (R.drawable.ic_action_cancel_dark,
-//       		mContext.getString(R.string.cancel), piDismiss)
-                .addAction(R.drawable.ic_snooze_reminder,
-                        net.fred.taskgame.utils.TextHelper.capitalize(mContext.getString(R.string.snooze)) + ": " + snoozeDelay, piSnooze)
-                .addAction(R.drawable.ic_reminder,
-                        net.fred.taskgame.utils.TextHelper.capitalize(mContext.getString(R.string.add_reminder)), piPostpone);
-
 
         // Next create the bundle and initialize it
         Intent intent = new Intent(mContext, SnoozeActivity.class);
@@ -117,16 +82,28 @@ public class AlarmReceiver extends BroadcastReceiver {
         PendingIntent notifyIntent = PendingIntent.getActivity(mContext, 0, intent,
                 PendingIntent.FLAG_UPDATE_CURRENT);
 
-        // Puts the PendingIntent into the notification builder
-        mBuilder.setContentIntent(notifyIntent);
+        NotificationsHelper notificationsHelper = new NotificationsHelper(mContext);
+        notificationsHelper.createNotification(R.drawable.ic_stat_notification_icon, title, notifyIntent);
+        notificationsHelper.setLargeIcon(R.drawable.ic_launcher).setMessage(text);
 
+        notificationsHelper.getBuilder().addAction(R.drawable.ic_snooze_reminder,
+                TextHelper.capitalize(mContext.getString(R.string.snooze)) +
+                        ": " + snoozeDelay, piSnooze)
+                .addAction(R.drawable.ic_reminder,
+                        TextHelper.capitalize(mContext.getString(R.string
+                                .add_reminder)), piPostpone);
 
-        // Notifications are issued by sending them to the
-        // NotificationManager system service.
-        NotificationManager mNotificationManager = (NotificationManager) mContext
-                .getSystemService(Context.NOTIFICATION_SERVICE);
-        // Builds an anonymous Notification object from the builder, and
-        // passes it to the NotificationManager
-        mNotificationManager.notify(task.id, mBuilder.build());
+        // Ringtone options
+        String ringtone = PrefUtils.getString("settings_notification_ringtone", null);
+        if (ringtone != null) {
+            notificationsHelper.setRingtone(ringtone);
+        }
+
+        // Vibration options
+        long[] pattern = {500, 500};
+        if (PrefUtils.getBoolean("settings_notification_vibration", true))
+            notificationsHelper.setVibration(pattern);
+
+        notificationsHelper.show(task.id);
     }
 }
