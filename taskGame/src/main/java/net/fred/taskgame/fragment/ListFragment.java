@@ -461,22 +461,26 @@ public class ListFragment extends Fragment implements OnTasksLoadedListener, OnV
 
 
 	private void animateFab(int translationY, final int visibilityBefore, final int visibilityAfter) {
-		animate(fab).setInterpolator(new AccelerateDecelerateInterpolator())
+		fab.animate().setInterpolator(new AccelerateDecelerateInterpolator())
 				.setDuration(Constants.FAB_ANIMATION_TIME)
 				.translationY(translationY)
-				.setListener(new ViewPropertyAnimatorListener() {
+				.setListener(new Animator.AnimatorListener() {
 					@Override
-					public void onAnimationStart(View view) {
+					public void onAnimationStart(Animator animator) {
 						fab.setVisibility(visibilityBefore);
 					}
 
 					@Override
-					public void onAnimationEnd(View view) {
+					public void onAnimationEnd(Animator animator) {
 						fab.setVisibility(visibilityAfter);
 					}
 
 					@Override
-					public void onAnimationCancel(View view) {
+					public void onAnimationCancel(Animator animator) {
+					}
+
+					@Override
+					public void onAnimationRepeat(Animator animator) {
 					}
 				});
 	}
@@ -687,7 +691,6 @@ public class ListFragment extends Fragment implements OnTasksLoadedListener, OnV
 	 * SearchView initialization. It's a little complex because it's not using SearchManager but is implementing on its
 	 * own.
 	 */
-	@SuppressLint("NewApi")
 	private void initSearchView(final Menu menu) {
 
 		// Save item as class attribute to make it collapse on drawer opening
