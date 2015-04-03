@@ -111,7 +111,4 @@ public class UndoBarController {
         isVisible = false;
     }
 
-    public boolean isVisible() {
-        return isVisible;
-    }
 }

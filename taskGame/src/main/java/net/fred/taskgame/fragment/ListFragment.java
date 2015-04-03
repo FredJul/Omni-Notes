@@ -18,7 +18,6 @@ package net.fred.taskgame.fragment;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
-import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.SearchManager;
 import android.content.Context;
@@ -34,7 +33,6 @@ import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.view.MenuItemCompat;
-import android.support.v4.view.ViewPropertyAnimatorListener;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.view.ActionMode;
 import android.support.v7.widget.SearchView;
@@ -77,7 +75,6 @@ import net.fred.taskgame.model.Task;
 import net.fred.taskgame.model.adapters.NavDrawerCategoryAdapter;
 import net.fred.taskgame.model.adapters.NoteAdapter;
 import net.fred.taskgame.model.listeners.AbsListViewScrollDetector;
-import net.fred.taskgame.model.listeners.OnTasksLoadedListener;
 import net.fred.taskgame.model.listeners.OnViewTouchedListener;
 import net.fred.taskgame.utils.AnimationsHelper;
 import net.fred.taskgame.utils.BitmapHelper;
@@ -101,7 +98,7 @@ import de.keyboardsurfer.android.widget.crouton.Crouton;
 import static android.support.v4.view.ViewCompat.animate;
 
 
-public class ListFragment extends Fragment implements OnTasksLoadedListener, OnViewTouchedListener, UndoBarController.UndoListener {
+public class ListFragment extends Fragment implements OnViewTouchedListener, UndoBarController.UndoListener {
 
 	private static final int REQUEST_CODE_CATEGORY = 2;
 	private static final int REQUEST_CODE_CATEGORY_TASKS = 3;
@@ -1030,9 +1027,7 @@ public class ListFragment extends Fragment implements OnTasksLoadedListener, OnV
 		}
 	}
 
-
-	@Override
-	public void onTasksLoaded(List<Task> tasks) {
+	private void onTasksLoaded(List<Task> tasks) {
 		listAdapter = new NoteAdapter(getActivity(), tasks);
 
 		list.enableSwipeToDismiss(new OnDismissCallback() {
@@ -1066,7 +1061,6 @@ public class ListFragment extends Fragment implements OnTasksLoadedListener, OnV
 				}
 			}
 		});
-//		adapter.setAbsListView(list);
 		list.setAdapter(listAdapter);
 
 		// Replace listview with Mr. Jingles if it is empty

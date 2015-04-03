@@ -68,7 +68,6 @@ public class MainActivity extends BaseActivity implements OnDateSetListener, OnT
 	public final String FRAGMENT_DETAIL_TAG = "fragment_detail";
 	public final String FRAGMENT_SKETCH_TAG = "fragment_sketch";
 
-	private static MainActivity instance;
 	private FragmentManager mFragmentManager;
 
 	public Uri sketchUri;
@@ -81,8 +80,6 @@ public class MainActivity extends BaseActivity implements OnDateSetListener, OnT
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 
-		instance = this;
-
 		init();
 		initUI();
 	}
@@ -92,10 +89,6 @@ public class MainActivity extends BaseActivity implements OnDateSetListener, OnT
 		setSupportActionBar(toolbar);
 		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 		getSupportActionBar().setHomeButtonEnabled(true);
-	}
-
-	public static MainActivity getInstance() {
-		return instance;
 	}
 
 	private void init() {

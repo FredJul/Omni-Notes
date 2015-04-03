@@ -44,8 +44,4 @@ public class InterceptorFrameLayout extends FrameLayout {
 		return super.onInterceptTouchEvent(ev);
 	}
 
-	public void setOnViewTouchedListener(OnViewTouchedListener mOnViewTouchedListener) {
-		this.mOnViewTouchedListener = mOnViewTouchedListener;
-	}
-
 }

@@ -115,16 +115,7 @@ public class NoteAdapter extends ArrayAdapter<Task> implements Insertable {
 		}
 		initThumbnail(task, holder);
 
-
-//		Animation animation = AnimationUtils.loadAnimation(mActivity, R.animator.fade_in_support);
-//		animation.setDuration(60);
-//		convertView.startAnimation(animation);
-
 		return convertView;
-	}
-
-	public List<Task> getTasks() {
-		return mTasks;
 	}
 
 	private void initThumbnail(Task task, NoteViewHolder holder) {
@@ -298,9 +289,5 @@ public class NoteAdapter extends ArrayAdapter<Task> implements Insertable {
 	@Override
 	public void add(int i, @NonNull Object o) {
 		insert((Task) o, i);
-
 	}
 }
-
-
-

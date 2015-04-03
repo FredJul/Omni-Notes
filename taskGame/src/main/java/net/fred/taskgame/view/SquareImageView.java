@@ -47,15 +47,4 @@ public class SquareImageView extends ImageView {
 		setMeasuredDimension(getMeasuredWidth(), getMeasuredWidth());
 	}
 
-	public void setAsyncTask(AsyncTask<?, ?, ?> mAsyncTask) {
-		this.mAsyncTaskReference = new WeakReference<AsyncTask<?, ?, ?>>(mAsyncTask);
-	}
-
-	public AsyncTask<?, ?, ?> getAsyncTask() {
-		if (mAsyncTaskReference != null) {
-			return mAsyncTaskReference.get();
-		} else {
-			return null;
-		}
-	}
 }

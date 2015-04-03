@@ -36,8 +36,6 @@ import java.util.ArrayList;
 
 public class SketchView extends View implements OnTouchListener {
 
-	private static final float TOUCH_TOLERANCE = 4;
-
 	public static final int STROKE = 0;
 	public static final int ERASER = 1;
 	public static final int DEFAULT_STROKE_SIZE = 7;
@@ -268,22 +266,6 @@ public class SketchView extends View implements OnTouchListener {
 
 	public ArrayList<Pair<Path, Paint>> getPaths() {
 		return paths;
-	}
-
-	public void setPaths(ArrayList<Pair<Path, Paint>> paths) {
-		this.paths = paths;
-	}
-
-	public ArrayList<Pair<Path, Paint>> getUndonePaths() {
-		return undonePaths;
-	}
-
-	public void setUndonePaths(ArrayList<Pair<Path, Paint>> undonePaths) {
-		this.undonePaths = undonePaths;
-	}
-
-	public int getStrokeSize() {
-		return Math.round(this.strokeSize);
 	}
 
 	public void setSize(int size, int eraserOrStroke) {

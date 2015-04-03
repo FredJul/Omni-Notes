@@ -67,12 +67,6 @@ public class SimpleDiskCache {
 		return new SimpleDiskCache(dir, appVersion, maxSize);
 	}
 
-	public InputStreamEntry getInputStream(String key) throws IOException {
-		DiskLruCache.Snapshot snapshot = diskLruCache.get(toInternalKey(key));
-		if (snapshot == null) return null;
-		return new InputStreamEntry(snapshot, readMetadata(snapshot));
-	}
-
 	public BitmapEntry getBitmap(String key) throws IOException {
 		DiskLruCache.Snapshot snapshot = diskLruCache.get(toInternalKey(key));
 		if (snapshot == null) return null;
@@ -85,27 +79,12 @@ public class SimpleDiskCache {
 		}
 	}
 
-	public StringEntry getString(String key) throws IOException {
-		DiskLruCache.Snapshot snapshot = diskLruCache.get(toInternalKey(key));
-		if (snapshot == null) return null;
-
-		try {
-			return new StringEntry(snapshot.getString(VALUE_IDX), readMetadata(snapshot));
-		} finally {
-			snapshot.close();
-		}
-	}
-
 	public boolean contains(String key) throws IOException {
 		DiskLruCache.Snapshot snapshot = diskLruCache.get(toInternalKey(key));
 		if (snapshot == null) return false;
 
 		snapshot.close();
 		return true;
-	}
-
-	public OutputStream openStream(String key) throws IOException {
-		return openStream(key, new HashMap<String, Serializable>());
 	}
 
 	public OutputStream openStream(String key, Map<String, ? extends Serializable> metadata)
@@ -134,22 +113,6 @@ public class SimpleDiskCache {
 		} finally {
 			if (os != null) os.close();
 		}
-	}
-
-	public void put(String key, String value) throws IOException {
-		put(key, value, new HashMap<String, Serializable>());
-	}
-
-	public void put(String key, String value, Map<String, ? extends Serializable> annotations)
-			throws IOException {
-		OutputStream cos = null;
-		try {
-			cos = openStream(key, annotations);
-			cos.write(value.getBytes());
-		} finally {
-			if (cos != null) cos.close();
-		}
-
 	}
 
 	private void writeMetadata(Map<String, ? extends Serializable> metadata,
@@ -265,30 +228,6 @@ public class SimpleDiskCache {
 		}
 	}
 
-	public static class InputStreamEntry {
-		private final DiskLruCache.Snapshot snapshot;
-		private final Map<String, Serializable> metadata;
-
-		public InputStreamEntry(DiskLruCache.Snapshot snapshot, Map<String, Serializable> metadata) {
-			this.metadata = metadata;
-			this.snapshot = snapshot;
-		}
-
-		public InputStream getInputStream() {
-			return snapshot.getInputStream(VALUE_IDX);
-		}
-
-		public Map<String, Serializable> getMetadata() {
-			return metadata;
-		}
-
-		public void close() {
-			snapshot.close();
-
-		}
-
-	}
-
 	public static class BitmapEntry {
 		private final Bitmap bitmap;
 		private final Map<String, Serializable> metadata;
@@ -302,26 +241,5 @@ public class SimpleDiskCache {
 			return bitmap;
 		}
 
-		public Map<String, Serializable> getMetadata() {
-			return metadata;
-		}
-	}
-
-	public static class StringEntry {
-		private final String string;
-		private final Map<String, Serializable> metadata;
-
-		public StringEntry(String string, Map<String, Serializable> metadata) {
-			this.string = string;
-			this.metadata = metadata;
-		}
-
-		public String getString() {
-			return string;
-		}
-
-		public Map<String, Serializable> getMetadata() {
-			return metadata;
-		}
 	}
 }
