@@ -59,8 +59,6 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 
-import it.feio.android.checklistview.utils.AlphaManager;
-
 public class SketchFragment extends Fragment implements OnDrawChangedListener {
 
     private ImageView stroke;
@@ -126,14 +124,14 @@ public class SketchFragment extends Fragment implements OnDrawChangedListener {
                     showPopup(v, SketchView.STROKE);
                 } else {
                     mSketchView.setMode(SketchView.STROKE);
-                    AlphaManager.setAlpha(eraser, 0.4f);
-                    AlphaManager.setAlpha(stroke, 1f);
+                    eraser.setAlpha(0.4f);
+                    stroke.setAlpha(1f);
                 }
             }
         });
 
         eraser = (ImageView) getActivity().findViewById(R.id.sketch_eraser);
-        AlphaManager.setAlpha(eraser, 0.4f);
+        eraser.setAlpha(0.4f);
         eraser.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -141,8 +139,8 @@ public class SketchFragment extends Fragment implements OnDrawChangedListener {
                     showPopup(v, SketchView.ERASER);
                 } else {
                     mSketchView.setMode(SketchView.ERASER);
-                    AlphaManager.setAlpha(stroke, 0.4f);
-                    AlphaManager.setAlpha(eraser, 1f);
+                    stroke.setAlpha(0.4f);
+                    eraser.setAlpha(1f);
                 }
             }
         });
@@ -341,14 +339,14 @@ public class SketchFragment extends Fragment implements OnDrawChangedListener {
     public void onDrawChanged() {
         // Undo
         if (mSketchView.getPaths().size() > 0)
-            AlphaManager.setAlpha(undo, 1f);
+            undo.setAlpha(1f);
         else
-            AlphaManager.setAlpha(undo, 0.4f);
+            undo.setAlpha(0.4f);
         // Redo
         if (mSketchView.getUndoneCount() > 0)
-            AlphaManager.setAlpha(redo, 1f);
+            redo.setAlpha(1f);
         else
-            AlphaManager.setAlpha(redo, 0.4f);
+            redo.setAlpha(0.4f);
     }
 
     private MainActivity getMainActivity() {

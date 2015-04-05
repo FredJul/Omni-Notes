@@ -1,2 +1,3 @@
-include ':BaseGameUtils'
+include ':libs:BaseGameUtils'
+include ':libs:checklistview'
 include ':TaskGame'
