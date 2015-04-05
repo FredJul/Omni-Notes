@@ -1,0 +1,12 @@
+apply plugin: 'com.android.library'
+
+dependencies {
+    compile "com.android.support:appcompat-v7:+"
+    compile "com.google.android.gms:play-services-games:+"
+}
+
+android {
+    compileSdkVersion 22
+    buildToolsVersion "22.0.1"
+}
+
