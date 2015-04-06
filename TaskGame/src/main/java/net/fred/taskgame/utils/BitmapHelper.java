@@ -195,12 +195,17 @@ public class BitmapHelper {
         String mimeType = StorageHelper.getMimeType(uri.toString());
         if (!TextUtils.isEmpty(mimeType)) {
             String type = mimeType.replaceFirst("/.*", "");
-            if (type.equals("image") || type.equals("video")) {
-                // Nothing to do, bitmap will be retrieved from this
-            } else if (type.equals("audio")) {
-                uri = Uri.parse("android.resource://" + mContext.getPackageName() + "/" + R.drawable.play);
-            } else {
-                uri = Uri.parse("android.resource://" + mContext.getPackageName() + "/" + R.drawable.files);
+            switch (type) {
+                case "image":
+                case "video":
+                    // Nothing to do, bitmap will be retrieved from this
+                    break;
+                case "audio":
+                    uri = Uri.parse("android.resource://" + mContext.getPackageName() + "/" + R.drawable.play);
+                    break;
+                default:
+                    uri = Uri.parse("android.resource://" + mContext.getPackageName() + "/" + R.drawable.files);
+                    break;
             }
         } else {
             uri = Uri.parse("android.resource://" + mContext.getPackageName() + "/" + R.drawable.files);

@@ -16,7 +16,6 @@
   -->
 
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-             xmlns:pixlui="http://schemas.android.com/apk/com.neopixl.pixlui"
              android:id="@+id/root"
              android:layout_width="match_parent"
              android:layout_height="wrap_content"
@@ -52,16 +51,16 @@
             android:paddingRight="16dp"
             android:paddingTop="7dp">
 
-            <com.neopixl.pixlui.components.textview.TextView
+            <TextView
                 android:id="@+id/note_title"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="top|start"
                 android:singleLine="true"
-                android:textAppearance="@style/Text.Big"
-                pixlui:typeface="RobotoSlab-Bold.ttf"/>
+                android:textStyle="bold"
+                android:textAppearance="@style/Text.Big"/>
 
-            <com.neopixl.pixlui.components.textview.TextView
+            <TextView
                 android:id="@+id/note_content"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
@@ -69,8 +68,7 @@
                 android:layout_gravity="center_vertical"
                 android:maxLines="2"
                 android:textAppearance="@style/Text.Normal"
-                android:visibility="invisible"
-                pixlui:typeface="RobotoSlab-Regular.ttf"/>
+                android:visibility="invisible"/>
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -78,7 +76,7 @@
                 android:layout_gravity="bottom|start"
                 android:orientation="horizontal">
 
-                <com.neopixl.pixlui.components.textview.TextView
+                <TextView
                     android:id="@+id/note_date"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -86,8 +84,7 @@
                     android:layout_marginRight="15dp"
                     android:alpha="0.5"
                     android:gravity="bottom|start"
-                    android:textAppearance="@style/Text.Small"
-                    pixlui:typeface="Roboto-Regular.ttf"/>
+                    android:textAppearance="@style/Text.Small"/>
 
                 <ImageView
                     android:id="@+id/alarmIcon"

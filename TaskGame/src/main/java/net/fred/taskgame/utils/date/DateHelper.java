@@ -60,8 +60,7 @@ public class DateHelper {
         cal.set(Calendar.YEAR, year);
         cal.set(Calendar.MONTH, month);
         cal.set(Calendar.DAY_OF_MONTH, day);
-        String dateString = sdf.format(cal.getTime());
-        return dateString;
+        return sdf.format(cal.getTime());
     }
 
 
@@ -123,7 +122,7 @@ public class DateHelper {
 
     /**
      * @param mContext
-     * @param date
+     * @param time
      * @return
      */
     public static String getTimeShort(Context mContext, Long time) {
@@ -150,7 +149,7 @@ public class DateHelper {
      * @param time
      * @return
      */
-    public static String formatShortTime(Context mContext, long time) {
+    public static String formatShortTime(long time) {
 //		return DateUtils.formatDateTime(mContext, time, DateUtils.FORMAT_SHOW_TIME);
         String m = String.valueOf(time / 1000 / 60);
         String s = String.format("%02d", (time / 1000) % 60);

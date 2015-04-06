@@ -42,14 +42,13 @@ import java.util.List;
 
 public class AttachmentAdapter extends BaseAdapter {
 
-    private Activity mActivity;
+    private final Activity mActivity;
     private List<Attachment> attachmentsList = new ArrayList<>();
-    private LayoutInflater inflater;
+    private final LayoutInflater inflater;
 
     public AttachmentAdapter(Activity mActivity, List<Attachment> attachmentsList, ExpandableHeightGridView mGridView) {
         this.mActivity = mActivity;
         this.attachmentsList = attachmentsList;
-        ExpandableHeightGridView mGridView1 = mGridView;
         this.inflater = (LayoutInflater) mActivity.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     }
 
@@ -87,7 +86,7 @@ public class AttachmentAdapter extends BaseAdapter {
 
             if (mAttachment.length > 0) {
                 // Recording duration
-                text = DateHelper.formatShortTime(mActivity, mAttachment.length);
+                text = DateHelper.formatShortTime(mAttachment.length);
             } else {
                 // Recording date otherwise
                 text = DateHelper.getLocalizedDateTime(mActivity, mAttachment
@@ -129,7 +128,6 @@ public class AttachmentAdapter extends BaseAdapter {
 
 
     public void setOnErrorListener(OnAttachingFileListener listener) {
-        OnAttachingFileListener mOnAttachingFileErrorListener = listener;
     }
 
 }

@@ -5,8 +5,7 @@ import android.view.KeyEvent;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputConnection;
 import android.view.inputmethod.InputConnectionWrapper;
-
-import com.neopixl.pixlui.components.edittext.EditText;
+import android.widget.EditText;
 
 import it.feio.android.checklistview.interfaces.EditTextEventListener;
 

@@ -68,18 +68,18 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.AdapterView.OnItemLongClickListener;
 import android.widget.AutoCompleteTextView;
 import android.widget.CheckBox;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.PopupWindow;
 import android.widget.PopupWindow.OnDismissListener;
 import android.widget.ScrollView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.bumptech.glide.load.resource.bitmap.GlideBitmapDrawable;
-import com.neopixl.pixlui.components.edittext.EditText;
-import com.neopixl.pixlui.components.textview.TextView;
 
 import net.fred.taskgame.MainApplication;
 import net.fred.taskgame.R;
@@ -121,15 +121,13 @@ import java.util.List;
 
 import de.keyboardsurfer.android.widget.crouton.Style;
 import it.feio.android.checklistview.ChecklistManager;
-import it.feio.android.checklistview.exceptions.ViewNotSupportedException;
 import it.feio.android.checklistview.interfaces.CheckListChangedListener;
-import it.feio.android.pixlui.links.TextLinkClickListener;
 
 import static com.nineoldandroids.view.ViewPropertyAnimator.animate;
 
 
 public class DetailFragment extends Fragment implements
-        OnReminderPickedListener, TextLinkClickListener, OnTouchListener, OnAttachingFileListener, TextWatcher, CheckListChangedListener, OnTaskSaved, OnGeoUtilResultListener {
+        OnReminderPickedListener, OnTouchListener, OnAttachingFileListener, TextWatcher, CheckListChangedListener, OnTaskSaved, OnGeoUtilResultListener {
 
     private static final int TAKE_PHOTO = 1;
     private static final int TAKE_VIDEO = 2;
@@ -213,12 +211,6 @@ public class DetailFragment extends Fragment implements
 
         // Added the sketched image if present returning from SketchFragment
         if (getMainActivity().sketchUri != null) {
-
-//			attachment.mimeType = Constants.MIME_TYPE_SKETCH;
-//			mTask.getAttachmentsList().add(attachment);
-//			mAttachmentAdapter.notifyDataSetChanged();
-//			mGridView.autoresize();
-
             Attachment attachment = new Attachment();
             attachment.uri = getMainActivity().sketchUri;
             attachment.mimeType = Constants.MIME_TYPE_SKETCH;
@@ -605,8 +597,6 @@ public class DetailFragment extends Fragment implements
     private EditText initTitle() {
         EditText title = (EditText) getView().findViewById(R.id.detail_title);
         title.setText(mTask.title);
-        title.gatherLinksForText();
-        title.setOnTextLinkClickListener(this);
         // To avoid dropping here the dragged isChecklist items
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
             title.setOnDragListener(new OnDragListener() {
@@ -632,8 +622,6 @@ public class DetailFragment extends Fragment implements
     private EditText initContent() {
         EditText content = (EditText) getView().findViewById(R.id.detail_content);
         content.setText(mTask.content);
-        content.gatherLinksForText();
-        content.setOnTextLinkClickListener(this);
         // Avoid focused line goes under the keyboard
         content.addTextChangedListener(this);
 
@@ -963,7 +951,6 @@ public class DetailFragment extends Fragment implements
         mChecklistManager.setNewEntryHint(getString(R.string.checklist_item_hint));
 
         // Links parsing options
-        mChecklistManager.setOnTextLinkClickListener(mFragment);
         mChecklistManager.addTextChangedListener(mFragment);
         mChecklistManager.setCheckListChangedListener(mFragment);
 
@@ -975,12 +962,7 @@ public class DetailFragment extends Fragment implements
         mChecklistManager.setDragVibrationEnabled(true);
 
         // Switches the views
-        View newView = null;
-        try {
-            newView = mChecklistManager.convert(toggleChecklistView);
-        } catch (ViewNotSupportedException e) {
-
-        }
+        View newView = mChecklistManager.convert(toggleChecklistView);
 
         // Switches the views
         if (newView != null) {
@@ -1499,63 +1481,6 @@ public class DetailFragment extends Fragment implements
             });
             v.startAnimation(mAnimation);
         }
-    }
-
-    /* (non-Javadoc)
-     * @see com.neopixl.pixlui.links.TextLinkClickListener#onTextLinkClick(android.view.View, java.lang.String, java.lang.String)
-     *
-     * Receives onClick from links in EditText and shows a dialog to open link or copy content
-     */
-    @Override
-    public void onTextLinkClick(View view, final String clickedString, final String url) {
-        MaterialDialog dialog = new MaterialDialog.Builder(getActivity())
-                .content(clickedString)
-                .positiveText(R.string.open)
-                .negativeText(R.string.copy)
-                .callback(new MaterialDialog.Callback() {
-                    @Override
-                    public void onPositive(MaterialDialog dialog) {
-                        boolean error = false;
-                        Intent intent = null;
-                        try {
-                            intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
-                            intent.addCategory(Intent.CATEGORY_BROWSABLE);
-                            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                        } catch (NullPointerException e) {
-                            error = true;
-                        }
-
-                        if (intent == null
-                                || error
-                                || !IntentChecker
-                                .isAvailable(
-                                        getActivity(),
-                                        intent,
-                                        new String[]{PackageManager.FEATURE_CAMERA})) {
-                            getMainActivity().showMessage(R.string.no_application_can_perform_this_action, CroutonHelper.ALERT);
-
-                        } else {
-                            startActivity(intent);
-                        }
-                    }
-
-                    @Override
-                    public void onNegative(MaterialDialog dialog) {
-                        // Creates a new text clip to put on the clipboard
-                        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
-                            android.text.ClipboardManager clipboard = (android.text.ClipboardManager) getActivity()
-                                    .getSystemService(Activity.CLIPBOARD_SERVICE);
-                            clipboard.setText("text to clip");
-                        } else {
-                            android.content.ClipboardManager clipboard = (android.content.ClipboardManager) getActivity()
-                                    .getSystemService(Activity.CLIPBOARD_SERVICE);
-                            android.content.ClipData clip = android.content.ClipData.newPlainText("text label", clickedString);
-                            clipboard.setPrimaryClip(clip);
-                        }
-                    }
-                }).build();
-
-        dialog.show();
     }
 
     @Override

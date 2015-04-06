@@ -19,5 +19,5 @@ package net.fred.taskgame.model.listeners;
 
 
 public interface OnReminderPickedListener {
-    public void onReminderPicked(long reminder);
+    void onReminderPicked(long reminder);
 }

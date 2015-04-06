@@ -28,12 +28,10 @@ import android.net.Uri;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.NotificationCompat.Builder;
 
-import net.fred.taskgame.R;
-
 
 public class NotificationsHelper {
 
-    private Context mContext;
+    private final Context mContext;
     private Builder mBuilder;
     private NotificationManager mNotificationManager;
 
@@ -67,7 +65,7 @@ public class NotificationsHelper {
 
     public NotificationsHelper setLargeIcon(int largeIconResource) {
         Bitmap largeIconBitmap = BitmapFactory.decodeResource(mContext.getResources(),
-                R.drawable.ic_launcher);
+                largeIconResource);
         return setLargeIcon(largeIconBitmap);
     }
 

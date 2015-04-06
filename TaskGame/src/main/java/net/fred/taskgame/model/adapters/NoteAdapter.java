@@ -29,9 +29,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
-import com.neopixl.pixlui.components.textview.TextView;
 import com.nhaarman.listviewanimations.util.Insertable;
 
 import net.fred.taskgame.R;
@@ -57,8 +57,8 @@ public class NoteAdapter extends ArrayAdapter<Task> implements Insertable {
 
 
     private List<Task> mTasks = new ArrayList<>();
-    private SparseBooleanArray mSelectedItems = new SparseBooleanArray();
-    private LayoutInflater mInflater;
+    private final SparseBooleanArray mSelectedItems = new SparseBooleanArray();
+    private final LayoutInflater mInflater;
 
 
     public NoteAdapter(Activity activity, List<Task> tasks) {

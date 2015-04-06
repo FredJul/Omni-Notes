@@ -38,9 +38,9 @@ public class ReminderPickers implements OnDateSetListener, OnTimeSetListener {
     public static final int TYPE_GOOGLE = 0;
     public static final int TYPE_AOSP = 1;
 
-    private FragmentActivity mActivity;
-    private OnReminderPickedListener mOnReminderPickedListener;
-    private int pickerType;
+    private final FragmentActivity mActivity;
+    private final OnReminderPickedListener mOnReminderPickedListener;
+    private final int pickerType;
 
     private int reminderYear;
     private int reminderMonth;

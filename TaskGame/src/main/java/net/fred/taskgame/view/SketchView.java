@@ -17,7 +17,6 @@
 
 package net.fred.taskgame.view;
 
-import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
@@ -47,12 +46,12 @@ public class SketchView extends View implements OnTouchListener {
 
     //	private Canvas mCanvas;
     private Path m_Path;
-    private Paint m_Paint;
+    private final Paint m_Paint;
     private float mX, mY;
     private int width, height;
 
-    private ArrayList<Pair<Path, Paint>> paths = new ArrayList<>();
-    private ArrayList<Pair<Path, Paint>> undonePaths = new ArrayList<>();
+    private final ArrayList<Pair<Path, Paint>> paths = new ArrayList<>();
+    private final ArrayList<Pair<Path, Paint>> undonePaths = new ArrayList<>();
 
     private Bitmap bitmap;
 
@@ -63,8 +62,6 @@ public class SketchView extends View implements OnTouchListener {
 
     public SketchView(Context context, AttributeSet attr) {
         super(context, attr);
-
-        Context mContext = context;
 
         setFocusable(true);
         setFocusableInTouchMode(true);
@@ -103,7 +100,7 @@ public class SketchView extends View implements OnTouchListener {
      *
      * @param bitmap
      */
-    public void setBackgroundBitmap(Activity mActivity, Bitmap bitmap) {
+    public void setBackgroundBitmap(Bitmap bitmap) {
         if (!bitmap.isMutable()) {
             android.graphics.Bitmap.Config bitmapConfig = bitmap.getConfig();
             // set default bitmap config if none
@@ -113,8 +110,6 @@ public class SketchView extends View implements OnTouchListener {
             bitmap = bitmap.copy(bitmapConfig, true);
         }
         this.bitmap = bitmap;
-//		this.bitmap = getScaledBitmap(mActivity, bitmap);
-//		mCanvas = new Canvas(bitmap);
     }
 
 

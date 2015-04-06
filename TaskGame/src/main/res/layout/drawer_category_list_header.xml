@@ -14,16 +14,6 @@
   ~ You should have received a copy of the GNU General Public License
   ~ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   -->
-<!-- <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android" -->
-<!--     xmlns:pixlui="http://schemas.android.com/apk/com.neopixl.pixlui" -->
-<!--     android:id="@+id/layout_root" -->
-<!--     android:layout_width="fill_parent" -->
-<!--     android:layout_height="wrap_content" -->
-<!--     android:orientation="vertical"  -->
-<!--     android:paddingLeft="@dimen/horizontal_margin" -->
-<!--     android:paddingStart="@dimen/horizontal_margin"  -->
-<!--     android:paddingRight="@dimen/horizontal_margin"  -->
-<!--     android:paddingEnd="@dimen/horizontal_margin" > -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
               android:id="@+id/layout_root"
               android:layout_width="fill_parent"
@@ -32,7 +22,7 @@
               android:paddingLeft="@dimen/horizontal_margin"
               android:paddingRight="@dimen/horizontal_margin">
 
-    <com.neopixl.pixlui.components.textview.TextView
+    <TextView
         android:id="@+id/tag"
         android:layout_width="match_parent"
         android:layout_height="35dp"

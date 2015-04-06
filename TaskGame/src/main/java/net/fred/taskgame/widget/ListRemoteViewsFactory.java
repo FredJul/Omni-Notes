@@ -48,8 +48,8 @@ public class ListRemoteViewsFactory implements RemoteViewsFactory {
 
     private static boolean showThumbnails = true;
 
-    private MainApplication app;
-    private int appWidgetId;
+    private final MainApplication app;
+    private final int appWidgetId;
     private List<Task> tasks;
 
 

@@ -32,13 +32,12 @@ import java.lang.ref.WeakReference;
 public class TextWorkerTask extends AsyncTask<Task, Void, Spanned[]> {
 
     private final WeakReference<Activity> mActivityWeakReference;
-    private TextView titleTextView;
-    private TextView contentTextView;
+    private final TextView titleTextView;
+    private final TextView contentTextView;
 
     public TextWorkerTask(Activity activity, TextView titleTextView,
                           TextView contentTextView) {
         mActivityWeakReference = new WeakReference<>(activity);
-        Activity mActivity = activity;
         this.titleTextView = titleTextView;
         this.contentTextView = contentTextView;
     }
@@ -47,8 +46,7 @@ public class TextWorkerTask extends AsyncTask<Task, Void, Spanned[]> {
     @Override
     protected Spanned[] doInBackground(Task... params) {
         Task task = params[0];
-        Spanned[] titleAndContent = TextHelper.parseTitleAndContent(task);
-        return titleAndContent;
+        return TextHelper.parseTitleAndContent(task);
     }
 
 
@@ -72,9 +70,7 @@ public class TextWorkerTask extends AsyncTask<Task, Void, Spanned[]> {
      * @return True or false
      */
     private boolean isAlive() {
-        return mActivityWeakReference != null
-                && mActivityWeakReference.get() != null;
-
+        return mActivityWeakReference.get() != null;
     }
 
 }

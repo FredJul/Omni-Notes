@@ -1,8 +1,6 @@
 package it.feio.android.checklistview;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
-import android.os.Build;
 import android.text.TextWatcher;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,21 +9,18 @@ import android.widget.LinearLayout;
 
 import java.util.regex.Pattern;
 
-import it.feio.android.checklistview.exceptions.ViewNotSupportedException;
 import it.feio.android.checklistview.interfaces.CheckListChangedListener;
 import it.feio.android.checklistview.interfaces.Constants;
 import it.feio.android.checklistview.models.CheckListView;
 import it.feio.android.checklistview.models.CheckListViewItem;
-import it.feio.android.pixlui.links.TextLinkClickListener;
 
 public class ChecklistManager {
 
     private static ChecklistManager instance = null;
-    private Context mContext;
+    private final Context mContext;
     private TextWatcher mTextWatcher;
     private CheckListChangedListener mCheckListChangedListener;
     private CheckListView mCheckListView;
-    private TextLinkClickListener mTextLinkClickListener;
 
 
     private ChecklistManager(Context mContext) {
@@ -38,27 +33,6 @@ public class ChecklistManager {
             instance = new ChecklistManager(mContext);
         }
         return instance;
-    }
-
-
-    /**
-     * Set the string to be used to split initial text into checklist items. Default System line separator (carriage
-     * return).
-     *
-     * @param linesSeparator String separator
-     */
-    public void setLinesSeparator(String linesSeparator) {
-        App.getSettings().setLinesSeparator(linesSeparator.length() == 0 ? Constants.LINES_SEPARATOR : linesSeparator);
-    }
-
-
-    /**
-     * Set if show or not a delete icon at the end of the line. Default true.
-     *
-     * @param showDeleteIcon True to show icon, false otherwise.
-     */
-    public void setShowDeleteIcon(boolean showDeleteIcon) {
-        App.getSettings().setShowDeleteIcon(showDeleteIcon);
     }
 
 
@@ -78,11 +52,6 @@ public class ChecklistManager {
      */
     public void setShowChecks(boolean showChecks) {
         App.getSettings().setShowChecks(showChecks);
-    }
-
-
-    public int getMoveCheckedOnBottom() {
-        return App.getSettings().getMoveCheckedOnBottom();
     }
 
 
@@ -107,14 +76,6 @@ public class ChecklistManager {
 
 
     /**
-     * Text to be used as hint for the last empty line (hint item)
-     */
-    public String getNewEntryHint() {
-        return App.getSettings().getNewEntryHint();
-    }
-
-
-    /**
      * Adds a new fillable line at the end of the checklist with hint text. Set an empty string to remove.
      *
      * @param newEntryHint Hint text
@@ -125,37 +86,12 @@ public class ChecklistManager {
     }
 
 
-    public void setDragEnabled(boolean dragEnabled) {
-        App.getSettings().setDragEnabled(dragEnabled);
-    }
-
-
-    public boolean getDragEnabled() {
-        return App.getSettings().getDragEnabled();
-    }
-
-
     public void setDragVibrationEnabled(boolean dragVibrationEnabled) {
         App.getSettings().setDragVibrationEnabled(dragVibrationEnabled);
     }
 
 
-    public boolean getDragVibrationEnabled() {
-        return App.getSettings().getDragVibrationEnabled();
-    }
-
-
-    public void setDragVibrationDuration(int dragVibrationDuration) {
-        App.getSettings().setDragVibrationDuration(dragVibrationDuration);
-    }
-
-
-    public int getDragVibrationDuration() {
-        return App.getSettings().getDragVibrationDuration();
-    }
-
-
-    public View convert(View v) throws ViewNotSupportedException {
+    public View convert(View v) {
         if (EditText.class.isAssignableFrom(v.getClass())) {
             return convert((EditText) v);
         } else if (LinearLayout.class.isAssignableFrom(v.getClass())) {
@@ -182,11 +118,6 @@ public class ChecklistManager {
         // Listener for general event is propagated on bottom
         if (mCheckListChangedListener != null) {
             mCheckListView.setCheckListChangedListener(mCheckListChangedListener);
-        }
-
-        // Listener for clicks on links
-        if (mTextLinkClickListener != null) {
-            mCheckListView.setOnTextLinkClickListener(mTextLinkClickListener);
         }
 
         String text = v.getText().toString();
@@ -233,8 +164,6 @@ public class ChecklistManager {
      * @param v CheckListView to be re-converted
      * @return EditText
      */
-    @SuppressWarnings("deprecation")
-    @SuppressLint("NewApi")
     private View convert(CheckListView v) {
         EditText returnView = new EditText(mContext);
 
@@ -244,11 +173,7 @@ public class ChecklistManager {
         returnView.setText(sb.toString());
         returnView.setId(v.getId());
 
-        if (Build.VERSION.SDK_INT < 16) {
-            returnView.setBackgroundDrawable(v.getBackground());
-        } else {
             returnView.setBackground(v.getBackground());
-        }
 
         restoreTypography(v, returnView);
 
@@ -335,7 +260,7 @@ public class ChecklistManager {
             if (!checklistviewitem.isHintItem()) {
                 boolean flag = checklistviewitem.isChecked();
                 if (!flag || flag && App.getSettings().getKeepChecked()) {
-                    StringBuilder stringbuilder1 = stringbuilder.append(App.getSettings().getLinesSeparator());
+                    stringbuilder.append(App.getSettings().getLinesSeparator());
                     String s;
                     if (App.getSettings().getShowChecks()) {
                         if (flag) {
@@ -346,7 +271,7 @@ public class ChecklistManager {
                     } else {
                         s = "";
                     }
-                    stringbuilder1.append(s).append(checklistviewitem.getText());
+                    stringbuilder.append(s).append(checklistviewitem.getText());
                 }
             }
             i++;
@@ -387,26 +312,4 @@ public class ChecklistManager {
         }
         return count;
     }
-
-
-    /**
-     * Returns the eventually focused item in the list
-     */
-    public CheckListViewItem getFocusedItemView() {
-        if (mCheckListView == null || !mCheckListView.hasFocus()) {
-            return null;
-        }
-        for (int i = 0; i < mCheckListView.getChildCount(); i++) {
-            if (mCheckListView.getChildAt(i).hasFocus()) {
-                return mCheckListView.getChildAt(i);
-            }
-        }
-        return null;
-    }
-
-
-    public void setOnTextLinkClickListener(TextLinkClickListener textlinkclicklistener) {
-        mTextLinkClickListener = textlinkclicklistener;
-    }
-
 }

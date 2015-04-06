@@ -48,7 +48,6 @@
     <string name="attachment">Attachment</string>
     <string name="camera">Camera</string>
     <string name="delete_selected_image">Delete selected attachment?</string>
-    <string name="gallery">Gallery</string>
     <string name="location">Location</string>
     <string name="remove_location">Remove location?</string>
     <string name="remove_reminder">Remove reminder?</string>
@@ -97,9 +96,6 @@
     <string name="widget_list_description">Scrolling list widget with buttons</string>
     <string name="show_thumbnails">Show attachment\'s thumbnails</string>
     <string name="edit">Edit</string>
-    <string name="open">Open</string>
-    <string name="copy">Copy</string>
-    <string name="no_application_can_perform_this_action">No application found for this action</string>
     <string name="eraser">Eraser</string>
     <string name="error">Error</string>
     <string name="files">Files</string>
@@ -114,7 +110,6 @@
 
     <!-- Settings -->
     <string name="settings">Settings</string>
-    <string name="action_settings">Settings</string>
     <string name="settings_enable_vibration">Vibration</string>
     <string name="settings_max_video_size">Video attachments</string>
     <string name="settings_max_video_size_summary">Maximum allowed size in MB</string>

@@ -13,9 +13,6 @@ import com.google.android.gms.games.GamesActivityResultCodes;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
-/**
- * Created by btco on 2/10/14.
- */
 class GameHelperUtils {
     public static final int R_UNKNOWN_ERROR = 0;
     public static final int R_SIGN_IN_FAILED = 1;

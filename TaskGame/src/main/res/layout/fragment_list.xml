@@ -15,7 +15,6 @@
   ~ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   -->
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-             xmlns:pixlui="http://schemas.android.com/apk/com.neopixl.pixlui"
              android:layout_width="match_parent"
              android:layout_height="match_parent"
              android:layout_marginLeft="@dimen/activity_additional_margin"
@@ -74,7 +73,7 @@
             android:layout_height="match_parent"
             android:gravity="center">
 
-            <com.neopixl.pixlui.components.textview.TextView
+            <TextView
                 android:id="@+id/empty_list"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -84,8 +83,7 @@
                 android:text="@string/no_items_in_list"
                 android:textColor="@color/list_note_dates"
                 android:textSize="20sp"
-                android:visibility="gone"
-                pixlui:typeface="Roboto-Regular.ttf"/>
+                android:visibility="gone"/>
         </LinearLayout>
 
     </net.fred.taskgame.view.InterceptorLinearLayout>

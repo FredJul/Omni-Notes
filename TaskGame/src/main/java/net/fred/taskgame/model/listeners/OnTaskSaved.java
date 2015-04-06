@@ -21,5 +21,5 @@ import net.fred.taskgame.model.Task;
 
 
 public interface OnTaskSaved {
-    public void onTaskSaved(Task taskSaved);
+    void onTaskSaved(Task taskSaved);
 }

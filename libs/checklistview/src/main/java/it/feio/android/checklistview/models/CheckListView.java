@@ -1,6 +1,5 @@
 package it.feio.android.checklistview.models;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.os.Build;
 import android.text.Html;
@@ -21,19 +20,15 @@ import it.feio.android.checklistview.dragging.ChecklistViewOnTouchListener;
 import it.feio.android.checklistview.interfaces.CheckListChangedListener;
 import it.feio.android.checklistview.interfaces.CheckListEventListener;
 import it.feio.android.checklistview.interfaces.Constants;
-import it.feio.android.pixlui.links.TextLinkClickListener;
 
-@SuppressLint("NewApi")
 public class CheckListView extends LinearLayout implements Constants, CheckListEventListener {
 
     private boolean showDeleteIcon = Constants.SHOW_DELETE_ICON;
-    private boolean showHintItem = Constants.SHOW_HINT_ITEM;
     private String newEntryHint = "";
     private int moveCheckedOnBottom = Settings.CHECKED_HOLD;
 
-    private Context mContext;
+    private final Context mContext;
     private CheckListChangedListener mCheckListChangedListener;
-    private TextLinkClickListener mTextLinkClickListener;
     private ChecklistViewItemOnDragListener mChecklistViewItemOnDragListener;
 
 
@@ -67,24 +62,12 @@ public class CheckListView extends LinearLayout implements Constants, CheckListE
 
 
     /**
-     * Set if an empty line on bottom of the checklist must be shown or not
-     */
-    public void setShowHintItem(boolean showHintItem) {
-        this.showHintItem = showHintItem;
-    }
-
-
-    /**
      * Text to be used as hint for the last empty line (hint item)
      */
     public void setNewEntryHint(String hint) {
-        setShowHintItem(true);
         this.newEntryHint = hint;
     }
 
-
-    @SuppressLint("NewApi")
-    @SuppressWarnings("deprecation")
     public void cloneStyles(EditText v) {
         for (int i = 0; i < getChildCount(); i++) {
             getChildAt(i).cloneStyles(v);
@@ -269,16 +252,6 @@ public class CheckListView extends LinearLayout implements Constants, CheckListE
      *
      * @param text String to be inserted as item text
      */
-    public void addItem(String text) {
-        addItem(text, false);
-    }
-
-
-    /**
-     * Add a new item into the checklist
-     *
-     * @param text String to be inserted as item text
-     */
     public void addItem(String text, boolean isChecked) {
         addItem(text, isChecked, null);
     }
@@ -295,11 +268,7 @@ public class CheckListView extends LinearLayout implements Constants, CheckListE
         mCheckListViewItem.setText(text);
         mCheckListViewItem.getEditText().setImeOptions(EditorInfo.IME_ACTION_NEXT);
         mCheckListViewItem.setItemCheckedListener(this);
-        // Links recognition
-        if (mTextLinkClickListener != null) {
-            mCheckListViewItem.getEditText().gatherLinksForText();
-            mCheckListViewItem.getEditText().setOnTextLinkClickListener(mTextLinkClickListener);
-        }
+
         // Set text changed listener if is asked to do this
         if (mCheckListChangedListener != null) {
             mCheckListViewItem.setCheckListChangedListener(this.mCheckListChangedListener);
@@ -370,32 +339,15 @@ public class CheckListView extends LinearLayout implements Constants, CheckListE
         addView(mCheckListViewItem, hintItemPosition);
     }
 
-
-    private void focusView(View v, int focusDirection) {
-        EditTextMultiLineNoEnter focusableEditText = (EditTextMultiLineNoEnter) v.focusSearch(focusDirection);
-        if (focusableEditText != null) {
-            focusableEditText.requestFocus();
-            focusableEditText.setSelection(focusableEditText.getText().length());
-        }
-    }
-
-
     public void setCheckListChangedListener(CheckListChangedListener mCheckListChangedListener) {
         this.mCheckListChangedListener = mCheckListChangedListener;
     }
-
 
     @Override
     public void onLineDeleted(CheckListViewItem checkableLine) {
         // Eventually notify something is changed
         mCheckListChangedListener.onCheckListChanged();
     }
-
-
-    public void setOnTextLinkClickListener(TextLinkClickListener textlinkclicklistener) {
-        mTextLinkClickListener = textlinkclicklistener;
-    }
-
 
     @Override
     public boolean dispatchDragEvent(DragEvent ev) {

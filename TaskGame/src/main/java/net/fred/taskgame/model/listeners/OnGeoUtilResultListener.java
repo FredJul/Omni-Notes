@@ -19,7 +19,7 @@ package net.fred.taskgame.model.listeners;
 
 
 public interface OnGeoUtilResultListener {
-    public void onAddressResolved(String address);
+    void onAddressResolved(String address);
 
-    public void onCoordinatesResolved(double[] coords);
+    void onCoordinatesResolved(double[] coords);
 }

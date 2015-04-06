@@ -18,55 +18,55 @@ package net.fred.taskgame.utils;
 
 public interface Constants {
 
-    final String TAG = "TaskGame";
+    String TAG = "TaskGame";
 
     // Tasks swipe
-    final int SWIPE_MARGIN = 30;
-    final int SWIPE_OFFSET = 100;
+    int SWIPE_MARGIN = 30;
+    int SWIPE_OFFSET = 100;
 
     // Floating action button
-    final int FAB_ANIMATION_TIME = 200;
+    int FAB_ANIMATION_TIME = 200;
 
-    final int THUMBNAIL_SIZE = 300;
+    int THUMBNAIL_SIZE = 300;
 
-    final String DATE_FORMAT_SHORT_DATE = "d MMM yyyy";
-    final String DATE_FORMAT_SORTABLE = "yyyyMMdd_HHmmss_S";
-    final String DATE_FORMAT_SORTABLE_OLD = "yyyyMMddHHmmss";
+    String DATE_FORMAT_SHORT_DATE = "d MMM yyyy";
+    String DATE_FORMAT_SORTABLE = "yyyyMMdd_HHmmss_S";
+    String DATE_FORMAT_SORTABLE_OLD = "yyyyMMddHHmmss";
 
-    final String INTENT_KEY = "task_id";
-    final String INTENT_TASK = "task";
-    final int INTENT_ALARM_CODE = 12345;
-    final String INTENT_CATEGORY = "category";
-    final String INTENT_GOOGLE_NOW = "com.google.android.gm.action.AUTO_SEND";
-    final String INTENT_WIDGET = "widget_id";
+    String INTENT_KEY = "task_id";
+    String INTENT_TASK = "task";
+    int INTENT_ALARM_CODE = 12345;
+    String INTENT_CATEGORY = "category";
+    String INTENT_GOOGLE_NOW = "com.google.android.gm.action.AUTO_SEND";
+    String INTENT_WIDGET = "widget_id";
 
     // Custom intent actions
-    final String ACTION_START_APP = "action_start_app";
-    final String ACTION_DISMISS = "action_dismiss";
-    final String ACTION_SNOOZE = "action_snooze";
-    final String ACTION_POSTPONE = "action_postpone";
-    final String ACTION_SHORTCUT = "action_shortcut";
-    final String ACTION_WIDGET = "action_widget";
-    final String ACTION_TAKE_PHOTO = "action_widget_take_photo";
-    final String ACTION_WIDGET_SHOW_LIST = "action_widget_show_list";
-    final String ACTION_NOTIFICATION_CLICK = "action_notification_click";
+    String ACTION_START_APP = "action_start_app";
+    String ACTION_DISMISS = "action_dismiss";
+    String ACTION_SNOOZE = "action_snooze";
+    String ACTION_POSTPONE = "action_postpone";
+    String ACTION_SHORTCUT = "action_shortcut";
+    String ACTION_WIDGET = "action_widget";
+    String ACTION_TAKE_PHOTO = "action_widget_take_photo";
+    String ACTION_WIDGET_SHOW_LIST = "action_widget_show_list";
+    String ACTION_NOTIFICATION_CLICK = "action_notification_click";
     /**
      * Used to quickly add a note, save, and perform backPress (eg. Tasker+Pushbullet) *
      */
-    final String ACTION_SEND_AND_EXIT = "action_send_and_exit";
+    String ACTION_SEND_AND_EXIT = "action_send_and_exit";
 
-    final String MIME_TYPE_IMAGE = "image/jpeg";
-    final String MIME_TYPE_AUDIO = "audio/mp3";
-    final String MIME_TYPE_VIDEO = "video/mp4";
-    final String MIME_TYPE_SKETCH = "image/png";
-    final String MIME_TYPE_FILES = "file/*";
+    String MIME_TYPE_IMAGE = "image/jpeg";
+    String MIME_TYPE_AUDIO = "audio/mp3";
+    String MIME_TYPE_VIDEO = "video/mp4";
+    String MIME_TYPE_SKETCH = "image/png";
+    String MIME_TYPE_FILES = "file/*";
 
-    final String MIME_TYPE_IMAGE_EXT = ".jpeg";
-    final String MIME_TYPE_AUDIO_EXT = ".mp3";
-    final String MIME_TYPE_VIDEO_EXT = ".mp4";
-    final String MIME_TYPE_SKETCH_EXT = ".png";
+    String MIME_TYPE_IMAGE_EXT = ".jpeg";
+    String MIME_TYPE_AUDIO_EXT = ".mp3";
+    String MIME_TYPE_VIDEO_EXT = ".mp4";
+    String MIME_TYPE_SKETCH_EXT = ".png";
 
-    final String TIMESTAMP_UNIX_EPOCH = "0";
+    String TIMESTAMP_UNIX_EPOCH = "0";
 
-    final int MENU_SORT_GROUP_ID = 11998811;
+    int MENU_SORT_GROUP_ID = 11998811;
 }

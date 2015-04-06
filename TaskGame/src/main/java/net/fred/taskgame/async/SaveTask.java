@@ -19,10 +19,8 @@ package net.fred.taskgame.async;
 
 import android.app.Activity;
 import android.os.AsyncTask;
-import android.widget.Toast;
 
 import net.fred.taskgame.MainApplication;
-import net.fred.taskgame.R;
 import net.fred.taskgame.fragment.DetailFragment;
 import net.fred.taskgame.model.Attachment;
 import net.fred.taskgame.model.Task;
@@ -40,7 +38,7 @@ public class SaveTask extends AsyncTask<Void, Void, Void> {
     private final Task mTask;
     private final List<Attachment> mOldAttachments;
     private boolean mUpdateLastModification = true;
-    private OnTaskSaved mOnTaskSaved;
+    private final OnTaskSaved mOnTaskSaved;
 
     public SaveTask(DetailFragment activity, Task task, List<Attachment> oldAttachments, OnTaskSaved onTaskSaved, boolean updateLastModification) {
         super();
@@ -55,13 +53,8 @@ public class SaveTask extends AsyncTask<Void, Void, Void> {
     protected Void doInBackground(Void... params) {
         purgeRemovedAttachments();
 
-        boolean error = false;
-        if (!error) {
             // Note updating on database
             DbHelper.updateTask(mTask, mUpdateLastModification);
-        } else {
-            Toast.makeText(mActivity, mActivity.getString(R.string.error_saving_attachments), Toast.LENGTH_SHORT).show();
-        }
 
         return null;
     }

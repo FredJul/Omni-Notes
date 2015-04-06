@@ -151,7 +151,7 @@ public class GameHelper implements GoogleApiClient.ConnectionCallbacks,
     // Print debug logs?
     boolean mDebugLog = false;
 
-    Handler mHandler;
+    final Handler mHandler;
 
     /*
      * If we got an invitation when we connected to the games client, it's here.
@@ -498,13 +498,6 @@ public class GameHelper implements GoogleApiClient.ConnectionCallbacks,
         }
     }
 
-    @Deprecated
-    public void enableDebugLog(boolean enabled, String tag) {
-        Log.w(TAG, "GameHelper.enableDebugLog(boolean,String) is deprecated. "
-                + "Use GameHelper.enableDebugLog(boolean)");
-        enableDebugLog(enabled);
-    }
-
     /**
      * Sign out and disconnect from the APIs.
      */
@@ -745,7 +738,7 @@ public class GameHelper implements GoogleApiClient.ConnectionCallbacks,
         SharedPreferences.Editor editor = mAppContext.getSharedPreferences(
                 GAMEHELPER_SHARED_PREFS, Context.MODE_PRIVATE).edit();
         editor.putInt(KEY_SIGN_IN_CANCELLATIONS, cancellations + 1);
-        editor.commit();
+        editor.apply();
         return cancellations + 1;
     }
 
@@ -755,7 +748,7 @@ public class GameHelper implements GoogleApiClient.ConnectionCallbacks,
         SharedPreferences.Editor editor = mAppContext.getSharedPreferences(
                 GAMEHELPER_SHARED_PREFS, Context.MODE_PRIVATE).edit();
         editor.putInt(KEY_SIGN_IN_CANCELLATIONS, 0);
-        editor.commit();
+        editor.apply();
     }
 
     /**
@@ -775,7 +768,7 @@ public class GameHelper implements GoogleApiClient.ConnectionCallbacks,
         debugLog("   - details: " + mConnectionResult.toString());
 
         int cancellations = getSignInCancellations();
-        boolean shouldResolve = false;
+        boolean shouldResolve;
 
         if (mUserInitiatedSignIn) {
             debugLog("onConnectionFailed: WILL resolve because user initiated sign-in.");
@@ -925,7 +918,7 @@ public class GameHelper implements GoogleApiClient.ConnectionCallbacks,
             Log.e("GameHelper", "*** No Activity. Can't show failure dialog!");
             return;
         }
-        Dialog errorDialog = null;
+        Dialog errorDialog;
 
         switch (actResp) {
             case GamesActivityResultCodes.RESULT_APP_MISCONFIGURED:

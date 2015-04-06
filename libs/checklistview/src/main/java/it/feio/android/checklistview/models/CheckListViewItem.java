@@ -1,8 +1,6 @@
 package it.feio.android.checklistview.models;
 
 
-import android.annotation.SuppressLint;
-import android.annotation.TargetApi;
 import android.content.Context;
 import android.graphics.Paint;
 import android.graphics.drawable.Drawable;
@@ -34,14 +32,12 @@ import it.feio.android.checklistview.interfaces.CheckListChangedListener;
 import it.feio.android.checklistview.interfaces.CheckListEventListener;
 import it.feio.android.checklistview.interfaces.Constants;
 import it.feio.android.checklistview.interfaces.EditTextEventListener;
-import it.feio.android.checklistview.utils.AlphaManager;
 import it.feio.android.checklistview.utils.DensityUtil;
 
-@TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR1)
 public class CheckListViewItem extends LinearLayout implements
         OnCheckedChangeListener, OnClickListener, OnFocusChangeListener, OnEditorActionListener, TextWatcher, EditTextEventListener {
 
-    private Context mContext;
+    private final Context mContext;
     private ImageView dragHandler;
     private CheckBox checkBox;
     private EditTextMultiLineNoEnter editText;
@@ -125,8 +121,6 @@ public class CheckListViewItem extends LinearLayout implements
         this.mCheckListEventListener = listener;
     }
 
-
-    @SuppressLint("NewApi")
     private void addDeleteIcon() {
         if (showDeleteIcon && imageView == null) {
             imageView = new ImageView(mContext);
@@ -218,16 +212,6 @@ public class CheckListViewItem extends LinearLayout implements
     }
 
     @Override
-    public boolean equals(Object o) {
-        return super.equals(o);
-    }
-
-    @Override
-    public int hashCode() {
-        return super.hashCode();
-    }
-
-    @Override
     public void onFocusChange(View v, boolean hasFocus) {
         // When a line gains focus deletion icon (if present) will be shown
         if (hasFocus) {
@@ -255,11 +239,11 @@ public class CheckListViewItem extends LinearLayout implements
         if (isChecked) {
             editText.setPaintFlags(editText.getPaintFlags()
                     | Paint.STRIKE_THRU_TEXT_FLAG);
-            AlphaManager.setAlpha(editText, 0.4F);
+            editText.setAlpha(0.4F);
         } else {
             editText.setPaintFlags(editText.getPaintFlags()
                     & (~Paint.STRIKE_THRU_TEXT_FLAG));
-            AlphaManager.setAlpha(editText, 1F);
+            editText.setAlpha(1F);
         }
         // Item checked is notified
         if (mCheckListEventListener != null) {
@@ -344,18 +328,12 @@ public class CheckListViewItem extends LinearLayout implements
         }
     }
 
-    @SuppressLint("NewApi")
-    @SuppressWarnings("deprecation")
     public void cloneStyles(EditText edittext) {
         if (edittext == null) {
             return;
         }
         Drawable drawable = edittext.getBackground();
-        if (android.os.Build.VERSION.SDK_INT < 16) {
-            getEditText().setBackgroundDrawable(drawable);
-        } else {
             getEditText().setBackground(drawable);
-        }
         getEditText().setTypeface(edittext.getTypeface());
         getEditText().setTextSize(0, edittext.getTextSize());
         getEditText().setTextColor(edittext.getTextColors());

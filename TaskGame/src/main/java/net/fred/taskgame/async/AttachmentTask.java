@@ -33,8 +33,8 @@ public class AttachmentTask extends AsyncTask<Void, Void, Attachment> {
 
     private final WeakReference<Fragment> mFragmentWeakReference;
     private final Activity mActivity;
-    private OnAttachingFileListener mOnAttachingFileListener;
-    private Uri uri;
+    private final OnAttachingFileListener mOnAttachingFileListener;
+    private final Uri uri;
 
     public AttachmentTask(Fragment mFragment, Uri uri, OnAttachingFileListener mOnAttachingFileListener) {
         mFragmentWeakReference = new WeakReference<>(mFragment);
@@ -67,8 +67,7 @@ public class AttachmentTask extends AsyncTask<Void, Void, Attachment> {
 
 
     private boolean isAlive() {
-        return mFragmentWeakReference != null
-                && mFragmentWeakReference.get() != null
+        return mFragmentWeakReference.get() != null
                 && mFragmentWeakReference.get().isAdded()
                 && mFragmentWeakReference.get().getActivity() != null
                 && !mFragmentWeakReference.get().getActivity().isFinishing();

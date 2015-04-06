@@ -56,11 +56,11 @@ import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.getbase.floatingactionbutton.AddFloatingActionButton;
 import com.getbase.floatingactionbutton.FloatingActionsMenu;
-import com.neopixl.pixlui.components.textview.TextView;
 import com.nhaarman.listviewanimations.itemmanipulation.DynamicListView;
 import com.nhaarman.listviewanimations.itemmanipulation.swipedismiss.OnDismissCallback;
 
@@ -104,7 +104,7 @@ public class ListFragment extends Fragment implements OnViewTouchedListener, Und
     private static final int REQUEST_CODE_CATEGORY_TASKS = 3;
 
     private DynamicListView list;
-    private List<Task> selectedTasks = new ArrayList<>();
+    private final List<Task> selectedTasks = new ArrayList<>();
     private List<Task> modifiedTasks = new ArrayList<>();
     private SearchView searchView;
     private MenuItem searchMenuItem;
@@ -120,9 +120,9 @@ public class ListFragment extends Fragment implements OnViewTouchedListener, Und
     private boolean undoTrash = false;
     private boolean undoCategorize = false;
     private Category undoCategorizeCategory = null;
-    private SparseArray<Task> undoTasksList = new SparseArray<>();
+    private final SparseArray<Task> undoTasksList = new SparseArray<>();
     // Used to remember removed categories from tasks
-    private Map<Task, Category> undoCategoryMap = new HashMap<>();
+    private final Map<Task, Category> undoCategoryMap = new HashMap<>();
 
     // Search variables
     private String searchQuery;

@@ -15,7 +15,6 @@
   ~ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              xmlns:pixlui="http://schemas.android.com/apk/com.neopixl.pixlui"
               android:layout_width="match_parent"
               android:layout_height="wrap_content"
               android:gravity="center_vertical"
@@ -33,7 +32,7 @@
             android:layout_width="@dimen/navigation_drawer_icon_size"
             android:layout_height="@dimen/navigation_drawer_icon_size"/>
 
-        <com.neopixl.pixlui.components.textview.TextView
+        <TextView
             android:id="@+id/title"
             android:layout_width="0dp"
             android:layout_weight="1"
@@ -42,8 +41,7 @@
             android:paddingLeft="@dimen/icon_text_margin"
             android:paddingRight="@dimen/horizontal_margin"
             android:textAppearance="@style/Text.Big"
-            android:textColor="@color/drawer_text"
-            pixlui:typeface="Roboto-Regular.ttf"/>
+            android:textColor="@color/drawer_text"/>
 
         <TextView
             android:id="@+id/count"

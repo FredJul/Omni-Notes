@@ -21,21 +21,7 @@ public class DensityUtil {
      */
     public static int dpToPx(float dp, Context context) {
         DisplayMetrics displayMetrics = context.getResources().getDisplayMetrics();
-        int px = Math.round(dp * (displayMetrics.densityDpi / 160f));
-        return px;
+        return Math.round(dp * (displayMetrics.densityDpi / 160f));
     }
 
-    /**
-     * This method converts device specific pixels to density independent
-     * pixels.
-     *
-     * @param px      A value in px (pixels) unit. Which we need to convert into db
-     * @param context Context to get resources and device specific display metrics
-     * @return A float value to represent dp equivalent to px value
-     */
-    public static int pxToDp(float px, Context context) {
-        DisplayMetrics displayMetrics = context.getResources().getDisplayMetrics();
-        int dp = Math.round(px / (displayMetrics.densityDpi / 160f));
-        return dp;
-    }
 }

@@ -47,7 +47,6 @@
     <string name="attachment">Pièce jointe</string>
     <string name="camera">Appareil photo</string>
     <string name="delete_selected_image">Supprimer la pièce jointe sélectionnée ?</string>
-    <string name="gallery">Galerie</string>
     <string name="location">Localisation</string>
     <string name="remove_location">Supprimer la localisation ?</string>
     <string name="remove_reminder">Supprimer le rappel ?</string>
@@ -96,9 +95,6 @@
     <string name="widget_list_description">Widget avec liste déroulante et boutons</string>
     <string name="show_thumbnails">Afficher les miniatures des pièces jointes</string>
     <string name="edit">Éditer</string>
-    <string name="open">Ouvrir</string>
-    <string name="copy">Copier</string>
-    <string name="no_application_can_perform_this_action">Aucune application trouvée pour cette action</string>
     <string name="eraser">Effacer</string>
     <string name="error">Erreur</string>
     <string name="files">Fichiers</string>
@@ -111,7 +107,6 @@
     <string name="filter">Filtrer</string>
     <string name="remove_filter">Supprimer le filtre</string>
     <string name="settings">Paramètres</string>
-    <string name="action_settings">Paramètres</string>
     <string name="settings_max_video_size_summary">Taille maximale allouée en Mo</string>
     <string name="minutes">minutes</string>
     <string name="drawer_open">volet ouvert</string>

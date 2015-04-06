@@ -37,9 +37,9 @@ public class BitmapCache extends LruCache<String, Bitmap> {
      * Get max available VM memory, exceeding this amount will throw an OutOfMemory exception. Stored in kilobytes as
      * LruCache takes an int in its constructor. Use 1/4th of the available memory for this memory cache.
      */
-    public static int MEMORY_CACHE_DEFAULT_SIZE = (int) (Runtime.getRuntime().maxMemory() / 1024) / 4;
+    public static final int MEMORY_CACHE_DEFAULT_SIZE = (int) (Runtime.getRuntime().maxMemory() / 1024) / 4;
 
-    private Context mContext;
+    private final Context mContext;
     private SimpleDiskCache mDiskLruCache;
     private final Object mDiskCacheLock = new Object();
     private boolean mDiskCacheStarting = true;
@@ -63,7 +63,7 @@ public class BitmapCache extends LruCache<String, Bitmap> {
     }
 
     private class InitCacheTask extends AsyncTask<File, Void, Void> {
-        private int maxDiskSize;
+        private final int maxDiskSize;
 
 
         public InitCacheTask(int maxDiskSize) {
@@ -79,13 +79,13 @@ public class BitmapCache extends LruCache<String, Bitmap> {
                 try {
                     version = mContext.getPackageManager().getPackageInfo(mContext.getPackageName(), 0).versionCode;
                 } catch (NameNotFoundException e) {
-
                 }
+
                 try {
                     mDiskLruCache = SimpleDiskCache.open(params[0], version, maxDiskSize);
                 } catch (IOException | NullPointerException e) {
-
                 }
+
                 mDiskCacheStarting = false; // Finished initialization
                 mDiskCacheLock.notifyAll(); // Wake any waiting threads
             }

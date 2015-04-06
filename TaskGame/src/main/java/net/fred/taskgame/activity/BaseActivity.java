@@ -19,8 +19,6 @@ package net.fred.taskgame.activity;
 import android.appwidget.AppWidgetManager;
 import android.content.ComponentName;
 import android.content.Context;
-import android.content.res.Resources;
-import android.graphics.Typeface;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -155,14 +153,6 @@ public class BaseActivity extends BaseGameActivity implements LocationListener {
 
 
     public void setActionBarTitle(String title) {
-        // Creating a spannable to support custom fonts on ActionBar
-        int actionBarTitle = Resources.getSystem().getIdentifier("action_bar_title", "id", "android");
-        android.widget.TextView actionBarTitleView = (android.widget.TextView) getWindow().findViewById(actionBarTitle);
-        Typeface font = Typeface.createFromAsset(getAssets(), "fonts/Roboto-Regular.ttf");
-        if (actionBarTitleView != null) {
-            actionBarTitleView.setTypeface(font);
-        }
-
         if (getSupportActionBar() != null) {
             getSupportActionBar().setTitle(title);
         }

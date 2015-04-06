@@ -30,16 +30,15 @@ import net.fred.taskgame.R;
 import java.util.Locale;
 
 public class UndoBarController {
-    private View mBarView;
-    private TextView mMessageView;
-    private ViewPropertyAnimator mBarAnimator;
+    private final View mBarView;
+    private final TextView mMessageView;
+    private final ViewPropertyAnimator mBarAnimator;
 
-    private UndoListener mUndoListener;
+    private final UndoListener mUndoListener;
 
     // State objects
     private Parcelable mUndoToken;
     private CharSequence mUndoMessage;
-    private boolean isVisible;
 
 
     public interface UndoListener {
@@ -83,7 +82,6 @@ public class UndoBarController {
                                     .getInteger(android.R.integer.config_shortAnimTime))
                     .setListener(null);
         }
-        isVisible = true;
     }
 
     public void hideUndoBar(boolean immediate) {
@@ -108,7 +106,6 @@ public class UndoBarController {
                         }
                     });
         }
-        isVisible = false;
     }
 
 }

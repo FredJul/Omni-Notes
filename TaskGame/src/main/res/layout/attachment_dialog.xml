@@ -16,7 +16,6 @@
   ~ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   -->
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-            xmlns:pixlui="http://schemas.android.com/apk/com.neopixl.pixlui"
             android:id="@+id/attachment_dialog_root"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
@@ -36,7 +35,7 @@
         android:orientation="vertical"
         android:gravity="start|left">
 
-        <com.neopixl.pixlui.components.textview.TextView
+        <TextView
             android:id="@+id/camera"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -46,10 +45,9 @@
             android:padding="6dp"
             android:text="@string/camera"
             android:textSize="@dimen/attachment_dialog_text_size"
-            pixlui:typeface="Roboto-Regular.ttf"
             android:textColor="@color/text_gray"/>
 
-        <com.neopixl.pixlui.components.textview.TextView
+        <TextView
             android:id="@+id/video"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -59,10 +57,9 @@
             android:padding="@dimen/attachment_dialog_items_padding"
             android:text="@string/video"
             android:textSize="@dimen/attachment_dialog_text_size"
-            pixlui:typeface="Roboto-Regular.ttf"
             android:textColor="@color/text_gray"/>
 
-        <com.neopixl.pixlui.components.textview.TextView
+        <TextView
             android:id="@+id/files"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -72,10 +69,9 @@
             android:padding="@dimen/attachment_dialog_items_padding"
             android:text="@string/files"
             android:textSize="@dimen/attachment_dialog_text_size"
-            pixlui:typeface="Roboto-Regular.ttf"
             android:textColor="@color/text_gray"/>
 
-        <com.neopixl.pixlui.components.textview.TextView
+        <TextView
             android:id="@+id/recording"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -85,10 +81,9 @@
             android:padding="@dimen/attachment_dialog_items_padding"
             android:text="@string/record"
             android:textSize="@dimen/attachment_dialog_text_size"
-            pixlui:typeface="Roboto-Regular.ttf"
             android:textColor="@color/text_gray"/>
 
-        <com.neopixl.pixlui.components.textview.TextView
+        <TextView
             android:id="@+id/sketch"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -98,10 +93,9 @@
             android:padding="@dimen/attachment_dialog_items_padding"
             android:text="@string/sketch"
             android:textSize="@dimen/attachment_dialog_text_size"
-            pixlui:typeface="Roboto-Regular.ttf"
             android:textColor="@color/text_gray"/>
 
-        <com.neopixl.pixlui.components.textview.TextView
+        <TextView
             android:id="@+id/location"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -111,7 +105,6 @@
             android:padding="@dimen/attachment_dialog_items_padding"
             android:text="@string/location"
             android:textSize="@dimen/attachment_dialog_text_size"
-            pixlui:typeface="Roboto-Regular.ttf"
             android:textColor="@color/text_gray"/>
     </LinearLayout>
 

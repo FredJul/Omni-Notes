@@ -16,18 +16,9 @@
 -->
 
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-          package="com.google.example.games.basegameutils"
-          android:versionCode="1"
-          android:versionName="1.0">
+          package="com.google.example.games.basegameutils">
 
     <uses-sdk
-        android:minSdkVersion="9"
-        android:targetSdkVersion="19"/>
-
-    <application android:allowBackup="true">
-    </application>
-    <meta-data
-        android:name="unityplayer.ForwardNativeEventsToDalvik"
-        android:value="true"/>
-
+        android:minSdkVersion="21"
+        android:targetSdkVersion="21"/>
 </manifest>

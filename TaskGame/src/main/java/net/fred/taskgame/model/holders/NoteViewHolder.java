@@ -19,8 +19,7 @@ package net.fred.taskgame.model.holders;
 
 import android.view.View;
 import android.widget.ImageView;
-
-import com.neopixl.pixlui.components.textview.TextView;
+import android.widget.TextView;
 
 import net.fred.taskgame.view.SquareImageView;
 

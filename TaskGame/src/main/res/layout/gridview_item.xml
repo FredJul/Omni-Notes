@@ -17,7 +17,6 @@
   -->
 
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                xmlns:pixlui="http://schemas.android.com/apk/com.neopixl.pixlui"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
 
@@ -29,7 +28,7 @@
         android:layout_alignParentTop="true"
         android:scaleType="centerCrop"/>
 
-    <com.neopixl.pixlui.components.textview.TextView
+    <TextView
         android:id="@+id/gridview_item_text"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -41,7 +40,6 @@
         android:layout_marginRight="2dp"
         android:textSize="12sp"
         android:textColor="@android:color/white"
-        android:visibility="invisible"
-        pixlui:typeface="Roboto-Regular.ttf"/>
+        android:visibility="invisible"/>
 
 </RelativeLayout>

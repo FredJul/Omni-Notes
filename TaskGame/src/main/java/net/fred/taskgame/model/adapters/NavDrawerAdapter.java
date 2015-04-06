@@ -25,8 +25,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
-
-import com.neopixl.pixlui.components.textview.TextView;
+import android.widget.TextView;
 
 import net.fred.taskgame.R;
 import net.fred.taskgame.activity.BaseActivity;
@@ -40,9 +39,9 @@ import java.util.List;
 
 public class NavDrawerAdapter extends BaseAdapter {
 
-    private Activity mActivity;
+    private final Activity mActivity;
     private List<NavigationItem> items = new ArrayList<>();
-    private LayoutInflater inflater;
+    private final LayoutInflater inflater;
 
     public NavDrawerAdapter(Activity mActivity, List<NavigationItem> items) {
         this.mActivity = mActivity;

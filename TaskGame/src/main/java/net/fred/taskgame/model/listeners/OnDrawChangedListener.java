@@ -18,5 +18,5 @@
 package net.fred.taskgame.model.listeners;
 
 public interface OnDrawChangedListener {
-    public void onDrawChanged();
+    void onDrawChanged();
 }

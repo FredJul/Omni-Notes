@@ -29,8 +29,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
-
-import com.neopixl.pixlui.components.textview.TextView;
+import android.widget.TextView;
 
 import net.fred.taskgame.R;
 import net.fred.taskgame.activity.BaseActivity;
@@ -42,10 +41,10 @@ import java.util.List;
 
 public class NavDrawerCategoryAdapter extends BaseAdapter {
 
-    private Activity mActivity;
-    private int layout;
-    private List<Category> categories;
-    private LayoutInflater inflater;
+    private final Activity mActivity;
+    private final int layout;
+    private final List<Category> categories;
+    private final LayoutInflater inflater;
 
     public NavDrawerCategoryAdapter(Activity mActivity, List<Category> categories) {
         this.mActivity = mActivity;
@@ -91,7 +90,7 @@ public class NavDrawerCategoryAdapter extends BaseAdapter {
         // Set the results into TextViews
         holder.txtTitle.setText(category.name);
 
-        if (isSelected(parent, position)) {
+        if (isSelected(position)) {
             holder.txtTitle.setTextColor(Color.BLACK);
             holder.txtTitle.setTypeface(null, Typeface.BOLD);
         } else {
@@ -123,7 +122,7 @@ public class NavDrawerCategoryAdapter extends BaseAdapter {
     }
 
 
-    private boolean isSelected(ViewGroup parent, int position) {
+    private boolean isSelected(int position) {
 
         // Getting actual navigation selection
         String[] navigationListCodes = mActivity.getResources().getStringArray(

@@ -1,7 +1,5 @@
 package it.feio.android.checklistview.dragging;
 
-import android.annotation.TargetApi;
-import android.os.Build;
 import android.util.Log;
 import android.view.DragEvent;
 import android.view.View;
@@ -15,7 +13,6 @@ import it.feio.android.checklistview.interfaces.Constants;
 import it.feio.android.checklistview.models.CheckListViewItem;
 import it.feio.android.checklistview.utils.DensityUtil;
 
-@TargetApi(Build.VERSION_CODES.HONEYCOMB)
 public class ChecklistViewItemOnDragListener implements OnDragListener {
 
     private static final int DIRECTION_UP = 0;
@@ -124,7 +121,7 @@ public class ChecklistViewItemOnDragListener implements OnDragListener {
 
     private void startScrolling(View target) {
         if (!scroll) {
-            scrollerThread = new Thread(new Scroller(target));
+            scrollerThread = new Thread(new Scroller());
             scroll = true;
             scrollerThread.start();
         }
@@ -141,10 +138,8 @@ public class ChecklistViewItemOnDragListener implements OnDragListener {
     }
 
     class Scroller implements Runnable {
-        View target;
 
-        public Scroller(View target) {
-            this.target = target;
+        public Scroller() {
         }
 
         @Override
@@ -155,7 +150,7 @@ public class ChecklistViewItemOnDragListener implements OnDragListener {
                 try {
                     Thread.sleep(Constants.SCROLLING_DELAY);
                 } catch (InterruptedException e) {
-                    Log.d("ChecklistViewItemOnDragListener", "InterruptedException");
+                    Log.d(Constants.TAG, "InterruptedException");
                 }
             }
         }

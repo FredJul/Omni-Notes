@@ -15,7 +15,6 @@
   ~ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              xmlns:pixlui="http://schemas.android.com/apk/com.neopixl.pixlui"
               android:id="@+id/detail_root"
               android:layout_width="match_parent"
               android:layout_height="match_parent"
@@ -56,7 +55,7 @@
                     android:layout_height="match_parent"
                     android:background="@null"/>
 
-                <com.neopixl.pixlui.components.edittext.EditText
+                <EditText
                     android:id="@+id/detail_title"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -73,7 +72,6 @@
                     android:textAppearance="@style/Text.Big"
                     android:textColorHint="@color/text_color_lighter"
                     android:textColor="@color/text_color"
-                    pixlui:typeface="RobotoSlab-Bold.ttf"
                     android:textCursorDrawable="@null"/>
             </LinearLayout>
         </LinearLayout>
@@ -115,7 +113,7 @@
                         android:paddingStart="@dimen/padding_half"
                         android:paddingEnd="@dimen/padding_half">
 
-                        <com.neopixl.pixlui.components.textview.TextView
+                        <TextView
                             android:id="@+id/location"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
@@ -127,8 +125,7 @@
                             android:paddingTop="10dp"
                             android:textColor="@color/location_text"
                             android:textAppearance="@style/Text.Small"
-                            android:visibility="gone"
-                            pixlui:typeface="Roboto-Regular.ttf"/>
+                            android:visibility="gone"/>
 
                         <LinearLayout
                             android:layout_width="match_parent"
@@ -136,7 +133,7 @@
                             android:paddingTop="@dimen/padding_half"
                             android:paddingLeft="6dp">
 
-                            <com.neopixl.pixlui.components.edittext.EditText
+                            <EditText
                                 android:id="@+id/detail_content"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
@@ -149,7 +146,6 @@
                                 android:textColorHint="@color/text_color_lighter"
                                 android:textColor="@color/text_color"
                                 android:imeOptions="actionDone"
-                                pixlui:typeface="RobotoSlab-Regular.ttf"
                                 android:textCursorDrawable="@null"/>
                         </LinearLayout>
 
@@ -175,7 +171,7 @@
                                 android:contentDescription="@string/reminder"
                                 android:src="@drawable/ic_alarm_grey600_48dp"/>
 
-                            <com.neopixl.pixlui.components.textview.TextView
+                            <TextView
                                 android:id="@+id/datetime"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
@@ -184,8 +180,7 @@
                                 android:hint="@string/add_reminder"
                                 android:textAppearance="@style/Text.Small"
                                 android:textColorHint="@color/text_color"
-                                android:textColor="@color/text_color"
-                                pixlui:typeface="Roboto-Regular.ttf"/>
+                                android:textColor="@color/text_color"/>
                         </LinearLayout>
                     </LinearLayout>
                 </LinearLayout>
@@ -200,25 +195,23 @@
             android:paddingBottom="3dp"
             android:paddingTop="3dp">
 
-            <com.neopixl.pixlui.components.textview.TextView
+            <TextView
                 android:id="@+id/creation"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:gravity="left|start"
                 android:padding="0dp"
-                android:textAppearance="@style/Text.Small"
-                pixlui:typeface="Roboto-Regular.ttf"/>
+                android:textAppearance="@style/Text.Small"/>
 
-            <com.neopixl.pixlui.components.textview.TextView
+            <TextView
                 android:id="@+id/last_modification"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:gravity="end"
                 android:padding="0dp"
-                android:textAppearance="@style/Text.Small"
-                pixlui:typeface="Roboto-Regular.ttf"/>
+                android:textAppearance="@style/Text.Small"/>
         </LinearLayout>
     </LinearLayout>
 

@@ -104,7 +104,7 @@ public class SketchFragment extends Fragment implements OnDrawChangedListener {
             Bitmap bmp;
             try {
                 bmp = BitmapFactory.decodeStream(getActivity().getContentResolver().openInputStream(baseUri));
-                mSketchView.setBackgroundBitmap(getActivity(), bmp);
+                mSketchView.setBackgroundBitmap(bmp);
             } catch (FileNotFoundException e) {
             }
         }
