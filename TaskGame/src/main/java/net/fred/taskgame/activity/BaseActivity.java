@@ -25,11 +25,16 @@ import android.location.LocationManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.ViewConfiguration;
 import android.widget.Toast;
 
+import com.google.android.gms.games.Games;
+import com.google.android.gms.games.snapshot.Snapshot;
+import com.google.android.gms.games.snapshot.SnapshotMetadataChange;
+import com.google.android.gms.games.snapshot.Snapshots;
 import com.google.example.games.basegameutils.BaseGameActivity;
 
 import net.fred.taskgame.R;
@@ -37,6 +42,7 @@ import net.fred.taskgame.utils.GeocodeHelper;
 import net.fred.taskgame.utils.PrefUtils;
 import net.fred.taskgame.widget.ListWidgetProvider;
 
+import java.io.IOException;
 import java.lang.reflect.Field;
 
 
@@ -54,6 +60,10 @@ public class BaseActivity extends BaseGameActivity implements LocationListener {
     public String navigation;
     public String navigationTmp; // used for widget navigation
 
+
+    protected BaseActivity() {
+        super(BaseGameActivity.CLIENT_ALL); // we need snapshot support
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -171,6 +181,41 @@ public class BaseActivity extends BaseGameActivity implements LocationListener {
 
     @Override
     public void onSignInSucceeded() {
+        sync();
+    }
 
+    private void sync() {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                // Open the saved game using its name.
+                Snapshots.OpenSnapshotResult result = Games.Snapshots.open(getApiClient(),
+                        "save", true).await();
+
+                // Check the result of the open operation
+                if (result.getStatus().isSuccess()) {
+                    Snapshot snapshot = result.getSnapshot();
+                    // Read the byte content of the saved game.
+                    try {
+                        byte[] saveData = snapshot.getSnapshotContents().readFully();
+                        Log.e("FRED", "result " + saveData.length);
+                    } catch (IOException e) {
+                    }
+
+                    // Set the data payload for the snapshot
+                    byte[] data = new byte[3];
+                    snapshot.getSnapshotContents().writeBytes(data);
+
+                    // Create the change operation
+                    SnapshotMetadataChange metadataChange = new SnapshotMetadataChange.Builder().build();
+
+                    // Commit the operation
+                    Games.Snapshots.commitAndClose(getApiClient(), snapshot, metadataChange);
+                } else {
+
+                    Log.e("FRED", "fail");
+                }
+            }
+        }).start();
     }
 }
