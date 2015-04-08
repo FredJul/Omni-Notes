@@ -53,8 +53,6 @@ public class CategoryActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_category);
 
-        CategoryActivity mActivity = this;
-
         // Retrieving intent
         category = getIntent().getParcelableExtra(Constants.INTENT_CATEGORY);
 
