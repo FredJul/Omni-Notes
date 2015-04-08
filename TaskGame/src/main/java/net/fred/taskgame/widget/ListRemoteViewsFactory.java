@@ -35,7 +35,7 @@ import net.fred.taskgame.R;
 import net.fred.taskgame.model.Attachment;
 import net.fred.taskgame.model.Task;
 import net.fred.taskgame.model.Task$Table;
-import net.fred.taskgame.model.adapters.NoteAdapter;
+import net.fred.taskgame.model.adapters.TaskAdapter;
 import net.fred.taskgame.utils.BitmapHelper;
 import net.fred.taskgame.utils.Constants;
 import net.fred.taskgame.utils.DbHelper;
@@ -126,7 +126,7 @@ public class ListRemoteViewsFactory implements RemoteViewsFactory {
             row.setInt(R.id.attachmentThumbnail, "setVisibility", View.GONE);
         }
 
-        row.setTextViewText(R.id.note_date, NoteAdapter.getDateText(app, task));
+        row.setTextViewText(R.id.note_date, TaskAdapter.getDateText(app, task));
 
         // Next, set a fill-intent, which will be used to fill in the pending intent template
         // that is set on the collection view in StackWidgetProvider.

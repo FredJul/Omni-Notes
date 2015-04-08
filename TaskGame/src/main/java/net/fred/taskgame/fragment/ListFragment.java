@@ -73,7 +73,7 @@ import net.fred.taskgame.async.DeleteNoteTask;
 import net.fred.taskgame.model.Category;
 import net.fred.taskgame.model.Task;
 import net.fred.taskgame.model.adapters.NavDrawerCategoryAdapter;
-import net.fred.taskgame.model.adapters.NoteAdapter;
+import net.fred.taskgame.model.adapters.TaskAdapter;
 import net.fred.taskgame.model.listeners.AbsListViewScrollDetector;
 import net.fred.taskgame.model.listeners.OnViewTouchedListener;
 import net.fred.taskgame.utils.AnimationsHelper;
@@ -130,7 +130,7 @@ public class ListFragment extends Fragment implements OnViewTouchedListener, Und
     private TextView listFooter;
     private boolean searchLabelActive = false;
 
-    private NoteAdapter listAdapter;
+    private TaskAdapter taskAdapter;
     private UndoBarController ubc;
 
     //    Fab
@@ -312,8 +312,8 @@ public class ListFragment extends Fragment implements OnViewTouchedListener, Und
 
         // Clears data structures
         // getSelectedTasks().clear();
-//		if (listAdapter != null) {
-//			listAdapter.clearSelectedItems();
+//		if (taskAdapter != null) {
+//			taskAdapter.clearSelectedItems();
 //		}
         if (!keepActionMode) {
             commitPending();
@@ -379,11 +379,11 @@ public class ListFragment extends Fragment implements OnViewTouchedListener, Und
             // Here you can make any necessary updates to the activity when
             // the CAB is removed. By default, selected items are
             // deselected/unchecked.
-            for (int i = 0; i < listAdapter.getSelectedItems().size(); i++) {
-                int key = listAdapter.getSelectedItems().keyAt(i);
+            for (int i = 0; i < taskAdapter.getSelectedItems().size(); i++) {
+                int key = taskAdapter.getSelectedItems().keyAt(i);
                 View v = list.getChildAt(key - list.getFirstVisiblePosition());
-                if (listAdapter.getCount() > key && listAdapter.getItem(key) != null && v != null) {
-                    listAdapter.restoreDrawable(listAdapter.getItem(key), v.findViewById(R.id.card_layout));
+                if (taskAdapter.getCount() > key && taskAdapter.getItem(key) != null && v != null) {
+                    taskAdapter.restoreDrawable(taskAdapter.getItem(key), v.findViewById(R.id.card_layout));
                 }
             }
 
@@ -392,7 +392,7 @@ public class ListFragment extends Fragment implements OnViewTouchedListener, Und
 
             // Clears data structures
             selectedTasks.clear();
-            listAdapter.clearSelectedItems();
+            taskAdapter.clearSelectedItems();
             list.clearChoices();
 
             setFabAllowed(true);
@@ -503,16 +503,16 @@ public class ListFragment extends Fragment implements OnViewTouchedListener, Und
      * Manage check/uncheck of tasks in list during multiple selection phase
      */
     private void toggleListViewItem(View view, int position) {
-        Task task = listAdapter.getItem(position);
+        Task task = taskAdapter.getItem(position);
         LinearLayout v = (LinearLayout) view.findViewById(R.id.card_layout);
         if (!getSelectedTasks().contains(task)) {
             getSelectedTasks().add(task);
-            listAdapter.addSelectedItem(position);
+            taskAdapter.addSelectedItem(position);
             v.setBackgroundColor(getResources().getColor(R.color.list_bg_selected));
         } else {
             getSelectedTasks().remove(task);
-            listAdapter.removeSelectedItem(position);
-            listAdapter.restoreDrawable(task, v);
+            taskAdapter.removeSelectedItem(position);
+            taskAdapter.restoreDrawable(task, v);
         }
         prepareActionModeMenu();
 
@@ -566,7 +566,7 @@ public class ListFragment extends Fragment implements OnViewTouchedListener, Und
             public void onItemClick(AdapterView<?> arg0, View view, int position, long arg3) {
                 if (view.equals(listFooter)) return;
                 if (getActionMode() == null) {
-                    editNote(listAdapter.getItem(position), view);
+                    editNote(taskAdapter.getItem(position), view);
                     return;
                 }
                 // If in CAB mode
@@ -936,8 +936,8 @@ public class ListFragment extends Fragment implements OnViewTouchedListener, Und
                 .callback(new MaterialDialog.SimpleCallback() {
                     @Override
                     public void onPositive(MaterialDialog materialDialog) {
-                        for (int i = 0; i < listAdapter.getCount(); i++) {
-                            getSelectedTasks().add(listAdapter.getItem(i));
+                        for (int i = 0; i < taskAdapter.getCount(); i++) {
+                            getSelectedTasks().add(taskAdapter.getItem(i));
                         }
                         deleteTasksExecute();
                     }
@@ -1027,7 +1027,7 @@ public class ListFragment extends Fragment implements OnViewTouchedListener, Und
     }
 
     private void onTasksLoaded(List<Task> tasks) {
-        listAdapter = new NoteAdapter(getActivity(), tasks);
+        taskAdapter = new TaskAdapter(getActivity(), tasks);
 
         list.enableSwipeToDismiss(new OnDismissCallback() {
             @Override
@@ -1039,7 +1039,7 @@ public class ListFragment extends Fragment implements OnViewTouchedListener, Und
                 for (int position : reverseSortedPositions) {
                     Task task;
                     try {
-                        task = listAdapter.getItem(position);
+                        task = taskAdapter.getItem(position);
                     } catch (IndexOutOfBoundsException e) {
 
                         continue;
@@ -1060,7 +1060,7 @@ public class ListFragment extends Fragment implements OnViewTouchedListener, Und
                 }
             }
         });
-        list.setAdapter(listAdapter);
+        list.setAdapter(taskAdapter);
 
         // Replace listview with Mr. Jingles if it is empty
         if (tasks.size() == 0) list.setEmptyView(getActivity().findViewById(R.id.empty_list));
@@ -1088,17 +1088,17 @@ public class ListFragment extends Fragment implements OnViewTouchedListener, Und
             // Restore it performed immediately, otherwise undo bar
             if (trash) {
                 // Saves tasks to be eventually restored at right position
-                undoTasksList.put(listAdapter.getPosition(task) + undoTasksList.size(), task);
+                undoTasksList.put(taskAdapter.getPosition(task) + undoTasksList.size(), task);
                 modifiedTasks.add(task);
             } else {
                 trashTask(task, false);
             }
             // Removes note adapter
-            listAdapter.remove(task);
+            taskAdapter.remove(task);
         }
 
         // If list is empty again Mr Jingles will appear again
-        if (listAdapter.getCount() == 0)
+        if (taskAdapter.getCount() == 0)
             list.setEmptyView(getActivity().findViewById(R.id.empty_list));
 
         finishActionMode();
@@ -1127,7 +1127,7 @@ public class ListFragment extends Fragment implements OnViewTouchedListener, Und
 
 
     private List<Task> getSelectedTasks() {
-//        return listAdapter.getSelectedTasks();
+//        return taskAdapter.getSelectedTasks();
         return selectedTasks;
     }
 
@@ -1140,7 +1140,7 @@ public class ListFragment extends Fragment implements OnViewTouchedListener, Und
     protected void trashTask(Task task, boolean trash) {
         DbHelper.trashTask(task, trash);
         // Update adapter content
-        listAdapter.remove(task);
+        taskAdapter.remove(task);
         // Informs about update
 
     }
@@ -1158,9 +1158,9 @@ public class ListFragment extends Fragment implements OnViewTouchedListener, Und
             }
         }
         selectedTasks.clear();
-        for (int i = 0; i < listAdapter.getCount(); i++) {
-            selectedTasks.add(listAdapter.getItem(i));
-            listAdapter.addSelectedItem(i);
+        for (int i = 0; i < taskAdapter.getCount(); i++) {
+            selectedTasks.add(taskAdapter.getItem(i));
+            taskAdapter.addSelectedItem(i);
         }
         prepareActionModeMenu();
         setCabTitle();
@@ -1189,19 +1189,19 @@ public class ListFragment extends Fragment implements OnViewTouchedListener, Und
      */
     private void deleteTasksExecute() {
         for (Task task : getSelectedTasks()) {
-            listAdapter.remove(task);
+            taskAdapter.remove(task);
             DeleteNoteTask deleteNoteTask = new DeleteNoteTask(MainApplication.getContext());
             deleteNoteTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, task);
         }
 
         // Clears data structures
-//		listAdapter.clearSelectedItems();
+//		taskAdapter.clearSelectedItems();
         list.clearChoices();
 
         finishActionMode();
 
         // If list is empty again Mr Jingles will appear again
-        if (listAdapter.getCount() == 0)
+        if (taskAdapter.getCount() == 0)
             list.setEmptyView(getActivity().findViewById(R.id.empty_list));
 
         // Advice to user
@@ -1270,21 +1270,21 @@ public class ListFragment extends Fragment implements OnViewTouchedListener, Und
                 // Saves categories associated to eventually undo
                 undoCategoryMap.put(task, task.getCategory());
                 // Saves tasks to be eventually restored at right position
-                undoTasksList.put(listAdapter.getPosition(task) + undoTasksList.size(), task);
+                undoTasksList.put(taskAdapter.getPosition(task) + undoTasksList.size(), task);
                 modifiedTasks.add(task);
             }
             // Update adapter content if actual navigation is the category
             // associated with actually cycled note
             if (Navigation.checkNavigation(Navigation.CATEGORY) && !Navigation.checkNavigationCategory(category)) {
-                listAdapter.remove(task);
+                taskAdapter.remove(task);
             } else {
                 task.setCategory(category);
-                listAdapter.replace(task, listAdapter.getPosition(task));
+                taskAdapter.replace(task, taskAdapter.getPosition(task));
             }
         }
 
         // Clears data structures
-//		listAdapter.clearSelectedItems();
+//		taskAdapter.clearSelectedItems();
 //		list.clearChoices();
         finishActionMode();
 
@@ -1292,7 +1292,7 @@ public class ListFragment extends Fragment implements OnViewTouchedListener, Und
 //		list.invalidateViews();
 
         // If list is empty again Mr Jingles will appear again
-        if (listAdapter.getCount() == 0)
+        if (taskAdapter.getCount() == 0)
             list.setEmptyView(getActivity().findViewById(R.id.empty_list));
 
         // Refreshes navigation drawer if is set to show categories count numbers
@@ -1340,8 +1340,8 @@ public class ListFragment extends Fragment implements OnViewTouchedListener, Und
                     task.setCategory(undoCategoryMap.get(task));
                 }
 
-                listAdapter.replace(task, listAdapter.getPosition(task));
-                listAdapter.notifyDataSetChanged();
+                taskAdapter.replace(task, taskAdapter.getPosition(task));
+                taskAdapter.notifyDataSetChanged();
                 // Manages trash undo
             } else {
                 list.insert(undoTasksList.keyAt(undoTasksList.indexOfValue(task)), task);

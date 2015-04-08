@@ -51,7 +51,7 @@ import java.util.List;
 import java.util.concurrent.RejectedExecutionException;
 
 
-public class NoteAdapter extends ArrayAdapter<Task> implements Insertable {
+public class TaskAdapter extends ArrayAdapter<Task> implements Insertable {
 
     private final Activity mActivity;
 
@@ -61,7 +61,7 @@ public class NoteAdapter extends ArrayAdapter<Task> implements Insertable {
     private final LayoutInflater mInflater;
 
 
-    public NoteAdapter(Activity activity, List<Task> tasks) {
+    public TaskAdapter(Activity activity, List<Task> tasks) {
         super(activity, R.layout.note_layout_expanded, tasks);
         this.mActivity = activity;
         this.mTasks = tasks;
