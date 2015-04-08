@@ -24,8 +24,8 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Parcel;
 import android.support.v4.app.FragmentTransaction;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.ViewConfiguration;
@@ -36,14 +36,19 @@ import com.google.android.gms.games.snapshot.Snapshot;
 import com.google.android.gms.games.snapshot.SnapshotMetadataChange;
 import com.google.android.gms.games.snapshot.Snapshots;
 import com.google.example.games.basegameutils.BaseGameActivity;
+import com.raizlabs.android.dbflow.sql.language.Delete;
+import com.raizlabs.android.dbflow.sql.language.Select;
 
 import net.fred.taskgame.R;
+import net.fred.taskgame.model.Category;
+import net.fred.taskgame.model.Task;
 import net.fred.taskgame.utils.GeocodeHelper;
 import net.fred.taskgame.utils.PrefUtils;
 import net.fred.taskgame.widget.ListWidgetProvider;
 
 import java.io.IOException;
 import java.lang.reflect.Field;
+import java.util.ArrayList;
 
 
 public class BaseActivity extends BaseGameActivity implements LocationListener {
@@ -176,12 +181,11 @@ public class BaseActivity extends BaseGameActivity implements LocationListener {
 
     @Override
     public void onSignInFailed() {
-
     }
 
     @Override
     public void onSignInSucceeded() {
-        sync();
+        //sync();
     }
 
     private void sync() {
@@ -195,15 +199,38 @@ public class BaseActivity extends BaseGameActivity implements LocationListener {
                 // Check the result of the open operation
                 if (result.getStatus().isSuccess()) {
                     Snapshot snapshot = result.getSnapshot();
+
+                    // TODO: parcels should not be used for persistent storage
                     // Read the byte content of the saved game.
                     try {
-                        byte[] saveData = snapshot.getSnapshotContents().readFully();
-                        Log.e("FRED", "result " + saveData.length);
+                        byte[] savedData = snapshot.getSnapshotContents().readFully();
+
+                        Parcel parcel = Parcel.obtain();
+                        parcel.unmarshall(savedData, 0, savedData.length);
+                        parcel.setDataPosition(0); // this is extremely important!
+                        ArrayList<Category> cats = new ArrayList<>();
+                        parcel.readList(cats, Category.class.getClassLoader());
+                        ArrayList<Task> tasks = new ArrayList<>();
+                        parcel.readList(tasks, Task.class.getClassLoader());
+                        parcel.recycle(); // not sure if needed or a good idea
+
+                        Delete.tables(Category.class, Task.class);
+                        for (Category cat : cats) {
+                            cat.save(false);
+                        }
+                        for (Task task : tasks) {
+                            task.save(false);
+                        }
                     } catch (IOException e) {
                     }
 
+                    Parcel parcel = Parcel.obtain();
+                    parcel.writeList(new Select().from(Category.class).queryList());
+                    parcel.writeList(new Select().from(Task.class).queryList());
+                    byte[] data = parcel.marshall();
+                    parcel.recycle(); // not sure if needed or a good idea
+
                     // Set the data payload for the snapshot
-                    byte[] data = new byte[3];
                     snapshot.getSnapshotContents().writeBytes(data);
 
                     // Create the change operation
@@ -211,9 +238,6 @@ public class BaseActivity extends BaseGameActivity implements LocationListener {
 
                     // Commit the operation
                     Games.Snapshots.commitAndClose(getApiClient(), snapshot, metadataChange);
-                } else {
-
-                    Log.e("FRED", "fail");
                 }
             }
         }).start();
