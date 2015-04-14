@@ -19,6 +19,7 @@ package net.fred.taskgame.model;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import com.google.gson.annotations.Expose;
 import com.raizlabs.android.dbflow.annotation.Column;
 import com.raizlabs.android.dbflow.annotation.Table;
 import com.raizlabs.android.dbflow.structure.BaseModel;
@@ -27,14 +28,19 @@ import com.raizlabs.android.dbflow.structure.BaseModel;
 public class Category extends BaseModel implements Parcelable {
 
     @Column(columnType = Column.PRIMARY_KEY_AUTO_INCREMENT)
+    @Expose
     public int id;
     @Column
+    @Expose
     public String name = "";
     @Column
+    @Expose
     public String description = "";
     @Column
+    @Expose
     public String color = "";
     @Column
+    @Expose
     public int count;
 
     public Category() {

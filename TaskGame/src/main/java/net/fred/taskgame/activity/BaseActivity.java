@@ -24,8 +24,8 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Parcel;
 import android.support.v4.app.FragmentTransaction;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.ViewConfiguration;
@@ -36,19 +36,19 @@ import com.google.android.gms.games.snapshot.Snapshot;
 import com.google.android.gms.games.snapshot.SnapshotMetadataChange;
 import com.google.android.gms.games.snapshot.Snapshots;
 import com.google.example.games.basegameutils.BaseGameActivity;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.raizlabs.android.dbflow.sql.language.Delete;
-import com.raizlabs.android.dbflow.sql.language.Select;
 
 import net.fred.taskgame.R;
 import net.fred.taskgame.model.Category;
+import net.fred.taskgame.model.SyncData;
 import net.fred.taskgame.model.Task;
 import net.fred.taskgame.utils.GeocodeHelper;
 import net.fred.taskgame.utils.PrefUtils;
 import net.fred.taskgame.widget.ListWidgetProvider;
 
-import java.io.IOException;
 import java.lang.reflect.Field;
-import java.util.ArrayList;
 
 
 public class BaseActivity extends BaseGameActivity implements LocationListener {
@@ -185,7 +185,7 @@ public class BaseActivity extends BaseGameActivity implements LocationListener {
 
     @Override
     public void onSignInSucceeded() {
-        //sync();
+        sync();
     }
 
     private void sync() {
@@ -193,45 +193,40 @@ public class BaseActivity extends BaseGameActivity implements LocationListener {
             @Override
             public void run() {
                 // Open the saved game using its name.
-                Snapshots.OpenSnapshotResult result = Games.Snapshots.open(getApiClient(),
-                        "save", true).await();
+                Snapshots.OpenSnapshotResult result = Games.Snapshots.open(getApiClient(), "save", true).await();
 
                 // Check the result of the open operation
                 if (result.getStatus().isSuccess()) {
                     Snapshot snapshot = result.getSnapshot();
 
-                    // TODO: parcels should not be used for persistent storage
+                    Gson gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
+
                     // Read the byte content of the saved game.
                     try {
-                        byte[] savedData = snapshot.getSnapshotContents().readFully();
+                        byte[] savedBytes = snapshot.getSnapshotContents().readFully();
 
-                        Parcel parcel = Parcel.obtain();
-                        parcel.unmarshall(savedData, 0, savedData.length);
-                        parcel.setDataPosition(0); // this is extremely important!
-                        ArrayList<Category> cats = new ArrayList<>();
-                        parcel.readList(cats, Category.class.getClassLoader());
-                        ArrayList<Task> tasks = new ArrayList<>();
-                        parcel.readList(tasks, Task.class.getClassLoader());
-                        parcel.recycle(); // not sure if needed or a good idea
+                        String json = new String(savedBytes);
+                        Log.e("FRED", "get back " + json);
+                        SyncData syncedData = gson.fromJson(json, SyncData.class);
 
-                        Delete.tables(Category.class, Task.class);
-                        for (Category cat : cats) {
-                            cat.save(false);
+                        if (syncedData.lastSyncDate > PrefUtils.getLong(PrefUtils.PREF_LAST_SYNC_DATE, -1)) {
+                            Delete.tables(Category.class, Task.class);
+                            for (Category cat : syncedData.categories) {
+                                cat.save(false);
+                            }
+                            for (Task task : syncedData.tasks) {
+                                task.save(false);
+                            }
                         }
-                        for (Task task : tasks) {
-                            task.save(false);
-                        }
-                    } catch (IOException e) {
+                    } catch (Exception e) {
+                        Log.e("FRED", "ERROR", e);
                     }
 
-                    Parcel parcel = Parcel.obtain();
-                    parcel.writeList(new Select().from(Category.class).queryList());
-                    parcel.writeList(new Select().from(Task.class).queryList());
-                    byte[] data = parcel.marshall();
-                    parcel.recycle(); // not sure if needed or a good idea
+                    String json = gson.toJson(SyncData.getLastData());
+                    Log.e("FRED", "write " + json);
 
                     // Set the data payload for the snapshot
-                    snapshot.getSnapshotContents().writeBytes(data);
+                    snapshot.getSnapshotContents().writeBytes(json.getBytes());
 
                     // Create the change operation
                     SnapshotMetadataChange metadataChange = new SnapshotMetadataChange.Builder().build();

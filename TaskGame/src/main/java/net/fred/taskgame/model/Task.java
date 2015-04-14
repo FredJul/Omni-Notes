@@ -20,6 +20,7 @@ import android.content.Context;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import com.google.gson.annotations.Expose;
 import com.raizlabs.android.dbflow.annotation.Column;
 import com.raizlabs.android.dbflow.annotation.Table;
 import com.raizlabs.android.dbflow.sql.builder.Condition;
@@ -36,32 +37,44 @@ import java.util.List;
 public class Task extends BaseModel implements Parcelable {
 
     @Column(columnType = Column.PRIMARY_KEY_AUTO_INCREMENT)
+    @Expose
     public int id;
     @Column
+    @Expose
     public String title = "";
     @Column
+    @Expose
     public String content = "";
     @Column
+    @Expose
     public long creationDate;
     @Column
+    @Expose
     public long lastModificationDate;
     @Column
+    @Expose
     public boolean isTrashed;
     @Column
+    @Expose
     public long alarmDate;
     @Column
+    @Expose
     public double latitude;
     @Column
+    @Expose
     public double longitude;
     @Column
+    @Expose
     public String address = "";
     @Column
+    @Expose
     public boolean isChecklist;
     @Column
+    @Expose
     int categoryId;
 
-    private Category mCategory;
-    private List<Attachment> mAttachmentsList;
+    private transient Category mCategory;
+    private transient List<Attachment> mAttachmentsList;
 
     public Task() {
     }

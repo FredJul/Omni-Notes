@@ -10,3 +10,7 @@
 
 # for picasso
 -dontwarn com.squareup.okhttp.**
+
+# for TaskGame
+-keep class net.fred.taskgame.model.SyncData { *; }
+-keep class * extends com.raizlabs.android.dbflow.structure.BaseModel { *; }

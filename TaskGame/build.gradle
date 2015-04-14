@@ -46,12 +46,11 @@ dependencies {
 
     compile project(':libs:BaseGameUtils')
     compile project(':libs:checklistview')
-    compile "com.android.support:appcompat-v7:+"
-    compile "com.google.android.gms:play-services-games:+"
 
-    apt 'com.raizlabs.android:DBFlow-Compiler:1.7.2'
-    compile "com.raizlabs.android:DBFlow-Core:1.7.2"
-    compile "com.raizlabs.android:DBFlow:1.7.2"
+    apt 'com.raizlabs.android:DBFlow-Compiler:1.8.0'
+    compile 'com.raizlabs.android:DBFlow-Core:1.8.0'
+    compile 'com.raizlabs.android:DBFlow:1.8.0'
+    compile 'com.google.code.gson:gson:+'
 
     compile 'com.github.flavienlaurent.datetimepicker:library:+'
     compile 'com.larswerkman:HoloColorPicker:+'
