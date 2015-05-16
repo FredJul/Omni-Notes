@@ -309,7 +309,7 @@ public class MainActivity extends BaseActivity implements OnDateSetListener, OnT
         task.title = title != null ? title : "";
         String content = i.getStringExtra(Intent.EXTRA_TEXT);
         task.content = content != null ? content : "";
-        DbHelper.updateTask(task, true);
+        DbHelper.updateTaskAsync(task, true);
         showToast(getString(R.string.task_updated), Toast.LENGTH_SHORT);
         finish();
     }

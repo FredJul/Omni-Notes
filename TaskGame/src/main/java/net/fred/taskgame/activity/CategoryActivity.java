@@ -151,7 +151,7 @@ public class CategoryActivity extends Activity {
             category.color = String.valueOf(picker.getColor());
 
         // Saved to DB and new id or update result catched
-        category.save();
+        category.async().save();
 
         // Sets result to show proper message
         getIntent().putExtra(Constants.INTENT_CATEGORY, category);
@@ -181,7 +181,7 @@ public class CategoryActivity extends Activity {
                         if (String.valueOf(category.id).equals(navigation))
                             PrefUtils.putString(PrefUtils.PREF_NAVIGATION, navTasks);
                         // Removes category and edit tasks associated with it
-                        DbHelper.deleteCategory(category);
+                        DbHelper.deleteCategoryAsync(category);
 
                         // Sets result to show proper message
                         setResult(RESULT_FIRST_USER);

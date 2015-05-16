@@ -17,11 +17,9 @@
 
 package net.fred.taskgame.async;
 
-import android.app.Activity;
 import android.os.AsyncTask;
 
 import net.fred.taskgame.MainApplication;
-import net.fred.taskgame.fragment.DetailFragment;
 import net.fred.taskgame.model.Attachment;
 import net.fred.taskgame.model.Task;
 import net.fred.taskgame.model.listeners.OnTaskSaved;
@@ -34,15 +32,13 @@ import java.util.List;
 
 public class SaveTask extends AsyncTask<Void, Void, Void> {
 
-    private final Activity mActivity;
     private final Task mTask;
     private final List<Attachment> mOldAttachments;
     private boolean mUpdateLastModification = true;
     private final OnTaskSaved mOnTaskSaved;
 
-    public SaveTask(DetailFragment activity, Task task, List<Attachment> oldAttachments, OnTaskSaved onTaskSaved, boolean updateLastModification) {
+    public SaveTask(Task task, List<Attachment> oldAttachments, OnTaskSaved onTaskSaved, boolean updateLastModification) {
         super();
-        mActivity = activity.getActivity();
         mTask = task;
         mOldAttachments = oldAttachments;
         mOnTaskSaved = onTaskSaved;
@@ -53,8 +49,8 @@ public class SaveTask extends AsyncTask<Void, Void, Void> {
     protected Void doInBackground(Void... params) {
         purgeRemovedAttachments();
 
-            // Note updating on database
-            DbHelper.updateTask(mTask, mUpdateLastModification);
+        // Note updating on database
+        DbHelper.updateTaskAsync(mTask, mUpdateLastModification);
 
         return null;
     }

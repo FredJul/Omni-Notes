@@ -1283,7 +1283,7 @@ public class ListFragment extends Fragment implements OnViewTouchedListener, Und
 
     private void categorizeNote(Task task, Category category) {
         task.setCategory(category);
-        DbHelper.updateTask(task, false);
+        DbHelper.updateTaskAsync(task, false);
     }
 
     @Override

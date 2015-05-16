@@ -1267,7 +1267,7 @@ public class DetailFragment extends Fragment implements
         if (saveNotNeeded()) return;
 
         // Saving changes to the note
-        SaveTask saveTask = new SaveTask(this, mTask, mOriginalTask.getAttachmentsList(), mOnTaskSaved, lastModificationUpdatedNeeded());
+        SaveTask saveTask = new SaveTask(mTask, mOriginalTask.getAttachmentsList(), mOnTaskSaved, lastModificationUpdatedNeeded());
         saveTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
 

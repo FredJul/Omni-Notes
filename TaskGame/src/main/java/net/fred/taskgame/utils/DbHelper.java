@@ -37,7 +37,7 @@ import java.util.List;
 public class DbHelper {
 
     // Inserting or updating single task
-    public static void updateTask(Task task, boolean updateLastModification) {
+    public static void updateTaskAsync(Task task, boolean updateLastModification) {
         if (task.creationDate == 0) {
             task.creationDate = System.currentTimeMillis();
         } else {    // If there already was a creation date, we put a last modification date
@@ -46,11 +46,11 @@ public class DbHelper {
                     .getInstance().getTimeInMillis());
         }
 
-        task.save();
+        task.async().save();
 
         for (Attachment attachment : task.getAttachmentsList()) {
             attachment.taskId = task.id;
-            attachment.save();
+            attachment.async().save();
         }
     }
 
@@ -138,7 +138,7 @@ public class DbHelper {
     public static void trashTask(Task task, boolean trash) {
         task.isTrashed = trash;
         ReminderHelper.removeReminder(MainApplication.getContext(), task);
-        updateTask(task, false);
+        updateTaskAsync(task, false);
     }
 
 
@@ -246,8 +246,8 @@ public class DbHelper {
         return new Select().from(Task.class).where(Condition.column(Task$Table.CATEGORYID).eq(category.id)).count();
     }
 
-    public static void deleteCategory(Category category) {
+    public static void deleteCategoryAsync(Category category) {
         new Update(Task.class).set(Condition.column(Task$Table.CATEGORYID).is(null)).where(Condition.column(Task$Table.CATEGORYID).eq(category.id));
-        category.delete();
+        category.async().delete();
     }
 }
