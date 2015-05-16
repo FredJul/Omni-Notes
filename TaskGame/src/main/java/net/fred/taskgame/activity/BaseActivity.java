@@ -25,13 +25,13 @@ import android.location.LocationManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.ViewConfiguration;
 import android.widget.Toast;
 
 import com.google.android.gms.games.Games;
+import com.google.android.gms.games.GamesStatusCodes;
 import com.google.android.gms.games.snapshot.Snapshot;
 import com.google.android.gms.games.snapshot.SnapshotMetadataChange;
 import com.google.android.gms.games.snapshot.Snapshots;
@@ -44,6 +44,7 @@ import net.fred.taskgame.R;
 import net.fred.taskgame.model.Category;
 import net.fred.taskgame.model.SyncData;
 import net.fred.taskgame.model.Task;
+import net.fred.taskgame.utils.Dog;
 import net.fred.taskgame.utils.GeocodeHelper;
 import net.fred.taskgame.utils.PrefUtils;
 import net.fred.taskgame.widget.ListWidgetProvider;
@@ -192,21 +193,21 @@ public class BaseActivity extends BaseGameActivity implements LocationListener {
         new Thread(new Runnable() {
             @Override
             public void run() {
+                Dog.i("sync started");
                 // Open the saved game using its name.
                 Snapshots.OpenSnapshotResult result = Games.Snapshots.open(getApiClient(), "save", true).await();
 
+                Snapshot snapshot = result.getSnapshot();
+                Gson gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
+
                 // Check the result of the open operation
                 if (result.getStatus().isSuccess()) {
-                    Snapshot snapshot = result.getSnapshot();
-
-                    Gson gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
-
                     // Read the byte content of the saved game.
                     try {
                         byte[] savedBytes = snapshot.getSnapshotContents().readFully();
 
                         String json = new String(savedBytes);
-                        Log.e("FRED", "get back " + json);
+                        Dog.i("get back " + json);
                         SyncData syncedData = gson.fromJson(json, SyncData.class);
 
                         if (syncedData.lastSyncDate > PrefUtils.getLong(PrefUtils.PREF_LAST_SYNC_DATE, -1)) {
@@ -219,11 +220,11 @@ public class BaseActivity extends BaseGameActivity implements LocationListener {
                             }
                         }
                     } catch (Exception e) {
-                        Log.e("FRED", "ERROR", e);
+                        Dog.e("ERROR", e);
                     }
 
                     String json = gson.toJson(SyncData.getLastData());
-                    Log.e("FRED", "write " + json);
+                    Dog.i("write " + json);
 
                     // Set the data payload for the snapshot
                     snapshot.getSnapshotContents().writeBytes(json.getBytes());
@@ -233,6 +234,24 @@ public class BaseActivity extends BaseGameActivity implements LocationListener {
 
                     // Commit the operation
                     Games.Snapshots.commitAndClose(getApiClient(), snapshot, metadataChange);
+
+                } else if (result.getStatus().getStatusCode() == GamesStatusCodes.STATUS_SNAPSHOT_CONFLICT) {
+                    Dog.i("Save conflict, use last version");
+
+                    String json = gson.toJson(SyncData.getLastData());
+                    Dog.i("write " + json);
+
+                    Snapshot conflictSnapshot = result.getConflictingSnapshot();
+                    // Resolve between conflicts by selecting the newest of the conflicting snapshots.
+                    Snapshot resolvedSnapshot = snapshot;
+
+                    if (snapshot.getMetadata().getLastModifiedTimestamp() <
+                            conflictSnapshot.getMetadata().getLastModifiedTimestamp()) {
+                        resolvedSnapshot = conflictSnapshot;
+                    }
+                    // Set the data payload for the snapshot
+                    snapshot.getSnapshotContents().writeBytes(json.getBytes());
+                    Games.Snapshots.resolveConflict(getApiClient(), result.getConflictId(), resolvedSnapshot);
                 }
             }
         }).start();
