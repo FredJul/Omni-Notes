@@ -60,9 +60,6 @@ import com.getbase.floatingactionbutton.AddFloatingActionButton;
 import com.getbase.floatingactionbutton.FloatingActionsMenu;
 import com.nhaarman.listviewanimations.itemmanipulation.DynamicListView;
 import com.nhaarman.listviewanimations.itemmanipulation.swipedismiss.OnDismissCallback;
-import com.raizlabs.android.dbflow.runtime.FlowContentObserver;
-import com.raizlabs.android.dbflow.structure.BaseModel;
-import com.raizlabs.android.dbflow.structure.Model;
 
 import net.fred.taskgame.MainApplication;
 import net.fred.taskgame.R;
@@ -84,6 +81,7 @@ import net.fred.taskgame.utils.CroutonHelper;
 import net.fred.taskgame.utils.DbHelper;
 import net.fred.taskgame.utils.Navigation;
 import net.fred.taskgame.utils.PrefUtils;
+import net.fred.taskgame.utils.ThrottledFlowContentObserver;
 import net.fred.taskgame.utils.UiUtils;
 import net.fred.taskgame.view.InterceptorLinearLayout;
 import net.fred.taskgame.view.UndoBarController;
@@ -137,24 +135,12 @@ public class ListFragment extends Fragment implements OnViewTouchedListener, Und
     private boolean fabHidden = true;
     private boolean fabExpanded = false;
 
-    private FlowContentObserver mContentObserver = new FlowContentObserver();
-    private FlowContentObserver.OnModelStateChangedListener mModelChangeListener = new FlowContentObserver.OnModelStateChangedListener() {
+    private ThrottledFlowContentObserver mContentObserver = new ThrottledFlowContentObserver(100) {
         @Override
-        public void onModelStateChanged(Class<? extends Model> aClass, BaseModel.Action action) {
-            if (getActivity() != null) {
-                getActivity().runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        initTasksList(getActivity().getIntent());
-                    }
-                });
-            }
+        public void onChangeThrottled() {
+            initTasksList(getActivity().getIntent());
         }
     };
-
-    public ListFragment() {
-        mContentObserver.addModelChangeListener(mModelChangeListener);
-    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {

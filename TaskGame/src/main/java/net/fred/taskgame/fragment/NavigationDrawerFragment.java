@@ -38,10 +38,6 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.AdapterView.OnItemLongClickListener;
 import android.widget.ListView;
 
-import com.raizlabs.android.dbflow.runtime.FlowContentObserver;
-import com.raizlabs.android.dbflow.structure.BaseModel;
-import com.raizlabs.android.dbflow.structure.Model;
-
 import net.fred.taskgame.R;
 import net.fred.taskgame.activity.MainActivity;
 import net.fred.taskgame.activity.SettingsActivity;
@@ -55,6 +51,7 @@ import net.fred.taskgame.utils.DbHelper;
 import net.fred.taskgame.utils.Display;
 import net.fred.taskgame.utils.Navigation;
 import net.fred.taskgame.utils.PrefUtils;
+import net.fred.taskgame.utils.ThrottledFlowContentObserver;
 import net.fred.taskgame.view.NonScrollableListView;
 
 import java.util.ArrayList;
@@ -86,24 +83,12 @@ public class NavigationDrawerFragment extends Fragment {
     private int listViewPosition;
     private int listViewPositionOffset;
 
-    private FlowContentObserver mContentObserver = new FlowContentObserver();
-    private FlowContentObserver.OnModelStateChangedListener mModelChangeListener = new FlowContentObserver.OnModelStateChangedListener() {
+    private ThrottledFlowContentObserver mContentObserver = new ThrottledFlowContentObserver(100) {
         @Override
-        public void onModelStateChanged(Class<? extends Model> aClass, BaseModel.Action action) {
-            if (getActivity() != null) {
-                getActivity().runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        init();
-                    }
-                });
-            }
+        public void onChangeThrottled() {
+            init();
         }
     };
-
-    public NavigationDrawerFragment() {
-        mContentObserver.addModelChangeListener(mModelChangeListener);
-    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
