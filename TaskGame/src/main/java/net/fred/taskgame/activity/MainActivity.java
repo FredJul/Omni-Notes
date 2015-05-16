@@ -44,15 +44,11 @@ import net.fred.taskgame.fragment.DetailFragment;
 import net.fred.taskgame.fragment.ListFragment;
 import net.fred.taskgame.fragment.NavigationDrawerFragment;
 import net.fred.taskgame.fragment.SketchFragment;
-import net.fred.taskgame.model.Attachment;
 import net.fred.taskgame.model.Category;
 import net.fred.taskgame.model.Task;
 import net.fred.taskgame.utils.Constants;
 import net.fred.taskgame.utils.DbHelper;
 import net.fred.taskgame.utils.PrefUtils;
-
-import java.util.ArrayList;
-import java.util.HashMap;
 
 import de.keyboardsurfer.android.widget.crouton.Crouton;
 import de.keyboardsurfer.android.widget.crouton.Style;
@@ -74,24 +70,17 @@ public class MainActivity extends BaseActivity implements OnDateSetListener, OnT
     private ViewGroup croutonViewContainer;
     private Toolbar toolbar;
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        init();
-        initUI();
-    }
-
-    private void initUI() {
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeButtonEnabled(true);
-    }
 
-    private void init() {
+
         mFragmentManager = getSupportFragmentManager();
 
         NavigationDrawerFragment mNavigationDrawerFragment = (NavigationDrawerFragment) mFragmentManager.findFragmentById(R.id.navigation_drawer);
@@ -108,7 +97,6 @@ public class MainActivity extends BaseActivity implements OnDateSetListener, OnT
         // Handling of Intent actions
         handleIntents();
     }
-
 
     @Override
     public void onLowMemory() {
@@ -159,12 +147,6 @@ public class MainActivity extends BaseActivity implements OnDateSetListener, OnT
             ((ListFragment) f).commitPending();
         }
     }
-
-    public void initNavigationDrawer() {
-        Fragment f = checkFragmentInstance(R.id.navigation_drawer, NavigationDrawerFragment.class);
-        if (f != null) ((NavigationDrawerFragment) f).init();
-    }
-
 
     /**
      * Checks if allocated fragment is of the required type and then returns it or returns null
@@ -378,60 +360,6 @@ public class MainActivity extends BaseActivity implements OnDateSetListener, OnT
         }
 
         animateBurger(ARROW);
-    }
-
-
-    /**
-     * Task sharing
-     */
-    public void shareTaskNote(Task task) {
-
-        String titleText = task.title;
-
-        String contentText = titleText
-                + System.getProperty("line.separator")
-                + task.content;
-
-
-        Intent shareIntent = new Intent();
-        // Prepare sharing intent with only text
-        if (task.getAttachmentsList().size() == 0) {
-            shareIntent.setAction(Intent.ACTION_SEND);
-            shareIntent.setType("text/plain");
-            shareIntent.putExtra(Intent.EXTRA_SUBJECT, titleText);
-            shareIntent.putExtra(Intent.EXTRA_TEXT, contentText);
-
-            // Intent with single image attachment
-        } else if (task.getAttachmentsList().size() == 1) {
-            shareIntent.setAction(Intent.ACTION_SEND);
-            shareIntent.setType(task.getAttachmentsList().get(0).mimeType);
-            shareIntent.putExtra(Intent.EXTRA_STREAM, task.getAttachmentsList().get(0).uri);
-            shareIntent.putExtra(Intent.EXTRA_SUBJECT, titleText);
-            shareIntent.putExtra(Intent.EXTRA_TEXT, contentText);
-
-            // Intent with multiple images
-        } else if (task.getAttachmentsList().size() > 1) {
-            shareIntent.setAction(Intent.ACTION_SEND_MULTIPLE);
-            ArrayList<Uri> uris = new ArrayList<>();
-            // A check to decide the mime type of attachments to share is done here
-            HashMap<String, Boolean> mimeTypes = new HashMap<>();
-            for (Attachment attachment : task.getAttachmentsList()) {
-                uris.add(attachment.uri);
-                mimeTypes.put(attachment.mimeType, true);
-            }
-            // If many mime types are present a general type is assigned to intent
-            if (mimeTypes.size() > 1) {
-                shareIntent.setType("*/*");
-            } else {
-                shareIntent.setType((String) mimeTypes.keySet().toArray()[0]);
-            }
-
-            shareIntent.putParcelableArrayListExtra(Intent.EXTRA_STREAM, uris);
-            shareIntent.putExtra(Intent.EXTRA_SUBJECT, titleText);
-            shareIntent.putExtra(Intent.EXTRA_TEXT, contentText);
-        }
-
-        startActivity(Intent.createChooser(shareIntent, getResources().getString(R.string.share_message_chooser)));
     }
 
     public void showMessage(int messageId, Style style) {

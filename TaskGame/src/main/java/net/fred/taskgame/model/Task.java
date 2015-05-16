@@ -17,6 +17,8 @@
 package net.fred.taskgame.model;
 
 import android.content.Context;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Parcel;
 import android.os.Parcelable;
 
@@ -28,10 +30,12 @@ import com.raizlabs.android.dbflow.sql.builder.Condition;
 import com.raizlabs.android.dbflow.sql.language.Select;
 import com.raizlabs.android.dbflow.structure.BaseModel;
 
+import net.fred.taskgame.R;
 import net.fred.taskgame.utils.EqualityChecker;
 import net.fred.taskgame.utils.date.DateHelper;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 @Table(databaseName = AppDatabase.NAME)
@@ -194,6 +198,54 @@ public class Task extends BaseModel implements Parcelable {
         return DateHelper.getDateTimeShort(mContext, alarmDate);
     }
 
+    public void share(Context context) {
+
+        String titleText = title;
+        String contentText = titleText
+                + System.getProperty("line.separator")
+                + content;
+
+
+        Intent shareIntent = new Intent();
+        // Prepare sharing intent with only text
+        if (getAttachmentsList().size() == 0) {
+            shareIntent.setAction(Intent.ACTION_SEND);
+            shareIntent.setType("text/plain");
+            shareIntent.putExtra(Intent.EXTRA_SUBJECT, titleText);
+            shareIntent.putExtra(Intent.EXTRA_TEXT, contentText);
+
+            // Intent with single image attachment
+        } else if (getAttachmentsList().size() == 1) {
+            shareIntent.setAction(Intent.ACTION_SEND);
+            shareIntent.setType(getAttachmentsList().get(0).mimeType);
+            shareIntent.putExtra(Intent.EXTRA_STREAM, getAttachmentsList().get(0).uri);
+            shareIntent.putExtra(Intent.EXTRA_SUBJECT, titleText);
+            shareIntent.putExtra(Intent.EXTRA_TEXT, contentText);
+
+            // Intent with multiple images
+        } else if (getAttachmentsList().size() > 1) {
+            shareIntent.setAction(Intent.ACTION_SEND_MULTIPLE);
+            ArrayList<Uri> uris = new ArrayList<>();
+            // A check to decide the mime type of attachments to share is done here
+            HashMap<String, Boolean> mimeTypes = new HashMap<>();
+            for (Attachment attachment : getAttachmentsList()) {
+                uris.add(attachment.uri);
+                mimeTypes.put(attachment.mimeType, true);
+            }
+            // If many mime types are present a general type is assigned to intent
+            if (mimeTypes.size() > 1) {
+                shareIntent.setType("*/*");
+            } else {
+                shareIntent.setType((String) mimeTypes.keySet().toArray()[0]);
+            }
+
+            shareIntent.putParcelableArrayListExtra(Intent.EXTRA_STREAM, uris);
+            shareIntent.putExtra(Intent.EXTRA_SUBJECT, titleText);
+            shareIntent.putExtra(Intent.EXTRA_TEXT, contentText);
+        }
+
+        context.startActivity(Intent.createChooser(shareIntent, context.getResources().getString(R.string.share_message_chooser)));
+    }
 
     @Override
     public int describeContents() {

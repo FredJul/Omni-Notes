@@ -23,7 +23,6 @@ import android.graphics.ColorFilter;
 import android.graphics.LightingColorFilter;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
-import android.os.Build;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -81,7 +80,6 @@ public class NavDrawerCategoryAdapter extends BaseAdapter {
 
             holder.imgIcon = (ImageView) convertView.findViewById(R.id.icon);
             holder.txtTitle = (TextView) convertView.findViewById(R.id.title);
-            holder.count = (android.widget.TextView) convertView.findViewById(R.id.count);
             convertView.setTag(holder);
         } else {
             holder = (NoteDrawerCategoryAdapterViewHolder) convertView.getTag();
@@ -102,20 +100,10 @@ public class NavDrawerCategoryAdapter extends BaseAdapter {
         if (category.color != null && category.color.length() > 0) {
             Drawable img = mActivity.getResources().getDrawable(R.drawable.square);
             ColorFilter cf = new LightingColorFilter(Color.parseColor("#000000"), Integer.parseInt(category.color));
-            // Before API 16 the object is mutable yet
-            if (Build.VERSION.SDK_INT >= 16) {
                 img.mutate().setColorFilter(cf);
-            } else {
-                img.setColorFilter(cf);
-            }
             holder.imgIcon.setImageDrawable(img);
             int padding = 12;
             holder.imgIcon.setPadding(padding, padding, padding, padding);
-        }
-
-        // Sets category count if set in preferences
-        if (PrefUtils.getBoolean("settings_show_category_count", false)) {
-            holder.count.setText(String.valueOf(category.count));
         }
 
         return convertView;
@@ -151,5 +139,4 @@ public class NavDrawerCategoryAdapter extends BaseAdapter {
 class NoteDrawerCategoryAdapterViewHolder {
     ImageView imgIcon;
     TextView txtTitle;
-    android.widget.TextView count;
 }

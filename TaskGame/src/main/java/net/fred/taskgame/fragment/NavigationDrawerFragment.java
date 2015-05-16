@@ -38,11 +38,16 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.AdapterView.OnItemLongClickListener;
 import android.widget.ListView;
 
+import com.raizlabs.android.dbflow.runtime.FlowContentObserver;
+import com.raizlabs.android.dbflow.structure.BaseModel;
+import com.raizlabs.android.dbflow.structure.Model;
+
 import net.fred.taskgame.R;
 import net.fred.taskgame.activity.MainActivity;
 import net.fred.taskgame.activity.SettingsActivity;
 import net.fred.taskgame.model.Category;
 import net.fred.taskgame.model.NavigationItem;
+import net.fred.taskgame.model.Task;
 import net.fred.taskgame.model.adapters.NavDrawerAdapter;
 import net.fred.taskgame.model.adapters.NavDrawerCategoryAdapter;
 import net.fred.taskgame.utils.CroutonHelper;
@@ -81,6 +86,24 @@ public class NavigationDrawerFragment extends Fragment {
     private int listViewPosition;
     private int listViewPositionOffset;
 
+    private FlowContentObserver mContentObserver = new FlowContentObserver();
+    private FlowContentObserver.OnModelStateChangedListener mModelChangeListener = new FlowContentObserver.OnModelStateChangedListener() {
+        @Override
+        public void onModelStateChanged(Class<? extends Model> aClass, BaseModel.Action action) {
+            if (getActivity() != null) {
+                getActivity().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        init();
+                    }
+                });
+            }
+        }
+    };
+
+    public NavigationDrawerFragment() {
+        mContentObserver.addModelChangeListener(mModelChangeListener);
+    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -97,15 +120,27 @@ public class NavigationDrawerFragment extends Fragment {
                 listViewPositionOffset = savedInstanceState.getInt("listViewPositionOffset");
             }
         }
+
+        // registers for callbacks from the specified tables
+        mContentObserver.registerForContentChanges(inflater.getContext(), Task.class);
+        mContentObserver.registerForContentChanges(inflater.getContext(), Category.class);
+
         return inflater.inflate(R.layout.fragment_navigation_drawer, container, false);
     }
 
+    @Override
+    public void onDestroyView() {
+        mContentObserver.unregisterForContentChanges(getView().getContext());
+
+        super.onDestroyView();
+    }
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         mActivity = (MainActivity) getActivity();
-        //prefs = mActivity.prefs;
+
+        init();
     }
 
 
@@ -130,7 +165,7 @@ public class NavigationDrawerFragment extends Fragment {
     /**
      * Initialization of compatibility navigation drawer
      */
-    public void init() {
+    private void init() {
 
         mDrawerLayout = (DrawerLayout) mActivity.findViewById(R.id.drawer_layout);
         mDrawerLayout.setFocusableInTouchMode(false);
@@ -152,8 +187,7 @@ public class NavigationDrawerFragment extends Fragment {
                 mDrawerLayout,
                 getMainActivity().getToolbar(),
                 R.string.drawer_open,
-                R.string.drawer_close
-        ) {
+                R.string.drawer_close) {
             public void onDrawerClosed(View view) {
                 // Saves the scrolling of the categories list
                 refreshListScrollPosition();

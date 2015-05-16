@@ -41,9 +41,6 @@ public class Category extends BaseModel implements Parcelable {
     @Column
     @Expose
     public String color = "";
-    @Column
-    @Expose
-    public int count;
 
     public Category() {
     }
@@ -53,7 +50,6 @@ public class Category extends BaseModel implements Parcelable {
         name = in.readString();
         description = in.readString();
         color = in.readString();
-        count = in.readInt();
     }
 
     @Override
@@ -68,7 +64,6 @@ public class Category extends BaseModel implements Parcelable {
         parcel.writeString(name);
         parcel.writeString(description);
         parcel.writeString(color);
-        parcel.writeInt(count);
     }
 
 

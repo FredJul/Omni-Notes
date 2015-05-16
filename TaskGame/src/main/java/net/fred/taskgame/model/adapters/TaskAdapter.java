@@ -46,7 +46,6 @@ import net.fred.taskgame.utils.PrefUtils;
 import net.fred.taskgame.utils.TextHelper;
 import net.fred.taskgame.view.SquareImageView;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.RejectedExecutionException;
 
@@ -54,9 +53,7 @@ import java.util.concurrent.RejectedExecutionException;
 public class TaskAdapter extends ArrayAdapter<Task> implements Insertable {
 
     private final Activity mActivity;
-
-
-    private List<Task> mTasks = new ArrayList<>();
+    private final List<Task> mTasks;
     private final SparseBooleanArray mSelectedItems = new SparseBooleanArray();
     private final LayoutInflater mInflater;
 
@@ -67,6 +64,36 @@ public class TaskAdapter extends ArrayAdapter<Task> implements Insertable {
         this.mTasks = tasks;
 
         mInflater = mActivity.getLayoutInflater();
+    }
+
+    public List<Task> getTasks() {
+        return mTasks;
+    }
+
+    public void setTasks(List<Task> tasks) {
+        mTasks.clear();
+        mTasks.addAll(tasks);
+        notifyDataSetChanged();
+    }
+
+    /**
+     * Replaces tasks
+     */
+    public void replace(Task task, int index) {
+        if (mTasks.indexOf(task) != -1) {
+            mTasks.remove(index);
+        } else {
+            index = mTasks.size();
+        }
+        mTasks.add(index, task);
+
+        notifyDataSetChanged();
+    }
+
+
+    @Override
+    public void add(int i, @NonNull Object o) {
+        insert((Task) o, i);
     }
 
     @Override
@@ -270,24 +297,5 @@ public class TaskAdapter extends ArrayAdapter<Task> implements Insertable {
                 v.findViewById(R.id.category_marker).setBackgroundColor(0);
             }
         }
-    }
-
-
-    /**
-     * Replaces tasks
-     */
-    public void replace(Task task, int index) {
-        if (mTasks.indexOf(task) != -1) {
-            mTasks.remove(index);
-        } else {
-            index = mTasks.size();
-        }
-        mTasks.add(index, task);
-    }
-
-
-    @Override
-    public void add(int i, @NonNull Object o) {
-        insert((Task) o, i);
     }
 }

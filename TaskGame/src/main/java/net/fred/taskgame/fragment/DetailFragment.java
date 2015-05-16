@@ -1341,7 +1341,7 @@ public class DetailFragment extends Fragment implements
     private void shareTask() {
         mTask.title = getTaskTitle();
         mTask.content = getTaskContent();
-        getMainActivity().shareTaskNote(mTask);
+        mTask.share(getActivity());
     }
 
     /**

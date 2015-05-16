@@ -24,9 +24,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Color;
-import android.graphics.drawable.AnimationDrawable;
 import android.os.AsyncTask;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.support.annotation.NonNull;
@@ -56,13 +54,15 @@ import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
-import android.widget.TextView;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.getbase.floatingactionbutton.AddFloatingActionButton;
 import com.getbase.floatingactionbutton.FloatingActionsMenu;
 import com.nhaarman.listviewanimations.itemmanipulation.DynamicListView;
 import com.nhaarman.listviewanimations.itemmanipulation.swipedismiss.OnDismissCallback;
+import com.raizlabs.android.dbflow.runtime.FlowContentObserver;
+import com.raizlabs.android.dbflow.structure.BaseModel;
+import com.raizlabs.android.dbflow.structure.Model;
 
 import net.fred.taskgame.MainApplication;
 import net.fred.taskgame.R;
@@ -70,6 +70,7 @@ import net.fred.taskgame.activity.BaseActivity;
 import net.fred.taskgame.activity.CategoryActivity;
 import net.fred.taskgame.activity.MainActivity;
 import net.fred.taskgame.async.DeleteNoteTask;
+import net.fred.taskgame.model.Attachment;
 import net.fred.taskgame.model.Category;
 import net.fred.taskgame.model.Task;
 import net.fred.taskgame.model.adapters.NavDrawerCategoryAdapter;
@@ -81,9 +82,9 @@ import net.fred.taskgame.utils.BitmapHelper;
 import net.fred.taskgame.utils.Constants;
 import net.fred.taskgame.utils.CroutonHelper;
 import net.fred.taskgame.utils.DbHelper;
-import net.fred.taskgame.utils.Display;
 import net.fred.taskgame.utils.Navigation;
 import net.fred.taskgame.utils.PrefUtils;
+import net.fred.taskgame.utils.UiUtils;
 import net.fred.taskgame.view.InterceptorLinearLayout;
 import net.fred.taskgame.view.UndoBarController;
 
@@ -109,8 +110,6 @@ public class ListFragment extends Fragment implements OnViewTouchedListener, Und
     private SearchView searchView;
     private MenuItem searchMenuItem;
     private Menu menu;
-    private TextView emptyListItem;
-    private AnimationDrawable jinglesAnimation;
     private int listViewPosition;
     private int listViewPositionOffset;
     private android.support.v7.view.ActionMode actionMode;
@@ -127,7 +126,6 @@ public class ListFragment extends Fragment implements OnViewTouchedListener, Und
     // Search variables
     private String searchQuery;
     private boolean goBackOnToggleSearchLabel = false;
-    private TextView listFooter;
     private boolean searchLabelActive = false;
 
     private TaskAdapter taskAdapter;
@@ -137,7 +135,26 @@ public class ListFragment extends Fragment implements OnViewTouchedListener, Und
     private FloatingActionsMenu fab;
     private boolean fabAllowed;
     private boolean fabHidden = true;
+    private boolean fabExpanded = false;
 
+    private FlowContentObserver mContentObserver = new FlowContentObserver();
+    private FlowContentObserver.OnModelStateChangedListener mModelChangeListener = new FlowContentObserver.OnModelStateChangedListener() {
+        @Override
+        public void onModelStateChanged(Class<? extends Model> aClass, BaseModel.Action action) {
+            if (getActivity() != null) {
+                getActivity().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        initTasksList(getActivity().getIntent());
+                    }
+                });
+            }
+        }
+    };
+
+    public ListFragment() {
+        mContentObserver.addModelChangeListener(mModelChangeListener);
+    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -157,9 +174,27 @@ public class ListFragment extends Fragment implements OnViewTouchedListener, Und
             }
             keepActionMode = false;
         }
-        return inflater.inflate(R.layout.fragment_list, container, false);
+        View layout = inflater.inflate(R.layout.fragment_list, container, false);
+
+        // List view initialization
+        initListView(layout);
+
+        // registers for callbacks from the specified tables
+        mContentObserver.registerForContentChanges(inflater.getContext(), Task.class);
+        mContentObserver.registerForContentChanges(inflater.getContext(), Category.class);
+        mContentObserver.registerForContentChanges(inflater.getContext(), Attachment.class);
+
+        return layout;
     }
 
+    @Override
+    public void onDestroyView() {
+        mContentObserver.unregisterForContentChanges(getView().getContext());
+        list = null;
+        taskAdapter = null;
+
+        super.onDestroyView();
+    }
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
@@ -170,21 +205,15 @@ public class ListFragment extends Fragment implements OnViewTouchedListener, Und
             getMainActivity().navigationTmp = savedInstanceState.getString("navigationTmp");
         }
 
-        // Easter egg initialization
-        initEasterEgg();
-
-        // Listview initialization
-        initListView();
-
         initFab();
 
         // Activity title initialization
         initTitle();
 
         ubc = new UndoBarController(getActivity().findViewById(R.id.undobar), this);
-    }
 
-    boolean fabExpanded = false;
+        initTasksList(getActivity().getIntent());
+    }
 
     private void initFab() {
         fab = (FloatingActionsMenu) getActivity().findViewById(R.id.fab);
@@ -269,45 +298,9 @@ public class ListFragment extends Fragment implements OnViewTouchedListener, Und
         getMainActivity().setActionBarTitle(title.toString());
     }
 
-
-    /**
-     * Starts a little animation on Mr.Jingles!
-     */
-    private void initEasterEgg() {
-        emptyListItem = (TextView) getActivity().findViewById(R.id.empty_list);
-        emptyListItem.setOnClickListener(new OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
-                if (jinglesAnimation == null) {
-                    jinglesAnimation = (AnimationDrawable) emptyListItem.getCompoundDrawables()[1];
-                    emptyListItem.post(new Runnable() {
-                        public void run() {
-                            if (jinglesAnimation != null) jinglesAnimation.start();
-                        }
-                    });
-                } else {
-                    stopJingles();
-                }
-            }
-        });
-    }
-
-
-    private void stopJingles() {
-        if (jinglesAnimation != null) {
-            jinglesAnimation.stop();
-            jinglesAnimation = null;
-            emptyListItem.setCompoundDrawablesWithIntrinsicBounds(0, R.animator.jingles_animation, 0, 0);
-
-        }
-    }
-
-
     @Override
     public void onPause() {
         super.onPause();
-        stopJingles();
         Crouton.cancelAllCroutons();
 
         // Clears data structures
@@ -343,15 +336,10 @@ public class ListFragment extends Fragment implements OnViewTouchedListener, Und
         }
     }
 
-
-    @SuppressWarnings("static-access")
     @Override
     public void onResume() {
         super.onResume();
-        initTasksList(getActivity().getIntent());
 
-        // Navigation drawer initialization to ensure data refresh
-        getMainActivity().initNavigationDrawer();
         // Removes navigation drawer forced closed status
         if (getMainActivity().getDrawerLayout() != null) {
             getMainActivity().getDrawerLayout().setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
@@ -527,28 +515,19 @@ public class ListFragment extends Fragment implements OnViewTouchedListener, Und
     /**
      * Tasks list initialization. Data, actions and callback are defined here.
      */
-    private void initListView() {
-        list = (DynamicListView) getActivity().findViewById(R.id.list);
+    private void initListView(View layout) {
+        Context c = layout.getContext();
+        list = (DynamicListView) layout.findViewById(R.id.list);
 
         list.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
         list.setItemsCanFocus(false);
 
-        // If device runs KitKat a footer is added to list to avoid
-        // navigation bar transparency covering items
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-            int navBarHeight = Display.getNavigationBarHeightKitkat(getActivity());
-            listFooter = new TextView(getActivity().getApplicationContext());
-            listFooter.setHeight(navBarHeight);
-            // To avoid useless events on footer
-            listFooter.setOnClickListener(null);
-            list.addFooterView(listFooter);
-        }
+        UiUtils.addEmptyFooterView(list, 50);
 
         // Note long click to start CAB mode
         list.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
             public boolean onItemLongClick(AdapterView<?> arg0, View view, int position, long arg3) {
-                if (view.equals(listFooter)) return true;
                 if (getActionMode() != null) {
                     return false;
                 }
@@ -564,7 +543,6 @@ public class ListFragment extends Fragment implements OnViewTouchedListener, Und
         list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> arg0, View view, int position, long arg3) {
-                if (view.equals(listFooter)) return;
                 if (getActionMode() == null) {
                     editNote(taskAdapter.getItem(position), view);
                     return;
@@ -575,8 +553,40 @@ public class ListFragment extends Fragment implements OnViewTouchedListener, Und
             }
         });
 
-        ((InterceptorLinearLayout) getActivity().findViewById(R.id.list_root))
+        ((InterceptorLinearLayout) layout.findViewById(R.id.list_root))
                 .setOnViewTouchedListener(this);
+
+        list.enableSwipeToDismiss(new OnDismissCallback() {
+            @Override
+            public void onDismiss(@NonNull ViewGroup viewGroup, @NonNull int[] reverseSortedPositions) {
+
+                // Avoids conflicts with action mode
+                finishActionMode();
+
+                for (int position : reverseSortedPositions) {
+                    Task task;
+                    try {
+                        task = taskAdapter.getItem(position);
+                    } catch (IndexOutOfBoundsException e) {
+                        continue;
+                    }
+                    getSelectedTasks().add(task);
+
+                    // Depending on settings and note status this action will...
+                    // ...restore
+                    if (Navigation.checkNavigation(Navigation.TRASH)) {
+                        trashTasks(false);
+                    }
+                    // ...removes category
+                    else if (Navigation.checkNavigation(Navigation.CATEGORY)) {
+                        categorizeTasksExecute(null);
+                    } else {
+                        trashTasks(true);
+                    }
+                }
+            }
+        });
+        list.setEmptyView(layout.findViewById(R.id.empty_list));
     }
 
     private ImageView getZoomListItemView(View view, Task task) {
@@ -861,8 +871,6 @@ public class ListFragment extends Fragment implements OnViewTouchedListener, Und
                 task.setCategory(DbHelper.getCategory(tagId));
             } catch (NumberFormatException e) {
             }
-        } else {
-
         }
 
         // Current list scrolling position is saved to be restored later
@@ -886,7 +894,6 @@ public class ListFragment extends Fragment implements OnViewTouchedListener, Und
                 switch (resultCode) {
                     case Activity.RESULT_OK:
                         getMainActivity().showMessage(R.string.category_saved, CroutonHelper.CONFIRM);
-                        getMainActivity().initNavigationDrawer();
                         break;
                     case Activity.RESULT_FIRST_USER:
                         getMainActivity().showMessage(R.string.category_deleted, CroutonHelper.ALERT);
@@ -1027,45 +1034,14 @@ public class ListFragment extends Fragment implements OnViewTouchedListener, Und
     }
 
     private void onTasksLoaded(List<Task> tasks) {
-        taskAdapter = new TaskAdapter(getActivity(), tasks);
+        if (taskAdapter == null) {
+            taskAdapter = new TaskAdapter(getActivity(), tasks);
+            list.setAdapter(taskAdapter);
+        } else {
+            taskAdapter.setTasks(tasks);
+        }
 
-        list.enableSwipeToDismiss(new OnDismissCallback() {
-            @Override
-            public void onDismiss(@NonNull ViewGroup viewGroup, @NonNull int[] reverseSortedPositions) {
-
-                // Avoids conflicts with action mode
-                finishActionMode();
-
-                for (int position : reverseSortedPositions) {
-                    Task task;
-                    try {
-                        task = taskAdapter.getItem(position);
-                    } catch (IndexOutOfBoundsException e) {
-
-                        continue;
-                    }
-                    getSelectedTasks().add(task);
-
-                    // Depending on settings and note status this action will...
-                    // ...restore
-                    if (Navigation.checkNavigation(Navigation.TRASH)) {
-                        trashTasks(false);
-                    }
-                    // ...removes category
-                    else if (Navigation.checkNavigation(Navigation.CATEGORY)) {
-                        categorizeTasksExecute(null);
-                    } else {
-                        trashTasks(true);
-                    }
-                }
-            }
-        });
-        list.setAdapter(taskAdapter);
-
-        // Replace listview with Mr. Jingles if it is empty
-        if (tasks.size() == 0) list.setEmptyView(getActivity().findViewById(R.id.empty_list));
-
-        // Restores listview position when turning back to list
+        // Restores list view position when turning back to list
         if (list != null && tasks.size() > 0) {
             if (list.getCount() > listViewPosition) {
                 list.setSelectionFromTop(listViewPosition, listViewPositionOffset);
@@ -1118,7 +1094,6 @@ public class ListFragment extends Fragment implements OnViewTouchedListener, Und
         } else {
             getSelectedTasks().clear();
         }
-        getMainActivity().initNavigationDrawer();
     }
 
     private android.support.v7.view.ActionMode getActionMode() {
@@ -1200,14 +1175,8 @@ public class ListFragment extends Fragment implements OnViewTouchedListener, Und
 
         finishActionMode();
 
-        // If list is empty again Mr Jingles will appear again
-        if (taskAdapter.getCount() == 0)
-            list.setEmptyView(getActivity().findViewById(R.id.empty_list));
-
         // Advice to user
         getMainActivity().showMessage(R.string.task_deleted, CroutonHelper.ALERT);
-
-        getMainActivity().initNavigationDrawer();
     }
 
     /**
@@ -1259,7 +1228,6 @@ public class ListFragment extends Fragment implements OnViewTouchedListener, Und
         dialog.show();
     }
 
-
     private void categorizeTasksExecute(Category category) {
         for (Task task : getSelectedTasks()) {
             // If is restore it will be done immediately, otherwise the undo bar
@@ -1287,18 +1255,6 @@ public class ListFragment extends Fragment implements OnViewTouchedListener, Und
 //		taskAdapter.clearSelectedItems();
 //		list.clearChoices();
         finishActionMode();
-
-        // Refreshes list
-//		list.invalidateViews();
-
-        // If list is empty again Mr Jingles will appear again
-        if (taskAdapter.getCount() == 0)
-            list.setEmptyView(getActivity().findViewById(R.id.empty_list));
-
-        // Refreshes navigation drawer if is set to show categories count numbers
-        if (PrefUtils.getBoolean("settings_show_category_count", false)) {
-            getMainActivity().initNavigationDrawer();
-        }
 
         if (getActionMode() != null) {
             getActionMode().finish();
@@ -1334,7 +1290,7 @@ public class ListFragment extends Fragment implements OnViewTouchedListener, Und
     public void onUndo(Parcelable undoToken) {
         // Cycles removed items to re-insert into adapter
         for (Task task : modifiedTasks) {
-            //   Manages uncategorize or archive  undo
+            // Manages uncategorize or archive undo
             if ((undoCategorize && !Navigation.checkNavigationCategory(undoCategoryMap.get(task)))) {
                 if (undoCategorize) {
                     task.setCategory(undoCategoryMap.get(task));
@@ -1374,10 +1330,6 @@ public class ListFragment extends Fragment implements OnViewTouchedListener, Und
                     trashTask(task, true);
                 else if (undoCategorize) categorizeNote(task, undoCategorizeCategory);
             }
-            // Refreshes navigation drawer if is set to show categories count numbers
-//            if (prefs.getBoolean("settings_show_category_count", false)) {
-            getMainActivity().initNavigationDrawer();
-//            }
 
             undoTrash = false;
             undoCategorize = false;
@@ -1403,7 +1355,7 @@ public class ListFragment extends Fragment implements OnViewTouchedListener, Und
     private void share() {
         // Only one note should be selected to perform sharing but they'll be cycled anyhow
         for (final Task task : getSelectedTasks()) {
-            getMainActivity().shareTaskNote(task);
+            task.share(getActivity());
         }
 
         getSelectedTasks().clear();
