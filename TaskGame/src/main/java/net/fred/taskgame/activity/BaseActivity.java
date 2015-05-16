@@ -212,10 +212,10 @@ public class BaseActivity extends BaseGameActivity implements LocationListener {
                         if (syncedData.lastSyncDate > PrefUtils.getLong(PrefUtils.PREF_LAST_SYNC_DATE, -1)) {
                             Delete.tables(Category.class, Task.class);
                             for (Category cat : syncedData.categories) {
-                                cat.save(false);
+                                cat.save();
                             }
                             for (Task task : syncedData.tasks) {
-                                task.save(false);
+                                task.save();
                             }
                         }
                     } catch (Exception e) {

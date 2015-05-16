@@ -46,11 +46,11 @@ public class DbHelper {
                     .getInstance().getTimeInMillis());
         }
 
-        task.save(false);
+        task.save();
 
         for (Attachment attachment : task.getAttachmentsList()) {
             attachment.taskId = task.id;
-            attachment.save(false);
+            attachment.save();
         }
     }
 
@@ -154,7 +154,7 @@ public class DbHelper {
         // Delete task's attachments
         Delete.table(Attachment.class, Condition.column(Attachment$Table.TASKID).eq(task.id));
 
-        task.delete(true);
+        task.delete();
     }
 
     /**
@@ -163,7 +163,7 @@ public class DbHelper {
     public static void deleteAttachment(Attachment attachment) {
         // Attachment deletion from storage
         StorageHelper.delete(MainApplication.getContext(), attachment.uri.getPath());
-        attachment.delete(true);
+        attachment.delete();
     }
 
     /**
@@ -176,16 +176,16 @@ public class DbHelper {
         ConditionQueryBuilder<Task> queryBuilder = new ConditionQueryBuilder<>(Task.class);
 
         if (Navigation.checkNavigation(Navigation.TRASH)) {
-            queryBuilder.putCondition(Condition.column(Task$Table.ISTRASHED).is(1));
+            queryBuilder.addCondition(Condition.column(Task$Table.ISTRASHED).is(1));
         } else {
-            queryBuilder.putCondition(Condition.column(Task$Table.ISTRASHED).isNot(1));
+            queryBuilder.addCondition(Condition.column(Task$Table.ISTRASHED).isNot(1));
         }
 
         if (Navigation.checkNavigation(Navigation.CATEGORY)) {
-            queryBuilder.putCondition(Condition.column(Task$Table.CATEGORYID).eq(Navigation.getCategory()));
+            queryBuilder.addCondition(Condition.column(Task$Table.CATEGORYID).eq(Navigation.getCategory()));
         }
 
-        queryBuilder.putCondition(Condition.column(Task$Table.TITLE).like("%" + pattern + "%")).or(Condition.column(Task$Table.CONTENT).like("%" + pattern + "%"));
+        queryBuilder.addCondition(Condition.column(Task$Table.TITLE).like("%" + pattern + "%")).or(Condition.column(Task$Table.CONTENT).like("%" + pattern + "%"));
 
         return getTasks(queryBuilder);
     }
@@ -200,12 +200,12 @@ public class DbHelper {
     public static List<Task> getTasksWithReminder(boolean filterPastReminders) {
         ConditionQueryBuilder<Task> queryBuilder = new ConditionQueryBuilder<>(Task.class);
         if (filterPastReminders) {
-            queryBuilder.putCondition(Task$Table.ALARMDATE, ">=", Calendar.getInstance().getTimeInMillis());
+            queryBuilder.addCondition(Task$Table.ALARMDATE, ">=", Calendar.getInstance().getTimeInMillis());
         } else {
-            queryBuilder.putCondition(Condition.column(Task$Table.ALARMDATE).isNotNull());
+            queryBuilder.addCondition(Condition.column(Task$Table.ALARMDATE).isNotNull());
         }
 
-        queryBuilder.putCondition(Condition.column(Task$Table.ISTRASHED).isNot(1));
+        queryBuilder.addCondition(Condition.column(Task$Table.ISTRASHED).isNot(1));
         return getTasks(queryBuilder);
     }
 
@@ -219,8 +219,8 @@ public class DbHelper {
         ConditionQueryBuilder<Task> queryBuilder = new ConditionQueryBuilder<>(Task.class);
         try {
             int id = Integer.parseInt(categoryId);
-            queryBuilder.putCondition(Condition.column(Task$Table.CATEGORYID).eq(id));
-            queryBuilder.putCondition(Condition.column(Task$Table.ISTRASHED).isNot(1));
+            queryBuilder.addCondition(Condition.column(Task$Table.CATEGORYID).eq(id));
+            queryBuilder.addCondition(Condition.column(Task$Table.ISTRASHED).isNot(1));
             return getTasks(queryBuilder);
         } catch (NumberFormatException e) {
             return getAllTasks();
@@ -243,11 +243,11 @@ public class DbHelper {
 
 
     public static long getCategorizedCount(Category category) {
-        return Select.count(Task.class, Condition.column(Task$Table.CATEGORYID).eq(category.id));
+        return new Select().from(Task.class).where(Condition.column(Task$Table.CATEGORYID).eq(category.id)).count();
     }
 
     public static void deleteCategory(Category category) {
-        new Update().table(Task.class).set(Condition.column(Task$Table.CATEGORYID).is(null)).where(Condition.column(Task$Table.CATEGORYID).eq(category.id));
-        category.delete(true);
+        new Update(Task.class).set(Condition.column(Task$Table.CATEGORYID).is(null)).where(Condition.column(Task$Table.CATEGORYID).eq(category.id));
+        category.delete();
     }
 }

@@ -21,13 +21,15 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 import com.raizlabs.android.dbflow.annotation.Column;
+import com.raizlabs.android.dbflow.annotation.PrimaryKey;
 import com.raizlabs.android.dbflow.annotation.Table;
 import com.raizlabs.android.dbflow.structure.BaseModel;
 
-@Table
+@Table(databaseName = AppDatabase.NAME)
 public class Attachment extends BaseModel implements Parcelable {
 
-    @Column(columnType = Column.PRIMARY_KEY_AUTO_INCREMENT)
+    @Column
+    @PrimaryKey(autoincrement = true)
     public int id;
     @Column
     public int taskId;

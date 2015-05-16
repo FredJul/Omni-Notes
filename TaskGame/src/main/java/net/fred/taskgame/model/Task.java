@@ -22,6 +22,7 @@ import android.os.Parcelable;
 
 import com.google.gson.annotations.Expose;
 import com.raizlabs.android.dbflow.annotation.Column;
+import com.raizlabs.android.dbflow.annotation.PrimaryKey;
 import com.raizlabs.android.dbflow.annotation.Table;
 import com.raizlabs.android.dbflow.sql.builder.Condition;
 import com.raizlabs.android.dbflow.sql.language.Select;
@@ -33,10 +34,11 @@ import net.fred.taskgame.utils.date.DateHelper;
 import java.util.ArrayList;
 import java.util.List;
 
-@Table
+@Table(databaseName = AppDatabase.NAME)
 public class Task extends BaseModel implements Parcelable {
 
-    @Column(columnType = Column.PRIMARY_KEY_AUTO_INCREMENT)
+    @Column
+    @PrimaryKey(autoincrement = true)
     @Expose
     public int id;
     @Column
@@ -118,8 +120,7 @@ public class Task extends BaseModel implements Parcelable {
 
     public List<Attachment> getAttachmentsList() {
         if (mAttachmentsList == null) {
-            mAttachmentsList = Select.all(Attachment.class,
-                    Condition.column(Attachment$Table.TASKID).is(id));
+            mAttachmentsList = new Select().from(Attachment.class).where(Condition.column(Attachment$Table.TASKID).is(id)).queryList();
         }
 
         return mAttachmentsList;
@@ -137,7 +138,7 @@ public class Task extends BaseModel implements Parcelable {
         }
 
         if (mCategory == null) {
-            mCategory = Select.byId(Category.class, categoryId);
+            mCategory = new Select().from(Category.class).where(Condition.column(Category$Table.ID).is(categoryId)).querySingle();
         }
 
         return mCategory;
