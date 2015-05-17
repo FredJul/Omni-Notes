@@ -16,6 +16,8 @@
  */
 package net.fred.taskgame.utils;
 
+import android.database.sqlite.SQLiteDoneException;
+
 import com.raizlabs.android.dbflow.sql.QueryBuilder;
 import com.raizlabs.android.dbflow.sql.builder.Condition;
 import com.raizlabs.android.dbflow.sql.builder.ConditionQueryBuilder;
@@ -243,7 +245,12 @@ public class DbHelper {
 
 
     public static long getCategorizedCount(Category category) {
-        return new Select().from(Task.class).where(Condition.column(Task$Table.CATEGORYID).eq(category.id)).count();
+        try {
+            return new Select().from(Task.class).where(Condition.column(Task$Table.CATEGORYID).eq(category.id)).count();
+        } catch (SQLiteDoneException e) {
+            // I do not know why this happen when count=0
+            return 0;
+        }
     }
 
     public static void deleteCategoryAsync(Category category) {
