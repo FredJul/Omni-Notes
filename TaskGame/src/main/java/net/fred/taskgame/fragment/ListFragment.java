@@ -969,7 +969,7 @@ public class ListFragment extends Fragment implements OnViewTouchedListener, Und
                 String widgetId = intent.hasExtra(Constants.INTENT_WIDGET) ? intent.getExtras()
                         .get(Constants.INTENT_WIDGET).toString() : null;
                 if (widgetId != null) {
-                    int categoryId = PrefUtils.getInt(PrefUtils.PREF_WIDGET_PREFIX + widgetId, -1);
+                    long categoryId = PrefUtils.getLong(PrefUtils.PREF_WIDGET_PREFIX + widgetId, -1);
                     getMainActivity().navigationTmp = (categoryId != -1 ? String.valueOf(categoryId) : null);
                 }
                 intent.removeExtra(Constants.INTENT_WIDGET);

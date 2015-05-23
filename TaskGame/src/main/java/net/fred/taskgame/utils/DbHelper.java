@@ -239,7 +239,7 @@ public class DbHelper {
         return new Select().from(Category.class).where().groupBy(groupBy).orderBy("IFNULL(NULLIF(" + Category$Table.NAME + ", ''),'zzzzzzzz')").queryList();
     }
 
-    public static Category getCategory(int categoryId) {
+    public static Category getCategory(long categoryId) {
         return new Select().from(Category.class).where(Condition.column(Category$Table.ID).eq(categoryId)).querySingle();
     }
 

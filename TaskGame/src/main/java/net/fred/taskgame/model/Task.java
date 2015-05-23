@@ -24,11 +24,9 @@ import android.os.Parcelable;
 
 import com.google.gson.annotations.Expose;
 import com.raizlabs.android.dbflow.annotation.Column;
-import com.raizlabs.android.dbflow.annotation.PrimaryKey;
 import com.raizlabs.android.dbflow.annotation.Table;
 import com.raizlabs.android.dbflow.sql.builder.Condition;
 import com.raizlabs.android.dbflow.sql.language.Select;
-import com.raizlabs.android.dbflow.structure.BaseModel;
 
 import net.fred.taskgame.R;
 import net.fred.taskgame.utils.EqualityChecker;
@@ -39,12 +37,8 @@ import java.util.HashMap;
 import java.util.List;
 
 @Table(databaseName = AppDatabase.NAME)
-public class Task extends BaseModel implements Parcelable {
+public class Task extends AutoIncrementModel implements Parcelable {
 
-    @Column
-    @PrimaryKey(autoincrement = true)
-    @Expose
-    public int id;
     @Column
     @Expose
     public String title = "";
@@ -77,7 +71,7 @@ public class Task extends BaseModel implements Parcelable {
     public boolean isChecklist;
     @Column
     @Expose
-    int categoryId;
+    long categoryId;
 
     private transient Category mCategory;
     private transient List<Attachment> mAttachmentsList;
@@ -106,7 +100,7 @@ public class Task extends BaseModel implements Parcelable {
     }
 
     private Task(Parcel in) {
-        id = in.readInt();
+        id = in.readLong();
         title = in.readString();
         content = in.readString();
         creationDate = in.readLong();
@@ -117,7 +111,7 @@ public class Task extends BaseModel implements Parcelable {
         longitude = in.readDouble();
         address = in.readString();
         isChecklist = in.readInt() == 1;
-        categoryId = in.readInt();
+        categoryId = in.readLong();
         mCategory = in.readParcelable(Category.class.getClassLoader());
         in.readList(mAttachmentsList, Attachment.class.getClassLoader());
     }
@@ -254,7 +248,7 @@ public class Task extends BaseModel implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel parcel, int flags) {
-        parcel.writeInt(id);
+        parcel.writeLong(id);
         parcel.writeString(title);
         parcel.writeString(content);
         parcel.writeLong(creationDate);
@@ -265,7 +259,7 @@ public class Task extends BaseModel implements Parcelable {
         parcel.writeDouble(longitude);
         parcel.writeString(address);
         parcel.writeInt(isChecklist ? 1 : 0);
-        parcel.writeInt(categoryId);
+        parcel.writeLong(categoryId);
         parcel.writeParcelable(getCategory(), 0);
         parcel.writeList(getAttachmentsList());
     }

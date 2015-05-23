@@ -314,7 +314,7 @@ public class DetailFragment extends Fragment implements
             if (i.hasExtra(Constants.INTENT_WIDGET)) {
                 String widgetId = i.getExtras().get(Constants.INTENT_WIDGET).toString();
                 if (widgetId != null) {
-                    int categoryId = PrefUtils.getInt(PrefUtils.PREF_WIDGET_PREFIX + widgetId, -1);
+                    long categoryId = PrefUtils.getLong(PrefUtils.PREF_WIDGET_PREFIX + widgetId, -1);
                     if (categoryId != -1) {
                         try {
                             Category cat = DbHelper.getCategory(categoryId);

@@ -21,18 +21,13 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 import com.raizlabs.android.dbflow.annotation.Column;
-import com.raizlabs.android.dbflow.annotation.PrimaryKey;
 import com.raizlabs.android.dbflow.annotation.Table;
-import com.raizlabs.android.dbflow.structure.BaseModel;
 
 @Table(databaseName = AppDatabase.NAME)
-public class Attachment extends BaseModel implements Parcelable {
+public class Attachment extends AutoIncrementModel implements Parcelable {
 
     @Column
-    @PrimaryKey(autoincrement = true)
-    public int id;
-    @Column
-    public int taskId;
+    public long taskId;
     @Column
     public String name = "";
     @Column
@@ -48,8 +43,8 @@ public class Attachment extends BaseModel implements Parcelable {
     }
 
     private Attachment(Parcel in) {
-        id = in.readInt();
-        taskId = in.readInt();
+        id = in.readLong();
+        taskId = in.readLong();
         name = in.readString();
         size = in.readLong();
         length = in.readLong();
@@ -64,8 +59,8 @@ public class Attachment extends BaseModel implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel parcel, int flags) {
-        parcel.writeInt(id);
-        parcel.writeInt(taskId);
+        parcel.writeLong(id);
+        parcel.writeLong(taskId);
         parcel.writeString(name);
         parcel.writeLong(size);
         parcel.writeLong(length);

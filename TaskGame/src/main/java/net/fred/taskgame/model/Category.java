@@ -21,17 +21,11 @@ import android.os.Parcelable;
 
 import com.google.gson.annotations.Expose;
 import com.raizlabs.android.dbflow.annotation.Column;
-import com.raizlabs.android.dbflow.annotation.PrimaryKey;
 import com.raizlabs.android.dbflow.annotation.Table;
-import com.raizlabs.android.dbflow.structure.BaseModel;
 
 @Table(databaseName = AppDatabase.NAME)
-public class Category extends BaseModel implements Parcelable {
+public class Category extends AutoIncrementModel implements Parcelable {
 
-    @Column
-    @PrimaryKey(autoincrement = true)
-    @Expose
-    public int id;
     @Column
     @Expose
     public String name = "";
@@ -46,7 +40,7 @@ public class Category extends BaseModel implements Parcelable {
     }
 
     private Category(Parcel in) {
-        id = in.readInt();
+        id = in.readLong();
         name = in.readString();
         description = in.readString();
         color = in.readString();
@@ -60,7 +54,7 @@ public class Category extends BaseModel implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel parcel, int flags) {
-        parcel.writeInt(id);
+        parcel.writeLong(id);
         parcel.writeString(name);
         parcel.writeString(description);
         parcel.writeString(color);

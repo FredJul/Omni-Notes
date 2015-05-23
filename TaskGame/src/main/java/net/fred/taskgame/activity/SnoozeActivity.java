@@ -77,7 +77,7 @@ public class SnoozeActivity extends FragmentActivity implements OnReminderPicked
 
     private void removeNotification(Task task) {
         NotificationManager manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-        manager.cancel(task.id);
+        manager.cancel((int) task.id);
     }
 
     private void setAlarm(Task task, long newAlarm) {
@@ -88,7 +88,6 @@ public class SnoozeActivity extends FragmentActivity implements OnReminderPicked
         AlarmManager am = (AlarmManager) this.getSystemService(ALARM_SERVICE);
         am.set(AlarmManager.RTC_WAKEUP, newAlarm, sender);
     }
-
 
     @Override
     public void onReminderPicked(long reminder) {
