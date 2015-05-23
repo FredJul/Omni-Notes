@@ -437,7 +437,7 @@ public class DetailFragment extends Fragment implements
                 MaterialDialog.Builder builder = new MaterialDialog.Builder(getActivity());
                 builder.content(R.string.remove_location);
                 builder.positiveText(R.string.ok);
-                builder.callback(new MaterialDialog.SimpleCallback() {
+                builder.callback(new MaterialDialog.ButtonCallback() {
                     @Override
                     public void onPositive(MaterialDialog materialDialog) {
                         mTask.latitude = 0.;
@@ -497,7 +497,7 @@ public class DetailFragment extends Fragment implements
                     dialogBuilder
                             .content(R.string.delete_selected_image)
                             .negativeText(R.string.edit)
-                            .callback(new MaterialDialog.Callback() {
+                            .callback(new MaterialDialog.ButtonCallback() {
                                 @Override
                                 public void onPositive(MaterialDialog materialDialog) {
                                     mTask.getAttachmentsList().remove(position);
@@ -514,7 +514,7 @@ public class DetailFragment extends Fragment implements
                 } else {
                     dialogBuilder
                             .content(R.string.delete_selected_image)
-                            .callback(new MaterialDialog.SimpleCallback() {
+                            .callback(new MaterialDialog.ButtonCallback() {
                                 @Override
                                 public void onPositive(MaterialDialog materialDialog) {
                                     mTask.getAttachmentsList().remove(position);
@@ -548,7 +548,7 @@ public class DetailFragment extends Fragment implements
                 MaterialDialog dialog = new MaterialDialog.Builder(getActivity())
                         .content(R.string.remove_reminder)
                         .positiveText(R.string.ok)
-                        .callback(new MaterialDialog.SimpleCallback() {
+                        .callback(new MaterialDialog.ButtonCallback() {
                             @Override
                             public void onPositive(MaterialDialog materialDialog) {
                                 reminderDate = "";
@@ -694,7 +694,7 @@ public class DetailFragment extends Fragment implements
         final MaterialDialog dialog = new MaterialDialog.Builder(getActivity())
                 .customView(autoCompView, false)
                 .positiveText(R.string.use_current_location)
-                .callback(new MaterialDialog.SimpleCallback() {
+                .callback(new MaterialDialog.ButtonCallback() {
                     @Override
                     public void onPositive(MaterialDialog materialDialog) {
                         if (TextUtils.isEmpty(autoCompView.getText().toString())) {
@@ -919,9 +919,9 @@ public class DetailFragment extends Fragment implements
         keepCheckmarks.setChecked(PrefUtils.getBoolean(PrefUtils.PREF_KEEP_CHECKMARKS, true));
 
         new MaterialDialog.Builder(getActivity())
-                .customView(layout)
+                .customView(layout, false)
                 .positiveText(R.string.ok)
-                .callback(new MaterialDialog.SimpleCallback() {
+                .callback(new MaterialDialog.ButtonCallback() {
                     @Override
                     public void onPositive(MaterialDialog materialDialog) {
                         PrefUtils.putBoolean(PrefUtils.PREF_KEEP_CHECKED, keepChecked.isChecked());
@@ -984,10 +984,10 @@ public class DetailFragment extends Fragment implements
 
         final MaterialDialog dialog = new MaterialDialog.Builder(getActivity())
                 .title(R.string.categorize_as)
-                .adapter(new NavDrawerCategoryAdapter(getActivity(), categories))
+                .adapter(new NavDrawerCategoryAdapter(getActivity(), categories), null)
                 .positiveText(R.string.add_category)
                 .negativeText(R.string.remove_category)
-                .callback(new MaterialDialog.Callback() {
+                .callback(new MaterialDialog.ButtonCallback() {
                     @Override
                     public void onPositive(MaterialDialog dialog) {
                         Intent intent = new Intent(getActivity(), CategoryActivity.class);
@@ -1225,7 +1225,7 @@ public class DetailFragment extends Fragment implements
         new MaterialDialog.Builder(getActivity())
                 .content(R.string.delete_task_confirmation)
                 .positiveText(R.string.ok)
-                .callback(new MaterialDialog.SimpleCallback() {
+                .callback(new MaterialDialog.ButtonCallback() {
                     @Override
                     public void onPositive(MaterialDialog materialDialog) {
                         DeleteNoteTask deleteNoteTask = new DeleteNoteTask(MainApplication.getContext());
@@ -1464,6 +1464,7 @@ public class DetailFragment extends Fragment implements
 
         // Checks if user has left the app
         if (getActivity() != null) {
+            @SuppressWarnings("ResourceType")
             Animation mAnimation = AnimationUtils.loadAnimation(getActivity(), anim);
             mAnimation.setAnimationListener(new AnimationListener() {
                 @Override
@@ -1476,6 +1477,7 @@ public class DetailFragment extends Fragment implements
 
                 @Override
                 public void onAnimationEnd(Animation animation) {
+                    //noinspection ResourceType
                     v.setVisibility(visibility);
                 }
             });

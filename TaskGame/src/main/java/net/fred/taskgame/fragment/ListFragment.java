@@ -926,7 +926,7 @@ public class ListFragment extends Fragment implements OnViewTouchedListener, Und
         MaterialDialog dialog = new MaterialDialog.Builder(getActivity())
                 .content(R.string.empty_trash_confirmation)
                 .positiveText(R.string.ok)
-                .callback(new MaterialDialog.SimpleCallback() {
+                .callback(new MaterialDialog.ButtonCallback() {
                     @Override
                     public void onPositive(MaterialDialog materialDialog) {
                         for (int i = 0; i < taskAdapter.getCount(); i++) {
@@ -1136,7 +1136,7 @@ public class ListFragment extends Fragment implements OnViewTouchedListener, Und
         new MaterialDialog.Builder(getActivity())
                 .content(R.string.delete_task_confirmation)
                 .positiveText(R.string.ok)
-                .callback(new MaterialDialog.SimpleCallback() {
+                .callback(new MaterialDialog.ButtonCallback() {
                     @Override
                     public void onPositive(MaterialDialog materialDialog) {
                         deleteTasksExecute();
@@ -1184,11 +1184,11 @@ public class ListFragment extends Fragment implements OnViewTouchedListener, Und
 
         final MaterialDialog dialog = new MaterialDialog.Builder(getActivity())
                 .title(R.string.categorize_as)
-                .adapter(new NavDrawerCategoryAdapter(getActivity(), categories))
+                .adapter(new NavDrawerCategoryAdapter(getActivity(), categories), null)
                 .positiveText(R.string.add_category)
 //                .neutralText(R.string.cancel)
                 .negativeText(R.string.remove_category)
-                .callback(new MaterialDialog.Callback() {
+                .callback(new MaterialDialog.ButtonCallback() {
                     @Override
                     public void onPositive(MaterialDialog dialog) {
                         keepActionMode = true;
