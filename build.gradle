@@ -2,7 +2,6 @@
 buildscript {
     repositories {
         jcenter()
-        maven { url "https://raw.github.com/Raizlabs/maven-releases/master/releases" }
     }
 
     dependencies {
