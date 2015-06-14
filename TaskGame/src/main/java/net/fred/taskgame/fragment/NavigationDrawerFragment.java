@@ -19,6 +19,7 @@ package net.fred.taskgame.fragment;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.res.TypedArray;
 import android.os.Build;
 import android.os.Bundle;
@@ -37,6 +38,7 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.AdapterView.OnItemLongClickListener;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import net.fred.taskgame.R;
 import net.fred.taskgame.activity.MainActivity;
@@ -74,19 +76,29 @@ public class NavigationDrawerFragment extends Fragment {
     TypedArray mNavigationIconsSelectedArray;
     private NonScrollableListView mDrawerList;
     private NonScrollableListView mDrawerCategoriesList;
-    private View categoriesListHeader;
-    private View settingsView, settingsViewCat;
+    private View mCategoriesListHeader;
+    private View mSettingsView, mSettingsViewCat;
     private MainActivity mActivity;
     private CharSequence mTitle;
+    private TextView mCurrentPoints;
 
     // Categories list scrolling
-    private int listViewPosition;
-    private int listViewPositionOffset;
+    private int mListViewPosition;
+    private int mListViewPositionOffset;
 
     private ThrottledFlowContentObserver mContentObserver = new ThrottledFlowContentObserver(100) {
         @Override
         public void onChangeThrottled() {
             init();
+        }
+    };
+
+    private SharedPreferences.OnSharedPreferenceChangeListener mCurrentPointsObserver = new SharedPreferences.OnSharedPreferenceChangeListener() {
+        @Override
+        public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+            if (mCurrentPoints != null && PrefUtils.PREF_CURRENT_POINTS.equals(key)) {
+                mCurrentPoints.setText(String.valueOf(PrefUtils.getLong(PrefUtils.PREF_CURRENT_POINTS, 0)));
+            }
         }
     };
 
@@ -100,9 +112,9 @@ public class NavigationDrawerFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         if (savedInstanceState != null) {
-            if (savedInstanceState.containsKey("listViewPosition")) {
-                listViewPosition = savedInstanceState.getInt("listViewPosition");
-                listViewPositionOffset = savedInstanceState.getInt("listViewPositionOffset");
+            if (savedInstanceState.containsKey("mListViewPosition")) {
+                mListViewPosition = savedInstanceState.getInt("mListViewPosition");
+                mListViewPositionOffset = savedInstanceState.getInt("mListViewPositionOffset");
             }
         }
 
@@ -110,12 +122,15 @@ public class NavigationDrawerFragment extends Fragment {
         mContentObserver.registerForContentChanges(inflater.getContext(), Task.class);
         mContentObserver.registerForContentChanges(inflater.getContext(), Category.class);
 
+        PrefUtils.registerOnPrefChangeListener(mCurrentPointsObserver);
+
         return inflater.inflate(R.layout.fragment_navigation_drawer, container, false);
     }
 
     @Override
     public void onDestroyView() {
         mContentObserver.unregisterForContentChanges(getView().getContext());
+        PrefUtils.unregisterOnPrefChangeListener(mCurrentPointsObserver);
 
         super.onDestroyView();
     }
@@ -133,16 +148,16 @@ public class NavigationDrawerFragment extends Fragment {
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         refreshListScrollPosition();
-        outState.putInt("listViewPosition", listViewPosition);
-        outState.putInt("listViewPositionOffset", listViewPositionOffset);
+        outState.putInt("mListViewPosition", mListViewPosition);
+        outState.putInt("mListViewPositionOffset", mListViewPositionOffset);
     }
 
 
     private void refreshListScrollPosition() {
         if (mDrawerCategoriesList != null) {
-            listViewPosition = mDrawerCategoriesList.getFirstVisiblePosition();
+            mListViewPosition = mDrawerCategoriesList.getFirstVisiblePosition();
             View v = mDrawerCategoriesList.getChildAt(0);
-            listViewPositionOffset = (v == null) ? 0 : v.getTop();
+            mListViewPositionOffset = (v == null) ? 0 : v.getTop();
         }
     }
 
@@ -162,6 +177,9 @@ public class NavigationDrawerFragment extends Fragment {
             leftDrawer.setPadding(leftDrawer.getPaddingLeft(), leftDrawer.getPaddingTop(),
                     leftDrawer.getPaddingRight(), leftDrawerBottomPadding);
         }
+
+        mCurrentPoints = (TextView) getView().findViewById(R.id.currentPoints);
+        mCurrentPoints.setText(String.valueOf(PrefUtils.getLong(PrefUtils.PREF_CURRENT_POINTS, 0)));
 
         buildMainMenu();
         buildCategoriesMenu();
@@ -213,15 +231,15 @@ public class NavigationDrawerFragment extends Fragment {
         LayoutInflater inflater = (LayoutInflater) mActivity.getSystemService(Activity.LAYOUT_INFLATER_SERVICE);
 
         // Inflation of header view
-        if (categoriesListHeader == null) {
-            categoriesListHeader = inflater.inflate(R.layout.drawer_category_list_header, null);
+        if (mCategoriesListHeader == null) {
+            mCategoriesListHeader = inflater.inflate(R.layout.drawer_category_list_header, null);
         }
 
         // Inflation of Settings view
-        if (settingsView == null) {
-            settingsView = ((ViewStub) getActivity().findViewById(R.id.settings_placeholder)).inflate();
+        if (mSettingsView == null) {
+            mSettingsView = ((ViewStub) getActivity().findViewById(R.id.settings_placeholder)).inflate();
         }
-        settingsView.setOnClickListener(new OnClickListener() {
+        mSettingsView.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent settingsIntent = new Intent(getActivity(), SettingsActivity.class);
@@ -229,10 +247,10 @@ public class NavigationDrawerFragment extends Fragment {
             }
         });
 
-        if (settingsViewCat == null) {
-            settingsViewCat = inflater.inflate(R.layout.drawer_category_list_footer, null);
+        if (mSettingsViewCat == null) {
+            mSettingsViewCat = inflater.inflate(R.layout.drawer_category_list_footer, null);
         }
-        settingsViewCat.setOnClickListener(new OnClickListener() {
+        mSettingsViewCat.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent settingsIntent = new Intent(getActivity(), SettingsActivity.class);
@@ -241,16 +259,16 @@ public class NavigationDrawerFragment extends Fragment {
         });
 
         if (mDrawerCategoriesList.getAdapter() == null) {
-            mDrawerCategoriesList.addFooterView(settingsViewCat);
+            mDrawerCategoriesList.addFooterView(mSettingsViewCat);
         }
         if (categories.size() == 0) {
-            categoriesListHeader.setVisibility(View.GONE);
-            settingsViewCat.setVisibility(View.GONE);
-            settingsView.setVisibility(View.VISIBLE);
+            mCategoriesListHeader.setVisibility(View.GONE);
+            mSettingsViewCat.setVisibility(View.GONE);
+            mSettingsView.setVisibility(View.VISIBLE);
         } else if (categories.size() > 0) {
-            settingsView.setVisibility(View.GONE);
-            categoriesListHeader.setVisibility(View.VISIBLE);
-            settingsViewCat.setVisibility(View.VISIBLE);
+            mSettingsView.setVisibility(View.GONE);
+            mCategoriesListHeader.setVisibility(View.VISIBLE);
+            mSettingsViewCat.setVisibility(View.VISIBLE);
         }
 
         mDrawerCategoriesList.setAdapter(new NavDrawerCategoryAdapter(mActivity, categories));
@@ -300,8 +318,8 @@ public class NavigationDrawerFragment extends Fragment {
 
         // Restores listview position when turning back to list
         if (mDrawerCategoriesList != null && categories.size() > 0) {
-            if (mDrawerCategoriesList.getCount() > listViewPosition) {
-                mDrawerCategoriesList.setSelectionFromTop(listViewPosition, listViewPositionOffset);
+            if (mDrawerCategoriesList.getCount() > mListViewPosition) {
+                mDrawerCategoriesList.setSelectionFromTop(mListViewPosition, mListViewPositionOffset);
             } else {
                 mDrawerCategoriesList.setSelectionFromTop(0, 0);
             }

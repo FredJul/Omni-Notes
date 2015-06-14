@@ -39,6 +39,10 @@ import java.util.List;
 @Table(databaseName = AppDatabase.NAME)
 public class Task extends AutoIncrementModel implements Parcelable {
 
+    public final static long NORMAL_POINT_REWARD = 50;
+    public final static long HIGH_POINT_REWARD = 100;
+    public final static long VERY_HIGH_POINT_REWARD = 200;
+
     @Column
     @Expose
     public String title = "";
@@ -72,6 +76,9 @@ public class Task extends AutoIncrementModel implements Parcelable {
     @Column
     @Expose
     long categoryId;
+    @Column
+    @Expose
+    public long pointReward = NORMAL_POINT_REWARD;
 
     private transient Category mCategory;
     private transient List<Attachment> mAttachmentsList;
@@ -92,6 +99,7 @@ public class Task extends AutoIncrementModel implements Parcelable {
         address = task.address;
         isChecklist = task.isChecklist;
         categoryId = task.categoryId;
+        pointReward = task.pointReward;
         mCategory = task.mCategory;
 
         if (task.mAttachmentsList != null) {
@@ -112,6 +120,7 @@ public class Task extends AutoIncrementModel implements Parcelable {
         address = in.readString();
         isChecklist = in.readInt() == 1;
         categoryId = in.readLong();
+        pointReward = in.readLong();
         mCategory = in.readParcelable(Category.class.getClassLoader());
         in.readList(mAttachmentsList, Attachment.class.getClassLoader());
     }
@@ -157,9 +166,9 @@ public class Task extends AutoIncrementModel implements Parcelable {
         }
 
         Object[] a = {id, title, content, creationDate, lastModificationDate, isTrashed,
-                alarmDate, latitude, longitude, address, isChecklist, categoryId, getAttachmentsList()};
+                alarmDate, latitude, longitude, address, isChecklist, categoryId, pointReward, getAttachmentsList()};
         Object[] b = {task.id, task.title, task.content, task.creationDate, task.lastModificationDate, task.isTrashed,
-                task.alarmDate, task.latitude, task.longitude, task.address, task.isChecklist, task.categoryId, task.getAttachmentsList()};
+                task.alarmDate, task.latitude, task.longitude, task.address, task.isChecklist, task.categoryId, task.pointReward, task.getAttachmentsList()};
         if (EqualityChecker.check(a, b)) {
             res = true;
         }
@@ -260,6 +269,7 @@ public class Task extends AutoIncrementModel implements Parcelable {
         parcel.writeString(address);
         parcel.writeInt(isChecklist ? 1 : 0);
         parcel.writeLong(categoryId);
+        parcel.writeLong(pointReward);
         parcel.writeParcelable(getCategory(), 0);
         parcel.writeList(getAttachmentsList());
     }

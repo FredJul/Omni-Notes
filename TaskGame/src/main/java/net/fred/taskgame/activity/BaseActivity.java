@@ -211,6 +211,7 @@ public class BaseActivity extends BaseGameActivity implements LocationListener {
                         SyncData syncedData = gson.fromJson(json, SyncData.class);
 
                         if (syncedData.lastSyncDate > PrefUtils.getLong(PrefUtils.PREF_LAST_SYNC_DATE, -1)) {
+                            PrefUtils.putLong(PrefUtils.PREF_CURRENT_POINTS, syncedData.currentPoints);
                             Delete.tables(Category.class, Task.class);
                             for (Category cat : syncedData.categories) {
                                 Dog.i("write cat " + cat);
@@ -224,7 +225,8 @@ public class BaseActivity extends BaseGameActivity implements LocationListener {
                         Dog.e("ERROR", e);
                     }
 
-                    String json = gson.toJson(SyncData.getLastData());
+                    SyncData syncData = SyncData.getLastData();
+                    String json = gson.toJson(syncData);
                     Dog.i("write " + json);
 
                     // Set the data payload for the snapshot
@@ -235,11 +237,13 @@ public class BaseActivity extends BaseGameActivity implements LocationListener {
 
                     // Commit the operation
                     Games.Snapshots.commitAndClose(getApiClient(), snapshot, metadataChange);
+                    PrefUtils.putLong(PrefUtils.PREF_LAST_SYNC_DATE, syncData.lastSyncDate);
 
                 } else if (result.getStatus().getStatusCode() == GamesStatusCodes.STATUS_SNAPSHOT_CONFLICT) {
                     Dog.i("Save conflict, use last version");
 
-                    String json = gson.toJson(SyncData.getLastData());
+                    SyncData syncData = SyncData.getLastData();
+                    String json = gson.toJson(syncData);
                     Dog.i("write " + json);
 
                     Snapshot conflictSnapshot = result.getConflictingSnapshot();
@@ -253,6 +257,7 @@ public class BaseActivity extends BaseGameActivity implements LocationListener {
                     // Set the data payload for the snapshot
                     snapshot.getSnapshotContents().writeBytes(json.getBytes());
                     Games.Snapshots.resolveConflict(getApiClient(), result.getConflictId(), resolvedSnapshot);
+                    PrefUtils.putLong(PrefUtils.PREF_LAST_SYNC_DATE, syncData.lastSyncDate);
                 }
             }
         }).start();
