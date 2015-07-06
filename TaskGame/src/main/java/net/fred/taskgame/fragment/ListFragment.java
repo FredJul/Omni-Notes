@@ -72,7 +72,6 @@ import net.fred.taskgame.model.Category;
 import net.fred.taskgame.model.Task;
 import net.fred.taskgame.model.adapters.NavDrawerCategoryAdapter;
 import net.fred.taskgame.model.adapters.TaskAdapter;
-import net.fred.taskgame.model.listeners.AbsListViewScrollDetector;
 import net.fred.taskgame.model.listeners.OnViewTouchedListener;
 import net.fred.taskgame.utils.AnimationsHelper;
 import net.fred.taskgame.utils.BitmapHelper;
@@ -224,22 +223,6 @@ public class ListFragment extends Fragment implements OnViewTouchedListener, Und
                 return true;
             }
         });
-        list.setOnScrollListener(
-                new AbsListViewScrollDetector() {
-                    public void onScrollUp() {
-                        if (fab != null) {
-                            fab.collapse();
-                            hideFab();
-                        }
-                    }
-
-                    public void onScrollDown() {
-                        if (fab != null) {
-                            fab.collapse();
-                            showFab();
-                        }
-                    }
-                });
 
         fab.findViewById(R.id.fab_checklist).setOnClickListener(new OnClickListener() {
             @Override
