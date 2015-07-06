@@ -169,17 +169,9 @@ public class DetailFragment extends Fragment implements
     private boolean orientationChanged;
     private long audioRecordingTimeStart;
     private long audioRecordingTime;
-    private DetailFragment mFragment;
     private Attachment sketchEdited;
     private ScrollView scrollView;
     private int contentLineCounter = 1;
-
-
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        mFragment = this;
-    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -417,7 +409,7 @@ public class DetailFragment extends Fragment implements
                 locationTextView.setVisibility(View.VISIBLE);
                 locationTextView.setText(mTask.address);
             } else {
-                GeocodeHelper.getAddressFromCoordinates(getActivity(), mTask.latitude, mTask.longitude, mFragment);
+                GeocodeHelper.getAddressFromCoordinates(getActivity(), mTask.latitude, mTask.longitude, this);
             }
         }
 
@@ -539,7 +531,7 @@ public class DetailFragment extends Fragment implements
             @Override
             public void onClick(View v) {
                 int pickerType = PrefUtils.getBoolean("settings_simple_calendar", false) ? ReminderPickers.TYPE_AOSP : ReminderPickers.TYPE_GOOGLE;
-                ReminderPickers reminderPicker = new ReminderPickers(getActivity(), mFragment, pickerType);
+                ReminderPickers reminderPicker = new ReminderPickers(getActivity(), DetailFragment.this, pickerType);
                 reminderPicker.pick(mTask.alarmDate);
                 onDateSetListener = reminderPicker;
                 onTimeSetListener = reminderPicker;
@@ -706,10 +698,10 @@ public class DetailFragment extends Fragment implements
                             mTask.latitude = lat;
                             mTask.longitude = lon;
                             GeocodeHelper.getAddressFromCoordinates(getActivity(), mTask.latitude,
-                                    mTask.longitude, mFragment);
+                                    mTask.longitude, DetailFragment.this);
                         } else {
                             GeocodeHelper.getCoordinatesFromAddress(getActivity(), autoCompView.getText().toString(),
-                                    mFragment);
+                                    DetailFragment.this);
                         }
                     }
                 })
@@ -954,8 +946,8 @@ public class DetailFragment extends Fragment implements
         mChecklistManager.setNewEntryHint(getString(R.string.checklist_item_hint));
 
         // Links parsing options
-        mChecklistManager.addTextChangedListener(mFragment);
-        mChecklistManager.setCheckListChangedListener(mFragment);
+        mChecklistManager.addTextChangedListener(this);
+        mChecklistManager.setCheckListChangedListener(this);
 
         // Options for converting back to simple text
         mChecklistManager.setKeepChecked(keepChecked);
@@ -1552,7 +1544,7 @@ public class DetailFragment extends Fragment implements
     @Override
     public void onReminderPicked(long reminder) {
         mTask.alarmDate = reminder;
-        if (mFragment.isAdded()) {
+        if (isAdded()) {
             datetime.setText(getString(R.string.alarm_set_on) + " " + DateHelper.getDateTimeShort(getActivity(), reminder));
         }
     }
