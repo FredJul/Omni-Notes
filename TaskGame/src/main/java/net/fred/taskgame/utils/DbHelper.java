@@ -33,6 +33,7 @@ import net.fred.taskgame.model.Category$Table;
 import net.fred.taskgame.model.Task;
 import net.fred.taskgame.model.Task$Table;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
@@ -113,23 +114,30 @@ public class DbHelper {
      * @return Tasks list
      */
     public static List<Task> getTasks(ConditionQueryBuilder<Task> queryBuilder) {
-        String sort_column;
+        ArrayList<String> sortColumns = new ArrayList<>();
 
         // Getting sorting criteria from preferences. Reminder screen forces sorting.
         if (Navigation.checkNavigation(Navigation.REMINDERS)) {
-            sort_column = Task$Table.ALARMDATE;
+            sortColumns.add(Task$Table.ALARMDATE);
         } else {
-            sort_column = PrefUtils.getString(PrefUtils.PREF_SORTING_COLUMN, Task$Table.TITLE);
+            sortColumns.add(PrefUtils.getString(PrefUtils.PREF_SORTING_COLUMN, Task$Table.TITLE));
         }
 
+        boolean isAsc = false;
         // In case of title sorting criteria it must be handled empty title by concatenating content
-        sort_column = Task$Table.TITLE.equals(sort_column) ? Task$Table.TITLE + "||" + Task$Table.CONTENT : sort_column;
+        if (sortColumns.contains(Task$Table.TITLE)) {
+            isAsc = true;
+            sortColumns.add(Task$Table.CONTENT);
+        }
 
         // In case of reminder sorting criteria the empty reminder tasks must be moved on bottom of results
-        sort_column = Task$Table.ALARMDATE.equals(sort_column) ? "IFNULL(" + Task$Table.ALARMDATE + ", " + Constants.TIMESTAMP_UNIX_EPOCH + ")" : sort_column;
+        if (sortColumns.contains(Task$Table.ALARMDATE)) {
+            isAsc = true;
+            sortColumns.remove(Task$Table.ALARMDATE);
+            sortColumns.add("IFNULL(" + Task$Table.ALARMDATE + ", " + Constants.TIMESTAMP_UNIX_EPOCH + ")");
+        }
 
-        boolean isAsc = Task$Table.TITLE.equals(sort_column) || Task$Table.ALARMDATE.equals(sort_column);
-        return new Select().from(Task.class).where(queryBuilder).orderBy(isAsc, sort_column).queryList();
+        return new Select().from(Task.class).where(queryBuilder).orderBy(isAsc, sortColumns.toArray(new String[]{})).queryList();
     }
 
     /**
