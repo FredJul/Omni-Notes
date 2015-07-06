@@ -124,6 +124,7 @@ public class DbHelper {
         }
 
         boolean isAsc = false;
+
         // In case of title sorting criteria it must be handled empty title by concatenating content
         if (sortColumns.contains(Task$Table.TITLE)) {
             isAsc = true;
@@ -133,8 +134,6 @@ public class DbHelper {
         // In case of reminder sorting criteria the empty reminder tasks must be moved on bottom of results
         if (sortColumns.contains(Task$Table.ALARMDATE)) {
             isAsc = true;
-            sortColumns.remove(Task$Table.ALARMDATE);
-            sortColumns.add("IFNULL(" + Task$Table.ALARMDATE + ", " + Constants.TIMESTAMP_UNIX_EPOCH + ")");
         }
 
         return new Select().from(Task.class).where(queryBuilder).orderBy(isAsc, sortColumns.toArray(new String[]{})).queryList();

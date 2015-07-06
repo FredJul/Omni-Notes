@@ -66,7 +66,5 @@ public interface Constants {
     String MIME_TYPE_VIDEO_EXT = ".mp4";
     String MIME_TYPE_SKETCH_EXT = ".png";
 
-    String TIMESTAMP_UNIX_EPOCH = "0";
-
     int MENU_SORT_GROUP_ID = 11998811;
 }
