@@ -188,7 +188,6 @@ public class NavigationDrawerFragment extends Fragment {
         // between the sliding drawer and the action bar app icon
         mDrawerToggle = new ActionBarDrawerToggle(mActivity,
                 mDrawerLayout,
-                getMainActivity().getToolbar(),
                 R.string.drawer_open,
                 R.string.drawer_close) {
             public void onDrawerClosed(View view) {

@@ -183,12 +183,6 @@ public class DetailFragment extends Fragment implements
         super.onActivityCreated(savedInstanceState);
 
         getMainActivity().getSupportActionBar().setDisplayShowTitleEnabled(false);
-        getMainActivity().getToolbar().setNavigationOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                navigateUp();
-            }
-        });
 
         // Force the navigation drawer to stay closed
         getMainActivity().getDrawerLayout().setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
@@ -220,7 +214,6 @@ public class DetailFragment extends Fragment implements
         setHasOptionsMenu(true);
         setRetainInstance(false);
     }
-
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
