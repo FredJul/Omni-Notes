@@ -299,8 +299,9 @@ public class DetailFragment extends Fragment implements
             if (mOriginalTask == null) {
                 getMainActivity().showToast(getText(R.string.shortcut_task_deleted), Toast.LENGTH_LONG);
                 getActivity().finish();
+            } else {
+                mTask = new Task(mOriginalTask);
             }
-            mTask = new Task(mOriginalTask);
             i.setAction(null);
         }
 
@@ -345,7 +346,9 @@ public class DetailFragment extends Fragment implements
 
             afterSavedReturnsToList = false;
 
-            if (mTask == null) mTask = new Task();
+            if (mTask == null) {
+                mTask = new Task();
+            }
 
             // Text title
             String title = i.getStringExtra(Intent.EXTRA_SUBJECT);
