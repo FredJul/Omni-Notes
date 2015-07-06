@@ -155,11 +155,7 @@ public class StorageHelper {
 
     public static String getRealPathFromURI(Context mContext, Uri contentUri) {
         String[] proj = {MediaStore.Images.Media.DATA};
-        Cursor cursor = null;
-        try {
-            cursor = mContext.getContentResolver().query(contentUri, proj, null, null, null);
-        } catch (Exception e) {
-        }
+        Cursor cursor = mContext.getContentResolver().query(contentUri, proj, null, null, null);
         if (cursor == null) {
             return null;
         }
