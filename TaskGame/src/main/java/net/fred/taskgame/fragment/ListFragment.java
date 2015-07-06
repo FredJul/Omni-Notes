@@ -837,7 +837,6 @@ public class ListFragment extends Fragment implements OnViewTouchedListener, Und
     }
 
     void editNote(final Task task, final View view) {
-        hideFab();
         AnimationsHelper.zoomListItem(getActivity(), view, getZoomListItemView(view, task),
                 getActivity().findViewById(R.id.list_root), buildAnimatorListenerAdapter(task));
     }
