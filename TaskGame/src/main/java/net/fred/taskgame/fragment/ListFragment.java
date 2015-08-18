@@ -133,7 +133,6 @@ public class ListFragment extends Fragment implements OnViewTouchedListener, Und
     //    Fab
     private FloatingActionsMenu fab;
     private boolean fabAllowed;
-    private boolean fabHidden = true;
     private boolean fabExpanded = false;
 
     private ThrottledFlowContentObserver mContentObserver = new ThrottledFlowContentObserver(100) {
@@ -397,7 +396,6 @@ public class ListFragment extends Fragment implements OnViewTouchedListener, Und
     private void showFab() {
         if (fab != null && fabAllowed && isFabHidden()) {
             animateFab(0, View.VISIBLE, View.VISIBLE);
-            fabHidden = false;
         }
     }
 
@@ -406,13 +404,12 @@ public class ListFragment extends Fragment implements OnViewTouchedListener, Und
         if (fab != null && !isFabHidden()) {
             fab.collapse();
             animateFab(fab.getHeight() + getMarginBottom(fab), View.VISIBLE, View.INVISIBLE);
-            fabHidden = true;
         }
     }
 
 
     private boolean isFabHidden() {
-        return fabHidden;
+        return fab.getVisibility() != View.VISIBLE;
     }
 
 
