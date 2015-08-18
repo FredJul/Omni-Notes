@@ -27,8 +27,6 @@ public interface Constants {
     // Floating action button
     int FAB_ANIMATION_TIME = 200;
 
-    int THUMBNAIL_SIZE = 300;
-
     String DATE_FORMAT_SHORT_DATE = "d MMM yyyy";
     String DATE_FORMAT_SORTABLE = "yyyyMMdd_HHmmss_S";
     String DATE_FORMAT_SORTABLE_OLD = "yyyyMMddHHmmss";

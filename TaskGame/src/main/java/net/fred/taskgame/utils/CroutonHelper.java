@@ -45,8 +45,8 @@ public class CroutonHelper {
     static {
         CONFIGURATION = new Configuration.Builder()
                 .setDuration(CROUTON_DURATION)
-                .setInAnimation(R.animator.fade_in_support)
-                .setOutAnimation(R.animator.fade_out_support)
+                .setInAnimation(R.anim.fade_in_support)
+                .setOutAnimation(R.anim.fade_out_support)
                 .build();
         ALERT = new Style.Builder()
                 .setBackgroundColor(ALERT_COLOR)

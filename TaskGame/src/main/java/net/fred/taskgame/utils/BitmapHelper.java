@@ -159,13 +159,13 @@ public class BitmapHelper {
             // Audio
         } else if (Constants.MIME_TYPE_AUDIO.equals(mAttachment.mimeType)) {
             bmp = ThumbnailUtils.extractThumbnail(
-                    decodeSampledBitmapFromResourceMemOpt(mContext.getResources().openRawResource(R.drawable.play),
+                    decodeSampledBitmapFromResourceMemOpt(mContext.getResources().openRawResource(R.raw.play),
                             width, height), width, height);
 
             // File
         } else if (Constants.MIME_TYPE_FILES.equals(mAttachment.mimeType)) {
             bmp = ThumbnailUtils.extractThumbnail(
-                    decodeSampledBitmapFromResourceMemOpt(mContext.getResources().openRawResource(R.drawable.files),
+                    decodeSampledBitmapFromResourceMemOpt(mContext.getResources().openRawResource(R.raw.files),
                             width, height), width, height);
         }
 
@@ -184,14 +184,14 @@ public class BitmapHelper {
                     // Nothing to do, bitmap will be retrieved from this
                     break;
                 case "audio":
-                    uri = Uri.parse("android.resource://" + mContext.getPackageName() + "/" + R.drawable.play);
+                    uri = Uri.parse("android.resource://" + mContext.getPackageName() + "/" + R.raw.play);
                     break;
                 default:
-                    uri = Uri.parse("android.resource://" + mContext.getPackageName() + "/" + R.drawable.files);
+                    uri = Uri.parse("android.resource://" + mContext.getPackageName() + "/" + R.raw.files);
                     break;
             }
         } else {
-            uri = Uri.parse("android.resource://" + mContext.getPackageName() + "/" + R.drawable.files);
+            uri = Uri.parse("android.resource://" + mContext.getPackageName() + "/" + R.raw.files);
         }
         return uri;
     }

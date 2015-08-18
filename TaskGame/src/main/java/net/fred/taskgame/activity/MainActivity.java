@@ -49,6 +49,7 @@ import net.fred.taskgame.model.Task;
 import net.fred.taskgame.utils.Constants;
 import net.fred.taskgame.utils.DbHelper;
 import net.fred.taskgame.utils.PrefUtils;
+import net.fred.taskgame.utils.UiUtils;
 
 import de.keyboardsurfer.android.widget.crouton.Crouton;
 import de.keyboardsurfer.android.widget.crouton.Style;
@@ -336,7 +337,7 @@ public class MainActivity extends BaseActivity implements OnDateSetListener, OnT
 
     public void switchToList() {
         FragmentTransaction transaction = mFragmentManager.beginTransaction();
-        animateTransition(transaction, TRANSITION_HORIZONTAL);
+        UiUtils.animateTransition(transaction, UiUtils.TRANSITION_HORIZONTAL);
         ListFragment mListFragment = new ListFragment();
         transaction.replace(R.id.fragment_container, mListFragment, FRAGMENT_LIST_TAG).addToBackStack(FRAGMENT_DETAIL_TAG).commitAllowingStateLoss();
         if (getDrawerToggle() != null) {
@@ -348,7 +349,7 @@ public class MainActivity extends BaseActivity implements OnDateSetListener, OnT
 
     public void switchToDetail(Task task) {
         FragmentTransaction transaction = mFragmentManager.beginTransaction();
-        animateTransition(transaction, TRANSITION_HORIZONTAL);
+        UiUtils.animateTransition(transaction, UiUtils.TRANSITION_HORIZONTAL);
         DetailFragment mDetailFragment = new DetailFragment();
         Bundle b = new Bundle();
         b.putParcelable(Constants.INTENT_TASK, task);

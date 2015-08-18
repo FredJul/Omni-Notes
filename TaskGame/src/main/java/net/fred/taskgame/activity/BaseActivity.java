@@ -22,9 +22,7 @@ import android.content.Context;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
-import android.os.Build;
 import android.os.Bundle;
-import android.support.v4.app.FragmentTransaction;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.ViewConfiguration;
@@ -53,9 +51,6 @@ import java.lang.reflect.Field;
 
 
 public class BaseActivity extends BaseGameActivity implements LocationListener {
-
-    public final int TRANSITION_VERTICAL = 0;
-    public final int TRANSITION_HORIZONTAL = 1;
 
     // Location variables
     protected LocationManager locationManager;
@@ -156,17 +151,6 @@ public class BaseActivity extends BaseGameActivity implements LocationListener {
         int[] ids = mgr.getAppWidgetIds(new ComponentName(mActivity, ListWidgetProvider.class));
         mgr.notifyAppWidgetViewDataChanged(ids, R.id.widget_list);
     }
-
-    public void animateTransition(FragmentTransaction transaction, int direction) {
-        if (direction == TRANSITION_HORIZONTAL) {
-            transaction.setCustomAnimations(R.animator.fade_in_support, R.animator.fade_out_support, R.animator.fade_in_support, R.animator.fade_out_support);
-        }
-        if (direction == TRANSITION_VERTICAL && Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-            transaction.setCustomAnimations(
-                    R.animator.anim_in, R.animator.anim_out, R.animator.anim_in_pop, R.animator.anim_out_pop);
-        }
-    }
-
 
     public void setActionBarTitle(String title) {
         if (getSupportActionBar() != null) {

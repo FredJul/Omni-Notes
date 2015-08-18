@@ -24,7 +24,6 @@ import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.Point;
 import android.graphics.drawable.BitmapDrawable;
@@ -32,7 +31,6 @@ import android.graphics.drawable.Drawable;
 import android.media.MediaPlayer;
 import android.media.MediaPlayer.OnCompletionListener;
 import android.media.MediaRecorder;
-import android.media.ThumbnailUtils;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
@@ -109,6 +107,7 @@ import net.fred.taskgame.utils.KeyboardUtils;
 import net.fred.taskgame.utils.PrefUtils;
 import net.fred.taskgame.utils.ReminderHelper;
 import net.fred.taskgame.utils.StorageHelper;
+import net.fred.taskgame.utils.UiUtils;
 import net.fred.taskgame.utils.date.DateHelper;
 import net.fred.taskgame.utils.date.ReminderPickers;
 import net.fred.taskgame.view.ExpandableHeightGridView;
@@ -1115,7 +1114,7 @@ public class DetailFragment extends Fragment implements
 
         // Fragments replacing
         FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
-        getMainActivity().animateTransition(transaction, getMainActivity().TRANSITION_HORIZONTAL);
+        UiUtils.animateTransition(transaction, UiUtils.TRANSITION_HORIZONTAL);
         SketchFragment sketchFragment = new SketchFragment();
         Bundle b = new Bundle();
         b.putParcelable(MediaStore.EXTRA_OUTPUT, attachmentUri);
@@ -1357,7 +1356,7 @@ public class DetailFragment extends Fragment implements
                 isPlayingView = v;
                 startPlaying(uri);
                 recordingBitmap = ((BitmapDrawable) ((ImageView) v.findViewById(R.id.gridview_item_picture)).getDrawable()).getBitmap();
-                ((ImageView) v.findViewById(R.id.gridview_item_picture)).setImageBitmap(ThumbnailUtils.extractThumbnail(BitmapFactory.decodeResource(getActivity().getResources(), R.drawable.stop), Constants.THUMBNAIL_SIZE, Constants.THUMBNAIL_SIZE));
+                ((ImageView) v.findViewById(R.id.gridview_item_picture)).setImageResource(R.drawable.stop);
                 // Otherwise just stops playing
             } else {
                 stopPlaying();
@@ -1372,7 +1371,7 @@ public class DetailFragment extends Fragment implements
             } else {
                 recordingBitmap = ((GlideBitmapDrawable) d.getCurrent()).getBitmap();
             }
-            ((ImageView) v.findViewById(R.id.gridview_item_picture)).setImageBitmap(ThumbnailUtils.extractThumbnail(BitmapFactory.decodeResource(getActivity().getResources(), R.drawable.stop), Constants.THUMBNAIL_SIZE, Constants.THUMBNAIL_SIZE));
+            ((ImageView) v.findViewById(R.id.gridview_item_picture)).setImageResource(R.drawable.stop);
         }
     }
 
@@ -1440,11 +1439,11 @@ public class DetailFragment extends Fragment implements
 
     private void fade(final View v, boolean fadeIn) {
 
-        int anim = R.animator.fade_out_support;
+        int anim = R.anim.fade_out_support;
         int visibilityTemp = View.GONE;
 
         if (fadeIn) {
-            anim = R.animator.fade_in_support;
+            anim = R.anim.fade_in_support;
             visibilityTemp = View.VISIBLE;
         }
 
@@ -1503,7 +1502,7 @@ public class DetailFragment extends Fragment implements
                     if (Math.abs(x - startSwipeX) > Constants.SWIPE_OFFSET) {
                         swiping = false;
                         FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
-                        getMainActivity().animateTransition(transaction, getMainActivity().TRANSITION_VERTICAL);
+                        UiUtils.animateTransition(transaction, UiUtils.TRANSITION_VERTICAL);
                         DetailFragment mDetailFragment = new DetailFragment();
                         Bundle b = new Bundle();
                         b.putParcelable(Constants.INTENT_TASK, new Task());
