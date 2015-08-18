@@ -161,7 +161,6 @@ public class TaskAdapter extends ArrayAdapter<Task> implements Insertable {
         }
     }
 
-
     private void initDates(Task task, NoteViewHolder holder) {
         String dateText = getDateText(mActivity, task);
         holder.date.setText(dateText);

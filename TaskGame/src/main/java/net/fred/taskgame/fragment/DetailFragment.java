@@ -460,7 +460,10 @@ public class DetailFragment extends Fragment implements
                     attachmentIntent.setDataAndType(attachment.uri, StorageHelper.getMimeType(getActivity(), attachment.uri));
                     attachmentIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
                     if (IntentChecker.isAvailable(getActivity().getApplicationContext(), attachmentIntent, null)) {
-                        startActivity(attachmentIntent);
+                        try {
+                            startActivity(attachmentIntent);
+                        } catch (Exception ignored) {
+                        }
                     } else {
                         getMainActivity().showMessage(R.string.feature_not_available_on_this_device, CroutonHelper.WARN);
                     }

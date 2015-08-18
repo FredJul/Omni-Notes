@@ -109,8 +109,6 @@ public class AttachmentAdapter extends BaseAdapter {
             holder.text.setVisibility(View.VISIBLE);
         }
 
-        // Starts the AsyncTask to draw bitmap into ImageView
-//		loadThumbnail(holder, mAttachment);
         Uri thumbnailUri = BitmapHelper.getThumbnailUri(mActivity, mAttachment);
         Glide.with(mActivity)
                 .load(thumbnailUri)

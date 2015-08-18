@@ -175,7 +175,8 @@ public class BitmapHelper {
 
     public static Uri getThumbnailUri(Context mContext, Attachment mAttachment) {
         Uri uri = mAttachment.uri;
-        String mimeType = StorageHelper.getMimeType(uri.toString());
+
+        String mimeType = !TextUtils.isEmpty(mAttachment.mimeType) ? mAttachment.mimeType : StorageHelper.getMimeType(uri.toString());
         if (!TextUtils.isEmpty(mimeType)) {
             String type = mimeType.replaceFirst("/.*", "");
             switch (type) {
@@ -193,6 +194,7 @@ public class BitmapHelper {
         } else {
             uri = Uri.parse("android.resource://" + mContext.getPackageName() + "/" + R.raw.files);
         }
+
         return uri;
     }
 
