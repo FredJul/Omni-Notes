@@ -30,24 +30,31 @@ import android.widget.Toast;
 
 import com.google.android.gms.games.Games;
 import com.google.android.gms.games.GamesStatusCodes;
+import com.google.android.gms.games.quest.Quest;
+import com.google.android.gms.games.quest.QuestBuffer;
+import com.google.android.gms.games.quest.Quests;
 import com.google.android.gms.games.snapshot.Snapshot;
 import com.google.android.gms.games.snapshot.SnapshotMetadataChange;
 import com.google.android.gms.games.snapshot.Snapshots;
 import com.google.example.games.basegameutils.BaseGameActivity;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.raizlabs.android.dbflow.sql.builder.Condition;
 import com.raizlabs.android.dbflow.sql.language.Delete;
+import com.raizlabs.android.dbflow.sql.language.Select;
 
 import net.fred.taskgame.R;
 import net.fred.taskgame.model.Category;
 import net.fred.taskgame.model.SyncData;
 import net.fred.taskgame.model.Task;
+import net.fred.taskgame.model.Task$Table;
 import net.fred.taskgame.utils.Dog;
 import net.fred.taskgame.utils.GeocodeHelper;
 import net.fred.taskgame.utils.PrefUtils;
 import net.fred.taskgame.widget.ListWidgetProvider;
 
 import java.lang.reflect.Field;
+import java.nio.charset.Charset;
 
 
 public class BaseActivity extends BaseGameActivity implements LocationListener {
@@ -166,10 +173,12 @@ public class BaseActivity extends BaseGameActivity implements LocationListener {
 
     @Override
     public void onSignInFailed() {
+        Toast.makeText(this, "sign in failed", Toast.LENGTH_SHORT).show();
     }
 
     @Override
     public void onSignInSucceeded() {
+        Toast.makeText(this, "sign in success", Toast.LENGTH_SHORT).show();
         sync();
     }
 
@@ -242,6 +251,30 @@ public class BaseActivity extends BaseGameActivity implements LocationListener {
                     snapshot.getSnapshotContents().writeBytes(json.getBytes());
                     Games.Snapshots.resolveConflict(getApiClient(), result.getConflictId(), resolvedSnapshot);
                     PrefUtils.putLong(PrefUtils.PREF_LAST_SYNC_DATE, syncData.lastSyncDate);
+                }
+
+                Dog.i("retrieve quests");
+                Quests.LoadQuestsResult questsResult = Games.Quests.load(getApiClient(), new int[]{Games.Quests.SELECT_ACCEPTED}, Games.Quests.SORT_ORDER_ENDING_SOON_FIRST, false).await();
+                if (questsResult.getStatus().isSuccess()) {
+                    Dog.i("retrieve quests success");
+                    QuestBuffer quests = questsResult.getQuests();
+                    for (Quest quest : quests) {
+                        Dog.i("quest: " + quest);
+                        String questId = quest.getQuestId();
+                        Task task = new Select().from(Task.class).where(Condition.column(Task$Table.QUESTID).eq(questId)).querySingle();
+                        if (task == null) {
+                            task = new Task();
+                        }
+
+                        task.questId = questId;
+                        task.title = quest.getName();
+                        task.content = quest.getDescription();
+                        String reward = new String(quest.getCurrentMilestone().getCompletionRewardData(), Charset.forName("UTF-8"));
+                        Dog.i("quest reward: " + reward);
+                        task.pointReward = Integer.valueOf(reward);
+
+                        task.save();
+                    }
                 }
             }
         }).start();

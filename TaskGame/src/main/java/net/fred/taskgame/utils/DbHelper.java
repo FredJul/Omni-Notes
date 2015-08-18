@@ -41,12 +41,8 @@ public class DbHelper {
 
     // Inserting or updating single task
     public static void updateTaskAsync(Task task, boolean updateLastModification) {
-        if (task.creationDate == 0) {
-            task.creationDate = System.currentTimeMillis();
-        } else {    // If there already was a creation date, we put a last modification date
-            task.lastModificationDate = updateLastModification ? Calendar
-                    .getInstance().getTimeInMillis() : (task.lastModificationDate != 0 ? task.lastModificationDate : Calendar
-                    .getInstance().getTimeInMillis());
+        if (task.creationDate != 0 && updateLastModification) { // If there already was a creation date, we put at least modification date
+            task.lastModificationDate = Calendar.getInstance().getTimeInMillis();
         }
 
         task.async().save();

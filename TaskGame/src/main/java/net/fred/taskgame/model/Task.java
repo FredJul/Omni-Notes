@@ -79,6 +79,9 @@ public class Task extends AutoIncrementModel implements Parcelable {
     @Column
     @Expose
     public long pointReward = NORMAL_POINT_REWARD;
+    @Column
+    @Expose
+    public String questId = "";
 
     private transient Category mCategory;
     private transient List<Attachment> mAttachmentsList;
@@ -248,6 +251,15 @@ public class Task extends AutoIncrementModel implements Parcelable {
         }
 
         context.startActivity(Intent.createChooser(shareIntent, context.getResources().getString(R.string.share_message_chooser)));
+    }
+
+    @Override
+    public void save() {
+        if (creationDate == 0) {
+            creationDate = System.currentTimeMillis();
+        }
+
+        super.save();
     }
 
     @Override
