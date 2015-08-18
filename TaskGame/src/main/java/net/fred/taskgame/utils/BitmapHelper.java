@@ -204,7 +204,7 @@ public class BitmapHelper {
         video = ThumbnailUtils.extractThumbnail(video, width, height);
         Bitmap mark = ThumbnailUtils.extractThumbnail(
                 BitmapFactory.decodeResource(mContext.getResources(),
-                        R.drawable.play_no_bg), width, height);
+                        R.raw.play_no_bg), width, height);
         Bitmap thumbnail = Bitmap.createBitmap(width, height, Bitmap.Config.RGB_565);
         Canvas canvas = new Canvas(thumbnail);
         canvas.drawBitmap(video, 0, 0, null);

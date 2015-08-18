@@ -101,6 +101,7 @@ import net.fred.taskgame.utils.Constants;
 import net.fred.taskgame.utils.CroutonHelper;
 import net.fred.taskgame.utils.DbHelper;
 import net.fred.taskgame.utils.Display;
+import net.fred.taskgame.utils.Dog;
 import net.fred.taskgame.utils.GeocodeHelper;
 import net.fred.taskgame.utils.IntentChecker;
 import net.fred.taskgame.utils.KeyboardUtils;
@@ -135,9 +136,9 @@ public class DetailFragment extends Fragment implements
 
     public OnDateSetListener onDateSetListener;
     public OnTimeSetListener onTimeSetListener;
-    MediaRecorder mRecorder = null;
+    private MediaRecorder mRecorder = null;
     // Toggle isChecklist view
-    View toggleChecklistView;
+    private View toggleChecklistView;
     private TextView datetime;
     private Uri attachmentUri;
     private AttachmentAdapter mAttachmentAdapter;
@@ -278,7 +279,7 @@ public class DetailFragment extends Fragment implements
         if (Constants.ACTION_SHORTCUT.equals(i.getAction())
                 || Constants.ACTION_NOTIFICATION_CLICK.equals(i.getAction())) {
             afterSavedReturnsToList = false;
-            mOriginalTask = DbHelper.getTask(i.getIntExtra(Constants.INTENT_KEY, 0));
+            mOriginalTask = DbHelper.getTask(i.getLongExtra(Constants.INTENT_KEY, 0));
             // Checks if the note pointed from the shortcut has been deleted
             if (mOriginalTask == null) {
                 getMainActivity().showToast(getText(R.string.shortcut_task_deleted), Toast.LENGTH_LONG);
@@ -1376,7 +1377,9 @@ public class DetailFragment extends Fragment implements
     }
 
     private void startPlaying(Uri uri) {
-        mPlayer = new MediaPlayer();
+        if (mPlayer == null) {
+            mPlayer = new MediaPlayer();
+        }
         try {
             mPlayer.setDataSource(getActivity(), uri);
             mPlayer.prepare();
@@ -1392,6 +1395,8 @@ public class DetailFragment extends Fragment implements
                 }
             });
         } catch (IOException e) {
+            Dog.e("prepare() failed", e);
+            getMainActivity().showMessage(R.string.error, Style.ALERT);
         }
     }
 
@@ -1409,22 +1414,27 @@ public class DetailFragment extends Fragment implements
         File f = StorageHelper.createNewAttachmentFile(getActivity(), Constants.MIME_TYPE_AUDIO_EXT);
         if (f == null) {
             getMainActivity().showMessage(R.string.error, CroutonHelper.ALERT);
-
             return;
         }
+
+        if (mRecorder == null) {
+            mRecorder = new MediaRecorder();
+            mRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
+            mRecorder.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4);
+            mRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_WB);
+            mRecorder.setAudioEncodingBitRate(16);
+            mRecorder.setAudioSamplingRate(44100);
+        }
         recordName = f.getAbsolutePath();
-        mRecorder = new MediaRecorder();
-        mRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
-        mRecorder.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4);
-        mRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
-        mRecorder.setAudioEncodingBitRate(16);
         mRecorder.setOutputFile(recordName);
 
         try {
-            mRecorder.prepare();
             audioRecordingTimeStart = Calendar.getInstance().getTimeInMillis();
+            mRecorder.prepare();
             mRecorder.start();
-        } catch (IOException e) {
+        } catch (IOException | IllegalStateException e) {
+            Dog.e("prepare() failed", e);
+            getMainActivity().showMessage(R.string.error, Style.ALERT);
         }
     }
 

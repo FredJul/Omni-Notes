@@ -837,15 +837,16 @@ public class ListFragment extends Fragment implements OnViewTouchedListener, Und
     void editNote2(Task task) {
         if (task.id == 0) {
 
-            // if navigation is a tag it will be set into note
+            // if navigation is a category it will be set into note
             try {
-                int tagId;
+                long categoryId;
                 if (!TextUtils.isEmpty(getMainActivity().navigationTmp)) {
-                    tagId = Integer.parseInt(getMainActivity().navigationTmp);
+                    categoryId = Long.parseLong(getMainActivity().navigationTmp);
                 } else {
-                    tagId = Integer.parseInt(getMainActivity().navigation);
+                    categoryId = Navigation.getCategory();
                 }
-                task.setCategory(DbHelper.getCategory(tagId));
+
+                task.setCategory(DbHelper.getCategory(categoryId));
             } catch (NumberFormatException e) {
             }
         }
@@ -964,8 +965,7 @@ public class ListFragment extends Fragment implements OnViewTouchedListener, Und
                     getMainActivity().navigationTmp = (categoryId != -1 ? String.valueOf(categoryId) : null);
                 }
                 intent.removeExtra(Constants.INTENT_WIDGET);
-                onTasksLoaded(DbHelper.getTasksByCategory(
-                        getMainActivity().navigationTmp));
+                onTasksLoaded(DbHelper.getTasksByCategory(Long.parseLong(getMainActivity().navigationTmp)));
 
                 // Gets all tasks
             } else {

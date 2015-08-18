@@ -113,17 +113,14 @@ public class NavDrawerCategoryAdapter extends BaseAdapter {
     private boolean isSelected(int position) {
 
         // Getting actual navigation selection
-        String[] navigationListCodes = mActivity.getResources().getStringArray(
-                R.array.navigation_list_codes);
+        String[] navigationListCodes = mActivity.getResources().getStringArray(R.array.navigation_list_codes);
 
         // Managing temporary navigation indicator when coming from a widget
         String navigationTmp = ListFragment.class.isAssignableFrom(mActivity
-                .getClass()) ? ((BaseActivity) mActivity).getNavigationTmp()
-                : null;
+                .getClass()) ? ((BaseActivity) mActivity).getNavigationTmp() : null;
 
         String navigation = navigationTmp != null ? navigationTmp
-                : PrefUtils.getString(PrefUtils.PREF_NAVIGATION,
-                navigationListCodes[0]);
+                : PrefUtils.getString(PrefUtils.PREF_NAVIGATION, navigationListCodes[0]);
 
         return navigation.equals(String.valueOf(categories.get(position).id));
     }

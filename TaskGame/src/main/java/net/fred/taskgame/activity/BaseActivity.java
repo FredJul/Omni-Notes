@@ -65,9 +65,7 @@ public class BaseActivity extends BaseGameActivity implements LocationListener {
     public double currentLatitude;
     public double currentLongitude;
 
-    public String navigation;
     public String navigationTmp; // used for widget navigation
-
 
     protected BaseActivity() {
         super(BaseGameActivity.CLIENT_ALL); // we need snapshot support
@@ -98,16 +96,6 @@ public class BaseActivity extends BaseGameActivity implements LocationListener {
         }
         super.onCreate(savedInstanceState);
     }
-
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        // Navigation selected
-        String navTasks = getResources().getStringArray(R.array.navigation_list_codes)[0];
-        navigation = PrefUtils.getString(PrefUtils.PREF_NAVIGATION, navTasks);
-    }
-
 
     @Override
     public void onStop() {
@@ -145,7 +133,6 @@ public class BaseActivity extends BaseGameActivity implements LocationListener {
 
     public void updateNavigation(String nav) {
         PrefUtils.putString(PrefUtils.PREF_NAVIGATION, nav);
-        navigation = nav;
         navigationTmp = null;
     }
 

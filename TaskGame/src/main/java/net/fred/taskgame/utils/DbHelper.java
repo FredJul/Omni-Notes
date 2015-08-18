@@ -59,7 +59,7 @@ public class DbHelper {
      * @param id
      * @return
      */
-    public static Task getTask(int id) {
+    public static Task getTask(long id) {
         return new Select().from(Task.class).where(Condition.column(Task$Table.ID).eq(id)).querySingle();
     }
 
@@ -221,16 +221,11 @@ public class DbHelper {
      * @param categoryId Category integer identifier
      * @return List of tasks with requested category
      */
-    public static List<Task> getTasksByCategory(String categoryId) {
+    public static List<Task> getTasksByCategory(long categoryId) {
         ConditionQueryBuilder<Task> queryBuilder = new ConditionQueryBuilder<>(Task.class);
-        try {
-            int id = Integer.parseInt(categoryId);
-            queryBuilder.addCondition(Condition.column(Task$Table.CATEGORYID).eq(id));
-            queryBuilder.addCondition(Condition.column(Task$Table.ISTRASHED).isNot(1));
-            return getTasks(queryBuilder);
-        } catch (NumberFormatException e) {
-            return getAllTasks();
-        }
+        queryBuilder.addCondition(Condition.column(Task$Table.CATEGORYID).eq(categoryId));
+        queryBuilder.addCondition(Condition.column(Task$Table.ISTRASHED).isNot(1));
+        return getTasks(queryBuilder);
     }
 
     /**

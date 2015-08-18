@@ -107,7 +107,7 @@
             android:name=".activity.CategoryActivity"
             android:label="@string/title_activity_category"
             android:parentActivityName=".activity.MainActivity"
-            android:theme="@style/Theme.AppCompat.Dialog">
+            android:theme="@style/Theme.AppCompat.Light.Dialog">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".activity.MainActivity"/>

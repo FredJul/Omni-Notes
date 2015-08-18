@@ -98,8 +98,7 @@ public class SnoozeActivity extends FragmentActivity implements OnReminderPicked
 
 
     @Override
-    public void onDateSet(DatePicker view, int year, int monthOfYear,
-                          int dayOfMonth) {
+    public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
         mOnDateSetListener.onDateSet(view, year, monthOfYear, dayOfMonth);
     }
 

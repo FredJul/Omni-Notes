@@ -281,7 +281,7 @@ public class MainActivity extends BaseActivity implements OnDateSetListener, OnT
         if (receivedIntent(i)) {
             Task task = i.getParcelableExtra(Constants.INTENT_TASK);
             if (task == null) {
-                task = DbHelper.getTask(i.getIntExtra(Constants.INTENT_KEY, 0));
+                task = DbHelper.getTask(i.getLongExtra(Constants.INTENT_KEY, 0));
             }
             // Checks if the same note is already opened to avoid to open again
             if (task != null && noteAlreadyOpened(task)) {

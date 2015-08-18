@@ -59,11 +59,12 @@ public class Navigation {
      *
      * @return id of category or 0 if current navigation is not a category
      */
-    public static String getCategory() {
+    public static long getCategory() {
         if (getNavigation() == CATEGORY) {
-            return PrefUtils.getString(PrefUtils.PREF_NAVIGATION, "");
+            String navTasks = MainApplication.getContext().getResources().getStringArray(R.array.navigation_list_codes)[0];
+            return Long.parseLong(PrefUtils.getString(PrefUtils.PREF_NAVIGATION, navTasks));
         } else {
-            return null;
+            return 0;
         }
     }
 

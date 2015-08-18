@@ -60,10 +60,8 @@ public class CategoryActivity extends Activity {
         initViews();
 
         if (category == null) {
-
             category = new Category();
         } else {
-
             populateViews();
         }
     }
@@ -96,12 +94,10 @@ public class CategoryActivity extends Activity {
 
         // Added invisible saturation and value bars to get achieve pastel colors
         SaturationBar saturationbar = (SaturationBar) findViewById(R.id.saturationbar_category);
-        float SATURATION = 0.4f;
-        saturationbar.setSaturation(SATURATION);
+        saturationbar.setSaturation(0.4f);
         picker.addSaturationBar(saturationbar);
         ValueBar valuebar = (ValueBar) findViewById(R.id.valuebar_category);
-        float VALUE = 0.9f;
-        valuebar.setValue(VALUE);
+        valuebar.setValue(0.9f);
         picker.addValueBar(valuebar);
 
         deleteBtn = (Button) findViewById(R.id.delete);
@@ -163,15 +159,16 @@ public class CategoryActivity extends Activity {
 
         // Retrieving how many tasks are categorized with category to be deleted
         long count = DbHelper.getCategorizedCount(category);
-        String msg;
-        if (count > 0)
+        String msg = "";
+        if (count > 0) {
             msg = getString(R.string.delete_category_confirmation).replace("$1$", String.valueOf(count));
-        else
-            msg = getString(R.string.delete_unused_category_confirmation);
+        }
 
         new MaterialDialog.Builder(this)
+                .title(R.string.delete_unused_category_confirmation)
                 .content(msg)
-                .positiveText(R.string.ok)
+                .positiveText(R.string.confirm)
+                .positiveColorRes(R.color.colorAccent)
                 .callback(new MaterialDialog.ButtonCallback() {
                     @Override
                     public void onPositive(MaterialDialog dialog) {
