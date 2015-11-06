@@ -163,7 +163,6 @@
         <!-- Widget Simple -->
         <receiver
             android:name="net.fred.taskgame.widget.SimpleWidgetProvider"
-            android:description="@string/widget_simple_description"
             android:icon="@drawable/ic_launcher"
             android:label="@string/app_name">
             <intent-filter>
@@ -177,7 +176,6 @@
         <!-- Widget List -->
         <receiver
             android:name="net.fred.taskgame.widget.ListWidgetProvider"
-            android:description="@string/widget_list_description"
             android:icon="@drawable/ic_launcher"
             android:label="@string/app_name">
             <intent-filter>

@@ -91,8 +91,6 @@
     <string name="snooze">Rappeler plus tard</string>
     <string name="error_saving_attachments">Erreur d\'enregistrement des pièces jointes</string>
     <string name="shortcut_task_deleted">Le raccourci pointe vers une tâche supprimée</string>
-    <string name="widget_simple_description">Simple widget avec boutons</string>
-    <string name="widget_list_description">Widget avec liste déroulante et boutons</string>
     <string name="show_thumbnails">Afficher les miniatures des pièces jointes</string>
     <string name="edit">Éditer</string>
     <string name="eraser">Effacer</string>
