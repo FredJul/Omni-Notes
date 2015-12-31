@@ -24,9 +24,10 @@ import android.os.Parcelable;
 
 import com.google.gson.annotations.Expose;
 import com.raizlabs.android.dbflow.annotation.Column;
+import com.raizlabs.android.dbflow.annotation.PrimaryKey;
 import com.raizlabs.android.dbflow.annotation.Table;
-import com.raizlabs.android.dbflow.sql.builder.Condition;
 import com.raizlabs.android.dbflow.sql.language.Select;
+import com.raizlabs.android.dbflow.structure.BaseModel;
 
 import net.fred.taskgame.R;
 import net.fred.taskgame.utils.EqualityChecker;
@@ -36,13 +37,16 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-@Table(databaseName = AppDatabase.NAME)
-public class Task extends AutoIncrementModel implements Parcelable {
+@Table(database = AppDatabase.class)
+public class Task extends BaseModel implements Parcelable {
 
     public final static long NORMAL_POINT_REWARD = 50;
     public final static long HIGH_POINT_REWARD = 100;
     public final static long VERY_HIGH_POINT_REWARD = 200;
 
+    @PrimaryKey(autoincrement = true)
+    @Expose
+    public long id;
     @Column
     @Expose
     public String title = "";
@@ -130,7 +134,7 @@ public class Task extends AutoIncrementModel implements Parcelable {
 
     public List<Attachment> getAttachmentsList() {
         if (mAttachmentsList == null) {
-            mAttachmentsList = new Select().from(Attachment.class).where(Condition.column(Attachment$Table.TASKID).is(id)).queryList();
+            mAttachmentsList = new Select().from(Attachment.class).where(Attachment_Table.taskId.is(id)).queryList();
         }
 
         return mAttachmentsList;
@@ -148,7 +152,7 @@ public class Task extends AutoIncrementModel implements Parcelable {
         }
 
         if (mCategory == null) {
-            mCategory = new Select().from(Category.class).where(Condition.column(Category$Table.ID).is(categoryId)).querySingle();
+            mCategory = new Select().from(Category.class).where(Category_Table.id.is(categoryId)).querySingle();
         }
 
         return mCategory;

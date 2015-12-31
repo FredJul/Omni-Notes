@@ -38,7 +38,7 @@ import net.fred.taskgame.R;
 import net.fred.taskgame.async.TextWorkerTask;
 import net.fred.taskgame.model.Attachment;
 import net.fred.taskgame.model.Task;
-import net.fred.taskgame.model.Task$Table;
+import net.fred.taskgame.model.Task_Table;
 import net.fred.taskgame.model.holders.NoteViewHolder;
 import net.fred.taskgame.utils.BitmapHelper;
 import net.fred.taskgame.utils.Navigation;
@@ -202,7 +202,7 @@ public class TaskAdapter extends ArrayAdapter<Task> implements Insertable {
     /**
      * Choosing which date must be shown depending on sorting criteria
      *
-     * @return String ith formatted date
+     * @return String with formatted date
      */
     public static String getDateText(Context mContext, Task task) {
         String dateText;
@@ -210,12 +210,12 @@ public class TaskAdapter extends ArrayAdapter<Task> implements Insertable {
 
         // Reminder screen forces sorting
         if (Navigation.checkNavigation(Navigation.REMINDERS)) {
-            sort_column = Task$Table.ALARMDATE;
+            sort_column = Task_Table.alarmDate.getContainerKey();
         } else {
             sort_column = PrefUtils.getString(PrefUtils.PREF_SORTING_COLUMN, "");
         }
 
-        if (sort_column.equals(Task$Table.ALARMDATE)) {
+        if (sort_column.equals(Task_Table.alarmDate.getContainerKey())) {
             String alarmShort = task.getAlarmShort(mContext);
 
             if (alarmShort.length() == 0) {

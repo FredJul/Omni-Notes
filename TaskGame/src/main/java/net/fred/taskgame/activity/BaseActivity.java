@@ -40,17 +40,16 @@ import com.google.android.gms.games.snapshot.Snapshots;
 import com.google.example.games.basegameutils.BaseGameActivity;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.raizlabs.android.dbflow.sql.builder.Condition;
 import com.raizlabs.android.dbflow.sql.language.Delete;
 import com.raizlabs.android.dbflow.sql.language.Select;
 
 import net.fred.taskgame.R;
 import net.fred.taskgame.model.Attachment;
-import net.fred.taskgame.model.Attachment$Table;
+import net.fred.taskgame.model.Attachment_Table;
 import net.fred.taskgame.model.Category;
 import net.fred.taskgame.model.SyncData;
 import net.fred.taskgame.model.Task;
-import net.fred.taskgame.model.Task$Table;
+import net.fred.taskgame.model.Task_Table;
 import net.fred.taskgame.utils.Constants;
 import net.fred.taskgame.utils.Dog;
 import net.fred.taskgame.utils.GeocodeHelper;
@@ -251,7 +250,7 @@ public class BaseActivity extends BaseGameActivity implements LocationListener {
 						for (Quest quest : quests) {
 							Dog.i("quest: " + quest);
 							String questId = quest.getQuestId();
-							Task task = new Select().from(Task.class).where(Condition.column(Task$Table.QUESTID).eq(questId)).querySingle();
+							Task task = new Select().from(Task.class).where(Task_Table.questId.eq(questId)).querySingle();
 							if (task == null) {
 								task = new Task();
 							}
@@ -266,7 +265,7 @@ public class BaseActivity extends BaseGameActivity implements LocationListener {
 							task.save();
 
 							// Delete task's attachments
-							Delete.table(Attachment.class, Condition.column(Attachment$Table.TASKID).eq(task.id));
+							Delete.table(Attachment.class, Attachment_Table.taskId.eq(task.id));
 							Attachment attachment = new Attachment();
 							attachment.taskId = task.id;
 							attachment.mimeType = Constants.MIME_TYPE_IMAGE;

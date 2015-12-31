@@ -47,9 +47,9 @@ dependencies {
     compile project(':libs:BaseGameUtils')
     compile project(':libs:checklistview')
 
-    apt 'com.raizlabs.android:DBFlow-Compiler:2.2.1'
-    compile 'com.raizlabs.android:DBFlow-Core:2.2.1'
-    compile 'com.raizlabs.android:DBFlow:2.2.1'
+    apt 'com.github.Raizlabs.DBFlow:dbflow-processor:3.0.0-beta1'
+    compile "com.github.Raizlabs.DBFlow:dbflow-core:3.0.0-beta1"
+    compile "com.github.Raizlabs.DBFlow:dbflow:3.0.0-beta1"
     compile 'com.google.code.gson:gson:+'
 
     compile 'com.github.flavienlaurent.datetimepicker:library:+'
@@ -61,5 +61,6 @@ dependencies {
     compile 'com.getbase:floatingactionbutton:+'
     compile 'com.nhaarman.listviewanimations:lib-core:+@aar'
     compile 'com.nhaarman.listviewanimations:lib-manipulation:+@aar'
-    compile 'com.afollestad:material-dialogs:+'
+    compile 'com.github.afollestad.material-dialogs:core:+@aar'
+    compile 'com.android.support:recyclerview-v7:+'
 }

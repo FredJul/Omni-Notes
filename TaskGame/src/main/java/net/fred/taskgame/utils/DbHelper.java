@@ -18,20 +18,20 @@ package net.fred.taskgame.utils;
 
 import android.database.sqlite.SQLiteDoneException;
 
-import com.raizlabs.android.dbflow.sql.QueryBuilder;
-import com.raizlabs.android.dbflow.sql.builder.Condition;
-import com.raizlabs.android.dbflow.sql.builder.ConditionQueryBuilder;
+import com.raizlabs.android.dbflow.sql.language.ConditionGroup;
 import com.raizlabs.android.dbflow.sql.language.Delete;
+import com.raizlabs.android.dbflow.sql.language.OrderBy;
+import com.raizlabs.android.dbflow.sql.language.SQLCondition;
 import com.raizlabs.android.dbflow.sql.language.Select;
 import com.raizlabs.android.dbflow.sql.language.Update;
 
 import net.fred.taskgame.MainApplication;
 import net.fred.taskgame.model.Attachment;
-import net.fred.taskgame.model.Attachment$Table;
+import net.fred.taskgame.model.Attachment_Table;
 import net.fred.taskgame.model.Category;
-import net.fred.taskgame.model.Category$Table;
+import net.fred.taskgame.model.Category_Table;
 import net.fred.taskgame.model.Task;
-import net.fred.taskgame.model.Task$Table;
+import net.fred.taskgame.model.Task_Table;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -60,7 +60,7 @@ public class DbHelper {
      * @return
      */
     public static Task getTask(long id) {
-        return new Select().from(Task.class).where(Condition.column(Task$Table.ID).eq(id)).querySingle();
+        return new Select().from(Task.class).where(Task_Table.id.eq(id)).querySingle();
     }
 
 
@@ -87,11 +87,11 @@ public class DbHelper {
 
 
     public static List<Task> getTasksActive() {
-        return new Select().from(Task.class).where(Condition.column(Task$Table.ISTRASHED).isNot(1)).queryList();
+        return new Select().from(Task.class).where(Task_Table.isTrashed.eq(false)).queryList();
     }
 
     public static List<Task> getTasksTrashed() {
-        return new Select().from(Task.class).where(Condition.column(Task$Table.ISTRASHED).eq(1)).queryList();
+        return new Select().from(Task.class).where(Task_Table.isTrashed.eq(true)).queryList();
     }
 
 
@@ -101,7 +101,7 @@ public class DbHelper {
      * @return Tasks list
      */
     public static List<Task> getTasks() {
-        return getTasks(null);
+        return getTasks(new SQLCondition[]{});
     }
 
     /**
@@ -109,30 +109,24 @@ public class DbHelper {
      *
      * @return Tasks list
      */
-    public static List<Task> getTasks(ConditionQueryBuilder<Task> queryBuilder) {
-        ArrayList<String> sortColumns = new ArrayList<>();
+    public static List<Task> getTasks(SQLCondition... conditions) {
+        ArrayList<OrderBy> orderByList = new ArrayList<>();
 
         // Getting sorting criteria from preferences. Reminder screen forces sorting.
         if (Navigation.checkNavigation(Navigation.REMINDERS)) {
-            sortColumns.add(Task$Table.ALARMDATE);
+            orderByList.add(OrderBy.fromProperty(Task_Table.alarmDate).ascending());
         } else {
-            sortColumns.add(PrefUtils.getString(PrefUtils.PREF_SORTING_COLUMN, Task$Table.TITLE));
+            String sortKey = PrefUtils.getString(PrefUtils.PREF_SORTING_COLUMN, Task_Table.title.getContainerKey());
+
+            if (sortKey.equals(Task_Table.title.getContainerKey())) {
+                orderByList.add(OrderBy.fromProperty(Task_Table.title).ascending());
+                orderByList.add(OrderBy.fromProperty(Task_Table.content).ascending());
+            } else {
+                orderByList.add(OrderBy.fromProperty(Task_Table.getProperty(sortKey)).descending());
+            }
         }
 
-        boolean isAsc = false;
-
-        // In case of title sorting criteria it must be handled empty title by concatenating content
-        if (sortColumns.contains(Task$Table.TITLE)) {
-            isAsc = true;
-            sortColumns.add(Task$Table.CONTENT);
-        }
-
-        // In case of reminder sorting criteria the empty reminder tasks must be moved on bottom of results
-        if (sortColumns.contains(Task$Table.ALARMDATE)) {
-            isAsc = true;
-        }
-
-        return new Select().from(Task.class).where(queryBuilder).orderBy(isAsc, sortColumns.toArray(new String[]{})).queryList();
+        return new Select().from(Task.class).where(conditions).orderByAll(orderByList).queryList();
     }
 
     /**
@@ -158,7 +152,7 @@ public class DbHelper {
         }
 
         // Delete task's attachments
-        Delete.table(Attachment.class, Condition.column(Attachment$Table.TASKID).eq(task.id));
+        Delete.table(Attachment.class, Attachment_Table.taskId.eq(task.id));
 
         task.delete();
     }
@@ -179,21 +173,17 @@ public class DbHelper {
      * @return Tasks list
      */
     public static List<Task> getTasksByPattern(String pattern) {
-        ConditionQueryBuilder<Task> queryBuilder = new ConditionQueryBuilder<>(Task.class);
+        ArrayList<SQLCondition> conditionList = new ArrayList<>();
 
-        if (Navigation.checkNavigation(Navigation.TRASH)) {
-            queryBuilder.addCondition(Condition.column(Task$Table.ISTRASHED).is(1));
-        } else {
-            queryBuilder.addCondition(Condition.column(Task$Table.ISTRASHED).isNot(1));
-        }
+        conditionList.add(Task_Table.isTrashed.is(Navigation.checkNavigation(Navigation.TRASH)));
 
         if (Navigation.checkNavigation(Navigation.CATEGORY)) {
-            queryBuilder.addCondition(Condition.column(Task$Table.CATEGORYID).eq(Navigation.getCategory()));
+            conditionList.add(Task_Table.categoryId.eq(Navigation.getCategory()));
         }
 
-        queryBuilder.addCondition(Condition.column(Task$Table.TITLE).like("%" + pattern + "%")).or(Condition.column(Task$Table.CONTENT).like("%" + pattern + "%"));
+        conditionList.add(ConditionGroup.clause().and(Task_Table.title.like("%" + pattern + "%")).or(Task_Table.content.like("%" + pattern + "%")));
 
-        return getTasks(queryBuilder);
+        return getTasks(conditionList.toArray(new SQLCondition[]{}));
     }
 
 
@@ -204,15 +194,17 @@ public class DbHelper {
      * @return Tasks list
      */
     public static List<Task> getTasksWithReminder(boolean filterPastReminders) {
-        ConditionQueryBuilder<Task> queryBuilder = new ConditionQueryBuilder<>(Task.class);
+        ArrayList<SQLCondition> conditionList = new ArrayList<>();
+
         if (filterPastReminders) {
-            queryBuilder.addCondition(Task$Table.ALARMDATE, ">=", Calendar.getInstance().getTimeInMillis());
+            conditionList.add(Task_Table.alarmDate.greaterThanOrEq(Calendar.getInstance().getTimeInMillis()));
         } else {
-            queryBuilder.addCondition(Condition.column(Task$Table.ALARMDATE).isNotNull());
+            conditionList.add(Task_Table.alarmDate.isNotNull());
         }
 
-        queryBuilder.addCondition(Condition.column(Task$Table.ISTRASHED).isNot(1));
-        return getTasks(queryBuilder);
+        conditionList.add(Task_Table.isTrashed.isNot(true));
+
+        return getTasks(conditionList.toArray(new SQLCondition[]{}));
     }
 
     /**
@@ -222,10 +214,12 @@ public class DbHelper {
      * @return List of tasks with requested category
      */
     public static List<Task> getTasksByCategory(long categoryId) {
-        ConditionQueryBuilder<Task> queryBuilder = new ConditionQueryBuilder<>(Task.class);
-        queryBuilder.addCondition(Condition.column(Task$Table.CATEGORYID).eq(categoryId));
-        queryBuilder.addCondition(Condition.column(Task$Table.ISTRASHED).isNot(1));
-        return getTasks(queryBuilder);
+        ArrayList<SQLCondition> conditionList = new ArrayList<>();
+
+        conditionList.add(Task_Table.categoryId.eq(categoryId));
+        conditionList.add(Task_Table.isTrashed.isNot(true));
+
+        return getTasks(conditionList.toArray(new SQLCondition[]{}));
     }
 
     /**
@@ -234,18 +228,19 @@ public class DbHelper {
      * @return List of categories
      */
     public static List<Category> getCategories() {
-        QueryBuilder groupBy = new QueryBuilder().appendArray(Category$Table.ID, Category$Table.NAME, Category$Table.DESCRIPTION, Category$Table.COLOR);
-        return new Select().from(Category.class).where().groupBy(groupBy).orderBy("IFNULL(NULLIF(" + Category$Table.NAME + ", ''),'zzzzzzzz')").queryList();
+//        return new Select().from(Category.class).where().groupBy(Category_Table.id, Category_Table.name, Category_Table.description, Category_Table.color)
+//                .orderBy("IFNULL(NULLIF(" + Category_Table.name.getContainerKey() + ", ''),'zzzzzzzz')").queryList();
+        return new Select().from(Category.class).queryList();
     }
 
     public static Category getCategory(long categoryId) {
-        return new Select().from(Category.class).where(Condition.column(Category$Table.ID).eq(categoryId)).querySingle();
+        return new Select().from(Category.class).where(Category_Table.id.eq(categoryId)).querySingle();
     }
 
 
     public static long getCategorizedCount(Category category) {
         try {
-            return new Select().from(Task.class).where(Condition.column(Task$Table.CATEGORYID).eq(category.id)).count();
+            return new Select().from(Task.class).where(Task_Table.categoryId.eq(category.id)).count();
         } catch (SQLiteDoneException e) {
             // I do not know why this happen when count=0
             return 0;
@@ -253,7 +248,7 @@ public class DbHelper {
     }
 
     public static void deleteCategoryAsync(Category category) {
-        new Update(Task.class).set(Condition.column(Task$Table.CATEGORYID).is(null)).where(Condition.column(Task$Table.CATEGORYID).eq(category.id));
+        new Update(Task.class).set(Task_Table.categoryId.isNull()).where(Task_Table.categoryId.eq(category.id));
         category.async().delete();
     }
 }

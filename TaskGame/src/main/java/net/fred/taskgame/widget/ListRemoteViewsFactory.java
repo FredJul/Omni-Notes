@@ -28,14 +28,11 @@ import android.view.View;
 import android.widget.RemoteViews;
 import android.widget.RemoteViewsService.RemoteViewsFactory;
 
-import com.raizlabs.android.dbflow.sql.builder.Condition;
-import com.raizlabs.android.dbflow.sql.builder.ConditionQueryBuilder;
-
 import net.fred.taskgame.MainApplication;
 import net.fred.taskgame.R;
 import net.fred.taskgame.model.Attachment;
 import net.fred.taskgame.model.Task;
-import net.fred.taskgame.model.Task$Table;
+import net.fred.taskgame.model.Task_Table;
 import net.fred.taskgame.model.adapters.TaskAdapter;
 import net.fred.taskgame.utils.BitmapHelper;
 import net.fred.taskgame.utils.Constants;
@@ -74,8 +71,7 @@ public class ListRemoteViewsFactory implements RemoteViewsFactory {
     private void getTasks() {
         long categoryId = PrefUtils.getLong(PrefUtils.PREF_WIDGET_PREFIX + appWidgetId, -1);
         if (categoryId != -1) {
-            ConditionQueryBuilder<Task> queryBuilder = new ConditionQueryBuilder<>(Task.class, Condition.column(Task$Table.CATEGORYID).eq(categoryId));
-            tasks = DbHelper.getTasks(queryBuilder);
+            tasks = DbHelper.getTasks(Task_Table.categoryId.eq(categoryId));
         } else {
             tasks = DbHelper.getTasks();
         }

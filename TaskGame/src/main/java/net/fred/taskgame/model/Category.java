@@ -21,11 +21,16 @@ import android.os.Parcelable;
 
 import com.google.gson.annotations.Expose;
 import com.raizlabs.android.dbflow.annotation.Column;
+import com.raizlabs.android.dbflow.annotation.PrimaryKey;
 import com.raizlabs.android.dbflow.annotation.Table;
+import com.raizlabs.android.dbflow.structure.BaseModel;
 
-@Table(databaseName = AppDatabase.NAME)
-public class Category extends AutoIncrementModel implements Parcelable {
+@Table(database = AppDatabase.class)
+public class Category extends BaseModel implements Parcelable {
 
+    @PrimaryKey(autoincrement = true)
+    @Expose
+    public long id;
     @Column
     @Expose
     public String name = "";

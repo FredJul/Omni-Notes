@@ -7,7 +7,7 @@ buildscript {
     dependencies {
         classpath 'com.android.tools.build:gradle:+'
         classpath 'com.droidtitan:lint-cleaner-plugin:+'
-        classpath 'com.neenbedankt.gradle.plugins:android-apt:1.4'
+        classpath 'com.neenbedankt.gradle.plugins:android-apt:1.8'
     }
 }
 
@@ -15,6 +15,6 @@ allprojects {
     repositories {
         mavenLocal()
         jcenter()
-        maven { url "https://raw.github.com/Raizlabs/maven-releases/master/releases" }
+        maven { url "https://jitpack.io" }
     }
 }

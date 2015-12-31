@@ -4,6 +4,7 @@ import android.os.Handler;
 import android.os.SystemClock;
 
 import com.raizlabs.android.dbflow.runtime.FlowContentObserver;
+import com.raizlabs.android.dbflow.sql.language.SQLCondition;
 import com.raizlabs.android.dbflow.structure.BaseModel;
 import com.raizlabs.android.dbflow.structure.Model;
 
@@ -38,7 +39,7 @@ public abstract class ThrottledFlowContentObserver extends FlowContentObserver {
         }
 
         @Override
-        public void onModelStateChanged(final Class<? extends Model> model, final BaseModel.Action action) {
+        public void onModelStateChanged(Class<? extends Model> table, BaseModel.Action action, SQLCondition[] primaryKeyValues) {
             long now = SystemClock.elapsedRealtime();
             if (now - mLastUpdate > mUpdateThrottle) {
                 mLastUpdate = now;
