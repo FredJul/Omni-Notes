@@ -113,20 +113,6 @@
                         android:paddingStart="@dimen/padding_half"
                         android:paddingEnd="@dimen/padding_half">
 
-                        <TextView
-                            android:id="@+id/location"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginBottom="5dp"
-                            android:background="@drawable/icon_selector"
-                            android:freezesText="true"
-                            android:gravity="center_vertical"
-                            android:paddingBottom="10dp"
-                            android:paddingTop="10dp"
-                            android:textColor="@color/location_text"
-                            android:textAppearance="@style/Text.Small"
-                            android:visibility="gone"/>
-
                         <LinearLayout
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"

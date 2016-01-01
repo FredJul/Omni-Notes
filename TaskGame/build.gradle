@@ -63,4 +63,7 @@ dependencies {
     compile 'com.nhaarman.listviewanimations:lib-manipulation:+@aar'
     compile 'com.github.afollestad.material-dialogs:core:+@aar'
     compile 'com.android.support:recyclerview-v7:+'
+    compile 'com.android.support:design:+'
+    compile 'io.reactivex:rxjava:+'
+    compile 'com.tbruyelle.rxpermissions:rxpermissions:0.5.0@aar'
 }

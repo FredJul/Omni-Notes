@@ -94,18 +94,6 @@
             android:text="@string/sketch"
             android:textSize="@dimen/attachment_dialog_text_size"
             android:textColor="@color/text_gray"/>
-
-        <TextView
-            android:id="@+id/location"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@drawable/icon_selector"
-            android:drawableLeft="@drawable/ic_pin_drop_grey600_24dp"
-            android:drawablePadding="@dimen/attachment_dialog_drawable_padding"
-            android:padding="@dimen/attachment_dialog_items_padding"
-            android:text="@string/location"
-            android:textSize="@dimen/attachment_dialog_text_size"
-            android:textColor="@color/text_gray"/>
     </LinearLayout>
 
 </ScrollView>

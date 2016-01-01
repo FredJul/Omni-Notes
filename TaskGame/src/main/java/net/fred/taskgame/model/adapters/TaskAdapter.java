@@ -115,7 +115,6 @@ public class TaskAdapter extends ArrayAdapter<Task> implements Insertable {
             holder.content = (TextView) convertView.findViewById(R.id.note_content);
             holder.date = (TextView) convertView.findViewById(R.id.note_date);
 
-            holder.locationIcon = (ImageView) convertView.findViewById(R.id.locationIcon);
             holder.alarmIcon = (ImageView) convertView.findViewById(R.id.alarmIcon);
 
             holder.attachmentThumbnail = (SquareImageView) convertView.findViewById(R.id.attachmentThumbnail);
@@ -168,9 +167,6 @@ public class TaskAdapter extends ArrayAdapter<Task> implements Insertable {
 
 
     private void initIcons(Task task, NoteViewHolder holder) {
-        // ...the location
-        holder.locationIcon.setVisibility(task.longitude != 0 ? View.VISIBLE : View.GONE);
-
         // ...the presence of an alarm
         holder.alarmIcon.setVisibility(task.alarmDate != 0 ? View.VISIBLE : View.GONE);
     }
@@ -197,7 +193,6 @@ public class TaskAdapter extends ArrayAdapter<Task> implements Insertable {
 
         }
     }
-
 
     /**
      * Choosing which date must be shown depending on sorting criteria

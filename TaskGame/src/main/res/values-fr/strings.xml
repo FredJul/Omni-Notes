@@ -47,11 +47,8 @@
     <string name="attachment">Pièce jointe</string>
     <string name="camera">Appareil photo</string>
     <string name="delete_selected_image">Supprimer la pièce jointe sélectionnée ?</string>
-    <string name="location">Localisation</string>
-    <string name="remove_location">Supprimer la localisation ?</string>
     <string name="remove_reminder">Supprimer le rappel ?</string>
     <string name="add_reminder">Ajouter un rappel</string>
-    <string name="location_not_found">Localisation non définie</string>
     <string name="record">Enregistrer</string>
     <string name="stop">Arrêter</string>
     <string name="storage_not_available">Stockage non disponible</string>
@@ -100,10 +97,10 @@
     <string name="empty_trash">Vider la corbeille</string>
     <string name="empty_trash_confirmation">Confirmer la suppression de toutes les tâches de la corbeille ?</string>
     <string name="select_all">Tout sélectionner</string>
-    <string name="search_location">Rechercher un lieu</string>
-    <string name="use_current_location">Utiliser la localisation actuelle</string>
     <string name="filter">Filtrer</string>
     <string name="remove_filter">Supprimer le filtre</string>
+    <string name="permission_audio_recording">La permission d\'utiliser le microphone est nécessaire pour enregistrer des tâches audios</string>
+    <string name="permission_not_granted">Permission refusée</string>
     <string name="settings">Paramètres</string>
     <string name="settings_max_video_size_summary">Taille maximale allouée en Mo</string>
     <string name="minutes">minutes</string>

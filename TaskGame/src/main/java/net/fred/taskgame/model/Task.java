@@ -67,15 +67,6 @@ public class Task extends BaseModel implements Parcelable {
     public long alarmDate;
     @Column
     @Expose
-    public double latitude;
-    @Column
-    @Expose
-    public double longitude;
-    @Column
-    @Expose
-    public String address = "";
-    @Column
-    @Expose
     public boolean isChecklist;
     @Column
     @Expose
@@ -101,9 +92,6 @@ public class Task extends BaseModel implements Parcelable {
         lastModificationDate = task.lastModificationDate;
         isTrashed = task.isTrashed;
         alarmDate = task.alarmDate;
-        latitude = task.latitude;
-        longitude = task.longitude;
-        address = task.address;
         isChecklist = task.isChecklist;
         categoryId = task.categoryId;
         pointReward = task.pointReward;
@@ -122,9 +110,6 @@ public class Task extends BaseModel implements Parcelable {
         lastModificationDate = in.readLong();
         isTrashed = in.readInt() == 1;
         alarmDate = in.readLong();
-        latitude = in.readDouble();
-        longitude = in.readDouble();
-        address = in.readString();
         isChecklist = in.readInt() == 1;
         categoryId = in.readLong();
         pointReward = in.readLong();
@@ -173,9 +158,9 @@ public class Task extends BaseModel implements Parcelable {
         }
 
         Object[] a = {id, title, content, creationDate, lastModificationDate, isTrashed,
-                alarmDate, latitude, longitude, address, isChecklist, categoryId, pointReward, getAttachmentsList()};
+                alarmDate, isChecklist, categoryId, pointReward, getAttachmentsList()};
         Object[] b = {task.id, task.title, task.content, task.creationDate, task.lastModificationDate, task.isTrashed,
-                task.alarmDate, task.latitude, task.longitude, task.address, task.isChecklist, task.categoryId, task.pointReward, task.getAttachmentsList()};
+                task.alarmDate, task.isChecklist, task.categoryId, task.pointReward, task.getAttachmentsList()};
         if (EqualityChecker.check(a, b)) {
             res = true;
         }
@@ -280,9 +265,6 @@ public class Task extends BaseModel implements Parcelable {
         parcel.writeLong(lastModificationDate);
         parcel.writeInt(isTrashed ? 1 : 0);
         parcel.writeLong(alarmDate);
-        parcel.writeDouble(latitude);
-        parcel.writeDouble(longitude);
-        parcel.writeString(address);
         parcel.writeInt(isChecklist ? 1 : 0);
         parcel.writeLong(categoryId);
         parcel.writeLong(pointReward);

@@ -17,9 +17,7 @@
 
 package net.fred.taskgame.model.listeners;
 
+public interface OnPermissionRequestedListener {
 
-public interface OnGeoUtilResultListener {
-    void onAddressResolved(String address);
-
-    void onCoordinatesResolved(double[] coords);
+    void onPermissionGranted();
 }

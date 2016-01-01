@@ -33,7 +33,6 @@ public class NoteViewHolder {
     public TextView content;
     public TextView date;
 
-    public ImageView locationIcon;
     public ImageView alarmIcon;
 
     public SquareImageView attachmentThumbnail;

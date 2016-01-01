@@ -16,6 +16,7 @@
  */
 package net.fred.taskgame.fragment;
 
+import android.Manifest;
 import android.app.Activity;
 import android.app.DatePickerDialog.OnDateSetListener;
 import android.app.TimePickerDialog.OnTimeSetListener;
@@ -64,7 +65,6 @@ import android.view.animation.AnimationUtils;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.AdapterView.OnItemLongClickListener;
-import android.widget.AutoCompleteTextView;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -75,7 +75,6 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.bumptech.glide.load.resource.bitmap.GlideBitmapDrawable;
 
@@ -91,20 +90,18 @@ import net.fred.taskgame.model.Category;
 import net.fred.taskgame.model.Task;
 import net.fred.taskgame.model.adapters.AttachmentAdapter;
 import net.fred.taskgame.model.adapters.NavDrawerCategoryAdapter;
-import net.fred.taskgame.model.adapters.PlacesAutoCompleteAdapter;
 import net.fred.taskgame.model.listeners.OnAttachingFileListener;
-import net.fred.taskgame.model.listeners.OnGeoUtilResultListener;
+import net.fred.taskgame.model.listeners.OnPermissionRequestedListener;
 import net.fred.taskgame.model.listeners.OnReminderPickedListener;
 import net.fred.taskgame.model.listeners.OnTaskSaved;
-import net.fred.taskgame.utils.ConnectionHelper;
 import net.fred.taskgame.utils.Constants;
 import net.fred.taskgame.utils.CroutonHelper;
 import net.fred.taskgame.utils.DbHelper;
 import net.fred.taskgame.utils.Display;
 import net.fred.taskgame.utils.Dog;
-import net.fred.taskgame.utils.GeocodeHelper;
 import net.fred.taskgame.utils.IntentChecker;
 import net.fred.taskgame.utils.KeyboardUtils;
+import net.fred.taskgame.utils.PermissionsHelper;
 import net.fred.taskgame.utils.PrefUtils;
 import net.fred.taskgame.utils.ReminderHelper;
 import net.fred.taskgame.utils.StorageHelper;
@@ -127,7 +124,7 @@ import static com.nineoldandroids.view.ViewPropertyAnimator.animate;
 
 
 public class DetailFragment extends Fragment implements
-        OnReminderPickedListener, OnTouchListener, OnAttachingFileListener, TextWatcher, CheckListChangedListener, OnTaskSaved, OnGeoUtilResultListener {
+        OnReminderPickedListener, OnTouchListener, OnAttachingFileListener, TextWatcher, CheckListChangedListener, OnTaskSaved {
 
     private static final int TAKE_PHOTO = 1;
     private static final int TAKE_VIDEO = 2;
@@ -145,7 +142,6 @@ public class DetailFragment extends Fragment implements
     private ExpandableHeightGridView mGridView;
     private PopupWindow attachmentDialog;
     private EditText title, content;
-    private TextView locationTextView;
     private Task mTask;
     private Task mOriginalTask;
     // Reminder
@@ -394,52 +390,6 @@ public class DetailFragment extends Fragment implements
 
         content = initContent();
 
-        // Initialization of location TextView
-        locationTextView = (TextView) getView().findViewById(R.id.location);
-
-        if (isTaskLocationValid()) {
-            if (!TextUtils.isEmpty(mTask.address)) {
-                locationTextView.setVisibility(View.VISIBLE);
-                locationTextView.setText(mTask.address);
-            } else {
-                GeocodeHelper.getAddressFromCoordinates(getActivity(), mTask.latitude, mTask.longitude, this);
-            }
-        }
-
-        locationTextView.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                String uriString = "geo:" + mTask.latitude + ',' + mTask.longitude
-                        + "?q=" + mTask.latitude + ',' + mTask.longitude;
-                Intent locationIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(uriString));
-                if (!IntentChecker.isAvailable(getActivity(), locationIntent, null)) {
-                    uriString = "http://maps.google.com/maps?q=" + mTask.latitude + ',' + mTask.longitude;
-                    locationIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(uriString));
-                }
-                startActivity(locationIntent);
-            }
-        });
-        locationTextView.setOnLongClickListener(new OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View v) {
-                MaterialDialog.Builder builder = new MaterialDialog.Builder(getActivity());
-                builder.content(R.string.remove_location);
-                builder.positiveText(R.string.ok);
-                builder.callback(new MaterialDialog.ButtonCallback() {
-                    @Override
-                    public void onPositive(MaterialDialog materialDialog) {
-                        mTask.latitude = 0.;
-                        mTask.longitude = 0.;
-                        fade(locationTextView, false);
-                    }
-                });
-                MaterialDialog dialog = builder.build();
-                dialog.show();
-                return true;
-            }
-        });
-
-
         // Some fields can be filled by third party application and are always shown
         mGridView = (ExpandableHeightGridView) getView().findViewById(R.id.gridview);
         mAttachmentAdapter = new AttachmentAdapter(getActivity(), mTask.getAttachmentsList(), mGridView);
@@ -670,108 +620,8 @@ public class DetailFragment extends Fragment implements
         }
     }
 
-    private void setAddress() {
-        if (!ConnectionHelper.isInternetAvailable(getActivity())) {
-            mTask.latitude = getMainActivity().currentLatitude;
-            mTask.longitude = getMainActivity().currentLongitude;
-            onAddressResolved("");
-            return;
-        }
-        LayoutInflater inflater = getActivity().getLayoutInflater();
-        View v = inflater.inflate(R.layout.dialog_location, null);
-        final AutoCompleteTextView autoCompView = (AutoCompleteTextView) v.findViewById(R.id.auto_complete_location);
-        autoCompView.setHint(getString(R.string.search_location));
-        autoCompView.setAdapter(new PlacesAutoCompleteAdapter(getActivity(), R.layout.simple_text_layout));
-        final MaterialDialog dialog = new MaterialDialog.Builder(getActivity())
-                .customView(autoCompView, false)
-                .positiveText(R.string.use_current_location)
-                .callback(new MaterialDialog.ButtonCallback() {
-                    @Override
-                    public void onPositive(MaterialDialog materialDialog) {
-                        if (TextUtils.isEmpty(autoCompView.getText().toString())) {
-                            double lat = getMainActivity().currentLatitude;
-                            double lon = getMainActivity().currentLongitude;
-                            mTask.latitude = lat;
-                            mTask.longitude = lon;
-                            GeocodeHelper.getAddressFromCoordinates(getActivity(), mTask.latitude,
-                                    mTask.longitude, DetailFragment.this);
-                        } else {
-                            GeocodeHelper.getCoordinatesFromAddress(getActivity(), autoCompView.getText().toString(),
-                                    DetailFragment.this);
-                        }
-                    }
-                })
-                .build();
-        autoCompView.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-            }
-
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-                if (s.length() != 0) {
-                    dialog.setActionButton(DialogAction.POSITIVE, getString(R.string.confirm));
-                } else {
-                    dialog.setActionButton(DialogAction.POSITIVE, getString(R.string.use_current_location));
-                }
-            }
-
-
-            @Override
-            public void afterTextChanged(Editable s) {
-            }
-        });
-        dialog.show();
-    }
-
-
     private MainActivity getMainActivity() {
         return (MainActivity) getActivity();
-    }
-
-
-    @Override
-    public void onAddressResolved(String address) {
-        if (TextUtils.isEmpty(address)) {
-            if (!isTaskLocationValid()) {
-                getMainActivity().showMessage(R.string.location_not_found, CroutonHelper.ALERT);
-                return;
-            }
-            address = mTask.latitude + ", " + mTask.longitude;
-        }
-        if (!GeocodeHelper.areCoordinates(address)) {
-            mTask.address = address;
-        }
-        locationTextView.setVisibility(View.VISIBLE);
-        locationTextView.setText(address);
-        fade(locationTextView, true);
-    }
-
-
-    @Override
-    public void onCoordinatesResolved(double[] coords) {
-        if (coords != null) {
-            mTask.latitude = coords[0];
-            mTask.longitude = coords[1];
-            GeocodeHelper.getAddressFromCoordinates(getActivity(), coords[0], coords[1], new OnGeoUtilResultListener() {
-                @Override
-                public void onAddressResolved(String address) {
-                    if (!GeocodeHelper.areCoordinates(address)) {
-                        mTask.address = address;
-                    }
-                    locationTextView.setVisibility(View.VISIBLE);
-                    locationTextView.setText(address);
-                    fade(locationTextView, true);
-                }
-
-                @Override
-                public void onCoordinatesResolved(double[] coords) {
-                }
-            });
-        } else {
-            getMainActivity().showMessage(R.string.location_not_found, CroutonHelper.ALERT);
-        }
     }
 
     @Override
@@ -1050,9 +900,6 @@ public class DetailFragment extends Fragment implements
         // Sketch
         android.widget.TextView sketchSelection = (android.widget.TextView) layout.findViewById(R.id.sketch);
         sketchSelection.setOnClickListener(new AttachmentOnClickListener());
-        // Location
-        android.widget.TextView locationSelection = (android.widget.TextView) layout.findViewById(R.id.location);
-        locationSelection.setOnClickListener(new AttachmentOnClickListener());
 
         try {
             attachmentDialog.showAsDropDown(anchor);
@@ -1413,32 +1260,43 @@ public class DetailFragment extends Fragment implements
         }
     }
 
-    private void startRecording() {
-        File f = StorageHelper.createNewAttachmentFile(getActivity(), Constants.MIME_TYPE_AUDIO_EXT);
-        if (f == null) {
-            getMainActivity().showMessage(R.string.error, CroutonHelper.ALERT);
-            return;
-        }
+    private void startRecording(final View v) {
+        PermissionsHelper.requestPermission(getActivity(), Manifest.permission.RECORD_AUDIO,
+                R.string.permission_audio_recording, getActivity().findViewById(R.id.crouton_handle), new OnPermissionRequestedListener() {
+                    @Override
+                    public void onPermissionGranted() {
+                        isRecording = true;
+                        android.widget.TextView mTextView = (android.widget.TextView) v;
+                        mTextView.setText(getString(R.string.stop));
+                        mTextView.setTextColor(Color.parseColor("#ff0000"));
 
-        if (mRecorder == null) {
-            mRecorder = new MediaRecorder();
-            mRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
-            mRecorder.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4);
-            mRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_WB);
-            mRecorder.setAudioEncodingBitRate(16);
-            mRecorder.setAudioSamplingRate(44100);
-        }
-        recordName = f.getAbsolutePath();
-        mRecorder.setOutputFile(recordName);
+                        File f = StorageHelper.createNewAttachmentFile(getActivity(), Constants.MIME_TYPE_AUDIO_EXT);
+                        if (f == null) {
+                            getMainActivity().showMessage(R.string.error, CroutonHelper.ALERT);
+                            return;
+                        }
 
-        try {
-            audioRecordingTimeStart = Calendar.getInstance().getTimeInMillis();
-            mRecorder.prepare();
-            mRecorder.start();
-        } catch (IOException | IllegalStateException e) {
-            Dog.e("prepare() failed", e);
-            getMainActivity().showMessage(R.string.error, Style.ALERT);
-        }
+                        if (mRecorder == null) {
+                            mRecorder = new MediaRecorder();
+                            mRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
+                            mRecorder.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4);
+                            mRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_WB);
+                            mRecorder.setAudioEncodingBitRate(16);
+                            mRecorder.setAudioSamplingRate(44100);
+                        }
+                        recordName = f.getAbsolutePath();
+                        mRecorder.setOutputFile(recordName);
+
+                        try {
+                            audioRecordingTimeStart = Calendar.getInstance().getTimeInMillis();
+                            mRecorder.prepare();
+                            mRecorder.start();
+                        } catch (IOException | IllegalStateException e) {
+                            Dog.e("prepare() failed", e);
+                            getMainActivity().showMessage(R.string.error, Style.ALERT);
+                        }
+                    }
+                });
     }
 
     private void stopRecording() {
@@ -1594,11 +1452,6 @@ public class DetailFragment extends Fragment implements
         return mTask;
     }
 
-    private boolean isTaskLocationValid() {
-        return mTask.latitude != 0
-                && mTask.longitude != 0;
-    }
-
     /**
      * Manages clicks on attachment dialog
      */
@@ -1618,7 +1471,7 @@ public class DetailFragment extends Fragment implements
                         android.widget.TextView mTextView = (android.widget.TextView) v;
                         mTextView.setText(getString(R.string.stop));
                         mTextView.setTextColor(Color.parseColor("#ff0000"));
-                        startRecording();
+                        startRecording(v);
                     } else {
                         isRecording = false;
                         stopRecording();
@@ -1647,10 +1500,6 @@ public class DetailFragment extends Fragment implements
                     break;
                 case R.id.sketch:
                     takeSketch(null);
-                    attachmentDialog.dismiss();
-                    break;
-                case R.id.location:
-                    setAddress();
                     attachmentDialog.dismiss();
                     break;
             }
