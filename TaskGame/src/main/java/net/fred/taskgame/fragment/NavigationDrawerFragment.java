@@ -48,12 +48,12 @@ import net.fred.taskgame.model.NavigationItem;
 import net.fred.taskgame.model.Task;
 import net.fred.taskgame.model.adapters.NavDrawerAdapter;
 import net.fred.taskgame.model.adapters.NavDrawerCategoryAdapter;
-import net.fred.taskgame.utils.CroutonHelper;
 import net.fred.taskgame.utils.DbHelper;
 import net.fred.taskgame.utils.Display;
 import net.fred.taskgame.utils.Navigation;
 import net.fred.taskgame.utils.PrefUtils;
 import net.fred.taskgame.utils.ThrottledFlowContentObserver;
+import net.fred.taskgame.utils.UiUtils;
 import net.fred.taskgame.view.NonScrollableListView;
 
 import java.util.ArrayList;
@@ -309,7 +309,7 @@ public class NavigationDrawerFragment extends Fragment {
                         mActivity.editTag((Category) item);
                     }
                 } else {
-                    getMainActivity().showMessage(R.string.category_deleted, CroutonHelper.ALERT);
+                    UiUtils.showMessage(getActivity(), R.string.category_deleted);
                 }
                 return true;
             }

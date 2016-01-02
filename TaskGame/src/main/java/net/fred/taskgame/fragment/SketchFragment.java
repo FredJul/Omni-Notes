@@ -52,7 +52,7 @@ import com.larswerkman.holocolorpicker.SVBar;
 import net.fred.taskgame.R;
 import net.fred.taskgame.activity.MainActivity;
 import net.fred.taskgame.model.listeners.OnDrawChangedListener;
-import net.fred.taskgame.utils.CroutonHelper;
+import net.fred.taskgame.utils.UiUtils;
 import net.fred.taskgame.view.SketchView;
 
 import java.io.File;
@@ -243,7 +243,7 @@ public class SketchFragment extends Fragment implements OnDrawChangedListener {
                 if (bitmapFile.exists()) {
                     getMainActivity().sketchUri = uri;
                 } else {
-                    getMainActivity().showMessage(R.string.error, CroutonHelper.ALERT);
+                    UiUtils.showErrorMessage(getActivity(), R.string.error);
                 }
 
             } catch (Exception e) {

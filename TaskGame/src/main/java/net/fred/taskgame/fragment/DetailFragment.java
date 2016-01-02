@@ -37,6 +37,7 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.MenuItemCompat;
@@ -95,7 +96,6 @@ import net.fred.taskgame.model.listeners.OnPermissionRequestedListener;
 import net.fred.taskgame.model.listeners.OnReminderPickedListener;
 import net.fred.taskgame.model.listeners.OnTaskSaved;
 import net.fred.taskgame.utils.Constants;
-import net.fred.taskgame.utils.CroutonHelper;
 import net.fred.taskgame.utils.DbHelper;
 import net.fred.taskgame.utils.Display;
 import net.fred.taskgame.utils.Dog;
@@ -116,7 +116,6 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
-import de.keyboardsurfer.android.widget.crouton.Style;
 import it.feio.android.checklistview.ChecklistManager;
 import it.feio.android.checklistview.interfaces.CheckListChangedListener;
 
@@ -156,7 +155,7 @@ public class DetailFragment extends Fragment implements
     private ChecklistManager mChecklistManager;
     // Values to print result
     private String exitMessage;
-    private Style exitCroutonStyle = CroutonHelper.CONFIRM;
+    private UiUtils.MessageType exitMessageStyle = UiUtils.MessageType.TYPE_INFO;
     // Flag to check if after editing it will return to ListActivity or not
     // and in the last case a Toast will be shown instead than Crouton
     private boolean afterSavedReturnsToList = true;
@@ -415,7 +414,7 @@ public class DetailFragment extends Fragment implements
                         } catch (Exception ignored) {
                         }
                     } else {
-                        getMainActivity().showMessage(R.string.feature_not_available_on_this_device, CroutonHelper.WARN);
+                        UiUtils.showWarningMessage(getActivity(), R.string.feature_not_available_on_this_device);
                     }
                 }
 
@@ -666,8 +665,8 @@ public class DetailFragment extends Fragment implements
             getActivity().finish();
             return true;
         } else {
-            if (!TextUtils.isEmpty(exitMessage) && exitCroutonStyle != null) {
-                getMainActivity().showMessage(exitMessage, exitCroutonStyle);
+            if (!TextUtils.isEmpty(exitMessage) && exitMessageStyle != null) {
+                UiUtils.showMessage(getActivity(), exitMessage, exitMessageStyle);
             }
         }
 
@@ -904,8 +903,7 @@ public class DetailFragment extends Fragment implements
         try {
             attachmentDialog.showAsDropDown(anchor);
         } catch (Exception e) {
-            getMainActivity().showMessage(R.string.error, CroutonHelper.ALERT);
-
+            Snackbar.make(getActivity().findViewById(R.id.content), R.string.error, Snackbar.LENGTH_SHORT).show();
         }
     }
 
@@ -913,14 +911,13 @@ public class DetailFragment extends Fragment implements
         // Checks for camera app available
         Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         if (!IntentChecker.isAvailable(getActivity(), intent, new String[]{PackageManager.FEATURE_CAMERA})) {
-            getMainActivity().showMessage(R.string.feature_not_available_on_this_device, CroutonHelper.ALERT);
-
+            UiUtils.showWarningMessage(getActivity(), R.string.feature_not_available_on_this_device);
             return;
         }
         // Checks for created file validity
         File f = StorageHelper.createNewAttachmentFile(getActivity(), Constants.MIME_TYPE_IMAGE_EXT);
         if (f == null) {
-            getMainActivity().showMessage(R.string.error, CroutonHelper.ALERT);
+            UiUtils.showErrorMessage(getActivity(), R.string.error);
             return;
         }
         // Launches intent
@@ -932,15 +929,13 @@ public class DetailFragment extends Fragment implements
     private void takeVideo() {
         Intent takeVideoIntent = new Intent(MediaStore.ACTION_VIDEO_CAPTURE);
         if (!IntentChecker.isAvailable(getActivity(), takeVideoIntent, new String[]{PackageManager.FEATURE_CAMERA})) {
-            getMainActivity().showMessage(R.string.feature_not_available_on_this_device, CroutonHelper.ALERT);
-
+            UiUtils.showWarningMessage(getActivity(), R.string.feature_not_available_on_this_device);
             return;
         }
         // File is stored in custom ON folder to speedup the attachment
         File f = StorageHelper.createNewAttachmentFile(getActivity(), Constants.MIME_TYPE_VIDEO_EXT);
         if (f == null) {
-            getMainActivity().showMessage(R.string.error, CroutonHelper.ALERT);
-
+            UiUtils.showErrorMessage(getActivity(), R.string.error);
             return;
         }
         attachmentUri = Uri.fromFile(f);
@@ -955,7 +950,7 @@ public class DetailFragment extends Fragment implements
     private void takeSketch(Attachment attachment) {
         File f = StorageHelper.createNewAttachmentFile(getActivity(), Constants.MIME_TYPE_SKETCH_EXT);
         if (f == null) {
-            getMainActivity().showMessage(R.string.error, CroutonHelper.ALERT);
+            UiUtils.showErrorMessage(getActivity(), R.string.error);
             return;
         }
         attachmentUri = Uri.fromFile(f);
@@ -1000,7 +995,7 @@ public class DetailFragment extends Fragment implements
                     onActivityResultManageReceivedFiles(intent);
                     break;
                 case CATEGORY_CHANGE:
-                    getMainActivity().showMessage(R.string.category_saved, CroutonHelper.CONFIRM);
+                    UiUtils.showMessage(getActivity(), R.string.category_saved);
                     Category category = intent.getParcelableExtra(Constants.INTENT_CATEGORY);
                     mTask.setCategory(category);
                     setTagMarkerColor(category);
@@ -1049,7 +1044,7 @@ public class DetailFragment extends Fragment implements
 
         mTask.isTrashed = trash;
         exitMessage = trash ? getString(R.string.task_trashed) : getString(R.string.task_untrashed);
-        exitCroutonStyle = trash ? CroutonHelper.WARN : CroutonHelper.INFO;
+        exitMessageStyle = trash ? UiUtils.MessageType.TYPE_WARN : UiUtils.MessageType.TYPE_INFO;
         if (trash) {
             ReminderHelper.removeReminder(MainApplication.getContext(), mTask);
         } else {
@@ -1069,7 +1064,7 @@ public class DetailFragment extends Fragment implements
                         DeleteNoteTask deleteNoteTask = new DeleteNoteTask(MainApplication.getContext());
                         deleteNoteTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, mTask);
 
-                        getMainActivity().showMessage(R.string.task_deleted, CroutonHelper.ALERT);
+                        UiUtils.showMessage(getActivity(), R.string.task_deleted);
                         MainActivity.notifyAppWidgets(getActivity());
                         goHome();
                     }
@@ -1078,7 +1073,7 @@ public class DetailFragment extends Fragment implements
 
     public void saveAndExit(OnTaskSaved mOnTaskSaved) {
         exitMessage = getString(R.string.task_updated);
-        exitCroutonStyle = CroutonHelper.CONFIRM;
+        exitMessageStyle = UiUtils.MessageType.TYPE_INFO;
         saveTask(mOnTaskSaved);
     }
 
@@ -1097,7 +1092,7 @@ public class DetailFragment extends Fragment implements
                 && mTask.getAttachmentsList().size() == 0) {
 
             exitMessage = getString(R.string.empty_task_not_saved);
-            exitCroutonStyle = CroutonHelper.INFO;
+            exitMessageStyle = UiUtils.MessageType.TYPE_INFO;
             goHome();
             return;
         }
@@ -1246,7 +1241,7 @@ public class DetailFragment extends Fragment implements
             });
         } catch (IOException e) {
             Dog.e("prepare() failed", e);
-            getMainActivity().showMessage(R.string.error, Style.ALERT);
+            UiUtils.showErrorMessage(getActivity(), R.string.error);
         }
     }
 
@@ -1262,7 +1257,7 @@ public class DetailFragment extends Fragment implements
 
     private void startRecording(final View v) {
         PermissionsHelper.requestPermission(getActivity(), Manifest.permission.RECORD_AUDIO,
-                R.string.permission_audio_recording, getActivity().findViewById(R.id.crouton_handle), new OnPermissionRequestedListener() {
+                R.string.permission_audio_recording, new OnPermissionRequestedListener() {
                     @Override
                     public void onPermissionGranted() {
                         isRecording = true;
@@ -1272,7 +1267,7 @@ public class DetailFragment extends Fragment implements
 
                         File f = StorageHelper.createNewAttachmentFile(getActivity(), Constants.MIME_TYPE_AUDIO_EXT);
                         if (f == null) {
-                            getMainActivity().showMessage(R.string.error, CroutonHelper.ALERT);
+                            UiUtils.showErrorMessage(getActivity(), R.string.error);
                             return;
                         }
 
@@ -1293,7 +1288,7 @@ public class DetailFragment extends Fragment implements
                             mRecorder.start();
                         } catch (IOException | IllegalStateException e) {
                             Dog.e("prepare() failed", e);
-                            getMainActivity().showMessage(R.string.error, Style.ALERT);
+                            UiUtils.showErrorMessage(getActivity(), R.string.error);
                         }
                     }
                 });
@@ -1389,7 +1384,7 @@ public class DetailFragment extends Fragment implements
 
     @Override
     public void onAttachingFileErrorOccurred(Attachment mAttachment) {
-        getMainActivity().showMessage(R.string.error_saving_attachments, CroutonHelper.ALERT);
+        UiUtils.showErrorMessage(getActivity(), R.string.error_saving_attachments);
         if (mTask.getAttachmentsList().contains(mAttachment)) {
             mTask.getAttachmentsList().remove(mAttachment);
             mAttachmentAdapter.notifyDataSetChanged();

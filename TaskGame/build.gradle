@@ -55,7 +55,6 @@ dependencies {
     compile 'com.github.flavienlaurent.datetimepicker:library:+'
     compile 'com.larswerkman:HoloColorPicker:+'
     compile 'com.jakewharton:disklrucache:+'
-    compile 'de.keyboardsurfer.android.widget:crouton:+@aar'
     compile 'com.github.bumptech.glide:glide:+'
     compile 'commons-io:commons-io:+'
     compile 'com.getbase:floatingactionbutton:+'

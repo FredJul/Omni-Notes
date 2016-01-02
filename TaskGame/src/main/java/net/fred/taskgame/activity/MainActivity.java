@@ -51,10 +51,6 @@ import net.fred.taskgame.utils.DbHelper;
 import net.fred.taskgame.utils.PrefUtils;
 import net.fred.taskgame.utils.UiUtils;
 
-import de.keyboardsurfer.android.widget.crouton.Crouton;
-import de.keyboardsurfer.android.widget.crouton.Style;
-
-
 public class MainActivity extends BaseActivity implements OnDateSetListener, OnTimeSetListener {
 
     public static final int BURGER = 0;
@@ -68,7 +64,6 @@ public class MainActivity extends BaseActivity implements OnDateSetListener, OnT
     private FragmentManager mFragmentManager;
 
     public Uri sketchUri;
-    private ViewGroup croutonViewContainer;
     private Toolbar toolbar;
 
     @Override
@@ -217,13 +212,6 @@ public class MainActivity extends BaseActivity implements OnDateSetListener, OnT
         outState.putString("navigationTmp", navigationTmp);
     }
 
-    @Override
-    protected void onPause() {
-        super.onPause();
-        Crouton.cancelAllCroutons();
-    }
-
-
     public void animateBurger(int targetShape) {
         if (getDrawerToggle() != null) {
             if (targetShape != BURGER && targetShape != ARROW)
@@ -362,19 +350,6 @@ public class MainActivity extends BaseActivity implements OnDateSetListener, OnT
 
         animateBurger(ARROW);
     }
-
-    public void showMessage(int messageId, Style style) {
-        showMessage(getString(messageId), style);
-    }
-
-    public void showMessage(String message, Style style) {
-        if (croutonViewContainer == null) {
-            // ViewGroup used to show Crouton keeping compatibility with the new Toolbar
-            croutonViewContainer = (ViewGroup) findViewById(R.id.crouton_handle);
-        }
-        Crouton.makeText(this, message, style, croutonViewContainer).show();
-    }
-
 
     @Override
     public void onTimeSet(TimePicker view, int hourOfDay, int minute) {

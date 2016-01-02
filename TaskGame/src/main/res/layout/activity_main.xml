@@ -43,10 +43,6 @@
             android:layout_below="@id/toolbar"
             android:background="@drawable/toolbar_dropshadow" />
 
-        <include
-            android:id="@+id/crouton_handle"
-            layout="@layout/crouton_handle" />
-
     </RelativeLayout>
 
     <fragment

@@ -78,7 +78,6 @@ import net.fred.taskgame.model.listeners.OnViewTouchedListener;
 import net.fred.taskgame.utils.AnimationsHelper;
 import net.fred.taskgame.utils.BitmapHelper;
 import net.fred.taskgame.utils.Constants;
-import net.fred.taskgame.utils.CroutonHelper;
 import net.fred.taskgame.utils.DbHelper;
 import net.fred.taskgame.utils.Navigation;
 import net.fred.taskgame.utils.PrefUtils;
@@ -92,8 +91,6 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import de.keyboardsurfer.android.widget.crouton.Crouton;
 
 import static android.support.v4.view.ViewCompat.animate;
 
@@ -271,7 +268,6 @@ public class ListFragment extends Fragment implements OnViewTouchedListener, Und
     @Override
     public void onPause() {
         super.onPause();
-        Crouton.cancelAllCroutons();
 
         // Clears data structures
         // getSelectedTasks().clear();
@@ -865,13 +861,13 @@ public class ListFragment extends Fragment implements OnViewTouchedListener, Und
             case REQUEST_CODE_CATEGORY:
                 // Dialog retarded to give time to activity's views of being
                 // completely initialized
-                // The dialog style is choosen depending on result code
+                // The dialog style is chosen depending on result code
                 switch (resultCode) {
                     case Activity.RESULT_OK:
-                        getMainActivity().showMessage(R.string.category_saved, CroutonHelper.CONFIRM);
+                        UiUtils.showMessage(getActivity(), R.string.category_saved);
                         break;
                     case Activity.RESULT_FIRST_USER:
-                        getMainActivity().showMessage(R.string.category_deleted, CroutonHelper.ALERT);
+                        UiUtils.showMessage(getActivity(), R.string.category_deleted);
                         break;
                     default:
                         break;
@@ -1055,9 +1051,9 @@ public class ListFragment extends Fragment implements OnViewTouchedListener, Und
 
         // Advice to user
         if (trash) {
-            getMainActivity().showMessage(R.string.task_trashed, CroutonHelper.WARN);
+            UiUtils.showMessage(getActivity(), R.string.task_trashed);
         } else {
-            getMainActivity().showMessage(R.string.task_untrashed, CroutonHelper.INFO);
+            UiUtils.showMessage(getActivity(), R.string.task_untrashed);
         }
 
         // Creation of undo bar
@@ -1150,7 +1146,7 @@ public class ListFragment extends Fragment implements OnViewTouchedListener, Und
         finishActionMode();
 
         // Advice to user
-        getMainActivity().showMessage(R.string.task_deleted, CroutonHelper.ALERT);
+        UiUtils.showMessage(getActivity(), R.string.task_deleted);
     }
 
     /**
@@ -1241,7 +1237,7 @@ public class ListFragment extends Fragment implements OnViewTouchedListener, Und
         } else {
             msg = getResources().getText(R.string.tasks_category_removed).toString();
         }
-        getMainActivity().showMessage(msg, CroutonHelper.INFO);
+        UiUtils.showMessage(getActivity(), msg);
 
         // Creation of undo bar
         if (category == null) {
@@ -1287,7 +1283,6 @@ public class ListFragment extends Fragment implements OnViewTouchedListener, Und
         undoTasksList.clear();
         undoCategoryMap.clear();
         undoCategorizeCategory = null;
-        Crouton.cancelAllCroutons();
 
         if (getActionMode() != null) {
             getActionMode().finish();

@@ -34,22 +34,22 @@ import rx.functions.Action1;
 
 public class PermissionsHelper {
 
-    public static void requestPermission(final Activity activity, final String permission, final int rationaleDescription, final View messageView,
+    public static void requestPermission(final Activity activity, final String permission, final int rationaleDescription,
                                          final OnPermissionRequestedListener onPermissionRequestedListener) {
 
         if (ContextCompat.checkSelfPermission(activity, permission) != PackageManager.PERMISSION_GRANTED) {
 
             if (ActivityCompat.shouldShowRequestPermissionRationale(activity, permission)) {
-                Snackbar.make(messageView, rationaleDescription, Snackbar.LENGTH_INDEFINITE)
+                Snackbar.make(activity.getWindow().getDecorView().findViewById(android.R.id.content), rationaleDescription, Snackbar.LENGTH_INDEFINITE)
                         .setAction(R.string.ok, new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
-                                requestPermissionExecute(activity, permission, onPermissionRequestedListener, messageView);
+                                requestPermissionExecute(activity, permission, onPermissionRequestedListener);
                             }
                         })
                         .show();
             } else {
-                requestPermissionExecute(activity, permission, onPermissionRequestedListener, messageView);
+                requestPermissionExecute(activity, permission, onPermissionRequestedListener);
             }
         } else {
             onPermissionRequestedListener.onPermissionGranted();
@@ -57,7 +57,7 @@ public class PermissionsHelper {
     }
 
 
-    private static void requestPermissionExecute(final Activity activity, final String permission, final OnPermissionRequestedListener onPermissionRequestedListener, final View messageView) {
+    private static void requestPermissionExecute(final Activity activity, final String permission, final OnPermissionRequestedListener onPermissionRequestedListener) {
 
         RxPermissions.getInstance(activity)
                 .request(permission)
@@ -67,8 +67,7 @@ public class PermissionsHelper {
                         if (granted) {
                             onPermissionRequestedListener.onPermissionGranted();
                         } else {
-                            String msg = activity.getString(R.string.permission_not_granted) + ": " + permission;
-                            Snackbar.make(messageView, msg, Snackbar.LENGTH_LONG).show();
+                            UiUtils.showWarningMessage(activity, R.string.permission_not_granted);
                         }
                     }
                 });
