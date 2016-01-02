@@ -26,7 +26,6 @@ import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
@@ -56,7 +55,6 @@ import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
-import android.widget.TextView;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.getbase.floatingactionbutton.AddFloatingActionButton;
@@ -95,7 +93,6 @@ import java.util.List;
 import java.util.Map;
 
 import static android.support.v4.view.ViewCompat.animate;
-import static android.support.v4.view.ViewCompat.setTransitionName;
 
 
 public class ListFragment extends Fragment implements OnViewTouchedListener {
@@ -456,15 +453,15 @@ public class ListFragment extends Fragment implements OnViewTouchedListener {
      */
     private void toggleListViewItem(View view, int position) {
         Task task = taskAdapter.getItem(position);
-        LinearLayout v = (LinearLayout) view.findViewById(R.id.card_layout);
+        View cardLayout = view.findViewById(R.id.card_layout);
         if (!getSelectedTasks().contains(task)) {
             getSelectedTasks().add(task);
             taskAdapter.addSelectedItem(position);
-            v.setBackgroundColor(getResources().getColor(R.color.list_bg_selected));
+            cardLayout.setBackgroundColor(getResources().getColor(R.color.list_bg_selected));
         } else {
             getSelectedTasks().remove(task);
             taskAdapter.removeSelectedItem(position);
-            taskAdapter.restoreDrawable(task, v);
+            taskAdapter.restoreDrawable(task, cardLayout);
         }
         prepareActionModeMenu();
 
@@ -1102,7 +1099,7 @@ public class ListFragment extends Fragment implements OnViewTouchedListener {
             LinearLayout v = (LinearLayout) list.getChildAt(i).findViewById(R.id.card_layout);
             // Checks null to avoid the footer
             if (v != null) {
-                v.setBackgroundColor(getResources().getColor(R.color.list_bg_selected));
+                v.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.list_bg_selected));
             }
         }
         selectedTasks.clear();

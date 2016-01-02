@@ -137,7 +137,7 @@ public class TaskAdapter extends ArrayAdapter<Task> implements Insertable {
             holder.cardLayout.setBackgroundColor(mActivity.getResources().getColor(
                     R.color.list_bg_selected));
         } else {
-            restoreDrawable(task, holder.cardLayout, holder);
+            restoreDrawable(task, convertView, holder);
         }
         initThumbnail(task, holder);
 
@@ -180,17 +180,14 @@ public class TaskAdapter extends ArrayAdapter<Task> implements Insertable {
             } else {
                 Spanned[] titleAndContent = TextHelper.parseTitleAndContent(note);
                 holder.title.setText(titleAndContent[0]);
-                holder.content.setText(titleAndContent[1]);
-                holder.title.setText(titleAndContent[0]);
                 if (titleAndContent[1].length() > 0) {
                     holder.content.setText(titleAndContent[1]);
                     holder.content.setVisibility(View.VISIBLE);
                 } else {
-                    holder.content.setVisibility(View.INVISIBLE);
+                    holder.content.setVisibility(View.GONE);
                 }
             }
         } catch (RejectedExecutionException e) {
-
         }
     }
 
@@ -274,12 +271,12 @@ public class TaskAdapter extends ArrayAdapter<Task> implements Insertable {
         if (!colorsPref.equals("disabled")) {
 
             // Resetting transparent color to the view
-            v.setBackgroundColor(Color.parseColor("#00000000"));
+            holder.cardLayout.setBackgroundColor(Color.parseColor("#00000000"));
 
             // If category is set the color will be applied on the appropriate target
             if (task.getCategory() != null && task.getCategory().color != null) {
                 if (colorsPref.equals("complete") || colorsPref.equals("list")) {
-                    v.setBackgroundColor(Integer.parseInt(task.getCategory().color));
+                    holder.cardLayout.setBackgroundColor(Integer.parseInt(task.getCategory().color));
                 } else {
                     if (holder != null) {
                         holder.categoryMarker.setBackgroundColor(Integer.parseInt(task.getCategory().color));

@@ -42,8 +42,7 @@
     <dimen name="undobar_margin_bottom">20dp</dimen>
 
     <!-- Tasks layout in list -->
-    <dimen name="note_item_min_height">102dp</dimen>
-    <dimen name="note_item_min_height_inner">100dp</dimen>
+    <dimen name="note_item_min_height_inner">80dp</dimen>
 
 
     <!-- Attachment dialog -->

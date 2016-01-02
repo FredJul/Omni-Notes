@@ -26,8 +26,6 @@ import java.lang.ref.WeakReference;
 
 public class SquareImageView extends ImageView {
 
-    private WeakReference<AsyncTask<?, ?, ?>> mAsyncTaskReference;
-
     public SquareImageView(Context context) {
         super(context);
         setScaleType(ScaleType.CENTER_CROP);
