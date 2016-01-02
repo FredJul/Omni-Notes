@@ -28,7 +28,9 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.support.annotation.NonNull;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -54,6 +56,7 @@ import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.getbase.floatingactionbutton.AddFloatingActionButton;
@@ -84,7 +87,6 @@ import net.fred.taskgame.utils.PrefUtils;
 import net.fred.taskgame.utils.ThrottledFlowContentObserver;
 import net.fred.taskgame.utils.UiUtils;
 import net.fred.taskgame.view.InterceptorLinearLayout;
-import net.fred.taskgame.view.UndoBarController;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -93,9 +95,10 @@ import java.util.List;
 import java.util.Map;
 
 import static android.support.v4.view.ViewCompat.animate;
+import static android.support.v4.view.ViewCompat.setTransitionName;
 
 
-public class ListFragment extends Fragment implements OnViewTouchedListener, UndoBarController.UndoListener {
+public class ListFragment extends Fragment implements OnViewTouchedListener {
 
     private static final int REQUEST_CODE_CATEGORY = 2;
     private static final int REQUEST_CODE_CATEGORY_TASKS = 3;
@@ -125,7 +128,6 @@ public class ListFragment extends Fragment implements OnViewTouchedListener, Und
     private boolean searchLabelActive = false;
 
     private TaskAdapter taskAdapter;
-    private UndoBarController ubc;
 
     //    Fab
     private FloatingActionsMenu fab;
@@ -192,8 +194,6 @@ public class ListFragment extends Fragment implements OnViewTouchedListener, Und
 
         // Activity title initialization
         initTitle();
-
-        ubc = new UndoBarController(getActivity().findViewById(R.id.undobar), this);
 
         initTasksList(getActivity().getIntent());
     }
@@ -1051,17 +1051,20 @@ public class ListFragment extends Fragment implements OnViewTouchedListener, Und
 
         // Advice to user
         if (trash) {
-            UiUtils.showMessage(getActivity(), R.string.task_trashed);
-        } else {
-            UiUtils.showMessage(getActivity(), R.string.task_untrashed);
-        }
-
-        // Creation of undo bar
-        if (trash) {
-            ubc.showUndoBar(false, selectedTasksSize + " " + getString(R.string.trashed), null);
+            Snackbar.make(getActivity().getWindow().getDecorView().findViewById(android.R.id.content), R.string.task_trashed, Snackbar.LENGTH_LONG)
+                    .setActionTextColor(ContextCompat.getColor(getActivity(), R.color.confirm))
+                    .setAction(R.string.undo, new OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            onUndo();
+                        }
+                    })
+                    .show();
             hideFab();
             undoTrash = true;
+
         } else {
+            UiUtils.showMessage(getActivity(), R.string.task_untrashed);
             getSelectedTasks().clear();
         }
     }
@@ -1231,22 +1234,22 @@ public class ListFragment extends Fragment implements OnViewTouchedListener, Und
         }
 
         // Advice to user
-        String msg;
         if (category != null) {
-            msg = getResources().getText(R.string.tasks_categorized_as) + " '" + category.name + "'";
+            UiUtils.showMessage(getActivity(), getResources().getText(R.string.tasks_categorized_as) + " '" + category.name + "'");
+            getSelectedTasks().clear();
         } else {
-            msg = getResources().getText(R.string.tasks_category_removed).toString();
-        }
-        UiUtils.showMessage(getActivity(), msg);
-
-        // Creation of undo bar
-        if (category == null) {
-            ubc.showUndoBar(false, getString(R.string.tasks_category_removed), null);
+            Snackbar.make(getActivity().getWindow().getDecorView().findViewById(android.R.id.content), R.string.tasks_category_removed, Snackbar.LENGTH_LONG)
+                    .setActionTextColor(ContextCompat.getColor(getActivity(), R.color.confirm))
+                            .setAction(R.string.undo, new OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    onUndo();
+                                }
+                            })
+                            .show();
             hideFab();
             undoCategorize = true;
             undoCategorizeCategory = null;
-        } else {
-            getSelectedTasks().clear();
         }
     }
 
@@ -1256,8 +1259,7 @@ public class ListFragment extends Fragment implements OnViewTouchedListener, Und
         DbHelper.updateTaskAsync(task, false);
     }
 
-    @Override
-    public void onUndo(Parcelable undoToken) {
+    public void onUndo() {
         // Cycles removed items to re-insert into adapter
         for (Task task : modifiedTasks) {
             // Manages uncategorize or archive undo
@@ -1287,7 +1289,6 @@ public class ListFragment extends Fragment implements OnViewTouchedListener, Und
         if (getActionMode() != null) {
             getActionMode().finish();
         }
-        ubc.hideUndoBar(false);
     }
 
 
@@ -1311,7 +1312,6 @@ public class ListFragment extends Fragment implements OnViewTouchedListener, Und
             undoCategoryMap.clear();
             list.clearChoices();
 
-            ubc.hideUndoBar(false);
             showFab();
 
             BaseActivity.notifyAppWidgets(getActivity());
