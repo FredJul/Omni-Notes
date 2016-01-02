@@ -41,8 +41,8 @@ import java.util.List;
 public class Task extends BaseModel implements Parcelable {
 
     public final static long NORMAL_POINT_REWARD = 50;
-    public final static long HIGH_POINT_REWARD = 100;
-    public final static long VERY_HIGH_POINT_REWARD = 200;
+    public final static long HIGH_POINT_REWARD = NORMAL_POINT_REWARD * 2;
+    public final static long VERY_HIGH_POINT_REWARD = HIGH_POINT_REWARD * 2;
 
     @PrimaryKey(autoincrement = true)
     @Expose

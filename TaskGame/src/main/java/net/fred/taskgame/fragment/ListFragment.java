@@ -17,13 +17,10 @@
 package net.fred.taskgame.fragment;
 
 import android.animation.Animator;
-import android.animation.AnimatorListenerAdapter;
 import android.app.Activity;
 import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -36,7 +33,6 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.view.ActionMode;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.SearchView.OnQueryTextListener;
-import android.text.Html;
 import android.text.TextUtils;
 import android.util.SparseArray;
 import android.view.LayoutInflater;
@@ -52,7 +48,6 @@ import android.view.ViewGroup;
 import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.inputmethod.EditorInfo;
 import android.widget.AdapterView;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 
@@ -76,8 +71,6 @@ import net.fred.taskgame.model.Task;
 import net.fred.taskgame.model.adapters.NavDrawerCategoryAdapter;
 import net.fred.taskgame.model.adapters.TaskAdapter;
 import net.fred.taskgame.model.listeners.OnViewTouchedListener;
-import net.fred.taskgame.utils.AnimationsHelper;
-import net.fred.taskgame.utils.BitmapHelper;
 import net.fred.taskgame.utils.Constants;
 import net.fred.taskgame.utils.DbHelper;
 import net.fred.taskgame.utils.Navigation;
@@ -121,8 +114,6 @@ public class ListFragment extends Fragment implements OnViewTouchedListener {
 
     // Search variables
     private String searchQuery;
-    private boolean goBackOnToggleSearchLabel = false;
-    private boolean searchLabelActive = false;
 
     private TaskAdapter taskAdapter;
 
@@ -206,7 +197,7 @@ public class ListFragment extends Fragment implements OnViewTouchedListener {
                     fab.toggle();
                     fabExpanded = false;
                 } else {
-                    editNote(new Task(), v);
+                    editNote(new Task());
                 }
             }
         });
@@ -224,7 +215,7 @@ public class ListFragment extends Fragment implements OnViewTouchedListener {
             public void onClick(View v) {
                 Task task = new Task();
                 task.isChecklist = true;
-                editNote(task, v);
+                editNote(task);
             }
         });
         fab.findViewById(R.id.fab_camera).setOnClickListener(new OnClickListener() {
@@ -233,7 +224,7 @@ public class ListFragment extends Fragment implements OnViewTouchedListener {
                 Intent i = getActivity().getIntent();
                 i.setAction(Constants.ACTION_TAKE_PHOTO);
                 getActivity().setIntent(i);
-                editNote(new Task(), v);
+                editNote(new Task());
             }
         });
     }
@@ -477,7 +468,6 @@ public class ListFragment extends Fragment implements OnViewTouchedListener {
      * Tasks list initialization. Data, actions and callback are defined here.
      */
     private void initListView(View layout) {
-        Context c = layout.getContext();
         list = (DynamicListView) layout.findViewById(R.id.list);
 
         list.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
@@ -505,7 +495,7 @@ public class ListFragment extends Fragment implements OnViewTouchedListener {
             @Override
             public void onItemClick(AdapterView<?> arg0, View view, int position, long arg3) {
                 if (getActionMode() == null) {
-                    editNote(taskAdapter.getItem(position), view);
+                    editNote(taskAdapter.getItem(position));
                     return;
                 }
                 // If in CAB mode
@@ -548,38 +538,6 @@ public class ListFragment extends Fragment implements OnViewTouchedListener {
             }
         });
         list.setEmptyView(layout.findViewById(R.id.empty_list));
-    }
-
-    private ImageView getZoomListItemView(View view, Task task) {
-        final ImageView expandedImageView = (ImageView) getActivity().findViewById(R.id.expanded_image);
-        View targetView = null;
-        if (task.getAttachmentsList().size() > 0) {
-            targetView = view.findViewById(R.id.attachmentThumbnail);
-        }
-        if (targetView == null && task.getCategory() != null) {
-            targetView = view.findViewById(R.id.category_marker);
-        }
-        if (targetView == null) {
-            targetView = new ImageView(getActivity());
-            targetView.setBackgroundColor(Color.WHITE);
-        }
-        targetView.setDrawingCacheEnabled(true);
-        targetView.buildDrawingCache();
-        Bitmap bmp = targetView.getDrawingCache();
-        expandedImageView.setBackgroundColor(BitmapHelper.getDominantColor(bmp));
-        return expandedImageView;
-    }
-
-    /**
-     * Listener that fires note opening once the zooming animation is finished
-     */
-    private AnimatorListenerAdapter buildAnimatorListenerAdapter(final Task task) {
-        return new AnimatorListenerAdapter() {
-            @Override
-            public void onAnimationEnd(Animator animation) {
-                editNote2(task);
-            }
-        };
     }
 
     @Override
@@ -682,15 +640,10 @@ public class ListFragment extends Fragment implements OnViewTouchedListener {
 
         MenuItemCompat.setOnActionExpandListener(searchMenuItem, new MenuItemCompat.OnActionExpandListener() {
 
-            private boolean mSearchPerformed = false;
-
             @Override
             public boolean onMenuItemActionCollapse(MenuItem item) {
                 // Reinitialize tasks list to all tasks when search is collapsed
                 searchQuery = null;
-                if (getActivity().findViewById(R.id.search_layout).getVisibility() == View.VISIBLE) {
-                    toggleSearchLabel(false);
-                }
                 getActivity().getIntent().setAction(Intent.ACTION_MAIN);
                 initTasksList(getActivity().getIntent());
                 getActivity().supportInvalidateOptionsMenu();
@@ -708,15 +661,9 @@ public class ListFragment extends Fragment implements OnViewTouchedListener {
 
                     @Override
                     public boolean onQueryTextChange(String pattern) {
-                        View searchLayout = getActivity().findViewById(R.id.search_layout);
-                        if (searchLayout != null && mSearchPerformed) {
-                            searchQuery = pattern;
-                            onTasksLoaded(DbHelper.getTasksByPattern(searchQuery));
-                            return true;
-                        } else {
-                            mSearchPerformed = true;
-                            return false;
-                        }
+                        searchQuery = pattern;
+                        onTasksLoaded(DbHelper.getTasksByPattern(searchQuery));
+                        return true;
                     }
                 });
                 return true;
@@ -818,13 +765,7 @@ public class ListFragment extends Fragment implements OnViewTouchedListener {
         return super.onOptionsItemSelected(item);
     }
 
-    void editNote(final Task task, final View view) {
-        AnimationsHelper.zoomListItem(getActivity(), view, getZoomListItemView(view, task),
-                getActivity().findViewById(R.id.list_root), buildAnimatorListenerAdapter(task));
-    }
-
-
-    void editNote2(Task task) {
+    void editNote(final Task task) {
         if (task.id == 0) {
 
             // if navigation is a category it will be set into note
@@ -847,7 +788,6 @@ public class ListFragment extends Fragment implements OnViewTouchedListener {
         // Fragments replacing
         getMainActivity().switchToDetail(task);
     }
-
 
     @Override
     public// Used to show a Crouton dialog after saved (or tried to) a note
@@ -925,13 +865,6 @@ public class ListFragment extends Fragment implements OnViewTouchedListener {
      * Tasks list adapter initialization and association to view
      */
     public void initTasksList(Intent intent) {
-        // Search for a tag
-        // A workaround to simplify it's to simulate normal search
-        if (Intent.ACTION_VIEW.equals(intent.getAction()) && intent.getCategories() != null
-                && intent.getCategories().contains(Intent.CATEGORY_BROWSABLE)) {
-            goBackOnToggleSearchLabel = true;
-        }
-
         // Searching
         if (searchQuery != null || Intent.ACTION_SEARCH.equals(intent.getAction())) {
 
@@ -940,9 +873,6 @@ public class ListFragment extends Fragment implements OnViewTouchedListener {
                 searchQuery = intent.getStringExtra(SearchManager.QUERY);
             }
             onTasksLoaded(DbHelper.getTasksByPattern(searchQuery));
-
-            toggleSearchLabel(true);
-
         } else {
             // Check if is launched from a widget with categories to set tag
             if ((Constants.ACTION_WIDGET_SHOW_LIST.equals(intent.getAction()) && intent
@@ -960,42 +890,6 @@ public class ListFragment extends Fragment implements OnViewTouchedListener {
                 // Gets all tasks
             } else {
                 onTasksLoaded(DbHelper.getAllTasks());
-            }
-        }
-    }
-
-
-    public void toggleSearchLabel(boolean activate) {
-        View searchLabel = getActivity().findViewById(R.id.search_layout);
-        if (activate) {
-            ((android.widget.TextView) getActivity().findViewById(R.id.search_query)).setText(Html.fromHtml("<i>"
-                    + getString(R.string.search) + ":</i> " + searchQuery));
-            searchLabel.setVisibility(View.VISIBLE);
-            getActivity().findViewById(R.id.search_cancel).setOnClickListener(new OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    toggleSearchLabel(false);
-                }
-            });
-            searchLabelActive = true;
-        } else {
-            if (searchLabelActive) {
-                searchLabelActive = false;
-                AnimationsHelper.expandOrCollapse(searchLabel, false);
-                searchQuery = null;
-                if (!goBackOnToggleSearchLabel) {
-                    getActivity().getIntent().setAction(Intent.ACTION_MAIN);
-                    if (searchView != null) {
-                        MenuItemCompat.collapseActionView(searchMenuItem);
-                    }
-                    initTasksList(getActivity().getIntent());
-                } else {
-                    getActivity().onBackPressed();
-                }
-                goBackOnToggleSearchLabel = false;
-                if (Intent.ACTION_VIEW.equals(getActivity().getIntent().getAction())) {
-                    getActivity().getIntent().setAction(null);
-                }
             }
         }
     }
@@ -1237,13 +1131,13 @@ public class ListFragment extends Fragment implements OnViewTouchedListener {
         } else {
             Snackbar.make(getActivity().getWindow().getDecorView().findViewById(android.R.id.content), R.string.tasks_category_removed, Snackbar.LENGTH_LONG)
                     .setActionTextColor(ContextCompat.getColor(getActivity(), R.color.confirm))
-                            .setAction(R.string.undo, new OnClickListener() {
-                                @Override
-                                public void onClick(View v) {
-                                    onUndo();
-                                }
-                            })
-                            .show();
+                    .setAction(R.string.undo, new OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            onUndo();
+                        }
+                    })
+                    .show();
             hideFab();
             undoCategorize = true;
             undoCategorizeCategory = null;

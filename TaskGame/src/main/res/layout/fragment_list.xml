@@ -26,31 +26,6 @@
         android:layout_height="match_parent"
         android:orientation="vertical">
 
-        <LinearLayout
-            android:id="@+id/search_layout"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:visibility="gone"
-            android:paddingLeft="16dp"
-            android:paddingTop="16dp"
-            android:paddingRight="16dp"
-            android:paddingBottom="8dp">
-
-            <TextView
-                android:id="@+id/search_query"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:textAppearance="@style/Text.Small"/>
-
-            <ImageView
-                android:id="@+id/search_cancel"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:src="@drawable/ic_cancel_grey600_18dp"/>
-        </LinearLayout>
-
         <com.nhaarman.listviewanimations.itemmanipulation.DynamicListView
             android:id="@+id/list"
             android:layout_width="match_parent"
