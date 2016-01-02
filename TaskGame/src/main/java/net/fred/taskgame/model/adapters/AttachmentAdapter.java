@@ -37,27 +37,31 @@ import net.fred.taskgame.view.ExpandableHeightGridView;
 import net.fred.taskgame.view.SquareImageView;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 
 public class AttachmentAdapter extends BaseAdapter {
 
     private final Activity mActivity;
-    private List<Attachment> attachmentsList = new ArrayList<>();
+    private List<Attachment> mAttachmentsList;
     private final LayoutInflater inflater;
 
-    public AttachmentAdapter(Activity mActivity, List<Attachment> attachmentsList, ExpandableHeightGridView mGridView) {
-        this.mActivity = mActivity;
-        this.attachmentsList = attachmentsList;
-        this.inflater = (LayoutInflater) mActivity.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+    public AttachmentAdapter(Activity activity, List<Attachment> attachmentsList, ExpandableHeightGridView mGridView) {
+        mActivity = activity;
+        mAttachmentsList = attachmentsList;
+        if (mAttachmentsList == null) {
+            mAttachmentsList = Collections.emptyList();
+        }
+        inflater = (LayoutInflater) mActivity.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     }
 
     public int getCount() {
-        return attachmentsList.size();
+        return mAttachmentsList.size();
     }
 
     public Attachment getItem(int position) {
-        return attachmentsList.get(position);
+        return mAttachmentsList.get(position);
     }
 
     public long getItemId(int position) {
@@ -66,7 +70,7 @@ public class AttachmentAdapter extends BaseAdapter {
 
 
     public View getView(int position, View convertView, ViewGroup parent) {
-        Attachment mAttachment = attachmentsList.get(position);
+        Attachment mAttachment = mAttachmentsList.get(position);
 
         AttachmentHolder holder;
         if (convertView == null) {

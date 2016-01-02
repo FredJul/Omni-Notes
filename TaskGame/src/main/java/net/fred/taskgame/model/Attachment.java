@@ -26,12 +26,10 @@ import com.raizlabs.android.dbflow.annotation.Table;
 import com.raizlabs.android.dbflow.structure.BaseModel;
 
 @Table(database = AppDatabase.class)
-public class Attachment extends BaseModel implements Parcelable {
+public class Attachment extends IdBasedModel implements Parcelable {
 
-    @PrimaryKey(autoincrement = true)
-    public long id;
     @Column
-    public long taskId;
+    public long taskId = INVALID_ID;
     @Column
     public String name = "";
     @Column

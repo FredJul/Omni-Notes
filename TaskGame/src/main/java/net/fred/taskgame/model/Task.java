@@ -34,19 +34,18 @@ import net.fred.taskgame.utils.EqualityChecker;
 import net.fred.taskgame.utils.date.DateHelper;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
 @Table(database = AppDatabase.class)
-public class Task extends BaseModel implements Parcelable {
+public class Task extends IdBasedModel implements Parcelable {
 
     public final static long NORMAL_POINT_REWARD = 50;
     public final static long HIGH_POINT_REWARD = NORMAL_POINT_REWARD * 2;
     public final static long VERY_HIGH_POINT_REWARD = HIGH_POINT_REWARD * 2;
 
-    @PrimaryKey(autoincrement = true)
-    @Expose
-    public long id;
     @Column
     @Expose
     public String title = "";
@@ -70,7 +69,7 @@ public class Task extends BaseModel implements Parcelable {
     public boolean isChecklist;
     @Column
     @Expose
-    long categoryId;
+    long categoryId = INVALID_ID;
     @Column
     @Expose
     public long pointReward = NORMAL_POINT_REWARD;
@@ -119,7 +118,11 @@ public class Task extends BaseModel implements Parcelable {
 
     public List<Attachment> getAttachmentsList() {
         if (mAttachmentsList == null) {
-            mAttachmentsList = new Select().from(Attachment.class).where(Attachment_Table.taskId.is(id)).queryList();
+            if (id != INVALID_ID) {
+                mAttachmentsList = new Select().from(Attachment.class).where(Attachment_Table.taskId.is(id)).queryList();
+            } else {
+                mAttachmentsList = new ArrayList<>();
+            }
         }
 
         return mAttachmentsList;
@@ -131,7 +134,7 @@ public class Task extends BaseModel implements Parcelable {
     }
 
     public Category getCategory() {
-        if (categoryId == 0) {
+        if (categoryId == INVALID_ID) {
             mCategory = null;
             return null;
         }
@@ -144,7 +147,7 @@ public class Task extends BaseModel implements Parcelable {
     }
 
     public void setCategory(Category category) {
-        categoryId = category != null ? category.id : 0;
+        categoryId = category != null ? category.id : INVALID_ID;
         mCategory = category;
     }
 

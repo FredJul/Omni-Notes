@@ -67,6 +67,7 @@ import net.fred.taskgame.activity.MainActivity;
 import net.fred.taskgame.async.DeleteNoteTask;
 import net.fred.taskgame.model.Attachment;
 import net.fred.taskgame.model.Category;
+import net.fred.taskgame.model.IdBasedModel;
 import net.fred.taskgame.model.Task;
 import net.fred.taskgame.model.adapters.NavDrawerCategoryAdapter;
 import net.fred.taskgame.model.adapters.TaskAdapter;
@@ -766,7 +767,7 @@ public class ListFragment extends Fragment implements OnViewTouchedListener {
     }
 
     void editTask(final Task task) {
-        if (task.id == 0) {
+        if (task.id == IdBasedModel.INVALID_ID) {
 
             // if navigation is a category it will be set into note
             try {
@@ -1147,7 +1148,7 @@ public class ListFragment extends Fragment implements OnViewTouchedListener {
 
     private void categorizeNote(Task task, Category category) {
         task.setCategory(category);
-        DbHelper.updateTaskAsync(task, false);
+        DbHelper.updateTask(task, false);
     }
 
     public void onUndo() {

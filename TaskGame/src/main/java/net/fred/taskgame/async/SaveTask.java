@@ -21,6 +21,7 @@ import android.os.AsyncTask;
 
 import net.fred.taskgame.MainApplication;
 import net.fred.taskgame.model.Attachment;
+import net.fred.taskgame.model.IdBasedModel;
 import net.fred.taskgame.model.Task;
 import net.fred.taskgame.model.listeners.OnTaskSaved;
 import net.fred.taskgame.utils.DbHelper;
@@ -50,25 +51,27 @@ public class SaveTask extends AsyncTask<Void, Void, Void> {
         purgeRemovedAttachments();
 
         // Note updating on database
-        DbHelper.updateTaskAsync(mTask, mUpdateLastModification);
+        DbHelper.updateTask(mTask, mUpdateLastModification);
 
         return null;
     }
 
     private void purgeRemovedAttachments() {
-        List<Attachment> deletedAttachments = mOldAttachments;
-        for (Attachment attachment : mTask.getAttachmentsList()) {
-            if (attachment.id != 0) {
-                // Workaround to prevent deleting attachments if instance is changed (app restart)
-                if (deletedAttachments.indexOf(attachment) == -1) {
-                    attachment = getFixedAttachmentInstance(deletedAttachments, attachment);
+        if (mOldAttachments != null && !mOldAttachments.isEmpty()) {
+            List<Attachment> deletedAttachments = mOldAttachments;
+            for (Attachment attachment : mTask.getAttachmentsList()) {
+                if (attachment.id != IdBasedModel.INVALID_ID) {
+                    // Workaround to prevent deleting attachments if instance is changed (app restart)
+                    if (deletedAttachments.indexOf(attachment) == -1) {
+                        attachment = getFixedAttachmentInstance(deletedAttachments, attachment);
+                    }
+                    deletedAttachments.remove(attachment);
                 }
-                deletedAttachments.remove(attachment);
             }
-        }
-        // Remove from database deleted attachments
-        for (Attachment deletedAttachment : deletedAttachments) {
-            DbHelper.deleteAttachment(deletedAttachment);
+            // Remove from database deleted attachments
+            for (Attachment deletedAttachment : deletedAttachments) {
+                DbHelper.deleteAttachment(deletedAttachment);
+            }
         }
     }
 

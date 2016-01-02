@@ -40,12 +40,12 @@ import java.util.List;
 public class DbHelper {
 
     // Inserting or updating single task
-    public static void updateTaskAsync(Task task, boolean updateLastModification) {
+    public static void updateTask(Task task, boolean updateLastModification) {
         if (task.creationDate != 0 && updateLastModification) { // If there already was a creation date, we put at least modification date
             task.lastModificationDate = Calendar.getInstance().getTimeInMillis();
         }
 
-        task.async().save();
+        task.save();
 
         for (Attachment attachment : task.getAttachmentsList()) {
             attachment.taskId = task.id;
@@ -138,7 +138,7 @@ public class DbHelper {
         task.isTrashed = trash;
         ReminderHelper.removeReminder(MainApplication.getContext(), task);
         PrefUtils.putLong(PrefUtils.PREF_CURRENT_POINTS, task.pointReward);
-        updateTaskAsync(task, false);
+        updateTask(task, false);
     }
 
 

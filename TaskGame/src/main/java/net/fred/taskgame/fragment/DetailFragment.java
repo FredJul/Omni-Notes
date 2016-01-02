@@ -88,6 +88,7 @@ import net.fred.taskgame.async.DeleteNoteTask;
 import net.fred.taskgame.async.SaveTask;
 import net.fred.taskgame.model.Attachment;
 import net.fred.taskgame.model.Category;
+import net.fred.taskgame.model.IdBasedModel;
 import net.fred.taskgame.model.Task;
 import net.fred.taskgame.model.adapters.AttachmentAdapter;
 import net.fred.taskgame.model.adapters.NavDrawerCategoryAdapter;
@@ -639,7 +640,7 @@ public class DetailFragment extends Fragment implements
             MenuItemCompat.collapseActionView(searchMenuItem);
         }
 
-        boolean newNote = mTask.id == 0;
+        boolean newNote = mTask.id == IdBasedModel.INVALID_ID;
 
         menu.findItem(R.id.menu_checklist_on).setVisible(!mTask.isChecklist);
         menu.findItem(R.id.menu_checklist_off).setVisible(mTask.isChecklist);
@@ -1037,7 +1038,7 @@ public class DetailFragment extends Fragment implements
 
     private void trashTask(boolean trash) {
         // Simply go back if is a new note
-        if (mTask.id == 0) {
+        if (mTask.id == IdBasedModel.INVALID_ID) {
             goHome();
             return;
         }
