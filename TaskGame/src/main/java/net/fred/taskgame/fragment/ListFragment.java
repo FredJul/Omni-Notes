@@ -197,7 +197,7 @@ public class ListFragment extends Fragment implements OnViewTouchedListener {
                     fab.toggle();
                     fabExpanded = false;
                 } else {
-                    editNote(new Task());
+                    editTask(new Task());
                 }
             }
         });
@@ -215,7 +215,7 @@ public class ListFragment extends Fragment implements OnViewTouchedListener {
             public void onClick(View v) {
                 Task task = new Task();
                 task.isChecklist = true;
-                editNote(task);
+                editTask(task);
             }
         });
         fab.findViewById(R.id.fab_camera).setOnClickListener(new OnClickListener() {
@@ -224,7 +224,7 @@ public class ListFragment extends Fragment implements OnViewTouchedListener {
                 Intent i = getActivity().getIntent();
                 i.setAction(Constants.ACTION_TAKE_PHOTO);
                 getActivity().setIntent(i);
-                editNote(new Task());
+                editTask(new Task());
             }
         });
     }
@@ -495,7 +495,7 @@ public class ListFragment extends Fragment implements OnViewTouchedListener {
             @Override
             public void onItemClick(AdapterView<?> arg0, View view, int position, long arg3) {
                 if (getActionMode() == null) {
-                    editNote(taskAdapter.getItem(position));
+                    editTask(taskAdapter.getItem(position));
                     return;
                 }
                 // If in CAB mode
@@ -765,7 +765,7 @@ public class ListFragment extends Fragment implements OnViewTouchedListener {
         return super.onOptionsItemSelected(item);
     }
 
-    void editNote(final Task task) {
+    void editTask(final Task task) {
         if (task.id == 0) {
 
             // if navigation is a category it will be set into note
