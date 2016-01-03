@@ -147,7 +147,7 @@ public class CategoryActivity extends Activity {
             category.color = String.valueOf(picker.getColor());
 
         // Saved to DB and new id or update result catched
-        category.async().save();
+        category.save();
 
         // Sets result to show proper message
         getIntent().putExtra(Constants.INTENT_CATEGORY, category);

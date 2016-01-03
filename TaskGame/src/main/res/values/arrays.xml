@@ -41,17 +41,19 @@
     </integer-array>
 
     <string-array name="sortable_columns" translatable="false">
+        <item>pointReward</item>
+        <item>creationDate</item>
+        <item>lastModificationDate</item>
+        <item>alarmDate</item>
         <item>title</item>
-        <item>creation</item>
-        <item>last_modification</item>
-        <item>alarm</item>
     </string-array>
 
     <string-array name="sortable_columns_human_readable">
-        <item>Title</item>
+        <item>Reward</item>
         <item>Creation date</item>
         <item>Last modification date</item>
         <item>Reminder date</item>
+        <item>Title</item>
     </string-array>
 
     <string-array name="checked_items_behavior">

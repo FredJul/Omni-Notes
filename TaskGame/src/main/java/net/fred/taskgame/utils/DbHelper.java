@@ -87,11 +87,11 @@ public class DbHelper {
 
 
     public static List<Task> getTasksActive() {
-        return new Select().from(Task.class).where(Task_Table.isTrashed.eq(false)).queryList();
+        return getTasks(Task_Table.isTrashed.eq(false));
     }
 
     public static List<Task> getTasksTrashed() {
-        return new Select().from(Task.class).where(Task_Table.isTrashed.eq(true)).queryList();
+        return getTasks(Task_Table.isTrashed.eq(true));
     }
 
 
@@ -116,7 +116,7 @@ public class DbHelper {
         if (Navigation.checkNavigation(Navigation.REMINDERS)) {
             orderByList.add(OrderBy.fromProperty(Task_Table.alarmDate).ascending());
         } else {
-            String sortKey = PrefUtils.getString(PrefUtils.PREF_SORTING_COLUMN, Task_Table.title.getContainerKey());
+            String sortKey = PrefUtils.getString(PrefUtils.PREF_SORTING_COLUMN, Task_Table.pointReward.getContainerKey());
 
             if (sortKey.equals(Task_Table.title.getContainerKey())) {
                 orderByList.add(OrderBy.fromProperty(Task_Table.title).ascending());

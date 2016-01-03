@@ -28,6 +28,7 @@ import com.raizlabs.android.dbflow.structure.BaseModel;
 @Table(database = AppDatabase.class)
 public class Category extends IdBasedModel implements Parcelable {
 
+    @Column
     @Expose
     public String name = "";
     @Column
