@@ -91,4 +91,11 @@
         <item>strip</item>
         <item>list</item>
     </string-array>
+
+    <string-array name="task_difficulties">
+        <item>Easy</item>
+        <item>Normal</item>
+        <item>Hard</item>
+        <item>Nightmare</item>
+    </string-array>
 </resources>

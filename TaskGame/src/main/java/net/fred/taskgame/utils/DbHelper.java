@@ -137,7 +137,7 @@ public class DbHelper {
     public static void trashTask(Task task, boolean trash) {
         task.isTrashed = trash;
         ReminderHelper.removeReminder(MainApplication.getContext(), task);
-        PrefUtils.putLong(PrefUtils.PREF_CURRENT_POINTS, task.pointReward);
+        PrefUtils.putLong(PrefUtils.PREF_CURRENT_POINTS,  PrefUtils.getLong(PrefUtils.PREF_CURRENT_POINTS, 0) + task.pointReward);
         updateTask(task, false);
     }
 

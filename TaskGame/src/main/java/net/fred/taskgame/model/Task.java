@@ -42,9 +42,10 @@ import java.util.List;
 @Table(database = AppDatabase.class)
 public class Task extends IdBasedModel implements Parcelable {
 
+    public final static long LOW_POINT_REWARD = 20;
     public final static long NORMAL_POINT_REWARD = 50;
-    public final static long HIGH_POINT_REWARD = NORMAL_POINT_REWARD * 2;
-    public final static long VERY_HIGH_POINT_REWARD = HIGH_POINT_REWARD * 2;
+    public final static long HIGH_POINT_REWARD = 100;
+    public final static long VERY_HIGH_POINT_REWARD = 200;
 
     @Column
     @Expose

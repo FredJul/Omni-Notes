@@ -43,4 +43,10 @@
         <item>Marge uniquement</item>
         <item>Liste de tâches</item>
     </string-array>
+    <string-array name="task_difficulties">
+        <item>Facile</item>
+        <item>Normal</item>
+        <item>Difficile</item>
+        <item>Cauchemar</item>
+    </string-array>
 </resources>
