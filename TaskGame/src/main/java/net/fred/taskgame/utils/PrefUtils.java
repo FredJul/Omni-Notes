@@ -33,7 +33,6 @@ public class PrefUtils {
     public static final String PREF_KEEP_CHECKMARKS = "show_checkmarks";
     public static final String PREF_COLORS_APP_DEFAULT = "strip";
     public static final String PREF_WIDGET_PREFIX = "widget_";
-    public static final String PREF_FILTER_PAST_REMINDERS = "settings_filter_past_reminders";
     public static final String PREF_DYNAMIC_MENU = "settings_dynamic_menu";
     public static final String PREF_LAST_SYNC_DATE = "PREF_LAST_SYNC_DATE";
     public static final String PREF_CURRENT_POINTS = "PREF_CURRENT_POINTS";

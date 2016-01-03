@@ -31,8 +31,8 @@
     <string name="untrash">Restaurer depuis la corbeille</string>
     <string name="delete">Supprimer</string>
     <string name="task_deleted">Tâche(s) définitivement supprimée(s)</string>
-    <string name="creation">Créé :</string>
-    <string name="last_update">Mis à jour :</string>
+    <string name="creation">Créé : %s</string>
+    <string name="last_update">Mis à jour : %s</string>
     <string name="delete_task_confirmation">Confirmer la suppression de la tâche ?</string>
     <string name="confirm">Confirmer</string>
     <string name="ok">OK</string>
@@ -41,7 +41,7 @@
     <string name="empty_task_not_saved">Tâche vide non enregistrée</string>
     <string name="share_message_chooser">Partager avec</string>
     <string name="sort">Trier</string>
-    <string name="alarm_set_on">Rappel défini le</string>
+    <string name="alarm_set_on">Rappel défini le %s</string>
     <string name="at_time">à</string>
     <string name="discard_changes">Annuler les modifications</string>
     <string name="attachment">Pièce jointe</string>
@@ -82,7 +82,6 @@
     <string name="colors">Couleurs</string>
     <string name="stroke">Barré</string>
     <string name="erase_sketch">Effacer le dessin ?</string>
-    <string name="no_reminder_set">Aucun rappel défini</string>
     <string name="saturation">Saturation</string>
     <string name="opacity">Opacité</string>
     <string name="snooze">Rappeler plus tard</string>
@@ -97,8 +96,6 @@
     <string name="empty_trash">Vider la corbeille</string>
     <string name="empty_trash_confirmation">Confirmer la suppression de toutes les tâches de la corbeille ?</string>
     <string name="select_all">Tout sélectionner</string>
-    <string name="filter">Filtrer</string>
-    <string name="remove_filter">Supprimer le filtre</string>
     <string name="permission_audio_recording">La permission d\'utiliser le microphone est nécessaire pour enregistrer des tâches audios</string>
     <string name="permission_not_granted">Permission refusée</string>
     <string name="settings">Paramètres</string>

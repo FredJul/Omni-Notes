@@ -32,8 +32,8 @@
     <string name="untrash">Restore from trash</string>
     <string name="delete">Delete</string>
     <string name="task_deleted">Task(s) deleted permanently</string>
-    <string name="creation">Created:</string>
-    <string name="last_update">Updated:</string>
+    <string name="creation">Created: %s</string>
+    <string name="last_update">Updated: %s</string>
     <string name="delete_task_confirmation">Confirm task deletion?</string>
     <string name="confirm">Confirm</string>
     <string name="ok">OK</string>
@@ -42,7 +42,7 @@
     <string name="empty_task_not_saved">Can\'t save an empty task</string>
     <string name="share_message_chooser">Share with</string>
     <string name="sort">Sort</string>
-    <string name="alarm_set_on">Reminder set for</string>
+    <string name="alarm_set_on">Reminder set for %s</string>
     <string name="at_time">at</string>
     <string name="discard_changes">Discard changes</string>
     <string name="attachment">Attachment</string>
@@ -83,7 +83,6 @@
     <string name="colors">Colors</string>
     <string name="stroke">Stroke</string>
     <string name="erase_sketch">Erase sketch?</string>
-    <string name="no_reminder_set">No reminder set</string>
     <string name="saturation">Saturation</string>
     <string name="opacity">Opacity</string>
     <string name="snooze">Remind me later</string>
@@ -98,8 +97,6 @@
     <string name="empty_trash">Empty trash</string>
     <string name="empty_trash_confirmation">Confirm deleting all trashed tasks?</string>
     <string name="select_all">Select all</string>
-    <string name="filter">Filter</string>
-    <string name="remove_filter">Remove filter</string>
     <string name="permission_audio_recording">Permission to use microphone is needed to record audio tasks</string>
     <string name="permission_not_granted">Permission not granted</string>
 

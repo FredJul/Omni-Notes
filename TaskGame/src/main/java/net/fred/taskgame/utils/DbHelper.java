@@ -74,8 +74,6 @@ public class DbHelper {
         switch (navigation) {
             case Navigation.TASKS:
                 return getTasksActive();
-            case Navigation.REMINDERS:
-                return getTasksWithReminder(PrefUtils.getBoolean(PrefUtils.PREF_FILTER_PAST_REMINDERS, false));
             case Navigation.TRASH:
                 return getTasksTrashed();
             case Navigation.CATEGORY:
@@ -112,18 +110,13 @@ public class DbHelper {
     public static List<Task> getTasks(SQLCondition... conditions) {
         ArrayList<OrderBy> orderByList = new ArrayList<>();
 
-        // Getting sorting criteria from preferences. Reminder screen forces sorting.
-        if (Navigation.checkNavigation(Navigation.REMINDERS)) {
-            orderByList.add(OrderBy.fromProperty(Task_Table.alarmDate).ascending());
-        } else {
-            String sortKey = PrefUtils.getString(PrefUtils.PREF_SORTING_COLUMN, Task_Table.pointReward.getContainerKey());
+        String sortKey = PrefUtils.getString(PrefUtils.PREF_SORTING_COLUMN, Task_Table.pointReward.getContainerKey());
 
-            if (sortKey.equals(Task_Table.title.getContainerKey())) {
-                orderByList.add(OrderBy.fromProperty(Task_Table.title).ascending());
-                orderByList.add(OrderBy.fromProperty(Task_Table.content).ascending());
-            } else {
-                orderByList.add(OrderBy.fromProperty(Task_Table.getProperty(sortKey)).descending());
-            }
+        if (sortKey.equals(Task_Table.title.getContainerKey())) {
+            orderByList.add(OrderBy.fromProperty(Task_Table.title).ascending());
+            orderByList.add(OrderBy.fromProperty(Task_Table.content).ascending());
+        } else {
+            orderByList.add(OrderBy.fromProperty(Task_Table.getProperty(sortKey)).descending());
         }
 
         return new Select().from(Task.class).where(conditions).orderByAll(orderByList).queryList();
@@ -137,7 +130,7 @@ public class DbHelper {
     public static void trashTask(Task task, boolean trash) {
         task.isTrashed = trash;
         ReminderHelper.removeReminder(MainApplication.getContext(), task);
-        PrefUtils.putLong(PrefUtils.PREF_CURRENT_POINTS,  PrefUtils.getLong(PrefUtils.PREF_CURRENT_POINTS, 0) + task.pointReward);
+        PrefUtils.putLong(PrefUtils.PREF_CURRENT_POINTS, PrefUtils.getLong(PrefUtils.PREF_CURRENT_POINTS, 0) + task.pointReward);
         updateTask(task, false);
     }
 

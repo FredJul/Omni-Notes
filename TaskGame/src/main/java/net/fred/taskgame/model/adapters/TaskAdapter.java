@@ -22,6 +22,7 @@ import android.graphics.Color;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.text.Spanned;
+import android.text.TextUtils;
 import android.util.SparseBooleanArray;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -178,28 +179,21 @@ public class TaskAdapter extends ArrayAdapter<Task> implements Insertable {
      * @return String with formatted date
      */
     public static String getDateText(Context mContext, Task task) {
-        String dateText;
-        String sort_column;
+        String dateText = "";
+        String sort_column = PrefUtils.getString(PrefUtils.PREF_SORTING_COLUMN, "");
 
-        // Reminder screen forces sorting
-        if (Navigation.checkNavigation(Navigation.REMINDERS)) {
-            sort_column = Task_Table.alarmDate.getContainerKey();
+        if (sort_column.equals(Task_Table.creationDate.getContainerKey()) || sort_column.equals(Task_Table.lastModificationDate.getContainerKey())) {
+            if (task.lastModificationDate != 0) {
+                dateText = mContext.getString(R.string.last_update, task.getLastModificationShort(mContext));
+            } else {
+                dateText = mContext.getString(R.string.creation, task.getCreationShort(mContext));
+            }
         } else {
-            sort_column = PrefUtils.getString(PrefUtils.PREF_SORTING_COLUMN, "");
-        }
-
-        if (sort_column.equals(Task_Table.alarmDate.getContainerKey())) {
             String alarmShort = task.getAlarmShort(mContext);
 
-            if (alarmShort.length() == 0) {
-                dateText = mContext.getString(R.string.no_reminder_set);
-            } else {
-                dateText = mContext.getString(R.string.alarm_set_on) + " " + task.getAlarmShort(mContext);
+            if (!TextUtils.isEmpty(alarmShort)) {
+                dateText = mContext.getString(R.string.alarm_set_on, task.getAlarmShort(mContext));
             }
-        } else if (task.lastModificationDate != 0) {
-            dateText = mContext.getString(R.string.last_update) + " " + task.getLastModificationShort(mContext);
-        } else {
-            dateText = mContext.getString(R.string.creation) + " " + task.getCreationShort(mContext);
         }
 
         return dateText;

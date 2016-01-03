@@ -29,9 +29,8 @@ import java.util.Arrays;
 public class Navigation {
 
     public static final int TASKS = 0;
-    public static final int REMINDERS = 1;
-    public static final int TRASH = 2;
-    public static final int CATEGORY = 3;
+    public static final int TRASH = 1;
+    public static final int CATEGORY = 2;
 
 
     /**
@@ -44,8 +43,6 @@ public class Navigation {
 
         if (navigationListCodes[TASKS].equals(navigation)) {
             return TASKS;
-        } else if (navigationListCodes[REMINDERS].equals(navigation)) {
-            return REMINDERS;
         } else if (navigationListCodes[TRASH].equals(navigation)) {
             return TRASH;
         } else {

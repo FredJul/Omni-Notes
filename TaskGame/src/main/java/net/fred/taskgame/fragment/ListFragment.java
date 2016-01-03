@@ -676,11 +676,9 @@ public class ListFragment extends Fragment implements OnViewTouchedListener {
         // Defines the conditions to set actionbar items visible or not
         boolean drawerOpen = (getMainActivity().getDrawerLayout() != null && getMainActivity()
                 .getDrawerLayout().isDrawerOpen(GravityCompat.START));
-        boolean filterPastReminders = PrefUtils.getBoolean(PrefUtils.PREF_FILTER_PAST_REMINDERS, true);
-        boolean navigationReminders = Navigation.checkNavigation(Navigation.REMINDERS);
         boolean navigationTrash = Navigation.checkNavigation(Navigation.TRASH);
 
-        if (!navigationReminders && !navigationTrash) {
+        if (!navigationTrash) {
             setFabAllowed(true);
             if (!drawerOpen) {
                 showFab();
@@ -690,9 +688,7 @@ public class ListFragment extends Fragment implements OnViewTouchedListener {
             hideFab();
         }
         menu.findItem(R.id.menu_search).setVisible(!drawerOpen);
-        menu.findItem(R.id.menu_filter).setVisible(!drawerOpen && !filterPastReminders && navigationReminders && !searchViewHasFocus);
-        menu.findItem(R.id.menu_filter_remove).setVisible(!drawerOpen && filterPastReminders && navigationReminders && !searchViewHasFocus);
-        menu.findItem(R.id.menu_sort).setVisible(!drawerOpen && !navigationReminders && !searchViewHasFocus);
+        menu.findItem(R.id.menu_sort).setVisible(!drawerOpen && !searchViewHasFocus);
         menu.findItem(R.id.menu_empty_trash).setVisible(!drawerOpen && navigationTrash);
     }
 
@@ -723,12 +719,6 @@ public class ListFragment extends Fragment implements OnViewTouchedListener {
                         startActivityForResult(questsIntent, 0);
                     } catch (Exception ignored) {
                     }
-                    break;
-                case R.id.menu_filter:
-                    filterReminders(true);
-                    break;
-                case R.id.menu_filter_remove:
-                    filterReminders(false);
                     break;
                 case R.id.menu_sort:
                     initSortingSubmenu();
@@ -1223,18 +1213,6 @@ public class ListFragment extends Fragment implements OnViewTouchedListener {
             getActionMode().finish();
         }
     }
-
-    /**
-     * Excludes past reminders
-     */
-    private void filterReminders(boolean filter) {
-        PrefUtils.putBoolean(PrefUtils.PREF_FILTER_PAST_REMINDERS, filter);
-        // Change list view
-        initTasksList(getActivity().getIntent());
-        // Called to switch menu voices
-        getActivity().supportInvalidateOptionsMenu();
-    }
-
 
     public MenuItem getSearchMenuItem() {
         return searchMenuItem;
