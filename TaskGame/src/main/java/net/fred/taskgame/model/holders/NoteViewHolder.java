@@ -32,8 +32,7 @@ public class NoteViewHolder {
     public TextView title;
     public TextView content;
     public TextView date;
-
-    public ImageView alarmIcon;
+    public TextView reward;
 
     public SquareImageView attachmentThumbnail;
 }

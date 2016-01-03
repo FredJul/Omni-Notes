@@ -41,7 +41,6 @@
             android:id="@+id/stroke_circle"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:contentDescription="@string/stroke_size"
             android:src="@drawable/circle"/>
 
         <SeekBar

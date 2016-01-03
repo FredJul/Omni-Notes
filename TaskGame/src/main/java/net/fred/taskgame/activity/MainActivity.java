@@ -94,13 +94,6 @@ public class MainActivity extends BaseActivity implements OnDateSetListener, OnT
     }
 
     @Override
-    public void onLowMemory() {
-        MainApplication.getBitmapCache().evictAll();
-        super.onLowMemory();
-    }
-
-
-    @Override
     protected void onNewIntent(Intent intent) {
         if (intent.getAction() == null) {
             intent.setAction(Constants.ACTION_START_APP);
@@ -191,9 +184,7 @@ public class MainActivity extends BaseActivity implements OnDateSetListener, OnT
         f = checkFragmentInstance(R.id.fragment_container, ListFragment.class);
         if (f != null) {
             // Before exiting from app the navigation drawer is opened
-            if (PrefUtils.getBoolean("settings_navdrawer_on_exit", false) && getDrawerLayout() != null && !getDrawerLayout().isDrawerOpen(GravityCompat.START)) {
-                getDrawerLayout().openDrawer(GravityCompat.START);
-            } else if (!PrefUtils.getBoolean("settings_navdrawer_on_exit", false) && getDrawerLayout() != null && getDrawerLayout().isDrawerOpen(GravityCompat.START)) {
+            if (getDrawerLayout() != null && getDrawerLayout().isDrawerOpen(GravityCompat.START)) {
                 getDrawerLayout().closeDrawer(GravityCompat.START);
             } else {
                 super.onBackPressed();

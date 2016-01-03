@@ -22,21 +22,15 @@ import android.content.Context;
 
 import com.raizlabs.android.dbflow.config.FlowManager;
 
-import net.fred.taskgame.utils.BitmapCache;
-
 public class MainApplication extends Application {
 
     private static Context mContext;
-    private static BitmapCache mBitmapCache;
 
     @Override
     public void onCreate() {
         super.onCreate();
 
         mContext = getApplicationContext();
-
-        // Instantiate bitmap cache
-        mBitmapCache = new BitmapCache(getApplicationContext(), 0, 0, getExternalCacheDir());
 
         FlowManager.init(this);
     }
@@ -51,10 +45,4 @@ public class MainApplication extends Application {
         return MainApplication.mContext;
     }
 
-    /*
-     * Returns the Google Analytics instance.
-     */
-    public static BitmapCache getBitmapCache() {
-        return mBitmapCache;
-    }
 }

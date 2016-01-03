@@ -31,12 +31,6 @@
         android:title="@string/colors_widget"
         android:defaultValue="strip"/>
 
-    <CheckBoxPreference
-        android:defaultValue="false"
-        android:key="settings_navdrawer_on_exit"
-        android:summary="@string/settings_navdrawer_on_exit_summary"
-        android:title="@string/settings_navdrawer_on_exit"/>
-
     <EditTextPreference
         android:inputType="number"
         android:key="settings_max_video_size"

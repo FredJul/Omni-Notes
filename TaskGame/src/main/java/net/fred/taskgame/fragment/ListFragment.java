@@ -326,7 +326,7 @@ public class ListFragment extends Fragment implements OnViewTouchedListener {
                 int key = taskAdapter.getSelectedItems().keyAt(i);
                 View v = list.getChildAt(key - list.getFirstVisiblePosition());
                 if (taskAdapter.getCount() > key && taskAdapter.getItem(key) != null && v != null) {
-                    taskAdapter.restoreDrawable(taskAdapter.getItem(key), v.findViewById(R.id.card_layout));
+                    taskAdapter.restoreDrawable(taskAdapter.getItem(key), v);
                 }
             }
 
@@ -453,7 +453,7 @@ public class ListFragment extends Fragment implements OnViewTouchedListener {
         } else {
             getSelectedTasks().remove(task);
             taskAdapter.removeSelectedItem(position);
-            taskAdapter.restoreDrawable(task, cardLayout);
+            taskAdapter.restoreDrawable(task, view);
         }
         prepareActionModeMenu();
 
@@ -461,7 +461,6 @@ public class ListFragment extends Fragment implements OnViewTouchedListener {
         if (getSelectedTasks().size() == 0) {
             finishActionMode();
         }
-
     }
 
 

@@ -21,7 +21,6 @@ import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.TypedArray;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.Fragment;
@@ -49,7 +48,6 @@ import net.fred.taskgame.model.Task;
 import net.fred.taskgame.model.adapters.NavDrawerAdapter;
 import net.fred.taskgame.model.adapters.NavDrawerCategoryAdapter;
 import net.fred.taskgame.utils.DbHelper;
-import net.fred.taskgame.utils.Display;
 import net.fred.taskgame.utils.Navigation;
 import net.fred.taskgame.utils.PrefUtils;
 import net.fred.taskgame.utils.ThrottledFlowContentObserver;
@@ -169,14 +167,6 @@ public class NavigationDrawerFragment extends Fragment {
 
         mDrawerLayout = (DrawerLayout) mActivity.findViewById(R.id.drawer_layout);
         mDrawerLayout.setFocusableInTouchMode(false);
-
-        // Setting specific bottom margin for Kitkat with translucent nav bar
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-            View leftDrawer = getView().findViewById(R.id.left_drawer);
-            int leftDrawerBottomPadding = Display.getNavigationBarHeightKitkat(getActivity());
-            leftDrawer.setPadding(leftDrawer.getPaddingLeft(), leftDrawer.getPaddingTop(),
-                    leftDrawer.getPaddingRight(), leftDrawerBottomPadding);
-        }
 
         mCurrentPoints = (TextView) getView().findViewById(R.id.currentPoints);
         mCurrentPoints.setText(String.valueOf(PrefUtils.getLong(PrefUtils.PREF_CURRENT_POINTS, 0)));

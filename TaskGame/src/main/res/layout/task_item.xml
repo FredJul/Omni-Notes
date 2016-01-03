@@ -32,7 +32,6 @@
             android:id="@+id/attachmentThumbnail"
             android:layout_width="@dimen/note_item_min_height_inner"
             android:layout_height="@dimen/note_item_min_height_inner"
-            android:contentDescription="@string/task_thumbnail"
             android:layout_alignParentEnd="true"
             android:layout_centerInParent="true"/>
 
@@ -58,27 +57,28 @@
             android:visibility="gone"/>
 
         <TextView
-            android:id="@+id/note_date"
+            android:id="@+id/reward"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginTop="3dp"
             android:layout_marginEnd="15dp"
             android:layout_marginStart="11dp"
+            android:paddingBottom="6dp"
+            android:layout_alignParentBottom="true"
+            android:layout_below="@+id/note_content"
+            android:drawableRight="@drawable/point_icon"/>
+
+        <TextView
+            android:id="@+id/taskModifDate"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="15dp"
             android:paddingBottom="6dp"
             android:alpha="0.5"
             android:textAppearance="@style/Text.Small"
             android:layout_alignParentBottom="true"
-            android:layout_below="@+id/note_content"/>
-
-        <ImageView
-            android:id="@+id/alarmIcon"
-            android:layout_width="15dp"
-            android:layout_height="15dp"
-            android:contentDescription="@string/task_reminder_symbol"
-            android:src="@drawable/ic_alarm_grey600_18dp"
-            android:layout_marginBottom="6dp"
-            android:layout_alignBottom="@+id/note_date"
-            android:layout_toEndOf="@+id/note_date"
-            android:visibility="gone"/>
+            android:layout_toEndOf="@+id/reward"
+            android:drawablePadding="5dp"/>
     </RelativeLayout>
 
     <View

@@ -20,7 +20,6 @@ import android.app.Activity;
 import android.content.Context;
 import android.graphics.Color;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.support.annotation.NonNull;
 import android.text.Spanned;
 import android.util.SparseBooleanArray;
@@ -35,7 +34,6 @@ import com.bumptech.glide.Glide;
 import com.nhaarman.listviewanimations.util.Insertable;
 
 import net.fred.taskgame.R;
-import net.fred.taskgame.async.TextWorkerTask;
 import net.fred.taskgame.model.Attachment;
 import net.fred.taskgame.model.Task;
 import net.fred.taskgame.model.Task_Table;
@@ -47,7 +45,6 @@ import net.fred.taskgame.utils.TextHelper;
 import net.fred.taskgame.view.SquareImageView;
 
 import java.util.List;
-import java.util.concurrent.RejectedExecutionException;
 
 
 public class TaskAdapter extends ArrayAdapter<Task> implements Insertable {
@@ -59,7 +56,7 @@ public class TaskAdapter extends ArrayAdapter<Task> implements Insertable {
 
 
     public TaskAdapter(Activity activity, List<Task> tasks) {
-        super(activity, R.layout.note_layout_expanded, tasks);
+        super(activity, R.layout.task_item, tasks);
         this.mActivity = activity;
         this.mTasks = tasks;
 
@@ -103,7 +100,7 @@ public class TaskAdapter extends ArrayAdapter<Task> implements Insertable {
 
         NoteViewHolder holder;
         if (convertView == null) {
-            convertView = mInflater.inflate(R.layout.note_layout_expanded, parent, false);
+            convertView = mInflater.inflate(R.layout.task_item, parent, false);
 
             holder = new NoteViewHolder();
 
@@ -113,31 +110,27 @@ public class TaskAdapter extends ArrayAdapter<Task> implements Insertable {
 
             holder.title = (TextView) convertView.findViewById(R.id.note_title);
             holder.content = (TextView) convertView.findViewById(R.id.note_content);
-            holder.date = (TextView) convertView.findViewById(R.id.note_date);
-
-            holder.alarmIcon = (ImageView) convertView.findViewById(R.id.alarmIcon);
+            holder.reward = (TextView) convertView.findViewById(R.id.reward);
+            holder.date = (TextView) convertView.findViewById(R.id.taskModifDate);
 
             holder.attachmentThumbnail = (SquareImageView) convertView.findViewById(R.id.attachmentThumbnail);
 
-            convertView.setTag(holder);
+            convertView.setTag(R.id.holder, holder);
 
         } else {
-            holder = (NoteViewHolder) convertView.getTag();
+            holder = (NoteViewHolder) convertView.getTag(R.id.holder);
         }
 
         initText(task, holder);
-
-        initIcons(task, holder);
 
         initDates(task, holder);
 
 
         // Highlighted if is part of multi selection of tasks. Remember to search for child with card ui
         if (mSelectedItems.get(position)) {
-            holder.cardLayout.setBackgroundColor(mActivity.getResources().getColor(
-                    R.color.list_bg_selected));
+            holder.cardLayout.setBackgroundColor(mActivity.getResources().getColor(R.color.list_bg_selected));
         } else {
-            restoreDrawable(task, convertView, holder);
+            restoreDrawable(task, convertView);
         }
         initThumbnail(task, holder);
 
@@ -163,32 +156,20 @@ public class TaskAdapter extends ArrayAdapter<Task> implements Insertable {
     private void initDates(Task task, NoteViewHolder holder) {
         String dateText = getDateText(mActivity, task);
         holder.date.setText(dateText);
+        holder.date.setCompoundDrawablesWithIntrinsicBounds(0, 0, task.alarmDate != 0 ? R.drawable.ic_alarm_grey600_18dp : 0, 0);
     }
 
-
-    private void initIcons(Task task, NoteViewHolder holder) {
-        // ...the presence of an alarm
-        holder.alarmIcon.setVisibility(task.alarmDate != 0 ? View.VISIBLE : View.GONE);
-    }
-
-
-    private void initText(Task note, NoteViewHolder holder) {
-        try {
-            if (note.isChecklist) {
-                TextWorkerTask task = new TextWorkerTask(mActivity, holder.title, holder.content);
-                task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, note);
-            } else {
-                Spanned[] titleAndContent = TextHelper.parseTitleAndContent(note);
-                holder.title.setText(titleAndContent[0]);
-                if (titleAndContent[1].length() > 0) {
-                    holder.content.setText(titleAndContent[1]);
-                    holder.content.setVisibility(View.VISIBLE);
-                } else {
-                    holder.content.setVisibility(View.GONE);
-                }
-            }
-        } catch (RejectedExecutionException e) {
+    private void initText(Task task, NoteViewHolder holder) {
+        Spanned[] titleAndContent = TextHelper.parseTitleAndContent(task);
+        holder.title.setText(titleAndContent[0]);
+        if (titleAndContent[1].length() > 0) {
+            holder.content.setText(titleAndContent[1]);
+            holder.content.setVisibility(View.VISIBLE);
+        } else {
+            holder.content.setVisibility(View.GONE);
         }
+
+        holder.reward.setText(String.valueOf(task.pointReward));
     }
 
     /**
@@ -241,30 +222,18 @@ public class TaskAdapter extends ArrayAdapter<Task> implements Insertable {
         this.mSelectedItems.clear();
     }
 
-
     public void restoreDrawable(Task task, View v) {
-        restoreDrawable(task, v, null);
-    }
-
-
-    public void restoreDrawable(Task task, View v, NoteViewHolder holder) {
         final int paddingBottom = v.getPaddingBottom(), paddingLeft = v.getPaddingLeft();
         final int paddingRight = v.getPaddingRight(), paddingTop = v.getPaddingTop();
         v.setPadding(paddingLeft, paddingTop, paddingRight, paddingBottom);
-        colorNote(task, v, holder);
-    }
-
-
-    @SuppressWarnings("unused")
-    private void colorNote(Task task, View v) {
-        colorNote(task, v, null);
+        colorNote(task, v);
     }
 
     /**
      * Color of category marker if note is categorized a function is active in preferences
      */
-    private void colorNote(Task task, View v, NoteViewHolder holder) {
-
+    private void colorNote(Task task, View v) {
+        NoteViewHolder holder = (NoteViewHolder) v.getTag(R.id.holder);
         String colorsPref = PrefUtils.getString("settings_colors_app", PrefUtils.PREF_COLORS_APP_DEFAULT);
 
         // Checking preference
@@ -278,11 +247,7 @@ public class TaskAdapter extends ArrayAdapter<Task> implements Insertable {
                 if (colorsPref.equals("complete") || colorsPref.equals("list")) {
                     holder.cardLayout.setBackgroundColor(Integer.parseInt(task.getCategory().color));
                 } else {
-                    if (holder != null) {
-                        holder.categoryMarker.setBackgroundColor(Integer.parseInt(task.getCategory().color));
-                    } else {
-                        v.findViewById(R.id.category_marker).setBackgroundColor(Integer.parseInt(task.getCategory().color));
-                    }
+                    holder.categoryMarker.setBackgroundColor(Integer.parseInt(task.getCategory().color));
                 }
             } else {
                 v.findViewById(R.id.category_marker).setBackgroundColor(0);

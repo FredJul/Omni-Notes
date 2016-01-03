@@ -26,7 +26,6 @@ import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.Color;
-import android.graphics.Point;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.media.MediaPlayer;
@@ -52,17 +51,12 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.View.OnDragListener;
 import android.view.View.OnLongClickListener;
-import android.view.View.OnTouchListener;
 import android.view.ViewGroup;
 import android.view.WindowManager;
-import android.view.animation.Animation;
-import android.view.animation.Animation.AnimationListener;
-import android.view.animation.AnimationUtils;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.AdapterView.OnItemLongClickListener;
@@ -98,7 +92,6 @@ import net.fred.taskgame.model.listeners.OnReminderPickedListener;
 import net.fred.taskgame.model.listeners.OnTaskSaved;
 import net.fred.taskgame.utils.Constants;
 import net.fred.taskgame.utils.DbHelper;
-import net.fred.taskgame.utils.Display;
 import net.fred.taskgame.utils.Dog;
 import net.fred.taskgame.utils.IntentChecker;
 import net.fred.taskgame.utils.KeyboardUtils;
@@ -123,8 +116,7 @@ import it.feio.android.checklistview.interfaces.CheckListChangedListener;
 import static com.nineoldandroids.view.ViewPropertyAnimator.animate;
 
 
-public class DetailFragment extends Fragment implements
-        OnReminderPickedListener, OnTouchListener, OnAttachingFileListener, TextWatcher, CheckListChangedListener, OnTaskSaved {
+public class DetailFragment extends Fragment implements OnReminderPickedListener, OnAttachingFileListener, TextWatcher, CheckListChangedListener, OnTaskSaved {
 
     private static final int TAKE_PHOTO = 1;
     private static final int TAKE_VIDEO = 2;
@@ -160,8 +152,6 @@ public class DetailFragment extends Fragment implements
     // Flag to check if after editing it will return to ListActivity or not
     // and in the last case a Toast will be shown instead than Crouton
     private boolean afterSavedReturnsToList = true;
-    private boolean swiping;
-    private int startSwipeX;
     private boolean orientationChanged;
     private long audioRecordingTimeStart;
     private long audioRecordingTime;
@@ -374,15 +364,11 @@ public class DetailFragment extends Fragment implements
 
     private void initViews() {
 
-        // Sets onTouchListener to the whole activity to swipe tasks
-        ViewGroup root = (ViewGroup) getView().findViewById(R.id.detail_root);
-        root.setOnTouchListener(this);
-
         // ScrollView container
         scrollView = (ScrollView) getView().findViewById(R.id.content_wrapper);
 
         // Color of tag marker if note is tagged a function is active in preferences
-        setTagMarkerColor(mTask.getCategory());
+        setCategoryMarkerColor(mTask.getCategory());
 
         // Sets links clickable in title and content Views
         title = initTitle();
@@ -508,16 +494,6 @@ public class DetailFragment extends Fragment implements
         datetime = (TextView) getView().findViewById(R.id.datetime);
         datetime.setText(dateTimeText);
 
-        // Timestamps view
-        View timestampsView = getActivity().findViewById(R.id.detail_timestamps);
-        // Bottom padding set for translucent navbar in Kitkat
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-            int navBarHeight = Display.getNavigationBarHeightKitkat(getActivity());
-            int timestampsViewPaddingBottom = navBarHeight > 0 ? navBarHeight - 22 : timestampsView.getPaddingBottom();
-            timestampsView.setPadding(timestampsView.getPaddingStart(), timestampsView.getPaddingTop(),
-                    timestampsView.getPaddingEnd(), timestampsViewPaddingBottom);
-        }
-
         // Footer dates of creation...
         TextView creationTextView = (TextView) getView().findViewById(R.id.creation);
         String creation = mTask.getCreationShort(getActivity());
@@ -591,7 +567,7 @@ public class DetailFragment extends Fragment implements
     /**
      * Colors tag marker in note's title and content elements
      */
-    private void setTagMarkerColor(Category tag) {
+    private void setCategoryMarkerColor(Category tag) {
 
         String colorsPref = PrefUtils.getString("settings_colors_app", PrefUtils.PREF_COLORS_APP_DEFAULT);
 
@@ -839,7 +815,7 @@ public class DetailFragment extends Fragment implements
                     @Override
                     public void onNegative(MaterialDialog dialog) {
                         mTask.setCategory(null);
-                        setTagMarkerColor(null);
+                        setCategoryMarkerColor(null);
                     }
                 })
                 .build();
@@ -848,7 +824,7 @@ public class DetailFragment extends Fragment implements
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 mTask.setCategory(categories.get(position));
-                setTagMarkerColor(categories.get(position));
+                setCategoryMarkerColor(categories.get(position));
                 dialog.dismiss();
             }
         });
@@ -999,7 +975,7 @@ public class DetailFragment extends Fragment implements
                     UiUtils.showMessage(getActivity(), R.string.category_saved);
                     Category category = intent.getParcelableExtra(Constants.INTENT_CATEGORY);
                     mTask.setCategory(category);
-                    setTagMarkerColor(category);
+                    setCategoryMarkerColor(category);
                     break;
             }
         }
@@ -1129,7 +1105,6 @@ public class DetailFragment extends Fragment implements
         tmpTask.isTrashed = mTask.isTrashed;
         return !tmpTask.equals(mOriginalTask);
     }
-
 
     @Override
     public void onTaskSaved(Task taskSaved) {
@@ -1302,85 +1277,6 @@ public class DetailFragment extends Fragment implements
             mRecorder.release();
             mRecorder = null;
         }
-    }
-
-    private void fade(final View v, boolean fadeIn) {
-
-        int anim = R.anim.fade_out_support;
-        int visibilityTemp = View.GONE;
-
-        if (fadeIn) {
-            anim = R.anim.fade_in_support;
-            visibilityTemp = View.VISIBLE;
-        }
-
-        final int visibility = visibilityTemp;
-
-        // Checks if user has left the app
-        if (getActivity() != null) {
-            @SuppressWarnings("ResourceType")
-            Animation mAnimation = AnimationUtils.loadAnimation(getActivity(), anim);
-            mAnimation.setAnimationListener(new AnimationListener() {
-                @Override
-                public void onAnimationStart(Animation animation) {
-                }
-
-                @Override
-                public void onAnimationRepeat(Animation animation) {
-                }
-
-                @Override
-                public void onAnimationEnd(Animation animation) {
-                    //noinspection ResourceType
-                    v.setVisibility(visibility);
-                }
-            });
-            v.startAnimation(mAnimation);
-        }
-    }
-
-    @Override
-    public boolean onTouch(View v, MotionEvent event) {
-        int x = (int) event.getX();
-
-        switch (event.getAction()) {
-
-            case MotionEvent.ACTION_DOWN:
-                int w;
-
-                Point displaySize = Display.getUsableSize(getActivity());
-                w = displaySize.x;
-
-                if (x < Constants.SWIPE_MARGIN || x > w - Constants.SWIPE_MARGIN) {
-                    swiping = true;
-                    startSwipeX = x;
-                }
-
-                break;
-
-            case MotionEvent.ACTION_UP:
-                if (swiping)
-                    swiping = false;
-                break;
-
-            case MotionEvent.ACTION_MOVE:
-                if (swiping) {
-
-                    if (Math.abs(x - startSwipeX) > Constants.SWIPE_OFFSET) {
-                        swiping = false;
-                        FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
-                        UiUtils.animateTransition(transaction, UiUtils.TRANSITION_VERTICAL);
-                        DetailFragment mDetailFragment = new DetailFragment();
-                        Bundle b = new Bundle();
-                        b.putParcelable(Constants.INTENT_TASK, new Task());
-                        mDetailFragment.setArguments(b);
-                        transaction.replace(R.id.fragment_container, mDetailFragment, getMainActivity().FRAGMENT_DETAIL_TAG).addToBackStack(getMainActivity().FRAGMENT_DETAIL_TAG).commit();
-                    }
-                }
-                break;
-        }
-
-        return true;
     }
 
     @Override

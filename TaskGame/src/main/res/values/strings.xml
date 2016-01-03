@@ -115,15 +115,9 @@
     <string name="minutes">minutes</string>
     <string name="colors_app">Application color scheme</string>
     <string name="colors_widget">Widget color scheme</string>
-    <string name="settings_navdrawer_on_exit">Navigation menu on exit</string>
-    <string name="settings_navdrawer_on_exit_summary">Pressing \"back\" when in tasks list opens navigation menu instead of exiting</string>
 
     <!-- Accessibility -->
     <string name="drawer_open">drawer open</string>
     <string name="drawer_close">drawer closed</string>
-    <string name="reminder">reminder</string>
-    <string name="stroke_size">stroke size</string>
-    <string name="task_thumbnail">task thumbnail</string>
-    <string name="task_reminder_symbol">task reminder symbol</string>
 
 </resources>

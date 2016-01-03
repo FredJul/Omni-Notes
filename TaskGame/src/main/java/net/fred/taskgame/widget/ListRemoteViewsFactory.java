@@ -109,21 +109,16 @@ public class ListRemoteViewsFactory implements RemoteViewsFactory {
             // Fetch from cache if possible
             int HEIGHT = 80;
             int WIDTH = 80;
-            String cacheKey = mAttachment.uri.getPath() + WIDTH + HEIGHT;
-            Bitmap bmp = MainApplication.getBitmapCache().getBitmap(cacheKey);
-
-            if (bmp == null) {
-                bmp = BitmapHelper.getBitmapFromAttachment(app, mAttachment,
+            Bitmap bmp = BitmapHelper.getBitmapFromAttachment(app, mAttachment,
                         WIDTH, HEIGHT);
-//				app.getBitmapCache().addBitmap(cacheKey, bmp);
-            }
+
             row.setBitmap(R.id.attachmentThumbnail, "setImageBitmap", bmp);
             row.setInt(R.id.attachmentThumbnail, "setVisibility", View.VISIBLE);
         } else {
             row.setInt(R.id.attachmentThumbnail, "setVisibility", View.GONE);
         }
 
-        row.setTextViewText(R.id.note_date, TaskAdapter.getDateText(app, task));
+        row.setTextViewText(R.id.taskModifDate, TaskAdapter.getDateText(app, task));
 
         // Next, set a fill-intent, which will be used to fill in the pending intent template
         // that is set on the collection view in StackWidgetProvider.

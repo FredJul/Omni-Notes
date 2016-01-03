@@ -106,18 +106,11 @@
     <string name="minutes">minutes</string>
     <string name="drawer_open">volet ouvert</string>
     <string name="drawer_close">volet fermé</string>
-    <string name="reminder">rappel</string>
-    <string name="stroke_size">taille du trait</string>
-    <string name="task_thumbnail">miniature de tâche</string>
-    <string name="task_reminder_symbol">symbole de rappel de tâche</string>
     <string name="settings_enable_vibration">Vibration</string>
     <string name="settings_max_video_size">Video attachments</string>
     <string name="settings_checked_items_behavior">Checklists</string>
     <string name="settings_checked_items_behavior_summary">What to do when an item is checked?</string>
     <string name="settings_notification_ringtone">Ringtone</string>
     <string name="settings_notification_snooze_delay">Second reminder delay</string>
-    <string name="settings_navdrawer_on_exit">Navigation menu on exit</string>
-    <string name="settings_navdrawer_on_exit_summary">Pressing \"back\" when in tasks list opens navigation menu instead of exiting</string>
-
 
 </resources>
