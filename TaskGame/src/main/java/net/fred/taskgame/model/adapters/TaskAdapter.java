@@ -39,7 +39,6 @@ import net.fred.taskgame.model.Attachment;
 import net.fred.taskgame.model.Task;
 import net.fred.taskgame.model.Task_Table;
 import net.fred.taskgame.model.holders.NoteViewHolder;
-import net.fred.taskgame.utils.BitmapHelper;
 import net.fred.taskgame.utils.PrefUtils;
 import net.fred.taskgame.utils.TextHelper;
 import net.fred.taskgame.view.SquareImageView;
@@ -144,7 +143,7 @@ public class TaskAdapter extends ArrayAdapter<Task> implements Insertable {
         if (task.getAttachmentsList() != null && !task.getAttachmentsList().isEmpty()) {
             holder.attachmentThumbnail.setVisibility(View.VISIBLE);
             Attachment mAttachment = task.getAttachmentsList().get(0);
-            Uri thumbnailUri = BitmapHelper.getThumbnailUri(mActivity, mAttachment);
+            Uri thumbnailUri = mAttachment.getThumbnailUri(mActivity);
             Glide.with(mActivity)
                     .load(thumbnailUri)
                     .centerCrop()

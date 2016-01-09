@@ -71,6 +71,7 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.bumptech.glide.load.resource.bitmap.GlideBitmapDrawable;
 
@@ -79,7 +80,6 @@ import net.fred.taskgame.R;
 import net.fred.taskgame.activity.CategoryActivity;
 import net.fred.taskgame.activity.MainActivity;
 import net.fred.taskgame.async.AttachmentTask;
-import net.fred.taskgame.async.DeleteNoteTask;
 import net.fred.taskgame.async.SaveTask;
 import net.fred.taskgame.model.Attachment;
 import net.fred.taskgame.model.Category;
@@ -382,7 +382,7 @@ public class DetailFragment extends Fragment implements OnReminderPickedListener
 
         // Some fields can be filled by third party application and are always shown
         mGridView = (ExpandableHeightGridView) getView().findViewById(R.id.gridview);
-        mAttachmentAdapter = new AttachmentAdapter(getActivity(), mTask.getAttachmentsList(), mGridView);
+        mAttachmentAdapter = new AttachmentAdapter(getActivity(), mTask.getAttachmentsList());
         mAttachmentAdapter.setOnErrorListener(this);
 
         // Initialization of gridview for images
@@ -1054,14 +1054,11 @@ public class DetailFragment extends Fragment implements OnReminderPickedListener
         new MaterialDialog.Builder(getActivity())
                 .content(R.string.delete_task_confirmation)
                 .positiveText(R.string.ok)
-                .callback(new MaterialDialog.ButtonCallback() {
+                .onPositive(new MaterialDialog.SingleButtonCallback() {
                     @Override
-                    public void onPositive(MaterialDialog materialDialog) {
-                        DeleteNoteTask deleteNoteTask = new DeleteNoteTask(MainApplication.getContext());
-                        deleteNoteTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, mTask);
-
+                    public void onClick(MaterialDialog dialog, DialogAction which) {
+                        DbHelper.deleteTask(mTask);
                         UiUtils.showMessage(getActivity(), R.string.task_deleted);
-                        MainActivity.notifyAppWidgets(getActivity());
                         goHome();
                     }
                 }).build().show();
@@ -1127,7 +1124,6 @@ public class DetailFragment extends Fragment implements OnReminderPickedListener
 
     @Override
     public void onTaskSaved(Task taskSaved) {
-        MainActivity.notifyAppWidgets(MainApplication.getContext());
         goHome();
     }
 

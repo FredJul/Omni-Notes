@@ -32,7 +32,6 @@ import android.widget.TextView;
 
 import net.fred.taskgame.R;
 import net.fred.taskgame.activity.BaseActivity;
-import net.fred.taskgame.fragment.ListFragment;
 import net.fred.taskgame.model.Category;
 import net.fred.taskgame.utils.PrefUtils;
 
@@ -99,8 +98,8 @@ public class NavDrawerCategoryAdapter extends BaseAdapter {
         // Set the results into ImageView checking if an icon is present before
         if (category.color != null && category.color.length() > 0) {
             Drawable img = mActivity.getResources().getDrawable(R.drawable.square);
-            ColorFilter cf = new LightingColorFilter(Color.parseColor("#000000"), Integer.parseInt(category.color));
-                img.mutate().setColorFilter(cf);
+            ColorFilter cf = new LightingColorFilter(Color.TRANSPARENT, Integer.parseInt(category.color));
+            img.mutate().setColorFilter(cf);
             holder.imgIcon.setImageDrawable(img);
             int padding = 12;
             holder.imgIcon.setPadding(padding, padding, padding, padding);
@@ -116,10 +115,10 @@ public class NavDrawerCategoryAdapter extends BaseAdapter {
         String[] navigationListCodes = mActivity.getResources().getStringArray(R.array.navigation_list_codes);
 
         // Managing temporary navigation indicator when coming from a widget
-        String navigationTmp = ListFragment.class.isAssignableFrom(mActivity
-                .getClass()) ? ((BaseActivity) mActivity).getNavigationTmp() : null;
+        long widgetCatId = mActivity instanceof BaseActivity ? ((BaseActivity) mActivity)
+                .getWidgetCatId() : -1;
 
-        String navigation = navigationTmp != null ? navigationTmp
+        String navigation = widgetCatId != -1 ? String.valueOf(widgetCatId)
                 : PrefUtils.getString(PrefUtils.PREF_NAVIGATION, navigationListCodes[0]);
 
         return navigation.equals(String.valueOf(categories.get(position).id));

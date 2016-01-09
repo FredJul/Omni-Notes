@@ -17,14 +17,10 @@
 package net.fred.taskgame.activity;
 
 import android.annotation.SuppressLint;
-import android.appwidget.AppWidgetManager;
-import android.content.ComponentName;
-import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
-import android.view.ViewConfiguration;
 import android.widget.Toast;
 
 import com.google.android.gms.games.Games;
@@ -51,16 +47,14 @@ import net.fred.taskgame.model.Task_Table;
 import net.fred.taskgame.utils.Constants;
 import net.fred.taskgame.utils.Dog;
 import net.fred.taskgame.utils.PrefUtils;
-import net.fred.taskgame.widget.ListWidgetProvider;
 
-import java.lang.reflect.Field;
 import java.nio.charset.Charset;
 
 
 @SuppressLint("Registered")
 public class BaseActivity extends BaseGameActivity {
 
-    public String navigationTmp; // used for widget navigation
+    public long mWidgetCatId = -1;
 
     protected BaseActivity() {
         super(BaseGameActivity.CLIENT_ALL); // we need snapshot support
@@ -77,17 +71,18 @@ public class BaseActivity extends BaseGameActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        // Force menu overflow icon
-        try {
-            ViewConfiguration config = ViewConfiguration.get(this);
-            Field menuKeyField = ViewConfiguration.class.getDeclaredField("sHasPermanentMenuKey");
-            if (menuKeyField != null) {
-                menuKeyField.setAccessible(true);
-                menuKeyField.setBoolean(config, false);
-            }
-        } catch (Exception ex) {
-        }
         super.onCreate(savedInstanceState);
+
+        // Restores savedInstanceState
+        if (savedInstanceState != null) {
+            mWidgetCatId = savedInstanceState.getLong("mWidgetCatId");
+        }
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putLong("mWidgetCatId", mWidgetCatId);
     }
 
     public void showToast(CharSequence text, int duration) {
@@ -96,17 +91,7 @@ public class BaseActivity extends BaseGameActivity {
 
     public void updateNavigation(String nav) {
         PrefUtils.putString(PrefUtils.PREF_NAVIGATION, nav);
-        navigationTmp = null;
-    }
-
-    /**
-     * Notifies App Widgets about data changes so they can update themselves
-     */
-    public static void notifyAppWidgets(Context mActivity) {
-        // Home widgets
-        AppWidgetManager mgr = AppWidgetManager.getInstance(mActivity);
-        int[] ids = mgr.getAppWidgetIds(new ComponentName(mActivity, ListWidgetProvider.class));
-        mgr.notifyAppWidgetViewDataChanged(ids, R.id.widget_list);
+        mWidgetCatId = -1;
     }
 
     public void setActionBarTitle(String title) {
@@ -116,8 +101,8 @@ public class BaseActivity extends BaseGameActivity {
     }
 
 
-    public String getNavigationTmp() {
-        return navigationTmp;
+    public long getWidgetCatId() {
+        return mWidgetCatId;
     }
 
 

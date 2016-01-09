@@ -16,17 +16,21 @@
  */
 package net.fred.taskgame.model;
 
+import android.content.Context;
 import android.net.Uri;
-import android.os.Parcel;
-import android.os.Parcelable;
+import android.text.TextUtils;
 
 import com.raizlabs.android.dbflow.annotation.Column;
-import com.raizlabs.android.dbflow.annotation.PrimaryKey;
 import com.raizlabs.android.dbflow.annotation.Table;
-import com.raizlabs.android.dbflow.structure.BaseModel;
 
+import net.fred.taskgame.R;
+import net.fred.taskgame.utils.StorageHelper;
+
+import org.parceler.Parcel;
+
+@Parcel
 @Table(database = AppDatabase.class)
-public class Attachment extends IdBasedModel implements Parcelable {
+public class Attachment extends IdBasedModel {
 
     @Column
     public long taskId = INVALID_ID;
@@ -41,47 +45,24 @@ public class Attachment extends IdBasedModel implements Parcelable {
     @Column
     public Uri uri = Uri.EMPTY;
 
-    public Attachment() {
-    }
-
-    private Attachment(Parcel in) {
-        id = in.readLong();
-        taskId = in.readLong();
-        name = in.readString();
-        size = in.readLong();
-        length = in.readLong();
-        mimeType = in.readString();
-        uri = Uri.parse(in.readString());
-    }
-
-    @Override
-    public int describeContents() {
-        return 0;
-    }
-
-    @Override
-    public void writeToParcel(Parcel parcel, int flags) {
-        parcel.writeLong(id);
-        parcel.writeLong(taskId);
-        parcel.writeString(name);
-        parcel.writeLong(size);
-        parcel.writeLong(length);
-        parcel.writeString(mimeType);
-        parcel.writeString(uri.toString());
-    }
-
-    /*
-    * Parcelable interface must also have a static field called CREATOR, which is an object implementing the
-    * Parcelable.Creator interface. Used to un-marshal or de-serialize object from Parcel.
-    */
-    public static final Parcelable.Creator<Attachment> CREATOR = new Parcelable.Creator<Attachment>() {
-
-        public Attachment createFromParcel(Parcel in) {
-            return new Attachment(in);
+    public Uri getThumbnailUri(Context context) {
+        String thumbnailMimeType = !TextUtils.isEmpty(mimeType) ? mimeType : StorageHelper.getMimeType(uri.toString());
+        if (!TextUtils.isEmpty(thumbnailMimeType)) {
+            String type = thumbnailMimeType.replaceFirst("/.*", "");
+            switch (type) {
+                case "image":
+                case "video":
+                    // Nothing to do, bitmap will be retrieved from this
+                    break;
+                case "audio":
+                    return Uri.parse("android.resource://" + context.getPackageName() + "/" + R.raw.play);
+                default:
+                    return Uri.parse("android.resource://" + context.getPackageName() + "/" + R.raw.files);
+            }
+        } else {
+            return Uri.parse("android.resource://" + context.getPackageName() + "/" + R.raw.files);
         }
 
-        public Attachment[] newArray(int size) {
-            return new Attachment[size];
-        }
-    };
+        return uri;
+    }
 }

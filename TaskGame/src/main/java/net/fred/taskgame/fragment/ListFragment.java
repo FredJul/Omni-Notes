@@ -21,7 +21,6 @@ import android.app.Activity;
 import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
@@ -54,15 +53,13 @@ import android.widget.ListView;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.getbase.floatingactionbutton.AddFloatingActionButton;
 import com.getbase.floatingactionbutton.FloatingActionsMenu;
+import com.google.android.gms.games.Games;
 import com.nhaarman.listviewanimations.itemmanipulation.DynamicListView;
 import com.nhaarman.listviewanimations.itemmanipulation.swipedismiss.OnDismissCallback;
 
-import net.fred.taskgame.MainApplication;
 import net.fred.taskgame.R;
-import net.fred.taskgame.activity.BaseActivity;
 import net.fred.taskgame.activity.CategoryActivity;
 import net.fred.taskgame.activity.MainActivity;
-import net.fred.taskgame.async.DeleteNoteTask;
 import net.fred.taskgame.model.Attachment;
 import net.fred.taskgame.model.Category;
 import net.fred.taskgame.model.IdBasedModel;
@@ -174,11 +171,6 @@ public class ListFragment extends Fragment implements OnViewTouchedListener {
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        // Restores savedInstanceState
-        if (savedInstanceState != null) {
-            getMainActivity().navigationTmp = savedInstanceState.getString("navigationTmp");
-        }
-
         initFab();
 
         // Activity title initialization
@@ -258,11 +250,6 @@ public class ListFragment extends Fragment implements OnViewTouchedListener {
     public void onPause() {
         super.onPause();
 
-        // Clears data structures
-        // getSelectedTasks().clear();
-//		if (taskAdapter != null) {
-//			taskAdapter.clearSelectedItems();
-//		}
         if (!keepActionMode) {
             commitPending();
             list.clearChoices();
@@ -344,10 +331,6 @@ public class ListFragment extends Fragment implements OnViewTouchedListener {
             }
 
             actionMode = null;
-
-
-            // Updates app widgets
-            BaseActivity.notifyAppWidgets(getActivity());
         }
 
 
@@ -754,8 +737,8 @@ public class ListFragment extends Fragment implements OnViewTouchedListener {
             // if navigation is a category it will be set into note
             try {
                 long categoryId;
-                if (!TextUtils.isEmpty(getMainActivity().navigationTmp)) {
-                    categoryId = Long.parseLong(getMainActivity().navigationTmp);
+                if (getMainActivity().getWidgetCatId() != -1) {
+                    categoryId = getMainActivity().getWidgetCatId();
                 } else {
                     categoryId = Navigation.getCategory();
                 }
@@ -818,8 +801,6 @@ public class ListFragment extends Fragment implements OnViewTouchedListener {
             listViewPositionOffset = 0;
             listViewPosition = 0;
             list.setSelectionFromTop(listViewPosition, listViewPositionOffset);
-            // Updates app widgets
-            BaseActivity.notifyAppWidgets(getActivity());
         }
     }
 
@@ -860,15 +841,15 @@ public class ListFragment extends Fragment implements OnViewTouchedListener {
             // Check if is launched from a widget with categories to set tag
             if ((Constants.ACTION_WIDGET_SHOW_LIST.equals(intent.getAction()) && intent
                     .hasExtra(Constants.INTENT_WIDGET))
-                    || !TextUtils.isEmpty(getMainActivity().navigationTmp)) {
+                    || getMainActivity().getWidgetCatId() != -1) {
                 String widgetId = intent.hasExtra(Constants.INTENT_WIDGET) ? intent.getExtras()
                         .get(Constants.INTENT_WIDGET).toString() : null;
                 if (widgetId != null) {
                     long categoryId = PrefUtils.getLong(PrefUtils.PREF_WIDGET_PREFIX + widgetId, -1);
-                    getMainActivity().navigationTmp = (categoryId != -1 ? String.valueOf(categoryId) : null);
+                    getMainActivity().mWidgetCatId = (categoryId != -1 ? categoryId : -1);
                 }
                 intent.removeExtra(Constants.INTENT_WIDGET);
-                onTasksLoaded(DbHelper.getTasksByCategory(Long.parseLong(getMainActivity().navigationTmp)));
+                onTasksLoaded(DbHelper.getTasksByCategory(getMainActivity().getWidgetCatId()));
 
                 // Gets all tasks
             } else {
@@ -1010,8 +991,11 @@ public class ListFragment extends Fragment implements OnViewTouchedListener {
     private void deleteTasksExecute() {
         for (Task task : getSelectedTasks()) {
             taskAdapter.remove(task);
-            DeleteNoteTask deleteNoteTask = new DeleteNoteTask(MainApplication.getContext());
-            deleteNoteTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, task);
+            // Deleting note using DbHelper
+            DbHelper.deleteTask(task);
+            if (!TextUtils.isEmpty(task.questId)) {
+                Games.Events.increment(getMainActivity().getApiClient(), task.questId, 1);
+            }
         }
 
         // Clears data structures
@@ -1185,8 +1169,6 @@ public class ListFragment extends Fragment implements OnViewTouchedListener {
             list.clearChoices();
 
             showFab();
-
-            BaseActivity.notifyAppWidgets(getActivity());
         }
     }
 

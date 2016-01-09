@@ -37,7 +37,6 @@ import android.widget.DatePicker;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
-import net.fred.taskgame.MainApplication;
 import net.fred.taskgame.R;
 import net.fred.taskgame.fragment.DetailFragment;
 import net.fred.taskgame.fragment.ListFragment;
@@ -47,7 +46,6 @@ import net.fred.taskgame.model.Category;
 import net.fred.taskgame.model.Task;
 import net.fred.taskgame.utils.Constants;
 import net.fred.taskgame.utils.DbHelper;
-import net.fred.taskgame.utils.PrefUtils;
 import net.fred.taskgame.utils.UiUtils;
 
 import org.parceler.Parcels;
@@ -76,7 +74,6 @@ public class MainActivity extends BaseActivity implements OnDateSetListener, OnT
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeButtonEnabled(true);
-
 
         mFragmentManager = getSupportFragmentManager();
 
@@ -196,13 +193,6 @@ public class MainActivity extends BaseActivity implements OnDateSetListener, OnT
         super.onBackPressed();
     }
 
-
-    @Override
-    public void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-        outState.putString("navigationTmp", navigationTmp);
-    }
-
     public void animateBurger(int targetShape) {
         if (getDrawerToggle() != null) {
             if (targetShape != BURGER && targetShape != ARROW)
@@ -220,7 +210,6 @@ public class MainActivity extends BaseActivity implements OnDateSetListener, OnT
             anim.start();
         }
     }
-
 
     public DrawerLayout getDrawerLayout() {
         return ((DrawerLayout) findViewById(R.id.drawer_layout));

@@ -88,7 +88,6 @@
     <string name="snooze">Remind me later</string>
     <string name="error_saving_attachments">Error saving attachments</string>
     <string name="shortcut_task_deleted">Shortcut points to deleted task</string>
-    <string name="show_thumbnails">Show attachment\'s thumbnails</string>
     <string name="edit">Edit</string>
     <string name="eraser">Eraser</string>
     <string name="error">Error</string>

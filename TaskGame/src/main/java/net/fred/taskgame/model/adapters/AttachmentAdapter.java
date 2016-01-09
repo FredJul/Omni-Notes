@@ -30,13 +30,10 @@ import com.bumptech.glide.Glide;
 import net.fred.taskgame.R;
 import net.fred.taskgame.model.Attachment;
 import net.fred.taskgame.model.listeners.OnAttachingFileListener;
-import net.fred.taskgame.utils.BitmapHelper;
 import net.fred.taskgame.utils.Constants;
 import net.fred.taskgame.utils.date.DateHelper;
-import net.fred.taskgame.view.ExpandableHeightGridView;
 import net.fred.taskgame.view.SquareImageView;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -47,7 +44,7 @@ public class AttachmentAdapter extends BaseAdapter {
     private List<Attachment> mAttachmentsList;
     private final LayoutInflater inflater;
 
-    public AttachmentAdapter(Activity activity, List<Attachment> attachmentsList, ExpandableHeightGridView mGridView) {
+    public AttachmentAdapter(Activity activity, List<Attachment> attachmentsList) {
         mActivity = activity;
         mAttachmentsList = attachmentsList;
         if (mAttachmentsList == null) {
@@ -70,7 +67,7 @@ public class AttachmentAdapter extends BaseAdapter {
 
 
     public View getView(int position, View convertView, ViewGroup parent) {
-        Attachment mAttachment = mAttachmentsList.get(position);
+        Attachment attachment = mAttachmentsList.get(position);
 
         AttachmentHolder holder;
         if (convertView == null) {
@@ -85,15 +82,15 @@ public class AttachmentAdapter extends BaseAdapter {
         }
 
         // Draw name in case the type is an audio recording
-        if (mAttachment.mimeType != null && mAttachment.mimeType.equals(Constants.MIME_TYPE_AUDIO)) {
+        if (attachment.mimeType != null && attachment.mimeType.equals(Constants.MIME_TYPE_AUDIO)) {
             String text;
 
-            if (mAttachment.length > 0) {
+            if (attachment.length > 0) {
                 // Recording duration
-                text = DateHelper.formatShortTime(mAttachment.length);
+                text = DateHelper.formatShortTime(attachment.length);
             } else {
                 // Recording date otherwise
-                text = DateHelper.getLocalizedDateTime(mActivity, mAttachment
+                text = DateHelper.getLocalizedDateTime(mActivity, attachment
                                 .uri.getLastPathSegment().split("\\.")[0],
                         Constants.DATE_FORMAT_SORTABLE);
             }
@@ -108,12 +105,12 @@ public class AttachmentAdapter extends BaseAdapter {
         }
 
         // Draw name in case the type is an audio recording (or file in the future)
-        if (mAttachment.mimeType != null && mAttachment.mimeType.equals(Constants.MIME_TYPE_FILES)) {
-            holder.text.setText(mAttachment.name);
+        if (attachment.mimeType != null && attachment.mimeType.equals(Constants.MIME_TYPE_FILES)) {
+            holder.text.setText(attachment.name);
             holder.text.setVisibility(View.VISIBLE);
         }
 
-        Uri thumbnailUri = BitmapHelper.getThumbnailUri(mActivity, mAttachment);
+        Uri thumbnailUri = attachment.getThumbnailUri(mActivity);
         Glide.with(mActivity)
                 .load(thumbnailUri)
                 .centerCrop()

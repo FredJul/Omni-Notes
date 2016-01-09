@@ -24,7 +24,6 @@ import android.os.Bundle;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
-import android.widget.CheckBox;
 import android.widget.RadioGroup;
 import android.widget.RadioGroup.OnCheckedChangeListener;
 import android.widget.Spinner;
@@ -84,11 +83,8 @@ public class WidgetConfigurationActivity extends Activity {
                     categoryId = tag.id;
                 }
 
-                CheckBox showThumbnailsCheckBox = (CheckBox) findViewById(R.id.show_thumbnails);
-
                 // Updating the ListRemoteViewsFactory parameter to get the list of tasks
-                ListRemoteViewsFactory.updateConfiguration(mAppWidgetId,
-                        categoryId, showThumbnailsCheckBox.isChecked());
+                ListRemoteViewsFactory.updateConfiguration(mAppWidgetId, categoryId);
 
                 Intent resultValue = new Intent();
                 resultValue.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID,

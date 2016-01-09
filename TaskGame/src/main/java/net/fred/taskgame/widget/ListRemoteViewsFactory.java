@@ -17,10 +17,9 @@
 
 package net.fred.taskgame.widget;
 
-import android.app.Application;
 import android.appwidget.AppWidgetManager;
+import android.content.Context;
 import android.content.Intent;
-import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.text.Spanned;
@@ -28,17 +27,17 @@ import android.view.View;
 import android.widget.RemoteViews;
 import android.widget.RemoteViewsService.RemoteViewsFactory;
 
-import net.fred.taskgame.MainApplication;
 import net.fred.taskgame.R;
 import net.fred.taskgame.model.Attachment;
+import net.fred.taskgame.model.Category;
 import net.fred.taskgame.model.Task;
 import net.fred.taskgame.model.Task_Table;
 import net.fred.taskgame.model.adapters.TaskAdapter;
-import net.fred.taskgame.utils.BitmapHelper;
 import net.fred.taskgame.utils.Constants;
 import net.fred.taskgame.utils.DbHelper;
 import net.fred.taskgame.utils.PrefUtils;
 import net.fred.taskgame.utils.TextHelper;
+import net.fred.taskgame.utils.ThrottledFlowContentObserver;
 
 import org.parceler.Parcels;
 
@@ -46,15 +45,19 @@ import java.util.List;
 
 public class ListRemoteViewsFactory implements RemoteViewsFactory {
 
-    private static boolean showThumbnails = true;
-
-    private final MainApplication app;
+    private final Context mContext;
     private final int appWidgetId;
     private List<Task> tasks;
 
+    private ThrottledFlowContentObserver mContentObserver = new ThrottledFlowContentObserver(100) {
+        @Override
+        public void onChangeThrottled() {
+            AppWidgetManager.getInstance(mContext).notifyAppWidgetViewDataChanged(appWidgetId, R.id.widget_list);
+        }
+    };
 
-    public ListRemoteViewsFactory(Application app, Intent intent) {
-        this.app = (MainApplication) app;
+    public ListRemoteViewsFactory(Context context, Intent intent) {
+        mContext = context;
         appWidgetId = intent.getIntExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, AppWidgetManager.INVALID_APPWIDGET_ID);
     }
 
@@ -62,8 +65,10 @@ public class ListRemoteViewsFactory implements RemoteViewsFactory {
     @Override
     public void onCreate() {
         getTasks();
+        mContentObserver.registerForContentChanges(mContext, Task.class);
+        mContentObserver.registerForContentChanges(mContext, Category.class);
+        mContentObserver.registerForContentChanges(mContext, Attachment.class);
     }
-
 
     @Override
     public void onDataSetChanged() {
@@ -82,6 +87,8 @@ public class ListRemoteViewsFactory implements RemoteViewsFactory {
 
     @Override
     public void onDestroy() {
+        mContentObserver.unregisterForContentChanges(mContext);
+
         PrefUtils.remove(PrefUtils.PREF_WIDGET_PREFIX
                 + String.valueOf(appWidgetId));
     }
@@ -95,7 +102,7 @@ public class ListRemoteViewsFactory implements RemoteViewsFactory {
 
     @Override
     public RemoteViews getViewAt(int position) {
-        RemoteViews row = new RemoteViews(app.getPackageName(), R.layout.note_layout_widget);
+        RemoteViews row = new RemoteViews(mContext.getPackageName(), R.layout.note_layout_widget);
 
         Task task = tasks.get(position);
 
@@ -106,21 +113,24 @@ public class ListRemoteViewsFactory implements RemoteViewsFactory {
 
         color(task, row);
 
-        if (task.getAttachmentsList().size() > 0 && showThumbnails) {
-            Attachment mAttachment = task.getAttachmentsList().get(0);
-            // Fetch from cache if possible
-            int HEIGHT = 80;
-            int WIDTH = 80;
-            Bitmap bmp = BitmapHelper.getBitmapFromAttachment(app, mAttachment,
-                    WIDTH, HEIGHT);
-
-            row.setBitmap(R.id.attachmentThumbnail, "setImageBitmap", bmp);
-            row.setInt(R.id.attachmentThumbnail, "setVisibility", View.VISIBLE);
-        } else {
+//        if (task.getAttachmentsList().size() > 0) {
+//            Attachment attachment = task.getAttachmentsList().get(0);
+//
+//            AppWidgetTarget target = new AppWidgetTarget(mContext, row, R.id.attachmentThumbnail, 80, 80, new int[]{appWidgetId});
+//
+//            Uri thumbnailUri = attachment.getThumbnailUri(mContext);
+//            Glide.with(mContext)
+//                    .load(thumbnailUri)
+//                    .asBitmap()
+//                    .centerCrop()
+//                    .into(target);
+//
+//            row.setInt(R.id.attachmentThumbnail, "setVisibility", View.VISIBLE);
+//        } else {
             row.setInt(R.id.attachmentThumbnail, "setVisibility", View.GONE);
-        }
+//        }
 
-        row.setTextViewText(R.id.taskModifDate, TaskAdapter.getDateText(app, task));
+        row.setTextViewText(R.id.taskModifDate, TaskAdapter.getDateText(mContext, task));
 
         // Next, set a fill-intent, which will be used to fill in the pending intent template
         // that is set on the collection view in StackWidgetProvider.
@@ -155,11 +165,9 @@ public class ListRemoteViewsFactory implements RemoteViewsFactory {
         return false;
     }
 
-    public static void updateConfiguration(int mAppWidgetId, long categoryId, boolean thumbnails) {
+    public static void updateConfiguration(int mAppWidgetId, long categoryId) {
         PrefUtils.putLong(PrefUtils.PREF_WIDGET_PREFIX + String.valueOf(mAppWidgetId), categoryId);
-        showThumbnails = thumbnails;
     }
-
 
     private void color(Task task, RemoteViews row) {
         // Resetting transparent color to the view
