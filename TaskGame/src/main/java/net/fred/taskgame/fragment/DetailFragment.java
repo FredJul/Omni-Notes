@@ -107,6 +107,8 @@ import net.fred.taskgame.utils.date.DateHelper;
 import net.fred.taskgame.utils.date.ReminderPickers;
 import net.fred.taskgame.view.ExpandableHeightGridView;
 
+import org.parceler.Parcels;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -179,8 +181,8 @@ public class DetailFragment extends Fragment implements OnReminderPickedListener
 
         // Restored temp note after orientation change
         if (savedInstanceState != null) {
-            mTask = savedInstanceState.getParcelable("note");
-            mOriginalTask = savedInstanceState.getParcelable("noteOriginal");
+            mTask = Parcels.unwrap(savedInstanceState.getParcelable("note"));
+            mOriginalTask = Parcels.unwrap(savedInstanceState.getParcelable("noteOriginal"));
             attachmentUri = savedInstanceState.getParcelable("attachmentUri");
             orientationChanged = savedInstanceState.getBoolean("orientationChanged");
         }
@@ -209,8 +211,8 @@ public class DetailFragment extends Fragment implements OnReminderPickedListener
     public void onSaveInstanceState(Bundle outState) {
         mTask.title = getTaskTitle();
         mTask.content = getTaskContent();
-        outState.putParcelable("note", mTask);
-        outState.putParcelable("noteOriginal", mOriginalTask);
+        outState.putParcelable("note", Parcels.wrap(mTask));
+        outState.putParcelable("noteOriginal", Parcels.wrap(mOriginalTask));
         outState.putParcelable("attachmentUri", attachmentUri);
         outState.putBoolean("orientationChanged", orientationChanged);
         super.onSaveInstanceState(outState);
@@ -248,7 +250,7 @@ public class DetailFragment extends Fragment implements OnReminderPickedListener
         handleIntents();
 
         if (mOriginalTask == null) {
-            mOriginalTask = getArguments().getParcelable(Constants.INTENT_TASK);
+            mOriginalTask = Parcels.unwrap(getArguments().getParcelable(Constants.INTENT_TASK));
         }
 
         if (mTask == null) {
@@ -1011,7 +1013,7 @@ public class DetailFragment extends Fragment implements OnReminderPickedListener
                     break;
                 case CATEGORY_CHANGE:
                     UiUtils.showMessage(getActivity(), R.string.category_saved);
-                    Category category = intent.getParcelableExtra(Constants.INTENT_CATEGORY);
+                    Category category = Parcels.unwrap(intent.getParcelableExtra(Constants.INTENT_CATEGORY));
                     mTask.setCategory(category);
                     setCategoryMarkerColor(category);
                     break;

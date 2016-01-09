@@ -80,6 +80,8 @@ import net.fred.taskgame.utils.ThrottledFlowContentObserver;
 import net.fred.taskgame.utils.UiUtils;
 import net.fred.taskgame.view.InterceptorLinearLayout;
 
+import org.parceler.Parcels;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -804,7 +806,7 @@ public class ListFragment extends Fragment implements OnViewTouchedListener {
 
             case REQUEST_CODE_CATEGORY_TASKS:
                 if (intent != null) {
-                    Category tag = intent.getParcelableExtra(Constants.INTENT_CATEGORY);
+                    Category tag = Parcels.unwrap(intent.getParcelableExtra(Constants.INTENT_CATEGORY));
                     categorizeTasksExecute(tag);
                 }
                 break;
@@ -910,7 +912,6 @@ public class ListFragment extends Fragment implements OnViewTouchedListener {
      * Batch note trashing
      */
     public void trashTasks(boolean trash) {
-        int selectedTasksSize = getSelectedTasks().size();
         for (Task task : getSelectedTasks()) {
             // Restore it performed immediately, otherwise undo bar
             if (trash) {
@@ -956,7 +957,6 @@ public class ListFragment extends Fragment implements OnViewTouchedListener {
 
 
     private List<Task> getSelectedTasks() {
-//        return taskAdapter.getSelectedTasks();
         return selectedTasks;
     }
 
@@ -1038,7 +1038,7 @@ public class ListFragment extends Fragment implements OnViewTouchedListener {
      */
     public void editCategory(Category category) {
         Intent categoryIntent = new Intent(getActivity(), CategoryActivity.class);
-        categoryIntent.putExtra(Constants.INTENT_CATEGORY, category);
+        categoryIntent.putExtra(Constants.INTENT_CATEGORY, Parcels.wrap(category));
         startActivityForResult(categoryIntent, REQUEST_CODE_CATEGORY);
     }
 

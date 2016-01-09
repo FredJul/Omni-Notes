@@ -50,6 +50,8 @@ import net.fred.taskgame.utils.DbHelper;
 import net.fred.taskgame.utils.PrefUtils;
 import net.fred.taskgame.utils.UiUtils;
 
+import org.parceler.Parcels;
+
 public class MainActivity extends BaseActivity implements OnDateSetListener, OnTimeSetListener {
 
     public static final int BURGER = 0;
@@ -256,7 +258,7 @@ public class MainActivity extends BaseActivity implements OnDateSetListener, OnT
         if (i.getAction() == null) return;
 
         if (receivedIntent(i)) {
-            Task task = i.getParcelableExtra(Constants.INTENT_TASK);
+            Task task = Parcels.unwrap(i.getParcelableExtra(Constants.INTENT_TASK));
             if (task == null) {
                 task = DbHelper.getTask(i.getLongExtra(Constants.INTENT_KEY, 0));
             }
@@ -329,7 +331,7 @@ public class MainActivity extends BaseActivity implements OnDateSetListener, OnT
         UiUtils.animateTransition(transaction, UiUtils.TRANSITION_HORIZONTAL);
         DetailFragment mDetailFragment = new DetailFragment();
         Bundle b = new Bundle();
-        b.putParcelable(Constants.INTENT_TASK, task);
+        b.putParcelable(Constants.INTENT_TASK, Parcels.wrap(task));
         mDetailFragment.setArguments(b);
         if (mFragmentManager.findFragmentByTag(FRAGMENT_DETAIL_TAG) == null) {
             transaction.replace(R.id.fragment_container, mDetailFragment, FRAGMENT_DETAIL_TAG).addToBackStack(FRAGMENT_LIST_TAG).commitAllowingStateLoss();

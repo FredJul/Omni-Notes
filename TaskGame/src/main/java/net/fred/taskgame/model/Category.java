@@ -16,17 +16,15 @@
  */
 package net.fred.taskgame.model;
 
-import android.os.Parcel;
-import android.os.Parcelable;
-
 import com.google.gson.annotations.Expose;
 import com.raizlabs.android.dbflow.annotation.Column;
-import com.raizlabs.android.dbflow.annotation.PrimaryKey;
 import com.raizlabs.android.dbflow.annotation.Table;
-import com.raizlabs.android.dbflow.structure.BaseModel;
 
+import org.parceler.Parcel;
+
+@Parcel
 @Table(database = AppDatabase.class)
-public class Category extends IdBasedModel implements Parcelable {
+public class Category extends IdBasedModel {
 
     @Column
     @Expose
@@ -40,46 +38,4 @@ public class Category extends IdBasedModel implements Parcelable {
 
     public Category() {
     }
-
-    private Category(Parcel in) {
-        id = in.readLong();
-        name = in.readString();
-        description = in.readString();
-        color = in.readString();
-    }
-
-    @Override
-    public int describeContents() {
-        return 0;
-    }
-
-
-    @Override
-    public void writeToParcel(Parcel parcel, int flags) {
-        parcel.writeLong(id);
-        parcel.writeString(name);
-        parcel.writeString(description);
-        parcel.writeString(color);
-    }
-
-
-    @Override
-    public String toString() {
-        return name;
-    }
-
-    /*
-     * Parcelable interface must also have a static field called CREATOR, which is an object implementing the
-     * Parcelable.Creator interface. Used to un-marshal or de-serialize object from Parcel.
-     */
-    public static final Parcelable.Creator<Category> CREATOR = new Parcelable.Creator<Category>() {
-
-        public Category createFromParcel(Parcel in) {
-            return new Category(in);
-        }
-
-        public Category[] newArray(int size) {
-            return new Category[size];
-        }
-    };
 }

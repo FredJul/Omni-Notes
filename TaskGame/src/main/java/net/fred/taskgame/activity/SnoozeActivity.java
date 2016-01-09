@@ -36,11 +36,13 @@ import net.fred.taskgame.utils.Constants;
 import net.fred.taskgame.utils.PrefUtils;
 import net.fred.taskgame.utils.date.ReminderPickers;
 
+import org.parceler.Parcels;
+
 import java.util.Calendar;
 
 public class SnoozeActivity extends FragmentActivity implements OnReminderPickedListener, OnDateSetListener, OnTimeSetListener {
 
-    private Task task;
+    private Task mTask;
     private OnDateSetListener mOnDateSetListener;
     private OnTimeSetListener mOnTimeSetListener;
 
@@ -49,7 +51,7 @@ public class SnoozeActivity extends FragmentActivity implements OnReminderPicked
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        task = getIntent().getParcelableExtra(Constants.INTENT_TASK);
+        mTask = Parcels.unwrap(getIntent().getParcelableExtra(Constants.INTENT_TASK));
 
         // If an alarm has been fired a notification must be generated
         if (Constants.ACTION_DISMISS.equals(getIntent().getAction())) {
@@ -57,21 +59,21 @@ public class SnoozeActivity extends FragmentActivity implements OnReminderPicked
         } else if (Constants.ACTION_SNOOZE.equals(getIntent().getAction())) {
             String snoozeDelay = PrefUtils.getString("settings_notification_snooze_delay", "10");
             long newAlarm = Calendar.getInstance().getTimeInMillis() + Integer.parseInt(snoozeDelay) * 60 * 1000;
-            setAlarm(task, newAlarm);
+            setAlarm(mTask, newAlarm);
             finish();
         } else if (Constants.ACTION_POSTPONE.equals(getIntent().getAction())) {
             int pickerType = PrefUtils.getBoolean("settings_simple_calendar", false) ? ReminderPickers.TYPE_AOSP : ReminderPickers.TYPE_GOOGLE;
             ReminderPickers reminderPicker = new ReminderPickers(this, this, pickerType);
-            reminderPicker.pick(task.alarmDate);
+            reminderPicker.pick(mTask.alarmDate);
             mOnDateSetListener = reminderPicker;
             mOnTimeSetListener = reminderPicker;
         } else {
             Intent intent = new Intent(this, MainActivity.class);
-            intent.putExtra(Constants.INTENT_KEY, task.id);
+            intent.putExtra(Constants.INTENT_KEY, mTask.id);
             intent.setAction(Constants.ACTION_NOTIFICATION_CLICK);
             startActivity(intent);
         }
-        removeNotification(task);
+        removeNotification(mTask);
     }
 
 
@@ -82,7 +84,7 @@ public class SnoozeActivity extends FragmentActivity implements OnReminderPicked
 
     private void setAlarm(Task task, long newAlarm) {
         Intent intent = new Intent(this, AlarmReceiver.class);
-        intent.putExtra(Constants.INTENT_TASK, task);
+        intent.putExtra(Constants.INTENT_TASK, Parcels.wrap(task));
         PendingIntent sender = PendingIntent.getBroadcast(this, Constants.INTENT_ALARM_CODE, intent,
                 PendingIntent.FLAG_CANCEL_CURRENT);
         AlarmManager am = (AlarmManager) this.getSystemService(ALARM_SERVICE);
@@ -91,8 +93,8 @@ public class SnoozeActivity extends FragmentActivity implements OnReminderPicked
 
     @Override
     public void onReminderPicked(long reminder) {
-        task.alarmDate = reminder;
-        setAlarm(task, reminder);
+        mTask.alarmDate = reminder;
+        setAlarm(mTask, reminder);
         finish();
     }
 

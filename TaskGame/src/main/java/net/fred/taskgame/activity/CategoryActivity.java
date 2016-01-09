@@ -38,6 +38,8 @@ import net.fred.taskgame.utils.Constants;
 import net.fred.taskgame.utils.DbHelper;
 import net.fred.taskgame.utils.PrefUtils;
 
+import org.parceler.Parcels;
+
 public class CategoryActivity extends Activity {
 
     Category category;
@@ -54,7 +56,7 @@ public class CategoryActivity extends Activity {
         setContentView(R.layout.activity_category);
 
         // Retrieving intent
-        category = getIntent().getParcelableExtra(Constants.INTENT_CATEGORY);
+        category = Parcels.unwrap(getIntent().getParcelableExtra(Constants.INTENT_CATEGORY));
 
         // Getting Views from layout
         initViews();
@@ -150,7 +152,7 @@ public class CategoryActivity extends Activity {
         category.save();
 
         // Sets result to show proper message
-        getIntent().putExtra(Constants.INTENT_CATEGORY, category);
+        getIntent().putExtra(Constants.INTENT_CATEGORY, Parcels.wrap(category));
         setResult(RESULT_OK, getIntent());
         finish();
     }

@@ -19,28 +19,25 @@ package net.fred.taskgame.model;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
-import android.os.Parcel;
-import android.os.Parcelable;
 
 import com.google.gson.annotations.Expose;
 import com.raizlabs.android.dbflow.annotation.Column;
-import com.raizlabs.android.dbflow.annotation.PrimaryKey;
 import com.raizlabs.android.dbflow.annotation.Table;
 import com.raizlabs.android.dbflow.sql.language.Select;
-import com.raizlabs.android.dbflow.structure.BaseModel;
 
 import net.fred.taskgame.R;
 import net.fred.taskgame.utils.EqualityChecker;
 import net.fred.taskgame.utils.date.DateHelper;
 
+import org.parceler.Parcel;
+
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
+@Parcel
 @Table(database = AppDatabase.class)
-public class Task extends IdBasedModel implements Parcelable {
+public class Task extends IdBasedModel {
 
     public final static long LOW_POINT_REWARD = 20;
     public final static long NORMAL_POINT_REWARD = 50;
@@ -95,26 +92,12 @@ public class Task extends IdBasedModel implements Parcelable {
         isChecklist = task.isChecklist;
         categoryId = task.categoryId;
         pointReward = task.pointReward;
+        questId = task.questId;
         mCategory = task.mCategory;
 
         if (task.mAttachmentsList != null) {
             mAttachmentsList = new ArrayList<>(task.mAttachmentsList);
         }
-    }
-
-    private Task(Parcel in) {
-        id = in.readLong();
-        title = in.readString();
-        content = in.readString();
-        creationDate = in.readLong();
-        lastModificationDate = in.readLong();
-        isTrashed = in.readInt() == 1;
-        alarmDate = in.readLong();
-        isChecklist = in.readInt() == 1;
-        categoryId = in.readLong();
-        pointReward = in.readLong();
-        mCategory = in.readParcelable(Category.class.getClassLoader());
-        in.readList(mAttachmentsList, Attachment.class.getClassLoader());
     }
 
     public List<Attachment> getAttachmentsList() {
@@ -162,9 +145,9 @@ public class Task extends IdBasedModel implements Parcelable {
         }
 
         Object[] a = {id, title, content, creationDate, lastModificationDate, isTrashed,
-                alarmDate, isChecklist, categoryId, pointReward, getAttachmentsList()};
+                alarmDate, isChecklist, categoryId, pointReward, questId, getAttachmentsList()};
         Object[] b = {task.id, task.title, task.content, task.creationDate, task.lastModificationDate, task.isTrashed,
-                task.alarmDate, task.isChecklist, task.categoryId, task.pointReward, task.getAttachmentsList()};
+                task.alarmDate, task.isChecklist, task.categoryId, task.pointReward, task.questId, task.getAttachmentsList()};
         if (EqualityChecker.check(a, b)) {
             res = true;
         }
@@ -254,40 +237,4 @@ public class Task extends IdBasedModel implements Parcelable {
 
         super.save();
     }
-
-    @Override
-    public int describeContents() {
-        return 0;
-    }
-
-    @Override
-    public void writeToParcel(Parcel parcel, int flags) {
-        parcel.writeLong(id);
-        parcel.writeString(title);
-        parcel.writeString(content);
-        parcel.writeLong(creationDate);
-        parcel.writeLong(lastModificationDate);
-        parcel.writeInt(isTrashed ? 1 : 0);
-        parcel.writeLong(alarmDate);
-        parcel.writeInt(isChecklist ? 1 : 0);
-        parcel.writeLong(categoryId);
-        parcel.writeLong(pointReward);
-        parcel.writeParcelable(getCategory(), 0);
-        parcel.writeList(getAttachmentsList());
-    }
-
-    /*
-     * Parcelable interface must also have a static field called CREATOR, which is an object implementing the
-     * Parcelable.Creator interface. Used to un-marshal or de-serialize object from Parcel.
-     */
-    public static final Parcelable.Creator<Task> CREATOR = new Parcelable.Creator<Task>() {
-
-        public Task createFromParcel(Parcel in) {
-            return new Task(in);
-        }
-
-        public Task[] newArray(int size) {
-            return new Task[size];
-        }
-    };
 }

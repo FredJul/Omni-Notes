@@ -32,12 +32,14 @@ import net.fred.taskgame.utils.PrefUtils;
 import net.fred.taskgame.utils.TextHelper;
 import net.fred.taskgame.utils.date.DateHelper;
 
+import org.parceler.Parcels;
+
 public class AlarmReceiver extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context mContext, Intent intent) {
         try {
-            Task task = intent.getExtras().getParcelable(Constants.INTENT_TASK);
+            Task task = Parcels.unwrap(intent.getExtras().getParcelable(Constants.INTENT_TASK));
             createNotification(mContext, task);
         } catch (Exception e) {
             Toast.makeText(mContext, e.getMessage(), Toast.LENGTH_LONG).show();
@@ -54,13 +56,13 @@ public class AlarmReceiver extends BroadcastReceiver {
 
         Intent snoozeIntent = new Intent(mContext, SnoozeActivity.class);
         snoozeIntent.setAction(Constants.ACTION_SNOOZE);
-        snoozeIntent.putExtra(Constants.INTENT_TASK, task);
+        snoozeIntent.putExtra(Constants.INTENT_TASK, Parcels.wrap(task));
         snoozeIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         PendingIntent piSnooze = PendingIntent.getActivity(mContext, 0, snoozeIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
         Intent postponeIntent = new Intent(mContext, SnoozeActivity.class);
         postponeIntent.setAction(Constants.ACTION_POSTPONE);
-        postponeIntent.putExtra(Constants.INTENT_TASK, task);
+        postponeIntent.putExtra(Constants.INTENT_TASK, Parcels.wrap(task));
         snoozeIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         PendingIntent piPostpone = PendingIntent.getActivity(mContext, 0, postponeIntent,
                 PendingIntent.FLAG_UPDATE_CURRENT);
@@ -70,7 +72,7 @@ public class AlarmReceiver extends BroadcastReceiver {
         // Next create the bundle and initialize it
         Intent intent = new Intent(mContext, SnoozeActivity.class);
         Bundle bundle = new Bundle();
-        bundle.putParcelable(Constants.INTENT_TASK, task);
+        bundle.putParcelable(Constants.INTENT_TASK, Parcels.wrap(task));
         intent.putExtras(bundle);
 
         // Sets the Activity to start in a new, empty task

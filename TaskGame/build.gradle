@@ -50,6 +50,9 @@ dependencies {
     apt 'com.github.Raizlabs.DBFlow:dbflow-processor:3.0.0-beta1'
     compile "com.github.Raizlabs.DBFlow:dbflow-core:3.0.0-beta1"
     compile "com.github.Raizlabs.DBFlow:dbflow:3.0.0-beta1"
+
+    compile 'org.parceler:parceler-api:+'
+    apt 'org.parceler:parceler:+'
     compile 'com.google.code.gson:gson:+'
 
     compile 'com.github.flavienlaurent.datetimepicker:library:+'
