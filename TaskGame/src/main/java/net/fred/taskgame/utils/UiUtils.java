@@ -64,7 +64,7 @@ public class UiUtils {
             }
             case TYPE_ERROR: {
                 TextView textView = (TextView) snackbar.getView().findViewById(R.id.snackbar_text);
-                textView.setTextColor(ContextCompat.getColor(activity, R.color.alert));
+                textView.setTextColor(ContextCompat.getColor(activity, R.color.error));
                 break;
             }
         }

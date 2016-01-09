@@ -17,20 +17,6 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
                   android:fitsSystemWindows="true">
 
-    <ListPreference
-        android:entries="@array/colors_app"
-        android:entryValues="@array/colors_app_values"
-        android:key="settings_colors_app"
-        android:title="@string/colors_app"
-        android:defaultValue="strip"/>
-
-    <ListPreference
-        android:entries="@array/colors_widget"
-        android:entryValues="@array/colors_widget_values"
-        android:key="settings_colors_widget"
-        android:title="@string/colors_widget"
-        android:defaultValue="strip"/>
-
     <EditTextPreference
         android:inputType="number"
         android:key="settings_max_video_size"

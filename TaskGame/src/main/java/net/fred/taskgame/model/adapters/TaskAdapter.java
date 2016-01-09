@@ -21,6 +21,7 @@ import android.content.Context;
 import android.graphics.Color;
 import android.net.Uri;
 import android.support.annotation.NonNull;
+import android.support.v4.content.ContextCompat;
 import android.text.Spanned;
 import android.text.TextUtils;
 import android.util.SparseBooleanArray;
@@ -28,7 +29,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
@@ -40,7 +40,6 @@ import net.fred.taskgame.model.Task;
 import net.fred.taskgame.model.Task_Table;
 import net.fred.taskgame.model.holders.NoteViewHolder;
 import net.fred.taskgame.utils.BitmapHelper;
-import net.fred.taskgame.utils.Navigation;
 import net.fred.taskgame.utils.PrefUtils;
 import net.fred.taskgame.utils.TextHelper;
 import net.fred.taskgame.view.SquareImageView;
@@ -228,23 +227,20 @@ public class TaskAdapter extends ArrayAdapter<Task> implements Insertable {
      */
     private void colorNote(Task task, View v) {
         NoteViewHolder holder = (NoteViewHolder) v.getTag(R.id.holder);
-        String colorsPref = PrefUtils.getString("settings_colors_app", PrefUtils.PREF_COLORS_APP_DEFAULT);
 
-        // Checking preference
-        if (!colorsPref.equals("disabled")) {
-
+        if (!TextUtils.isEmpty(task.questId)) { // If this is an official quest, let's make it quite visible
+            holder.cardLayout.setBackgroundColor(ContextCompat.getColor(mActivity, R.color.quest_color));
+            holder.categoryMarker.setVisibility(View.GONE);
+        } else {
             // Resetting transparent color to the view
-            holder.cardLayout.setBackgroundColor(Color.parseColor("#00000000"));
+            holder.cardLayout.setBackgroundColor(Color.TRANSPARENT);
+            holder.categoryMarker.setVisibility(View.VISIBLE);
 
             // If category is set the color will be applied on the appropriate target
             if (task.getCategory() != null && task.getCategory().color != null) {
-                if (colorsPref.equals("complete") || colorsPref.equals("list")) {
-                    holder.cardLayout.setBackgroundColor(Integer.parseInt(task.getCategory().color));
-                } else {
-                    holder.categoryMarker.setBackgroundColor(Integer.parseInt(task.getCategory().color));
-                }
+                holder.categoryMarker.setBackgroundColor(Integer.parseInt(task.getCategory().color));
             } else {
-                v.findViewById(R.id.category_marker).setBackgroundColor(0);
+                holder.categoryMarker.setBackgroundColor(Color.TRANSPARENT);
             }
         }
     }

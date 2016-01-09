@@ -24,7 +24,6 @@ import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
-import android.database.DataSetObserver;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
@@ -69,7 +68,6 @@ import android.widget.PopupWindow;
 import android.widget.PopupWindow.OnDismissListener;
 import android.widget.ScrollView;
 import android.widget.Spinner;
-import android.widget.SpinnerAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -608,31 +606,12 @@ public class DetailFragment extends Fragment implements OnReminderPickedListener
      * Colors tag marker in note's title and content elements
      */
     private void setCategoryMarkerColor(Category tag) {
-
-        String colorsPref = PrefUtils.getString("settings_colors_app", PrefUtils.PREF_COLORS_APP_DEFAULT);
-
-        // Checking preference
-        if (!colorsPref.equals("disabled")) {
-
-            // Choosing target view depending on another preference
-            ArrayList<View> target = new ArrayList<>();
-            if (colorsPref.equals("complete")) {
-                target.add(getView().findViewById(R.id.title_wrapper));
-                target.add(getView().findViewById(R.id.content_wrapper));
-            } else {
-                target.add(getView().findViewById(R.id.tag_marker));
-            }
-
-            // Coloring the target
-            if (tag != null && tag.color != null) {
-                for (View view : target) {
-                    view.setBackgroundColor(Integer.parseInt(tag.color));
-                }
-            } else {
-                for (View view : target) {
-                    view.setBackgroundColor(Color.parseColor("#00000000"));
-                }
-            }
+        View marker = getView().findViewById(R.id.tag_marker);
+        // Coloring the target
+        if (tag != null && tag.color != null) {
+            marker.setBackgroundColor(Integer.parseInt(tag.color));
+        } else {
+            marker.setBackgroundColor(Color.TRANSPARENT);
         }
     }
 

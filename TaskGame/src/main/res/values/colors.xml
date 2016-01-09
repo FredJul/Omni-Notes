@@ -28,6 +28,7 @@
     <color name="action_color">#B78B00</color>
     <color name="action_color_pressed">#916E02</color>
 
+    <color name="quest_color">#c1ded3</color>
     <color name="navigation_bg">#ffffffff</color>
     <color name="gray_bg">#e2e2e2</color>
     <color name="kitkat_gray_light">#19000000</color>
@@ -43,10 +44,9 @@
     <color name="text_color_lighter">#868686</color>
 
     <!-- toasts -->
-    <color name="confirm">@color/colorPrimary</color>
+    <color name="info">@color/colorPrimary</color>
     <color name="warning">#ffffb32d</color>
-    <color name="alert">#ffe54230</color>
-    <color name="info">@color/colorPrimaryDark</color>
+    <color name="error">#ffe54230</color>
 
     <!--Undo bar-->
     <color name="card_undobar_material_background_color">#323232</color>

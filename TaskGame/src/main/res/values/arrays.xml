@@ -72,32 +72,6 @@
         <item>2</item>
     </string-array>
 
-    <string-array name="colors_app">
-        <item>Disabled</item>
-        <item>Strip only</item>
-        <item>Tasks list only</item>
-        <item>Complete</item>
-    </string-array>
-
-    <string-array name="colors_app_values" translatable="false">
-        <item>disabled</item>
-        <item>strip</item>
-        <item>list</item>
-        <item>complete</item>
-    </string-array>
-
-    <string-array name="colors_widget">
-        <item>Disabled</item>
-        <item>Strip only</item>
-        <item>Tasks list</item>
-    </string-array>
-
-    <string-array name="colors_widget_values" translatable="false">
-        <item>disabled</item>
-        <item>strip</item>
-        <item>list</item>
-    </string-array>
-
     <string-array name="task_difficulties">
         <item>Easy</item>
         <item>Normal</item>

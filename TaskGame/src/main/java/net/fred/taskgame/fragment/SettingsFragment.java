@@ -69,27 +69,6 @@ public class SettingsFragment extends PreferenceFragment {
             });
         }
 
-        // Application's colors
-        final ListPreference colorsApp = (ListPreference) findPreference("settings_colors_app");
-        if (colorsApp != null) {
-            int colorsAppIndex = colorsApp.findIndexOfValue(PrefUtils.getString("settings_colors_app",
-                    PrefUtils.PREF_COLORS_APP_DEFAULT));
-            String colorsAppString = getResources().getStringArray(R.array.colors_app)[colorsAppIndex];
-            colorsApp.setSummary(colorsAppString);
-            colorsApp.setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
-                @Override
-                public boolean onPreferenceChange(Preference preference, Object newValue) {
-                    int colorsAppIndex = colorsApp.findIndexOfValue(newValue.toString());
-                    String colorsAppString = getResources().getStringArray(R.array.colors_app)[colorsAppIndex];
-                    colorsApp.setSummary(colorsAppString);
-                    PrefUtils.putString("settings_colors_app", newValue.toString());
-                    colorsApp.setValueIndex(colorsAppIndex);
-                    return false;
-                }
-            });
-        }
-
-
         // Checklists
         final ListPreference checklist = (ListPreference) findPreference("settings_checked_items_behavior");
         if (checklist != null) {
@@ -109,28 +88,6 @@ public class SettingsFragment extends PreferenceFragment {
                 }
             });
         }
-
-
-        // Widget's colors
-        final ListPreference colorsWidget = (ListPreference) findPreference("settings_colors_widget");
-        if (colorsWidget != null) {
-            int colorsWidgetIndex = colorsWidget.findIndexOfValue(PrefUtils.getString("settings_colors_widget",
-                    PrefUtils.PREF_COLORS_APP_DEFAULT));
-            String colorsWidgetString = getResources().getStringArray(R.array.colors_widget)[colorsWidgetIndex];
-            colorsWidget.setSummary(colorsWidgetString);
-            colorsWidget.setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
-                @Override
-                public boolean onPreferenceChange(Preference preference, Object newValue) {
-                    int colorsWidgetIndex = colorsWidget.findIndexOfValue(newValue.toString());
-                    String colorsWidgetString = getResources().getStringArray(R.array.colors_widget)[colorsWidgetIndex];
-                    colorsWidget.setSummary(colorsWidgetString);
-                    PrefUtils.putString("settings_colors_widget", newValue.toString());
-                    colorsWidget.setValueIndex(colorsWidgetIndex);
-                    return false;
-                }
-            });
-        }
-
 
         // Notification snooze delay
         final EditTextPreference snoozeDelay = (EditTextPreference) findPreference

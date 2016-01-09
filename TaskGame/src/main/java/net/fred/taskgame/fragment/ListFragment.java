@@ -925,7 +925,7 @@ public class ListFragment extends Fragment implements OnViewTouchedListener {
         // Advice to user
         if (trash) {
             Snackbar.make(getActivity().getWindow().getDecorView().findViewById(android.R.id.content), R.string.task_trashed, Snackbar.LENGTH_LONG)
-                    .setActionTextColor(ContextCompat.getColor(getActivity(), R.color.confirm))
+                    .setActionTextColor(ContextCompat.getColor(getActivity(), R.color.info))
                     .setAction(R.string.undo, new OnClickListener() {
                         @Override
                         public void onClick(View v) {
@@ -1111,7 +1111,7 @@ public class ListFragment extends Fragment implements OnViewTouchedListener {
             getSelectedTasks().clear();
         } else {
             Snackbar.make(getActivity().getWindow().getDecorView().findViewById(android.R.id.content), R.string.tasks_category_removed, Snackbar.LENGTH_LONG)
-                    .setActionTextColor(ContextCompat.getColor(getActivity(), R.color.confirm))
+                    .setActionTextColor(ContextCompat.getColor(getActivity(), R.color.info))
                     .setAction(R.string.undo, new OnClickListener() {
                         @Override
                         public void onClick(View v) {

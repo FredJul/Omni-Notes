@@ -112,7 +112,7 @@ public class ListRemoteViewsFactory implements RemoteViewsFactory {
             int HEIGHT = 80;
             int WIDTH = 80;
             Bitmap bmp = BitmapHelper.getBitmapFromAttachment(app, mAttachment,
-                        WIDTH, HEIGHT);
+                    WIDTH, HEIGHT);
 
             row.setBitmap(R.id.attachmentThumbnail, "setImageBitmap", bmp);
             row.setInt(R.id.attachmentThumbnail, "setVisibility", View.VISIBLE);
@@ -162,27 +162,14 @@ public class ListRemoteViewsFactory implements RemoteViewsFactory {
 
 
     private void color(Task task, RemoteViews row) {
+        // Resetting transparent color to the view
+        row.setInt(R.id.tag_marker, "setBackgroundColor", Color.TRANSPARENT);
 
-        String colorsPref = PrefUtils.getString("settings_colors_widget",
-                PrefUtils.PREF_COLORS_APP_DEFAULT);
-
-        // Checking preference
-        if (!colorsPref.equals("disabled")) {
-
-            // Resetting transparent color to the view
-            row.setInt(R.id.tag_marker, "setBackgroundColor", Color.parseColor("#00000000"));
-
-            // If tag is set the color will be applied on the appropriate target
-            if (task.getCategory() != null && task.getCategory().color != null) {
-                if (colorsPref.equals("list")) {
-                    row.setInt(R.id.card_layout, "setBackgroundColor", Integer.parseInt(task.getCategory().color));
-                } else {
-                    row.setInt(R.id.tag_marker, "setBackgroundColor", Integer.parseInt(task.getCategory().color));
-                }
-            } else {
-                row.setInt(R.id.tag_marker, "setBackgroundColor", 0);
-            }
+        // If tag is set the color will be applied on the appropriate target
+        if (task.getCategory() != null && task.getCategory().color != null) {
+            row.setInt(R.id.tag_marker, "setBackgroundColor", Integer.parseInt(task.getCategory().color));
+        } else {
+            row.setInt(R.id.tag_marker, "setBackgroundColor", Color.TRANSPARENT);
         }
     }
-
 }

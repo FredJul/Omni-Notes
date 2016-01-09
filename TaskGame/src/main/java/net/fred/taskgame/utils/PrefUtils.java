@@ -31,7 +31,6 @@ public class PrefUtils {
     public static final String PREF_SORTING_COLUMN = "sorting_column";
     public static final String PREF_KEEP_CHECKED = "keep_checked";
     public static final String PREF_KEEP_CHECKMARKS = "show_checkmarks";
-    public static final String PREF_COLORS_APP_DEFAULT = "strip";
     public static final String PREF_WIDGET_PREFIX = "widget_";
     public static final String PREF_DYNAMIC_MENU = "settings_dynamic_menu";
     public static final String PREF_LAST_SYNC_DATE = "PREF_LAST_SYNC_DATE";

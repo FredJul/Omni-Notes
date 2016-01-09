@@ -110,8 +110,6 @@
     <string name="settings_notification_ringtone">Ringtone</string>
     <string name="settings_notification_snooze_delay">Second reminder delay</string>
     <string name="minutes">minutes</string>
-    <string name="colors_app">Application color scheme</string>
-    <string name="colors_widget">Widget color scheme</string>
 
     <!-- Accessibility -->
     <string name="drawer_open">drawer open</string>

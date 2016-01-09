@@ -34,17 +34,6 @@
         <item>Déplacer à la fin de la liste</item>
         <item>Déplacer à la fin des éléments non cochés</item>
     </string-array>
-    <string-array name="colors_app">
-        <item>Désactivé</item>
-        <item>Marge uniquement</item>
-        <item>Liste de tâches uniquement</item>
-        <item>Complet</item>
-    </string-array>
-    <string-array name="colors_widget">
-        <item>Désactivé</item>
-        <item>Marge uniquement</item>
-        <item>Liste de tâches</item>
-    </string-array>
     <string-array name="task_difficulties">
         <item>Facile</item>
         <item>Normal</item>
