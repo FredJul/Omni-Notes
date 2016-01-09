@@ -39,6 +39,9 @@ import android.widget.AdapterView.OnItemLongClickListener;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.google.android.gms.games.Games;
+import com.google.android.gms.games.quest.Quests;
+
 import net.fred.taskgame.R;
 import net.fred.taskgame.activity.MainActivity;
 import net.fred.taskgame.activity.SettingsActivity;
@@ -47,6 +50,7 @@ import net.fred.taskgame.model.NavigationItem;
 import net.fred.taskgame.model.Task;
 import net.fred.taskgame.model.adapters.NavDrawerAdapter;
 import net.fred.taskgame.model.adapters.NavDrawerCategoryAdapter;
+import net.fred.taskgame.utils.Constants;
 import net.fred.taskgame.utils.DbHelper;
 import net.fred.taskgame.utils.Navigation;
 import net.fred.taskgame.utils.PrefUtils;
@@ -340,18 +344,32 @@ public class NavigationDrawerFragment extends Fragment {
             @Override
             public void onItemClick(AdapterView<?> arg0, View arg1, int position, long arg3) {
                 mActivity.commitPending();
-                String navigation = getResources().getStringArray(R.array.navigation_list_codes)[items.get(position)
-                        .getArrayIndex()];
-                selectNavigationItem(mDrawerList, position);
-                mActivity.updateNavigation(navigation);
-                mDrawerList.setItemChecked(position, true);
-                if (mDrawerCategoriesList != null)
-                    mDrawerCategoriesList.setItemChecked(0, false); // Called to force redraw
-                // Reset intent
-                mActivity.getIntent().setAction(Intent.ACTION_MAIN);
+                if (position == Navigation.QUESTS) {
+                    try {
+                        Intent questsIntent = Games.Quests.getQuestsIntent(getMainActivity().getApiClient(), Quests.SELECT_ALL_QUESTS);
+                        startActivityForResult(questsIntent, 0);
+                    } catch (Exception ignored) {
+                    }
+                    mDrawerLayout.closeDrawer(GravityCompat.START);
+                } else if (position == Navigation.LEADERBOARD) {
+                    try {
+                        startActivityForResult(Games.Leaderboards.getLeaderboardIntent(getMainActivity().getApiClient(), Constants.LEADERBOARD_ID), 0);
+                    } catch (Exception ignored) {
+                    }
+                    mDrawerLayout.closeDrawer(GravityCompat.START);
+                } else {
+                    String navigation = getResources().getStringArray(R.array.navigation_list_codes)[items.get(position).getArrayIndex()];
+                    selectNavigationItem(mDrawerList, position);
+                    mActivity.updateNavigation(navigation);
+                    mDrawerList.setItemChecked(position, true);
+                    if (mDrawerCategoriesList != null)
+                        mDrawerCategoriesList.setItemChecked(0, false); // Called to force redraw
+                    // Reset intent
+                    mActivity.getIntent().setAction(Intent.ACTION_MAIN);
 
-                // Call method to update tasks list
-                mActivity.initTasksList(mActivity.getIntent());
+                    // Call method to update tasks list
+                    mActivity.initTasksList(mActivity.getIntent());
+                }
             }
         });
 

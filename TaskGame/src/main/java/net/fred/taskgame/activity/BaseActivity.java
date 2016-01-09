@@ -168,6 +168,9 @@ public class BaseActivity extends BaseGameActivity {
                         json = gson.toJson(syncData);
                         Dog.i("write " + json);
 
+                        // Sync leaderboard
+                        Games.Leaderboards.submitScore(getApiClient(), Constants.LEADERBOARD_ID, syncData.currentPoints);
+
                         // Set the data payload for the snapshot
                         snapshot.getSnapshotContents().writeBytes(json.getBytes());
 

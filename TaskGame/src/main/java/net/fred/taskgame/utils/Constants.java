@@ -20,10 +20,6 @@ public interface Constants {
 
     String TAG = "TaskGame";
 
-    // Tasks swipe
-    int SWIPE_MARGIN = 30;
-    int SWIPE_OFFSET = 100;
-
     // Floating action button
     int FAB_ANIMATION_TIME = 200;
 
@@ -65,4 +61,6 @@ public interface Constants {
     String MIME_TYPE_SKETCH_EXT = ".png";
 
     int MENU_SORT_GROUP_ID = 11998811;
+
+    String LEADERBOARD_ID = "CgkI--6GstwWEAIQAw";
 }

@@ -54,8 +54,6 @@ import android.widget.ListView;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.getbase.floatingactionbutton.AddFloatingActionButton;
 import com.getbase.floatingactionbutton.FloatingActionsMenu;
-import com.google.android.gms.games.Games;
-import com.google.android.gms.games.quest.Quests;
 import com.nhaarman.listviewanimations.itemmanipulation.DynamicListView;
 import com.nhaarman.listviewanimations.itemmanipulation.swipedismiss.OnDismissCallback;
 
@@ -713,13 +711,6 @@ public class ListFragment extends Fragment implements OnViewTouchedListener {
                         getMainActivity().getDrawerLayout().closeDrawer(GravityCompat.START);
                     } else {
                         getMainActivity().getDrawerLayout().openDrawer(GravityCompat.START);
-                    }
-                    break;
-                case R.id.menu_quests:
-                    try {
-                        Intent questsIntent = Games.Quests.getQuestsIntent(getMainActivity().getApiClient(), Quests.SELECT_ALL_QUESTS);
-                        startActivityForResult(questsIntent, 0);
-                    } catch (Exception ignored) {
                     }
                     break;
                 case R.id.menu_sort:
