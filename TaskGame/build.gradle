@@ -47,9 +47,9 @@ dependencies {
     compile project(':libs:BaseGameUtils')
     compile project(':libs:checklistview')
 
-    apt 'com.github.Raizlabs.DBFlow:dbflow-processor:3.0.0-beta1'
-    compile "com.github.Raizlabs.DBFlow:dbflow-core:3.0.0-beta1"
-    compile "com.github.Raizlabs.DBFlow:dbflow:3.0.0-beta1"
+    apt 'com.github.Raizlabs.DBFlow:dbflow-processor:+'
+    compile "com.github.Raizlabs.DBFlow:dbflow-core:+"
+    compile "com.github.Raizlabs.DBFlow:dbflow:+"
 
     compile 'org.parceler:parceler-api:+'
     apt 'org.parceler:parceler:+'
@@ -67,5 +67,5 @@ dependencies {
     compile 'com.android.support:recyclerview-v7:+'
     compile 'com.android.support:design:+'
     compile 'io.reactivex:rxjava:+'
-    compile 'com.tbruyelle.rxpermissions:rxpermissions:0.5.0@aar'
+    compile 'com.tbruyelle.rxpermissions:rxpermissions:0.5.1@aar'
 }
