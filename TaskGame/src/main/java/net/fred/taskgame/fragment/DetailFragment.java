@@ -32,7 +32,6 @@ import android.media.MediaPlayer;
 import android.media.MediaPlayer.OnCompletionListener;
 import android.media.MediaRecorder;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -80,7 +79,6 @@ import net.fred.taskgame.R;
 import net.fred.taskgame.activity.CategoryActivity;
 import net.fred.taskgame.activity.MainActivity;
 import net.fred.taskgame.async.AttachmentTask;
-import net.fred.taskgame.async.SaveTask;
 import net.fred.taskgame.model.Attachment;
 import net.fred.taskgame.model.Category;
 import net.fred.taskgame.model.IdBasedModel;
@@ -90,12 +88,12 @@ import net.fred.taskgame.model.adapters.NavDrawerCategoryAdapter;
 import net.fred.taskgame.model.listeners.OnAttachingFileListener;
 import net.fred.taskgame.model.listeners.OnPermissionRequestedListener;
 import net.fred.taskgame.model.listeners.OnReminderPickedListener;
-import net.fred.taskgame.model.listeners.OnTaskSaved;
 import net.fred.taskgame.utils.Constants;
 import net.fred.taskgame.utils.DbHelper;
 import net.fred.taskgame.utils.Dog;
 import net.fred.taskgame.utils.IntentChecker;
 import net.fred.taskgame.utils.KeyboardUtils;
+import net.fred.taskgame.utils.LoaderUtils;
 import net.fred.taskgame.utils.PermissionsHelper;
 import net.fred.taskgame.utils.PrefUtils;
 import net.fred.taskgame.utils.ReminderHelper;
@@ -115,11 +113,14 @@ import java.util.List;
 
 import it.feio.android.checklistview.ChecklistManager;
 import it.feio.android.checklistview.interfaces.CheckListChangedListener;
+import me.tatarka.rxloader.RxLoaderObserver;
+import rx.Observable;
+import rx.Subscriber;
 
 import static com.nineoldandroids.view.ViewPropertyAnimator.animate;
 
 
-public class DetailFragment extends Fragment implements OnReminderPickedListener, OnAttachingFileListener, TextWatcher, CheckListChangedListener, OnTaskSaved {
+public class DetailFragment extends Fragment implements OnReminderPickedListener, OnAttachingFileListener, TextWatcher, CheckListChangedListener {
 
     private static final int TAKE_PHOTO = 1;
     private static final int TAKE_VIDEO = 2;
@@ -621,13 +622,20 @@ public class DetailFragment extends Fragment implements OnReminderPickedListener
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        inflater.inflate(R.menu.menu_detail, menu);
+        if (TextUtils.isEmpty(mTask.questId)) { // no menu for quests
+            inflater.inflate(R.menu.menu_detail, menu);
+        }
+
         super.onCreateOptionsMenu(menu, inflater);
     }
 
 
     @Override
     public void onPrepareOptionsMenu(Menu menu) {
+
+        if (!TextUtils.isEmpty(mTask.questId)) { // no menu for quests
+            return;
+        }
 
         // Closes search view if left open in List fragment
         MenuItem searchMenuItem = menu.findItem(R.id.menu_search);
@@ -725,7 +733,7 @@ public class DetailFragment extends Fragment implements OnReminderPickedListener
 
     private void navigateUp() {
         afterSavedReturnsToList = true;
-        saveAndExit(this);
+        saveAndExit();
     }
 
     private void toggleChecklist() {
@@ -823,16 +831,17 @@ public class DetailFragment extends Fragment implements OnReminderPickedListener
                 .adapter(new NavDrawerCategoryAdapter(getActivity(), categories), null)
                 .positiveText(R.string.add_category)
                 .negativeText(R.string.remove_category)
-                .callback(new MaterialDialog.ButtonCallback() {
+                .onPositive(new MaterialDialog.SingleButtonCallback() {
                     @Override
-                    public void onPositive(MaterialDialog dialog) {
+                    public void onClick(MaterialDialog dialog, DialogAction which) {
                         Intent intent = new Intent(getActivity(), CategoryActivity.class);
                         intent.putExtra("noHome", true);
                         startActivityForResult(intent, CATEGORY_CHANGE);
                     }
-
+                })
+                .onNegative(new MaterialDialog.SingleButtonCallback() {
                     @Override
-                    public void onNegative(MaterialDialog dialog) {
+                    public void onClick(MaterialDialog dialog, DialogAction which) {
                         mTask.setCategory(null);
                         setCategoryMarkerColor(null);
                     }
@@ -1046,7 +1055,7 @@ public class DetailFragment extends Fragment implements OnReminderPickedListener
         } else {
             ReminderHelper.addReminder(MainApplication.getContext(), mTask);
         }
-        saveTask(this);
+        saveTask();
     }
 
     private void deleteTask() {
@@ -1064,17 +1073,19 @@ public class DetailFragment extends Fragment implements OnReminderPickedListener
                 }).build().show();
     }
 
-    public void saveAndExit(OnTaskSaved mOnTaskSaved) {
-        exitMessage = getString(R.string.task_updated);
-        exitMessageStyle = UiUtils.MessageType.TYPE_INFO;
-        saveTask(mOnTaskSaved);
+    public void saveAndExit() {
+        if (TextUtils.isEmpty(mTask.questId)) { // do not modify any quests
+            exitMessage = getString(R.string.task_updated);
+            exitMessageStyle = UiUtils.MessageType.TYPE_INFO;
+            saveTask();
+        }
     }
 
 
     /**
      * Save new tasks, modify them or archive
      */
-    void saveTask(OnTaskSaved mOnTaskSaved) {
+    void saveTask() {
         // Changed fields
         mTask.title = getTaskTitle();
         mTask.content = getTaskContent();
@@ -1090,11 +1101,46 @@ public class DetailFragment extends Fragment implements OnReminderPickedListener
             return;
         }
 
-        if (saveNotNeeded()) return;
+        if (saveNotNeeded()) {
+            return;
+        }
 
-        // Saving changes to the note
-        SaveTask saveTask = new SaveTask(mTask, mOriginalTask.getAttachmentsList(), mOnTaskSaved, lastModificationUpdatedNeeded());
-        saveTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+        LoaderUtils.startAsync(this, new Observable.OnSubscribe<Void>() {
+            @Override
+            public void call(Subscriber<? super Void> subscriber) {
+                // purge attachments
+                for (Attachment oldAttachment : mOriginalTask.getAttachmentsList()) {
+                    boolean stillHere = false;
+                    for (Attachment currentAttachment : mTask.getAttachmentsList()) {
+                        if (currentAttachment.id != IdBasedModel.INVALID_ID && currentAttachment.id == oldAttachment.id) {
+                            stillHere = true;
+                            break;
+                        }
+                    }
+
+                    if (!stillHere) {
+                        DbHelper.deleteAttachment(oldAttachment);
+                    }
+                }
+
+                // Note updating on database
+                DbHelper.updateTask(mTask, lastModificationUpdatedNeeded());
+
+                // Set reminder if is not passed yet
+                long now = Calendar.getInstance().getTimeInMillis();
+                if (mTask.alarmDate >= now) {
+                    ReminderHelper.addReminder(MainApplication.getContext(), mTask);
+                }
+
+                subscriber.onNext(null);
+            }
+        }, new RxLoaderObserver<Void>() {
+
+            @Override
+            public void onNext(Void result) {
+                goHome();
+            }
+        });
     }
 
 
@@ -1120,11 +1166,6 @@ public class DetailFragment extends Fragment implements OnReminderPickedListener
         tmpTask.setCategory(mTask.getCategory());
         tmpTask.isTrashed = mTask.isTrashed;
         return !tmpTask.equals(mOriginalTask);
-    }
-
-    @Override
-    public void onTaskSaved(Task taskSaved) {
-        goHome();
     }
 
     private String getTaskTitle() {

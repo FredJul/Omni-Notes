@@ -245,7 +245,7 @@ public class Dog {
         Log.e(tag, msg);
     }
 
-    private static String getTag() {
+    static String getTag() {
         StackTraceElement[] elements = Thread.currentThread().getStackTrace();
         if (elements != null && elements.length > 4) {
 

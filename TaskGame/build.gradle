@@ -67,5 +67,6 @@ dependencies {
     compile 'com.android.support:recyclerview-v7:+'
     compile 'com.android.support:design:+'
     compile 'io.reactivex:rxjava:+'
+    compile 'me.tatarka.rxloader:rxloader:+'
     compile 'com.tbruyelle.rxpermissions:rxpermissions:0.5.1@aar'
 }
