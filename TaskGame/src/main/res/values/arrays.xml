@@ -18,15 +18,11 @@
 
     <string-array name="navigation_list">
         <item>Tasks</item>
-        <item>Quests</item>
-        <item>Leaderboard</item>
         <item>Trash</item>
     </string-array>
 
     <string-array name="navigation_list_codes" translatable="false">
         <item>Tasks</item>
-        <item>Quests</item>
-        <item>Leaderboard</item>
         <item>Trash</item>
     </string-array>
 

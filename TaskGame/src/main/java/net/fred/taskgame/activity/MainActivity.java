@@ -35,7 +35,6 @@ import android.view.MenuItem;
 import android.view.animation.DecelerateInterpolator;
 import android.widget.DatePicker;
 import android.widget.TimePicker;
-import android.widget.Toast;
 
 import net.fred.taskgame.R;
 import net.fred.taskgame.fragment.DetailFragment;
@@ -94,9 +93,6 @@ public class MainActivity extends BaseActivity implements OnDateSetListener, OnT
 
     @Override
     protected void onNewIntent(Intent intent) {
-        if (intent.getAction() == null) {
-            intent.setAction(Constants.ACTION_START_APP);
-        }
         setIntent(intent);
         handleIntents();
 
@@ -262,27 +258,11 @@ public class MainActivity extends BaseActivity implements OnDateSetListener, OnT
             switchToDetail(task);
         }
 
-        if (Constants.ACTION_SEND_AND_EXIT.equals(i.getAction())) {
-            saveAndExit(i);
-        }
-
         // Tag search
         if (Intent.ACTION_VIEW.equals(i.getAction())) {
             switchToList();
         }
     }
-
-    private void saveAndExit(Intent i) {
-        Task task = new Task();
-        String title = i.getStringExtra(Intent.EXTRA_SUBJECT);
-        task.title = title != null ? title : "";
-        String content = i.getStringExtra(Intent.EXTRA_TEXT);
-        task.content = content != null ? content : "";
-        DbHelper.updateTask(task, true);
-        showToast(getString(R.string.task_updated), Toast.LENGTH_SHORT);
-        finish();
-    }
-
 
     private boolean receivedIntent(Intent i) {
         return Constants.ACTION_SHORTCUT.equals(i.getAction())
@@ -293,7 +273,7 @@ public class MainActivity extends BaseActivity implements OnDateSetListener, OnT
                 || Intent.ACTION_SEND_MULTIPLE.equals(i.getAction())
                 || Constants.INTENT_GOOGLE_NOW.equals(i.getAction()))
                 && i.getType() != null)
-                || i.getAction().contains(Constants.ACTION_NOTIFICATION_CLICK);
+                || (i.getAction() != null && i.getAction().contains(Constants.ACTION_NOTIFICATION_CLICK));
     }
 
 

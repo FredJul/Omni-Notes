@@ -35,7 +35,6 @@ public interface Constants {
     String INTENT_WIDGET = "widget_id";
 
     // Custom intent actions
-    String ACTION_START_APP = "action_start_app";
     String ACTION_DISMISS = "action_dismiss";
     String ACTION_SNOOZE = "action_snooze";
     String ACTION_POSTPONE = "action_postpone";
@@ -44,10 +43,6 @@ public interface Constants {
     String ACTION_TAKE_PHOTO = "action_widget_take_photo";
     String ACTION_WIDGET_SHOW_LIST = "action_widget_show_list";
     String ACTION_NOTIFICATION_CLICK = "action_notification_click";
-    /**
-     * Used to quickly add a note, save, and perform backPress (eg. Tasker+Pushbullet) *
-     */
-    String ACTION_SEND_AND_EXIT = "action_send_and_exit";
 
     String MIME_TYPE_IMAGE = "image/jpeg";
     String MIME_TYPE_AUDIO = "audio/mp3";

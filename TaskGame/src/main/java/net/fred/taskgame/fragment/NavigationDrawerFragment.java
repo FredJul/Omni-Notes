@@ -61,6 +61,9 @@ import net.fred.taskgame.view.NonScrollableListView;
 import java.util.ArrayList;
 import java.util.List;
 
+import butterknife.ButterKnife;
+import butterknife.OnClick;
+
 
 /**
  * Fragment used for managing interactions for and presentation of a navigation
@@ -126,7 +129,10 @@ public class NavigationDrawerFragment extends Fragment {
 
         PrefUtils.registerOnPrefChangeListener(mCurrentPointsObserver);
 
-        return inflater.inflate(R.layout.fragment_navigation_drawer, container, false);
+        View view = inflater.inflate(R.layout.fragment_navigation_drawer, container, false);
+        ButterKnife.bind(this, view);
+
+        return view;
     }
 
     @Override
@@ -344,32 +350,18 @@ public class NavigationDrawerFragment extends Fragment {
             @Override
             public void onItemClick(AdapterView<?> arg0, View arg1, int position, long arg3) {
                 mActivity.commitPending();
-                if (position == Navigation.QUESTS) {
-                    try {
-                        Intent questsIntent = Games.Quests.getQuestsIntent(getMainActivity().getApiClient(), Quests.SELECT_ALL_QUESTS);
-                        startActivityForResult(questsIntent, 0);
-                    } catch (Exception ignored) {
-                    }
-                    mDrawerLayout.closeDrawer(GravityCompat.START);
-                } else if (position == Navigation.LEADERBOARD) {
-                    try {
-                        startActivityForResult(Games.Leaderboards.getLeaderboardIntent(getMainActivity().getApiClient(), Constants.LEADERBOARD_ID), 0);
-                    } catch (Exception ignored) {
-                    }
-                    mDrawerLayout.closeDrawer(GravityCompat.START);
-                } else {
-                    String navigation = getResources().getStringArray(R.array.navigation_list_codes)[items.get(position).getArrayIndex()];
-                    selectNavigationItem(mDrawerList, position);
-                    mActivity.updateNavigation(navigation);
-                    mDrawerList.setItemChecked(position, true);
-                    if (mDrawerCategoriesList != null)
-                        mDrawerCategoriesList.setItemChecked(0, false); // Called to force redraw
-                    // Reset intent
-                    mActivity.getIntent().setAction(Intent.ACTION_MAIN);
 
-                    // Call method to update tasks list
-                    mActivity.initTasksList(mActivity.getIntent());
-                }
+                String navigation = getResources().getStringArray(R.array.navigation_list_codes)[items.get(position).getArrayIndex()];
+                selectNavigationItem(mDrawerList, position);
+                mActivity.updateNavigation(navigation);
+                mDrawerList.setItemChecked(position, true);
+                if (mDrawerCategoriesList != null)
+                    mDrawerCategoriesList.setItemChecked(0, false); // Called to force redraw
+                // Reset intent
+                mActivity.getIntent().setAction(Intent.ACTION_MAIN);
+
+                // Call method to update tasks list
+                mActivity.initTasksList(mActivity.getIntent());
             }
         });
 
@@ -415,5 +407,21 @@ public class NavigationDrawerFragment extends Fragment {
 
     private MainActivity getMainActivity() {
         return (MainActivity) getActivity();
+    }
+
+    @OnClick(R.id.questsBtn)
+    public void onQuestsBtnClicked(View v) {
+        try {
+            startActivityForResult(Games.Quests.getQuestsIntent(getMainActivity().getApiClient(), Quests.SELECT_ALL_QUESTS), 0);
+        } catch (Exception ignored) {
+        }
+    }
+
+    @OnClick(R.id.leaderboardBtn)
+    public void onLeaderboardBtnClicked(View v) {
+        try {
+            startActivityForResult(Games.Leaderboards.getLeaderboardIntent(getMainActivity().getApiClient(), Constants.LEADERBOARD_ID), 0);
+        } catch (Exception ignored) {
+        }
     }
 }

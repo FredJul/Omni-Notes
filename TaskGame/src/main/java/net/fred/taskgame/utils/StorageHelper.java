@@ -18,10 +18,8 @@ package net.fred.taskgame.utils;
 
 import android.content.ContentResolver;
 import android.content.Context;
-import android.database.Cursor;
 import android.net.Uri;
 import android.os.Environment;
-import android.provider.MediaStore;
 import android.webkit.MimeTypeMap;
 import android.widget.Toast;
 
@@ -152,21 +150,6 @@ public class StorageHelper {
         return res;
     }
 
-
-    public static String getRealPathFromURI(Context mContext, Uri contentUri) {
-        String[] proj = {MediaStore.Images.Media.DATA};
-        Cursor cursor = mContext.getContentResolver().query(contentUri, proj, null, null, null);
-        if (cursor == null) {
-            return null;
-        }
-        int column_index = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
-        cursor.moveToFirst();
-        String path = cursor.getString(column_index);
-        cursor.close();
-        return path;
-    }
-
-
     public static File createNewAttachmentFile(Context mContext, String extension) {
         File f = null;
         if (checkStorage()) {
@@ -174,7 +157,6 @@ public class StorageHelper {
         }
         return f;
     }
-
 
     public static String createNewAttachmentName(String extension) {
         Calendar now = Calendar.getInstance();

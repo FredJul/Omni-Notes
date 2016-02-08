@@ -73,8 +73,7 @@ public class DateHelper {
     }
 
 
-    public static String getLocalizedDateTime(Context mContext,
-                                              String dateString, String format) {
+    public static String getLocalizedDateTime(Context mContext, String dateString, String format) {
         String res = null;
         SimpleDateFormat sdf = new SimpleDateFormat(format);
         Date date = null;

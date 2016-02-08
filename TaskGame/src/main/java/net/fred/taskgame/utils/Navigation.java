@@ -29,10 +29,8 @@ import java.util.Arrays;
 public class Navigation {
 
     public static final int TASKS = 0;
-    public static final int QUESTS = 1;
-    public static final int LEADERBOARD = 2;
-    public static final int TRASH = 3;
-    public static final int CATEGORY = 4;
+    public static final int TRASH = 1;
+    public static final int CATEGORY = 2;
 
 
     /**

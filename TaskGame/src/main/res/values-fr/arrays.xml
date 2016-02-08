@@ -18,8 +18,6 @@
 <resources>
     <string-array name="navigation_list">
         <item>Tâches</item>
-        <item>Quêtes</item>
-        <item>Classement</item>
         <item>Corbeille</item>
     </string-array>
     <string-array name="sortable_columns_human_readable">

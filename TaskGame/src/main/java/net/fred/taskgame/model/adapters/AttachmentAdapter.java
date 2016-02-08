@@ -90,9 +90,7 @@ public class AttachmentAdapter extends BaseAdapter {
                 text = DateHelper.formatShortTime(attachment.length);
             } else {
                 // Recording date otherwise
-                text = DateHelper.getLocalizedDateTime(mActivity, attachment
-                                .uri.getLastPathSegment().split("\\.")[0],
-                        Constants.DATE_FORMAT_SORTABLE);
+                text = DateHelper.getLocalizedDateTime(mActivity, attachment.uri.getLastPathSegment().split("\\.")[0], Constants.DATE_FORMAT_SORTABLE);
             }
 
             if (text == null) {
