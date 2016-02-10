@@ -273,7 +273,7 @@ public class DetailFragment extends Fragment implements OnReminderPickedListener
             mOriginalTask = DbHelper.getTask(i.getLongExtra(Constants.INTENT_KEY, 0));
             // Checks if the note pointed from the shortcut has been deleted
             if (mOriginalTask == null) {
-                getMainActivity().showToast(getText(R.string.shortcut_task_deleted), Toast.LENGTH_LONG);
+                UiUtils.showMessage(getActivity(), R.string.shortcut_task_deleted);
                 getActivity().finish();
             } else {
                 mTask = new Task(mOriginalTask);
@@ -664,7 +664,7 @@ public class DetailFragment extends Fragment implements OnReminderPickedListener
         // performs a normal onBackPressed instead of returning back to ListActivity
         if (!afterSavedReturnsToList) {
             if (!TextUtils.isEmpty(exitMessage)) {
-                getMainActivity().showToast(exitMessage, Toast.LENGTH_SHORT);
+                Toast.makeText(getActivity(), exitMessage, Toast.LENGTH_SHORT).show();
             }
             getActivity().finish();
             return true;

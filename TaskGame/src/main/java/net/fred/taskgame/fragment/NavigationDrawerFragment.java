@@ -409,6 +409,11 @@ public class NavigationDrawerFragment extends Fragment {
         return (MainActivity) getActivity();
     }
 
+    @OnClick(R.id.loginBtn)
+    public void onLoginBtnClicked(View v) {
+        getMainActivity().beginUserInitiatedSignIn();
+    }
+
     @OnClick(R.id.questsBtn)
     public void onQuestsBtnClicked(View v) {
         try {

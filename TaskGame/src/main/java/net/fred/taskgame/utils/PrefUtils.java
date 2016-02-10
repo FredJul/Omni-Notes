@@ -27,6 +27,7 @@ import net.fred.taskgame.MainApplication;
 
 public class PrefUtils {
 
+    public static final String PREF_ALREADY_LOGGED_TO_GAMES = "PREF_ALREADY_LOGGED_TO_GAMES";
     public static final String PREF_NAVIGATION = "navigation";
     public static final String PREF_SORTING_COLUMN = "sorting_column";
     public static final String PREF_KEEP_CHECKED = "keep_checked";

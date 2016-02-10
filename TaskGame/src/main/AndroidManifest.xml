@@ -24,6 +24,8 @@
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
     <uses-permission android:name="android.permission.MANAGE_DOCUMENTS" />
+    <uses-permission android:name="android.permission.GET_ACCOUNTS" />
+    <uses-permission android:name="android.permission.WRITE_SYNC_SETTINGS" />
 
     <uses-feature
         android:name="android.hardware.camera"
@@ -189,9 +191,28 @@
                 android:resource="@xml/appwidget_list" />
         </receiver>
 
+        <provider
+            android:name=".provider.FakeProvider"
+            android:authorities="net.fred.taskgame"
+            android:exported="false" />
+
         <service
             android:name="net.fred.taskgame.widget.ListWidgetService"
             android:permission="android.permission.BIND_REMOTEVIEWS" />
+
+        <!-- This service implements our SyncAdapter. It needs to be exported, so that the system sync framework can access it. -->
+        <service
+            android:name=".service.SyncService"
+            android:exported="true">
+            <!-- This intent filter is required. It allows the system to launch our sync service as needed. -->
+            <intent-filter>
+                <action android:name="android.content.SyncAdapter" />
+            </intent-filter>
+            <!-- This points to a required XML file which describes our SyncAdapter. -->
+            <meta-data
+                android:name="android.content.SyncAdapter"
+                android:resource="@xml/syncadapter" />
+        </service>
 
         <meta-data
             android:name="com.google.android.gms.games.APP_ID"

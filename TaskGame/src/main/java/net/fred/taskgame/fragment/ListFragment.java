@@ -67,6 +67,7 @@ import net.fred.taskgame.model.Task;
 import net.fred.taskgame.model.adapters.NavDrawerCategoryAdapter;
 import net.fred.taskgame.model.adapters.TaskAdapter;
 import net.fred.taskgame.model.listeners.OnViewTouchedListener;
+import net.fred.taskgame.service.SyncService;
 import net.fred.taskgame.utils.Constants;
 import net.fred.taskgame.utils.DbHelper;
 import net.fred.taskgame.utils.Navigation;
@@ -124,6 +125,9 @@ public class ListFragment extends Fragment implements OnViewTouchedListener {
         @Override
         public void onChangeThrottled() {
             initTasksList(getActivity().getIntent());
+
+            // Just notify the SyncAdapter that there was a change
+            SyncService.triggerSync(getContext(), false);
         }
     };
 
@@ -861,22 +865,26 @@ public class ListFragment extends Fragment implements OnViewTouchedListener {
     private void onTasksLoaded(List<Task> tasks) {
         if (taskAdapter == null) {
             taskAdapter = new TaskAdapter(getActivity(), tasks);
-            list.setAdapter(taskAdapter);
+            if (list != null) {
+                list.setAdapter(taskAdapter);
+            }
         } else {
             taskAdapter.setTasks(tasks);
         }
 
         // Restores list view position when turning back to list
-        if (list != null && tasks.size() > 0) {
-            if (list.getCount() > listViewPosition) {
-                list.setSelectionFromTop(listViewPosition, listViewPositionOffset);
-            } else {
-                list.setSelectionFromTop(0, 0);
+        if (list != null) {
+            if (tasks.size() > 0) {
+                if (list.getCount() > listViewPosition) {
+                    list.setSelectionFromTop(listViewPosition, listViewPositionOffset);
+                } else {
+                    list.setSelectionFromTop(0, 0);
+                }
             }
-        }
 
-        // Fade in the list view
-        animate(list).setDuration(getResources().getInteger(R.integer.list_view_fade_anim)).alpha(1);
+            // Fade in the list view
+            animate(list).setDuration(getResources().getInteger(R.integer.list_view_fade_anim)).alpha(1);
+        }
     }
 
 

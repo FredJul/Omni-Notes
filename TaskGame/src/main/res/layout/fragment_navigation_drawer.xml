@@ -38,11 +38,20 @@
         android:drawableEnd="@drawable/point_icon" />
 
     <ImageButton
+        android:id="@+id/loginBtn"
+        style="?android:attr/buttonBarButtonStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/scrollView"
+        android:src="@drawable/common_full_open_on_phone" />
+
+    <ImageButton
         android:id="@+id/questsBtn"
         style="?android:attr/buttonBarButtonStyle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_above="@+id/scrollView"
+        android:layout_toEndOf="@+id/loginBtn"
         android:src="@drawable/common_full_open_on_phone" />
 
     <ImageButton

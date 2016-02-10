@@ -17,48 +17,20 @@
 package net.fred.taskgame.activity;
 
 import android.annotation.SuppressLint;
-import android.net.Uri;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.widget.Toast;
 
-import com.google.android.gms.games.Games;
-import com.google.android.gms.games.GamesStatusCodes;
-import com.google.android.gms.games.quest.Quest;
-import com.google.android.gms.games.quest.QuestBuffer;
-import com.google.android.gms.games.quest.Quests;
-import com.google.android.gms.games.snapshot.Snapshot;
-import com.google.android.gms.games.snapshot.SnapshotMetadataChange;
-import com.google.android.gms.games.snapshot.Snapshots;
-import com.google.example.games.basegameutils.BaseGameActivity;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.raizlabs.android.dbflow.sql.language.Delete;
-import com.raizlabs.android.dbflow.sql.language.Select;
-
 import net.fred.taskgame.R;
-import net.fred.taskgame.model.Attachment;
-import net.fred.taskgame.model.Attachment_Table;
-import net.fred.taskgame.model.Category;
-import net.fred.taskgame.model.SyncData;
-import net.fred.taskgame.model.Task;
-import net.fred.taskgame.model.Task_Table;
-import net.fred.taskgame.utils.Constants;
-import net.fred.taskgame.utils.Dog;
+import net.fred.taskgame.service.SyncService;
 import net.fred.taskgame.utils.PrefUtils;
-
-import java.nio.charset.Charset;
 
 
 @SuppressLint("Registered")
 public class BaseActivity extends BaseGameActivity {
 
     public long mWidgetCatId = -1;
-
-    protected BaseActivity() {
-        super(BaseGameActivity.CLIENT_ALL); // we need snapshot support
-    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -85,10 +57,6 @@ public class BaseActivity extends BaseGameActivity {
         outState.putLong("mWidgetCatId", mWidgetCatId);
     }
 
-    public void showToast(CharSequence text, int duration) {
-        Toast.makeText(getApplicationContext(), text, duration).show();
-    }
-
     public void updateNavigation(String nav) {
         PrefUtils.putString(PrefUtils.PREF_NAVIGATION, nav);
         mWidgetCatId = -1;
@@ -113,118 +81,7 @@ public class BaseActivity extends BaseGameActivity {
 
     @Override
     public void onSignInSucceeded() {
-        sync();
-    }
-
-    private void sync() {
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    Dog.i("sync started");
-                    // Open the saved game using its name.
-                    Snapshots.OpenSnapshotResult result = Games.Snapshots.open(getApiClient(), "save", true).await();
-
-                    Snapshot snapshot = result.getSnapshot();
-                    Gson gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
-
-                    // Check the result of the open operation
-                    if (result.getStatus().isSuccess()) {
-                        // Read the byte content of the saved game.
-                        byte[] savedBytes = snapshot.getSnapshotContents().readFully();
-
-                        String json = new String(savedBytes);
-                        Dog.i("get back " + json);
-                        SyncData syncedData = gson.fromJson(json, SyncData.class);
-
-                        if (syncedData.lastSyncDate > PrefUtils.getLong(PrefUtils.PREF_LAST_SYNC_DATE, -1)) {
-                            PrefUtils.putLong(PrefUtils.PREF_CURRENT_POINTS, syncedData.currentPoints);
-                            Delete.tables(Category.class, Task.class);
-                            for (Category cat : syncedData.categories) {
-                                Dog.i("write cat " + cat);
-                                cat.save();
-                            }
-                            for (Task task : syncedData.tasks) {
-                                task.save();
-                            }
-                        }
-
-                        SyncData syncData = SyncData.getLastData();
-                        json = gson.toJson(syncData);
-                        Dog.i("write " + json);
-
-                        // Sync leaderboard
-                        Games.Leaderboards.submitScore(getApiClient(), Constants.LEADERBOARD_ID, syncData.currentPoints);
-
-                        // Set the data payload for the snapshot
-                        snapshot.getSnapshotContents().writeBytes(json.getBytes());
-
-                        // Create the change operation
-                        SnapshotMetadataChange metadataChange = new SnapshotMetadataChange.Builder().build();
-
-                        // Commit the operation
-                        Games.Snapshots.commitAndClose(getApiClient(), snapshot, metadataChange);
-                        PrefUtils.putLong(PrefUtils.PREF_LAST_SYNC_DATE, syncData.lastSyncDate);
-
-                    } else if (result.getStatus().getStatusCode() == GamesStatusCodes.STATUS_SNAPSHOT_CONFLICT) {
-                        Dog.i("Save conflict, use last version");
-
-                        SyncData syncData = SyncData.getLastData();
-                        String json = gson.toJson(syncData);
-                        Dog.i("write " + json);
-
-                        Snapshot conflictSnapshot = result.getConflictingSnapshot();
-                        // Resolve between conflicts by selecting the newest of the conflicting snapshots.
-                        Snapshot resolvedSnapshot = snapshot;
-
-                        if (snapshot.getMetadata().getLastModifiedTimestamp() <
-                                conflictSnapshot.getMetadata().getLastModifiedTimestamp()) {
-                            resolvedSnapshot = conflictSnapshot;
-                        }
-                        // Set the data payload for the snapshot
-                        snapshot.getSnapshotContents().writeBytes(json.getBytes());
-                        Games.Snapshots.resolveConflict(getApiClient(), result.getConflictId(), resolvedSnapshot);
-                        PrefUtils.putLong(PrefUtils.PREF_LAST_SYNC_DATE, syncData.lastSyncDate);
-                    } else {
-                        Dog.i("error status: " + result.getStatus().getStatusCode());
-                        return; // We just got a timeout, it's maybe because we left, it's better to not continue
-                    }
-
-                    Dog.i("retrieve quests");
-                    Quests.LoadQuestsResult questsResult = Games.Quests.load(getApiClient(), new int[]{Games.Quests.SELECT_ACCEPTED}, Games.Quests.SORT_ORDER_ENDING_SOON_FIRST, false).await();
-                    if (questsResult.getStatus().isSuccess()) {
-                        Dog.i("retrieve quests success");
-                        QuestBuffer quests = questsResult.getQuests();
-                        for (Quest quest : quests) {
-                            Dog.i("quest: " + quest);
-                            String questId = quest.getQuestId();
-                            Task task = new Select().from(Task.class).where(Task_Table.questId.eq(questId)).querySingle();
-                            if (task == null) {
-                                task = new Task();
-                            }
-
-                            task.questId = questId;
-                            task.title = quest.getName();
-                            task.content = quest.getDescription();
-                            String reward = new String(quest.getCurrentMilestone().getCompletionRewardData(), Charset.forName("UTF-8"));
-                            Dog.i("quest reward: " + reward);
-                            task.pointReward = Integer.valueOf(reward);
-
-                            task.save();
-
-                            // Delete task's attachments
-                            Delete.table(Attachment.class, Attachment_Table.taskId.eq(task.id));
-                            Attachment attachment = new Attachment();
-                            attachment.taskId = task.id;
-                            attachment.mimeType = Constants.MIME_TYPE_IMAGE;
-                            attachment.uri = Uri.parse(quest.getIconImageUrl());
-                            attachment.save();
-                        }
-                    }
-                } catch (Throwable t) {
-                    Dog.e("ERROR", t);
-                }
-            }
-        }).start();
+        PrefUtils.putBoolean(PrefUtils.PREF_ALREADY_LOGGED_TO_GAMES, true);
+        SyncService.triggerSync(this, true);
     }
 }
