@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package net.fred.taskgame.async;
+package net.fred.taskgame.service;
 
 import android.app.Service;
 import android.content.Context;

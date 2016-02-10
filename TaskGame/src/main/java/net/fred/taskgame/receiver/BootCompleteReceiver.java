@@ -20,7 +20,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 
-import net.fred.taskgame.async.AlarmRestoreOnRebootService;
+import net.fred.taskgame.service.AlarmRestoreOnRebootService;
 
 
 public class BootCompleteReceiver extends BroadcastReceiver {
