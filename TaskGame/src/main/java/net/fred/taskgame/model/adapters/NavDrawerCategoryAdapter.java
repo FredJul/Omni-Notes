@@ -31,7 +31,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import net.fred.taskgame.R;
-import net.fred.taskgame.activity.BaseActivity;
+import net.fred.taskgame.activity.MainActivity;
 import net.fred.taskgame.model.Category;
 import net.fred.taskgame.utils.PrefUtils;
 
@@ -115,8 +115,7 @@ public class NavDrawerCategoryAdapter extends BaseAdapter {
         String[] navigationListCodes = mActivity.getResources().getStringArray(R.array.navigation_list_codes);
 
         // Managing temporary navigation indicator when coming from a widget
-        long widgetCatId = mActivity instanceof BaseActivity ? ((BaseActivity) mActivity)
-                .getWidgetCatId() : -1;
+        long widgetCatId = mActivity instanceof MainActivity ? ((MainActivity) mActivity).getWidgetCatId() : -1;
 
         String navigation = widgetCatId != -1 ? String.valueOf(widgetCatId)
                 : PrefUtils.getString(PrefUtils.PREF_NAVIGATION, navigationListCodes[0]);

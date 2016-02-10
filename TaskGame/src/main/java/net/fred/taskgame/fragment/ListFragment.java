@@ -247,7 +247,7 @@ public class ListFragment extends Fragment implements OnViewTouchedListener {
         }
 
         title = title == null ? getString(R.string.app_name) : title;
-        getMainActivity().setActionBarTitle(title.toString());
+        getMainActivity().getSupportActionBar().setTitle(title);
     }
 
     @Override
@@ -843,20 +843,9 @@ public class ListFragment extends Fragment implements OnViewTouchedListener {
             onTasksLoaded(DbHelper.getTasksByPattern(searchQuery));
         } else {
             // Check if is launched from a widget with categories to set tag
-            if ((Constants.ACTION_WIDGET_SHOW_LIST.equals(intent.getAction()) && intent
-                    .hasExtra(Constants.INTENT_WIDGET))
-                    || getMainActivity().getWidgetCatId() != -1) {
-                String widgetId = intent.hasExtra(Constants.INTENT_WIDGET) ? intent.getExtras()
-                        .get(Constants.INTENT_WIDGET).toString() : null;
-                if (widgetId != null) {
-                    long categoryId = PrefUtils.getLong(PrefUtils.PREF_WIDGET_PREFIX + widgetId, -1);
-                    getMainActivity().mWidgetCatId = (categoryId != -1 ? categoryId : -1);
-                }
-                intent.removeExtra(Constants.INTENT_WIDGET);
+            if (getMainActivity().getWidgetCatId() != -1) {
                 onTasksLoaded(DbHelper.getTasksByCategory(getMainActivity().getWidgetCatId()));
-
-                // Gets all tasks
-            } else {
+            } else { // Gets all tasks
                 onTasksLoaded(DbHelper.getAllTasks());
             }
         }

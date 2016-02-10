@@ -31,10 +31,13 @@ import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.Toolbar;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.animation.DecelerateInterpolator;
 import android.widget.DatePicker;
 import android.widget.TimePicker;
+import android.widget.Toast;
 
 import net.fred.taskgame.R;
 import net.fred.taskgame.fragment.DetailFragment;
@@ -43,13 +46,15 @@ import net.fred.taskgame.fragment.NavigationDrawerFragment;
 import net.fred.taskgame.fragment.SketchFragment;
 import net.fred.taskgame.model.Category;
 import net.fred.taskgame.model.Task;
+import net.fred.taskgame.service.SyncService;
 import net.fred.taskgame.utils.Constants;
 import net.fred.taskgame.utils.DbHelper;
+import net.fred.taskgame.utils.PrefUtils;
 import net.fred.taskgame.utils.UiUtils;
 
 import org.parceler.Parcels;
 
-public class MainActivity extends BaseActivity implements OnDateSetListener, OnTimeSetListener {
+public class MainActivity extends BaseGameActivity implements OnDateSetListener, OnTimeSetListener {
 
     public static final int BURGER = 0;
     static final int ARROW = 1;
@@ -99,6 +104,44 @@ public class MainActivity extends BaseActivity implements OnDateSetListener, OnT
         super.onNewIntent(intent);
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu items for use in the action bar
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.menu_list, menu);
+
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    public void updateNavigation(String nav) {
+        PrefUtils.putString(PrefUtils.PREF_NAVIGATION, nav);
+
+        if (getIntent() != null && getIntent().hasExtra(Constants.INTENT_WIDGET)) {
+            getIntent().removeExtra(Constants.INTENT_WIDGET);
+            setIntent(getIntent());
+        }
+    }
+
+    public long getWidgetCatId() {
+        // Check if is launched from a widget with categories to set tag
+        if (getIntent() != null && getIntent().hasExtra(Constants.INTENT_WIDGET)) {
+            String widgetId = getIntent().getExtras().get(Constants.INTENT_WIDGET).toString();
+            return PrefUtils.getLong(PrefUtils.PREF_WIDGET_PREFIX + widgetId, -1);
+        }
+
+        return -1;
+    }
+
+    @Override
+    public void onSignInFailed() {
+        Toast.makeText(this, "sign in failed", Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onSignInSucceeded() {
+        PrefUtils.putBoolean(PrefUtils.PREF_ALREADY_LOGGED_TO_GAMES, true);
+        SyncService.triggerSync(this, true);
+    }
 
     public MenuItem getSearchMenuItem() {
         Fragment f = checkFragmentInstance(R.id.fragment_container, ListFragment.class);

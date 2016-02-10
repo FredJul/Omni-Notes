@@ -43,7 +43,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_above="@+id/scrollView"
-        android:src="@drawable/common_full_open_on_phone" />
+        android:src="@drawable/common_google_signin_btn_icon_dark" />
 
     <ImageButton
         android:id="@+id/questsBtn"
