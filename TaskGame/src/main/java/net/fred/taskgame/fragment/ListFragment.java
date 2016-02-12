@@ -27,7 +27,6 @@ import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.view.MenuItemCompat;
-import android.support.v4.widget.DrawerLayout;
 import android.support.v7.view.ActionMode;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -220,16 +219,6 @@ public class ListFragment extends Fragment implements OnViewTouchedListener {
 
         // Init tasks list
         initTasksList(getActivity().getIntent());
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-
-        // Removes navigation drawer forced closed status
-        if (getMainActivity().getDrawerLayout() != null) {
-            getMainActivity().getDrawerLayout().setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
-        }
     }
 
     @Override
@@ -508,7 +497,7 @@ public class ListFragment extends Fragment implements OnViewTouchedListener {
 
     @Override
     public void onPrepareOptionsMenu(Menu menu) {
-        setActionItemsVisibility(menu, false);
+        setActionItemsVisibility(menu);
     }
 
     private void prepareActionModeMenu() {
@@ -558,7 +547,7 @@ public class ListFragment extends Fragment implements OnViewTouchedListener {
         mSearchView.setOnQueryTextFocusChangeListener(new OnFocusChangeListener() {
             @Override
             public void onFocusChange(View v, boolean hasFocus) {
-                setActionItemsVisibility(menu, hasFocus);
+                setActionItemsVisibility(menu);
 //                if (!hasFocus) {
 //                    MenuItemCompat.collapseActionView(mSearchMenuItem);
 //                }
@@ -599,23 +588,18 @@ public class ListFragment extends Fragment implements OnViewTouchedListener {
         });
     }
 
-    private void setActionItemsVisibility(Menu menu, boolean searchViewHasFocus) {
+    private void setActionItemsVisibility(Menu menu) {
         // Defines the conditions to set actionbar items visible or not
-        boolean drawerOpen = (getMainActivity().getDrawerLayout() != null && getMainActivity()
-                .getDrawerLayout().isDrawerOpen(GravityCompat.START));
         boolean navigationTrash = Navigation.checkNavigation(Navigation.TRASH);
 
         if (!navigationTrash) {
             setFabAllowed(true);
-            if (!drawerOpen) {
                 showFab();
-            }
         } else {
             setFabAllowed(false);
             hideFab();
         }
-        menu.findItem(R.id.menu_search).setVisible(!drawerOpen);
-        menu.findItem(R.id.menu_empty_trash).setVisible(!drawerOpen && navigationTrash);
+        menu.findItem(R.id.menu_empty_trash).setVisible(navigationTrash);
     }
 
     @Override

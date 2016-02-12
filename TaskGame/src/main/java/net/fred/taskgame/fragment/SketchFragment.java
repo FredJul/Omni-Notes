@@ -104,9 +104,7 @@ public class SketchFragment extends Fragment implements OnDrawChangedListener {
 
         // Show the Up button in the action bar.
         if (getMainActivity().getSupportActionBar() != null) {
-            getMainActivity().getSupportActionBar().setDisplayShowTitleEnabled(true);
             getMainActivity().getSupportActionBar().setTitle(R.string.title_activity_sketch);
-            getMainActivity().getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         }
 
         stroke = (ImageView) getActivity().findViewById(R.id.sketch_stroke);

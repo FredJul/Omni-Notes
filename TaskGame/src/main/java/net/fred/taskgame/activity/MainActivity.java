@@ -31,6 +31,7 @@ import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.Toolbar;
+import android.view.View;
 import android.view.animation.DecelerateInterpolator;
 import android.widget.DatePicker;
 import android.widget.TimePicker;
@@ -50,10 +51,10 @@ import net.fred.taskgame.utils.UiUtils;
 
 import org.parceler.Parcels;
 
-public class MainActivity extends BaseGameActivity implements OnDateSetListener, OnTimeSetListener {
+import butterknife.Bind;
+import butterknife.ButterKnife;
 
-    public static final int BURGER = 0;
-    static final int ARROW = 1;
+public class MainActivity extends BaseGameActivity implements OnDateSetListener, OnTimeSetListener, FragmentManager.OnBackStackChangedListener {
 
     public final String FRAGMENT_DRAWER_TAG = "fragment_drawer";
     public final String FRAGMENT_LIST_TAG = "fragment_list";
@@ -63,17 +64,62 @@ public class MainActivity extends BaseGameActivity implements OnDateSetListener,
     private FragmentManager mFragmentManager;
 
     public Uri sketchUri;
-    private Toolbar toolbar;
+
+    @Bind(R.id.toolbar)
+    Toolbar mToolbar;
+    @Bind(R.id.drawer_layout)
+    DrawerLayout mDrawerLayout;
+
+    private ActionBarDrawerToggle mDrawerToggle;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        ButterKnife.bind(this);
 
-        toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        setSupportActionBar(mToolbar);
+        mDrawerLayout.setFocusableInTouchMode(false);
+
         getSupportActionBar().setHomeButtonEnabled(true);
+        getSupportActionBar().setDisplayShowTitleEnabled(true);
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+        // ActionBarDrawerToggle± ties together the the proper interactions
+        // between the sliding drawer and the action bar app icon
+        mDrawerToggle = new ActionBarDrawerToggle(this,
+                mDrawerLayout,
+                R.string.drawer_open,
+                R.string.drawer_close);
+
+        // just styling option
+        mDrawerLayout.setDrawerShadow(R.drawable.drawer_shadow, GravityCompat.START);
+        mDrawerToggle.setDrawerIndicatorEnabled(true);
+        mDrawerLayout.setDrawerListener(new DrawerLayout.DrawerListener() {
+            @Override
+            public void onDrawerSlide(View drawerView, float slideOffset) {
+            }
+
+            @Override
+            public void onDrawerOpened(View drawerView) {
+                // Commits all pending actions
+                commitPending();
+                // Finishes action mode
+                finishActionMode();
+            }
+
+            @Override
+            public void onDrawerClosed(View drawerView) {
+                // Call to onPrepareOptionsMenu()
+                supportInvalidateOptionsMenu();
+            }
+
+            @Override
+            public void onDrawerStateChanged(int newState) {
+            }
+        });
+        mDrawerToggle.syncState();
 
         mFragmentManager = getSupportFragmentManager();
 
@@ -90,6 +136,11 @@ public class MainActivity extends BaseGameActivity implements OnDateSetListener,
 
         // Handling of Intent actions
         handleIntents();
+
+        //Listen for changes in the back stack
+        mFragmentManager.addOnBackStackChangedListener(this);
+        //Handle when activity is recreated like on orientation Change
+        displayHomeOrUpIcon();
     }
 
     @Override
@@ -158,6 +209,41 @@ public class MainActivity extends BaseGameActivity implements OnDateSetListener,
         return result;
     }
 
+    @Override
+    public void onBackStackChanged() {
+        displayHomeOrUpIcon();
+    }
+
+    public void displayHomeOrUpIcon() {
+        //Enable Up button only if there are entries in the back stack
+        boolean canUp = getSupportFragmentManager().getBackStackEntryCount() > 0;
+        mDrawerLayout.setDrawerLockMode(canUp ? DrawerLayout.LOCK_MODE_LOCKED_CLOSED : DrawerLayout.LOCK_MODE_UNLOCKED);
+
+        // Use the drawerToggle to animate the icon
+        ValueAnimator anim = ValueAnimator.ofFloat(canUp ? 0 : 1, canUp ? 1 : 0);
+        anim.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+            @Override
+            public void onAnimationUpdate(ValueAnimator valueAnimator) {
+                float slideOffset = (Float) valueAnimator.getAnimatedValue();
+                mDrawerToggle.onDrawerSlide(mDrawerLayout, slideOffset);
+            }
+        });
+        anim.setInterpolator(new DecelerateInterpolator());
+        anim.setDuration(300);
+        anim.start();
+    }
+
+    public DrawerLayout getDrawerLayout() {
+        return mDrawerLayout;
+    }
+
+//TODO use that to automatically open drawer or popBackStack
+//    @Override
+//    public boolean onSupportNavigateUp() {
+//        //This method is called when the up button is pressed. Just the pop back stack.
+//        getSupportFragmentManager().popBackStack();
+//        return true;
+//    }
 
     /*
      * (non-Javadoc)
@@ -193,8 +279,8 @@ public class MainActivity extends BaseGameActivity implements OnDateSetListener,
         f = checkFragmentInstance(R.id.fragment_container, ListFragment.class);
         if (f != null) {
             // Before exiting from app the navigation drawer is opened
-            if (getDrawerLayout() != null && getDrawerLayout().isDrawerOpen(GravityCompat.START)) {
-                getDrawerLayout().closeDrawer(GravityCompat.START);
+            if (mDrawerLayout.isDrawerOpen(GravityCompat.START)) {
+                mDrawerLayout.closeDrawer(GravityCompat.START);
             } else {
                 super.onBackPressed();
             }
@@ -202,38 +288,6 @@ public class MainActivity extends BaseGameActivity implements OnDateSetListener,
         }
         super.onBackPressed();
     }
-
-    public void animateBurger(int targetShape) {
-        if (getDrawerToggle() != null) {
-            if (targetShape != BURGER && targetShape != ARROW)
-                return;
-            ValueAnimator anim = ValueAnimator.ofFloat((targetShape + 1) % 2, targetShape);
-            anim.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-                @Override
-                public void onAnimationUpdate(ValueAnimator valueAnimator) {
-                    float slideOffset = (Float) valueAnimator.getAnimatedValue();
-                    getDrawerToggle().onDrawerSlide(getDrawerLayout(), slideOffset);
-                }
-            });
-            anim.setInterpolator(new DecelerateInterpolator());
-            anim.setDuration(500);
-            anim.start();
-        }
-    }
-
-    public DrawerLayout getDrawerLayout() {
-        return ((DrawerLayout) findViewById(R.id.drawer_layout));
-    }
-
-
-    public ActionBarDrawerToggle getDrawerToggle() {
-        if (mFragmentManager != null && mFragmentManager.findFragmentById(R.id.navigation_drawer) != null) {
-            return ((NavigationDrawerFragment) mFragmentManager.findFragmentById(R.id.navigation_drawer)).mDrawerToggle;
-        } else {
-            return null;
-        }
-    }
-
 
     /**
      * Finishes multiselection mode started by ListFragment
@@ -246,8 +300,8 @@ public class MainActivity extends BaseGameActivity implements OnDateSetListener,
     }
 
 
-    public Toolbar getToolbar() {
-        return this.toolbar;
+    public Toolbar getmToolbar() {
+        return this.mToolbar;
     }
 
 
@@ -302,10 +356,6 @@ public class MainActivity extends BaseGameActivity implements OnDateSetListener,
         UiUtils.animateTransition(transaction, UiUtils.TRANSITION_HORIZONTAL);
         ListFragment mListFragment = new ListFragment();
         transaction.replace(R.id.fragment_container, mListFragment, FRAGMENT_LIST_TAG).addToBackStack(FRAGMENT_DETAIL_TAG).commitAllowingStateLoss();
-        if (getDrawerToggle() != null) {
-            getDrawerToggle().setDrawerIndicatorEnabled(false);
-        }
-        mFragmentManager.getFragments();
     }
 
 
@@ -321,8 +371,6 @@ public class MainActivity extends BaseGameActivity implements OnDateSetListener,
         } else {
             transaction.replace(R.id.fragment_container, mDetailFragment, FRAGMENT_DETAIL_TAG).addToBackStack(FRAGMENT_DETAIL_TAG).commitAllowingStateLoss();
         }
-
-        animateBurger(ARROW);
     }
 
     @Override

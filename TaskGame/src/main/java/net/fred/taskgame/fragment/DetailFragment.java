@@ -39,7 +39,6 @@ import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.MenuItemCompat;
-import android.support.v4.widget.DrawerLayout;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
@@ -173,11 +172,6 @@ public class DetailFragment extends Fragment implements OnReminderPickedListener
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        getMainActivity().getSupportActionBar().setDisplayShowTitleEnabled(false);
-
-        // Force the navigation drawer to stay closed
-        getMainActivity().getDrawerLayout().setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
-
         // Restored temp note after orientation change
         if (savedInstanceState != null) {
             mTask = Parcels.unwrap(savedInstanceState.getParcelable("note"));
@@ -199,6 +193,8 @@ public class DetailFragment extends Fragment implements OnReminderPickedListener
                 sketchEdited = null;
             }
         }
+
+        getMainActivity().getSupportActionBar().setTitle("");
 
         init();
 
@@ -667,26 +663,14 @@ public class DetailFragment extends Fragment implements OnReminderPickedListener
                 Toast.makeText(getActivity(), exitMessage, Toast.LENGTH_SHORT).show();
             }
             getActivity().finish();
-            return true;
         } else {
             if (!TextUtils.isEmpty(exitMessage) && exitMessageStyle != null) {
                 UiUtils.showMessage(getActivity(), exitMessage, exitMessageStyle);
             }
-        }
 
-        // Otherwise the result is passed to ListActivity
-        if (getActivity() != null && getActivity().getSupportFragmentManager() != null) {
-            getActivity().getSupportFragmentManager().popBackStack();
-            if (getActivity().getSupportFragmentManager().getBackStackEntryCount() == 1) {
-                getMainActivity().getSupportActionBar().setDisplayShowTitleEnabled(true);
+            if (getActivity() != null && getActivity().getSupportFragmentManager() != null) {
+                getActivity().getSupportFragmentManager().popBackStack();
             }
-            if (getMainActivity().getDrawerToggle() != null) {
-                getMainActivity().getDrawerToggle().setDrawerIndicatorEnabled(true);
-            }
-        }
-
-        if (getActivity().getSupportFragmentManager().getBackStackEntryCount() == 1) {
-            getMainActivity().animateBurger(MainActivity.BURGER);
         }
 
         return true;

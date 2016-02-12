@@ -26,8 +26,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.GravityCompat;
-import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.ActionBarDrawerToggle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -81,8 +79,6 @@ public class NavigationDrawerFragment extends Fragment {
 
     private static final int REQUEST_CODE_CATEGORY = 2;
 
-    public ActionBarDrawerToggle mDrawerToggle;
-    DrawerLayout mDrawerLayout;
     String[] mNavigationArray;
     TypedArray mNavigationIconsArray;
     TypedArray mNavigationIconsSelectedArray;
@@ -152,39 +148,11 @@ public class NavigationDrawerFragment extends Fragment {
      */
     private void init() {
 
-        mDrawerLayout = (DrawerLayout) mActivity.findViewById(R.id.drawer_layout);
-        mDrawerLayout.setFocusableInTouchMode(false);
-
         mCurrentPoints = (TextView) getView().findViewById(R.id.currentPoints);
         mCurrentPoints.setText(String.valueOf(PrefUtils.getLong(PrefUtils.PREF_CURRENT_POINTS, 0)));
 
         buildMainMenu();
         buildCategoriesMenu();
-
-        // ActionBarDrawerToggle± ties together the the proper interactions
-        // between the sliding drawer and the action bar app icon
-        mDrawerToggle = new ActionBarDrawerToggle(mActivity,
-                mDrawerLayout,
-                R.string.drawer_open,
-                R.string.drawer_close) {
-            public void onDrawerClosed(View view) {
-                // Call to onPrepareOptionsMenu()
-                mActivity.supportInvalidateOptionsMenu();
-            }
-
-            public void onDrawerOpened(View drawerView) {
-                // Commits all pending actions
-                mActivity.commitPending();
-                // Finishes action mode
-                mActivity.finishActionMode();
-            }
-        };
-
-        // just styling option
-        mDrawerLayout.setDrawerShadow(R.drawable.drawer_shadow, GravityCompat.START);
-        mDrawerToggle.setDrawerIndicatorEnabled(true);
-        mDrawerLayout.setDrawerListener(mDrawerToggle);
-        mDrawerToggle.syncState();
     }
 
     private void buildCategoriesMenu() {
@@ -350,7 +318,7 @@ public class NavigationDrawerFragment extends Fragment {
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
-                mDrawerLayout.closeDrawer(GravityCompat.START);
+                mActivity.getDrawerLayout().closeDrawer(GravityCompat.START);
             }
         }, 200);
     }
