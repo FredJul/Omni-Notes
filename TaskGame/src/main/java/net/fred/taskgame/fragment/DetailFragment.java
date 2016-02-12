@@ -607,7 +607,7 @@ public class DetailFragment extends Fragment implements OnReminderPickedListener
      * Colors tag marker in note's title and content elements
      */
     private void setCategoryMarkerColor(Category tag) {
-        View marker = getView().findViewById(R.id.tag_marker);
+        View marker = getView().findViewById(R.id.category_marker);
         // Coloring the target
         if (tag != null && tag.color != null) {
             marker.setBackgroundColor(Integer.parseInt(tag.color));

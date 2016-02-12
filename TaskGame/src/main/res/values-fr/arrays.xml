@@ -20,18 +20,13 @@
         <item>Tâches</item>
         <item>Corbeille</item>
     </string-array>
-    <string-array name="sortable_columns_human_readable">
-        <item>Récompense</item>
-        <item>Date de création</item>
-        <item>Date de modification</item>
-        <item>Date de rappel</item>
-        <item>Titre</item>
-    </string-array>
+
     <string-array name="checked_items_behavior">
         <item>Maintenir la position</item>
         <item>Déplacer à la fin de la liste</item>
         <item>Déplacer à la fin des éléments non cochés</item>
     </string-array>
+
     <string-array name="task_difficulties">
         <item>Facile</item>
         <item>Normal</item>

@@ -29,7 +29,6 @@ public class PrefUtils {
 
     public static final String PREF_ALREADY_LOGGED_TO_GAMES = "PREF_ALREADY_LOGGED_TO_GAMES";
     public static final String PREF_NAVIGATION = "navigation";
-    public static final String PREF_SORTING_COLUMN = "sorting_column";
     public static final String PREF_KEEP_CHECKED = "keep_checked";
     public static final String PREF_KEEP_CHECKMARKS = "show_checkmarks";
     public static final String PREF_WIDGET_PREFIX = "widget_";

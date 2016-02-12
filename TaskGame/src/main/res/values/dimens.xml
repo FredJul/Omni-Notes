@@ -39,7 +39,6 @@
 
     <dimen name="widget_height">56dp</dimen>
 
-
     <!-- Tasks layout in list -->
     <dimen name="note_item_min_height_inner">80dp</dimen>
 

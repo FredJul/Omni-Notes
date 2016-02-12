@@ -58,6 +58,9 @@ public class Task extends IdBasedModel {
     public long lastModificationDate;
     @Column
     @Expose
+    public int displayPriority;
+    @Column
+    @Expose
     public boolean isTrashed;
     @Column
     @Expose

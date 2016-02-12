@@ -69,15 +69,6 @@
         android:visible="false"
         app:showAsAction="ifRoom"/>
     <item
-        android:id="@+id/menu_sort"
-        android:icon="@drawable/ic_sort_white_24dp"
-        android:orderInCategory="600"
-        android:title="@string/sort"
-        android:visible="false"
-        app:showAsAction="ifRoom">
-        <menu/>
-    </item>
-    <item
         android:id="@+id/menu_empty_trash"
         android:orderInCategory="900"
         app:showAsAction="never"

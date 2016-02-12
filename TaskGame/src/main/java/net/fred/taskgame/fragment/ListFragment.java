@@ -41,7 +41,6 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.MotionEvent;
-import android.view.SubMenu;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.View.OnFocusChangeListener;
@@ -57,6 +56,7 @@ import com.getbase.floatingactionbutton.FloatingActionsMenu;
 import com.google.android.gms.games.Games;
 import com.h6ah4i.android.widget.advrecyclerview.animator.GeneralItemAnimator;
 import com.h6ah4i.android.widget.advrecyclerview.animator.SwipeDismissItemAnimator;
+import com.h6ah4i.android.widget.advrecyclerview.draggable.RecyclerViewDragDropManager;
 import com.h6ah4i.android.widget.advrecyclerview.swipeable.RecyclerViewSwipeManager;
 import com.h6ah4i.android.widget.advrecyclerview.touchguard.RecyclerViewTouchActionGuardManager;
 
@@ -104,7 +104,6 @@ public class ListFragment extends Fragment implements OnViewTouchedListener {
     private List<Task> mModifiedTasks = new ArrayList<>();
     private SearchView mSearchView;
     private MenuItem mSearchMenuItem;
-    private Menu mMenu;
     private android.support.v7.view.ActionMode mActionMode;
     private boolean mKeepActionMode = false;
 
@@ -397,9 +396,6 @@ public class ListFragment extends Fragment implements OnViewTouchedListener {
         recyclerViewTouchActionGuardManager.setInterceptVerticalScrollingWhileAnimationRunning(true);
         recyclerViewTouchActionGuardManager.setEnabled(true);
 
-        // swipe manager
-        RecyclerViewSwipeManager recyclerViewSwipeManager = new RecyclerViewSwipeManager();
-
         //adapter
         mAdapter = new TaskAdapter(getActivity(), new ArrayList<Task>());
         mAdapter.setEventListener(new TaskAdapter.EventListener() {
@@ -413,6 +409,22 @@ public class ListFragment extends Fragment implements OnViewTouchedListener {
                     categorizeTasks(new int[]{position}, null);
                 } else { // ...trash
                     trashTasks(new int[]{position});
+                }
+            }
+
+            @Override
+            public void onItemMoved(int fromPosition, int toPosition) {
+                List<Task> tasks = mAdapter.getTasks();
+                int newPriorityForMovedItem = tasks.get(toPosition).displayPriority + 1;
+
+                for (int i = 0; i < tasks.size(); i++) {
+                    Task task = tasks.get(i);
+                    if (i == fromPosition) { // that's the item we moved
+                        task.displayPriority = newPriorityForMovedItem;
+                    } else if ((i < toPosition && fromPosition > toPosition) || (i <= toPosition && fromPosition < toPosition)) {
+                        task.displayPriority = task.displayPriority + 2;
+                    }
+                    task.async().save();
                 }
             }
 
@@ -445,7 +457,14 @@ public class ListFragment extends Fragment implements OnViewTouchedListener {
             }
         });
 
-        RecyclerView.Adapter wrappedAdapter = recyclerViewSwipeManager.createWrappedAdapter(mAdapter);      // wrap for swiping
+
+        // drag & drop manager
+        RecyclerViewDragDropManager recyclerViewDragDropManager = new RecyclerViewDragDropManager();
+        RecyclerView.Adapter wrappedAdapter = recyclerViewDragDropManager.createWrappedAdapter(mAdapter);      // wrap for dragging
+
+        // swipe manager
+        RecyclerViewSwipeManager recyclerViewSwipeManager = new RecyclerViewSwipeManager();
+        wrappedAdapter = recyclerViewSwipeManager.createWrappedAdapter(wrappedAdapter);      // wrap for swiping
 
         final GeneralItemAnimator animator = new SwipeDismissItemAnimator();
 
@@ -463,6 +482,7 @@ public class ListFragment extends Fragment implements OnViewTouchedListener {
         // priority: TouchActionGuard > Swipe > DragAndDrop
         recyclerViewTouchActionGuardManager.attachRecyclerView(mRecyclerView);
         recyclerViewSwipeManager.attachRecyclerView(mRecyclerView);
+        recyclerViewDragDropManager.attachRecyclerView(mRecyclerView);
     }
 
     private void checkAdapterIsEmpty() {
@@ -484,24 +504,8 @@ public class ListFragment extends Fragment implements OnViewTouchedListener {
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.menu_list, menu);
         super.onCreateOptionsMenu(menu, inflater);
-        this.mMenu = menu;
         // Initialization of SearchView
         initSearchView(menu);
-    }
-
-    private void initSortingSubmenu() {
-        final String[] arrayDb = getResources().getStringArray(R.array.sortable_columns);
-        final String[] arrayDialog = getResources().getStringArray(R.array.sortable_columns_human_readable);
-        int selected = Arrays.asList(arrayDb).indexOf(PrefUtils.getString(PrefUtils.PREF_SORTING_COLUMN, arrayDb[0]));
-
-        SubMenu sortMenu = this.mMenu.findItem(R.id.menu_sort).getSubMenu();
-        for (int i = 0; i < arrayDialog.length; i++) {
-            if (sortMenu.findItem(i) == null) {
-                sortMenu.add(Constants.MENU_SORT_GROUP_ID, i, i, arrayDialog[i]);
-            }
-            if (i == selected) sortMenu.getItem(i).setChecked(true);
-        }
-        sortMenu.setGroupCheckable(Constants.MENU_SORT_GROUP_ID, true, true);
     }
 
     @Override
@@ -612,7 +616,6 @@ public class ListFragment extends Fragment implements OnViewTouchedListener {
             hideFab();
         }
         menu.findItem(R.id.menu_search).setVisible(!drawerOpen);
-        menu.findItem(R.id.menu_sort).setVisible(!drawerOpen && !searchViewHasFocus);
         menu.findItem(R.id.menu_empty_trash).setVisible(!drawerOpen && navigationTrash);
     }
 
@@ -634,9 +637,6 @@ public class ListFragment extends Fragment implements OnViewTouchedListener {
                     } else {
                         getMainActivity().getDrawerLayout().openDrawer(GravityCompat.START);
                     }
-                    break;
-                case R.id.menu_sort:
-                    initSortingSubmenu();
                     break;
                 case R.id.menu_empty_trash:
                     emptyTrash();
@@ -664,8 +664,6 @@ public class ListFragment extends Fragment implements OnViewTouchedListener {
                     break;
             }
         }
-
-        checkSortActionPerformed(item);
 
         return super.onOptionsItemSelected(item);
     }
@@ -722,16 +720,6 @@ public class ListFragment extends Fragment implements OnViewTouchedListener {
 
             default:
                 break;
-        }
-
-    }
-
-
-    private void checkSortActionPerformed(MenuItem item) {
-        if (item.getGroupId() == Constants.MENU_SORT_GROUP_ID) {
-            final String[] arrayDb = getResources().getStringArray(R.array.sortable_columns);
-            PrefUtils.putString(PrefUtils.PREF_SORTING_COLUMN, arrayDb[item.getOrder()]);
-            initTasksList(getActivity().getIntent());
         }
     }
 

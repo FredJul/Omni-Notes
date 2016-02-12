@@ -32,7 +32,6 @@ import net.fred.taskgame.model.Attachment;
 import net.fred.taskgame.model.Category;
 import net.fred.taskgame.model.Task;
 import net.fred.taskgame.model.Task_Table;
-import net.fred.taskgame.model.adapters.TaskAdapter;
 import net.fred.taskgame.utils.Constants;
 import net.fred.taskgame.utils.DbHelper;
 import net.fred.taskgame.utils.PrefUtils;
@@ -102,14 +101,14 @@ public class ListRemoteViewsFactory implements RemoteViewsFactory {
 
     @Override
     public RemoteViews getViewAt(int position) {
-        RemoteViews row = new RemoteViews(mContext.getPackageName(), R.layout.note_layout_widget);
+        RemoteViews row = new RemoteViews(mContext.getPackageName(), R.layout.task_layout_widget);
 
         Task task = tasks.get(position);
 
         Spanned[] titleAndContent = TextHelper.parseTitleAndContent(task);
 
-        row.setTextViewText(R.id.note_title, titleAndContent[0]);
-        row.setTextViewText(R.id.note_content, titleAndContent[1]);
+        row.setTextViewText(R.id.task_title, titleAndContent[0]);
+        row.setTextViewText(R.id.task_content, titleAndContent[1]);
 
         color(task, row);
 
@@ -129,8 +128,6 @@ public class ListRemoteViewsFactory implements RemoteViewsFactory {
 //        } else {
         row.setInt(R.id.attachment_thumbnail, "setVisibility", View.GONE);
 //        }
-
-        row.setTextViewText(R.id.date, TaskAdapter.getDateText(mContext, task));
 
         // Next, set a fill-intent, which will be used to fill in the pending intent template
         // that is set on the collection view in StackWidgetProvider.
@@ -171,13 +168,13 @@ public class ListRemoteViewsFactory implements RemoteViewsFactory {
 
     private void color(Task task, RemoteViews row) {
         // Resetting transparent color to the view
-        row.setInt(R.id.tag_marker, "setBackgroundColor", Color.TRANSPARENT);
+        row.setInt(R.id.category_marker, "setBackgroundColor", Color.TRANSPARENT);
 
         // If tag is set the color will be applied on the appropriate target
         if (task.getCategory() != null && task.getCategory().color != null) {
-            row.setInt(R.id.tag_marker, "setBackgroundColor", Integer.parseInt(task.getCategory().color));
+            row.setInt(R.id.category_marker, "setBackgroundColor", Integer.parseInt(task.getCategory().color));
         } else {
-            row.setInt(R.id.tag_marker, "setBackgroundColor", Color.TRANSPARENT);
+            row.setInt(R.id.category_marker, "setBackgroundColor", Color.TRANSPARENT);
         }
     }
 }

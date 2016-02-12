@@ -109,15 +109,8 @@ public class DbHelper {
      */
     public static List<Task> getTasks(SQLCondition... conditions) {
         ArrayList<OrderBy> orderByList = new ArrayList<>();
-
-        String sortKey = PrefUtils.getString(PrefUtils.PREF_SORTING_COLUMN, Task_Table.pointReward.getContainerKey());
-
-        if (sortKey.equals(Task_Table.title.getContainerKey())) {
-            orderByList.add(OrderBy.fromProperty(Task_Table.title).ascending());
-            orderByList.add(OrderBy.fromProperty(Task_Table.content).ascending());
-        } else {
-            orderByList.add(OrderBy.fromProperty(Task_Table.getProperty(sortKey)).descending());
-        }
+        orderByList.add(OrderBy.fromProperty(Task_Table.displayPriority).descending());
+        orderByList.add(OrderBy.fromProperty(Task_Table.creationDate).ascending());
 
         return new Select().from(Task.class).where(conditions).orderByAll(orderByList).queryList();
     }

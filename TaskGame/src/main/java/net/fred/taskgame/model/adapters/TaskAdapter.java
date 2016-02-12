@@ -1,10 +1,10 @@
 package net.fred.taskgame.model.adapters;
 
 import android.app.Activity;
-import android.content.Context;
 import android.graphics.Color;
 import android.net.Uri;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.view.ViewCompat;
 import android.text.Spanned;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
@@ -13,17 +13,18 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.h6ah4i.android.widget.advrecyclerview.draggable.DraggableItemAdapter;
+import com.h6ah4i.android.widget.advrecyclerview.draggable.ItemDraggableRange;
 import com.h6ah4i.android.widget.advrecyclerview.swipeable.SwipeableItemAdapter;
 import com.h6ah4i.android.widget.advrecyclerview.swipeable.SwipeableItemConstants;
 import com.h6ah4i.android.widget.advrecyclerview.swipeable.action.SwipeResultActionRemoveItem;
-import com.h6ah4i.android.widget.advrecyclerview.utils.AbstractSwipeableItemViewHolder;
+import com.h6ah4i.android.widget.advrecyclerview.utils.AbstractDraggableSwipeableItemViewHolder;
 
 import net.fred.taskgame.R;
 import net.fred.taskgame.model.Attachment;
 import net.fred.taskgame.model.Task;
-import net.fred.taskgame.model.Task_Table;
-import net.fred.taskgame.utils.PrefUtils;
 import net.fred.taskgame.utils.TextHelper;
+import net.fred.taskgame.utils.UiUtils;
 import net.fred.taskgame.view.SquareImageView;
 
 import java.util.List;
@@ -32,7 +33,7 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 
 public class TaskAdapter extends MultiSelectAdapter<TaskAdapter.TaskViewHolder>
-        implements SwipeableItemAdapter<TaskAdapter.TaskViewHolder> {
+        implements SwipeableItemAdapter<TaskAdapter.TaskViewHolder>, DraggableItemAdapter<TaskAdapter.TaskViewHolder> {
 
     private final Activity mActivity;
     private final List<Task> mTasks;
@@ -41,25 +42,25 @@ public class TaskAdapter extends MultiSelectAdapter<TaskAdapter.TaskViewHolder>
     public interface EventListener {
         void onItemRemoved(int position);
 
+        void onItemMoved(int fromPosition, int toPosition);
+
         void onItemViewClicked(View v, int position);
 
         void onItemViewLongClicked(View v, int position);
     }
 
-    public static class TaskViewHolder extends AbstractSwipeableItemViewHolder {
+    public static class TaskViewHolder extends AbstractDraggableSwipeableItemViewHolder {
 
-        @Bind(R.id.root)
-        View mRoot;
+        @Bind(R.id.container)
+        View mContainer;
         @Bind(R.id.card_layout)
         View mCardLayout;
-        @Bind(R.id.category_marker)
-        View mCategoryMarker;
-        @Bind(R.id.note_title)
+        @Bind(R.id.drag_handle)
+        View mDragHandle;
+        @Bind(R.id.task_title)
         TextView mTitle;
-        @Bind(R.id.note_content)
+        @Bind(R.id.task_content)
         TextView mContent;
-        @Bind(R.id.date)
-        TextView mDate;
         @Bind(R.id.reward)
         TextView mReward;
         @Bind(R.id.attachment_thumbnail)
@@ -72,7 +73,7 @@ public class TaskAdapter extends MultiSelectAdapter<TaskAdapter.TaskViewHolder>
 
         @Override
         public View getSwipeableContainerView() {
-            return mRoot;
+            return mContainer;
         }
     }
 
@@ -139,11 +140,6 @@ public class TaskAdapter extends MultiSelectAdapter<TaskAdapter.TaskViewHolder>
         }
         holder.mReward.setText(String.valueOf(task.pointReward));
 
-        // Init dates
-        String dateText = getDateText(mActivity, task);
-        holder.mDate.setText(dateText);
-        holder.mDate.setCompoundDrawablesWithIntrinsicBounds(0, 0, task.alarmDate != 0 ? R.drawable.ic_alarm_grey600_18dp : 0, 0);
-
         // Init thumbnail
         if (task.getAttachmentsList() != null && !task.getAttachmentsList().isEmpty()) {
             holder.mAttachmentThumbnail.setVisibility(View.VISIBLE);
@@ -161,17 +157,16 @@ public class TaskAdapter extends MultiSelectAdapter<TaskAdapter.TaskViewHolder>
         // Init task and category marker colors
         if (!TextUtils.isEmpty(task.questId)) { // If this is an official quest, let's make it quite visible
             holder.mCardLayout.setBackgroundColor(ContextCompat.getColor(mActivity, R.color.quest_color));
-            holder.mCategoryMarker.setVisibility(View.GONE);
+            holder.mDragHandle.setBackgroundColor(Color.TRANSPARENT);
         } else {
             // Resetting transparent color to the view
             holder.mCardLayout.setBackgroundColor(Color.TRANSPARENT);
-            holder.mCategoryMarker.setVisibility(View.VISIBLE);
 
             // If category is set the color will be applied on the appropriate target
             if (task.getCategory() != null && task.getCategory().color != null) {
-                holder.mCategoryMarker.setBackgroundColor(Integer.parseInt(task.getCategory().color));
+                holder.mDragHandle.setBackgroundColor(Integer.parseInt(task.getCategory().color));
             } else {
-                holder.mCategoryMarker.setBackgroundColor(Color.TRANSPARENT);
+                holder.mDragHandle.setBackgroundColor(Color.TRANSPARENT);
             }
         }
 
@@ -181,45 +176,19 @@ public class TaskAdapter extends MultiSelectAdapter<TaskAdapter.TaskViewHolder>
         }
 
         // set listeners
-        holder.mRoot.setOnClickListener(new View.OnClickListener() {
+        holder.mContainer.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 onItemViewClick(v, holder.getAdapterPosition());
             }
         });
-        holder.mRoot.setOnLongClickListener(new View.OnLongClickListener() {
+        holder.mContainer.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
                 onItemViewLongClick(v, holder.getAdapterPosition());
                 return true;
             }
         });
-    }
-
-    /**
-     * Choosing which mDate must be shown depending on sorting criteria
-     *
-     * @return String with formatted mDate
-     */
-    public static String getDateText(Context mContext, Task task) {
-        String dateText = "";
-        String sort_column = PrefUtils.getString(PrefUtils.PREF_SORTING_COLUMN, "");
-
-        if (sort_column.equals(Task_Table.creationDate.getContainerKey()) || sort_column.equals(Task_Table.lastModificationDate.getContainerKey())) {
-            if (task.lastModificationDate != 0) {
-                dateText = mContext.getString(R.string.last_update, task.getLastModificationShort(mContext));
-            } else {
-                dateText = mContext.getString(R.string.creation, task.getCreationShort(mContext));
-            }
-        } else {
-            String alarmShort = task.getAlarmShort(mContext);
-
-            if (!TextUtils.isEmpty(alarmShort)) {
-                dateText = mContext.getString(R.string.alarm_set_on, task.getAlarmShort(mContext));
-            }
-        }
-
-        return dateText;
     }
 
     @Override
@@ -229,7 +198,11 @@ public class TaskAdapter extends MultiSelectAdapter<TaskAdapter.TaskViewHolder>
 
     @Override
     public int onGetSwipeReactionType(TaskViewHolder holder, int position, int x, int y) {
-        return SwipeableItemConstants.REACTION_CAN_SWIPE_BOTH_H;
+        if (onCheckCanStartDrag(holder, position, x, y)) {
+            return SwipeableItemConstants.REACTION_CAN_NOT_SWIPE_BOTH_H;
+        } else {
+            return SwipeableItemConstants.REACTION_CAN_SWIPE_BOTH_H;
+        }
     }
 
     @Override
@@ -248,6 +221,35 @@ public class TaskAdapter extends MultiSelectAdapter<TaskAdapter.TaskViewHolder>
 //        }
 //
 //        holder.itemView.setBackgroundResource(bgRes);
+    }
+
+    @Override
+    public void onMoveItem(int fromPosition, int toPosition) {
+        if (fromPosition == toPosition) {
+            return;
+        }
+
+        if (mEventListener != null) {
+            mEventListener.onItemMoved(fromPosition, toPosition);
+        }
+
+        notifyItemMoved(fromPosition, toPosition);
+    }
+
+    @Override
+    public boolean onCheckCanStartDrag(TaskViewHolder holder, int position, int x, int y) {
+        // x, y --- relative from the itemView's top-left
+
+        final int offsetX = holder.mContainer.getLeft() + (int) (ViewCompat.getTranslationX(holder.mContainer) + 0.5f);
+        final int offsetY = holder.mContainer.getTop() + (int) (ViewCompat.getTranslationY(holder.mContainer) + 0.5f);
+
+        return UiUtils.hitTest(holder.mDragHandle, x - offsetX, y - offsetY);
+    }
+
+    @Override
+    public ItemDraggableRange onGetItemDraggableRange(TaskViewHolder holder, int position) {
+        // no drag-sortable range specified
+        return null;
     }
 
     @Override
