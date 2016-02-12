@@ -122,15 +122,15 @@ public class DbHelper {
         return new Select().from(Task.class).where(conditions).orderByAll(orderByList).queryList();
     }
 
-    /**
-     * Trashes/restore single task
-     *
-     * @param task
-     */
-    public static void trashTask(Task task, boolean trash) {
-        task.isTrashed = trash;
+    public static void trashTask(Task task) {
+        task.isTrashed = true;
         ReminderHelper.removeReminder(MainApplication.getContext(), task);
         PrefUtils.putLong(PrefUtils.PREF_CURRENT_POINTS, PrefUtils.getLong(PrefUtils.PREF_CURRENT_POINTS, 0) + task.pointReward);
+        updateTask(task, false);
+    }
+
+    public static void untrashTask(Task task) {
+        task.isTrashed = false;
         updateTask(task, false);
     }
 

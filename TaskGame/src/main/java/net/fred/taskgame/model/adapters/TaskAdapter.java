@@ -1,65 +1,88 @@
-/*
- * Copyright (C) 2015 Federico Iosue (federico.iosue@gmail.com)
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */
 package net.fred.taskgame.model.adapters;
 
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Color;
 import android.net.Uri;
-import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
 import android.text.Spanned;
 import android.text.TextUtils;
-import android.util.SparseBooleanArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
-import com.nhaarman.listviewanimations.util.Insertable;
+import com.h6ah4i.android.widget.advrecyclerview.swipeable.SwipeableItemAdapter;
+import com.h6ah4i.android.widget.advrecyclerview.swipeable.SwipeableItemConstants;
+import com.h6ah4i.android.widget.advrecyclerview.swipeable.action.SwipeResultActionRemoveItem;
+import com.h6ah4i.android.widget.advrecyclerview.utils.AbstractSwipeableItemViewHolder;
 
 import net.fred.taskgame.R;
 import net.fred.taskgame.model.Attachment;
 import net.fred.taskgame.model.Task;
 import net.fred.taskgame.model.Task_Table;
-import net.fred.taskgame.model.holders.NoteViewHolder;
 import net.fred.taskgame.utils.PrefUtils;
 import net.fred.taskgame.utils.TextHelper;
 import net.fred.taskgame.view.SquareImageView;
 
 import java.util.List;
 
+import butterknife.Bind;
+import butterknife.ButterKnife;
 
-public class TaskAdapter extends ArrayAdapter<Task> implements Insertable {
+public class TaskAdapter extends MultiSelectAdapter<TaskAdapter.TaskViewHolder>
+        implements SwipeableItemAdapter<TaskAdapter.TaskViewHolder> {
 
     private final Activity mActivity;
     private final List<Task> mTasks;
-    private final SparseBooleanArray mSelectedItems = new SparseBooleanArray();
-    private final LayoutInflater mInflater;
+    private EventListener mEventListener;
 
+    public interface EventListener {
+        void onItemRemoved(int position);
+
+        void onItemViewClicked(View v, int position);
+
+        void onItemViewLongClicked(View v, int position);
+    }
+
+    public static class TaskViewHolder extends AbstractSwipeableItemViewHolder {
+
+        @Bind(R.id.root)
+        View mRoot;
+        @Bind(R.id.card_layout)
+        View mCardLayout;
+        @Bind(R.id.category_marker)
+        View mCategoryMarker;
+        @Bind(R.id.note_title)
+        TextView mTitle;
+        @Bind(R.id.note_content)
+        TextView mContent;
+        @Bind(R.id.date)
+        TextView mDate;
+        @Bind(R.id.reward)
+        TextView mReward;
+        @Bind(R.id.attachment_thumbnail)
+        SquareImageView mAttachmentThumbnail;
+
+        public TaskViewHolder(View v) {
+            super(v);
+            ButterKnife.bind(this, v);
+        }
+
+        @Override
+        public View getSwipeableContainerView() {
+            return mRoot;
+        }
+    }
 
     public TaskAdapter(Activity activity, List<Task> tasks) {
-        super(activity, R.layout.task_item, tasks);
-        this.mActivity = activity;
-        this.mTasks = tasks;
+        mActivity = activity;
+        mTasks = tasks;
 
-        mInflater = mActivity.getLayoutInflater();
+        // SwipeableItemAdapter requires stable ID, and also
+        // have to implement the getItemId() method appropriately.
+        setHasStableIds(true);
     }
 
     public List<Task> getTasks() {
@@ -72,109 +95,111 @@ public class TaskAdapter extends ArrayAdapter<Task> implements Insertable {
         notifyDataSetChanged();
     }
 
-    /**
-     * Replaces tasks
-     */
-    public void replace(Task task, int index) {
-        if (mTasks.indexOf(task) != -1) {
-            mTasks.remove(index);
-        } else {
-            index = mTasks.size();
+    private void onItemViewClick(View v, int position) {
+        if (mEventListener != null) {
+            mEventListener.onItemViewClicked(v, position); // true --- pinned
         }
-        mTasks.add(index, task);
-
-        notifyDataSetChanged();
     }
 
-
-    @Override
-    public void add(int i, @NonNull Object o) {
-        insert((Task) o, i);
+    private void onItemViewLongClick(View v, int position) {
+        if (mEventListener != null) {
+            mEventListener.onItemViewLongClicked(v, position); // true --- pinned
+        }
     }
 
     @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
+    public long getItemId(int position) {
+        return mTasks.get(position).id;
+    }
 
+    @Override
+    public int getItemViewType(int position) {
+        return 0;
+    }
+
+    @Override
+    public TaskViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        final LayoutInflater inflater = LayoutInflater.from(parent.getContext());
+        final View v = inflater.inflate(R.layout.task_item, parent, false);
+        return new TaskViewHolder(v);
+    }
+
+    @Override
+    public void onBindViewHolder(final TaskViewHolder holder, int position) {
         Task task = mTasks.get(position);
 
-        NoteViewHolder holder;
-        if (convertView == null) {
-            convertView = mInflater.inflate(R.layout.task_item, parent, false);
-
-            holder = new NoteViewHolder();
-
-            holder.root = convertView.findViewById(R.id.root);
-            holder.cardLayout = convertView.findViewById(R.id.card_layout);
-            holder.categoryMarker = convertView.findViewById(R.id.category_marker);
-
-            holder.title = (TextView) convertView.findViewById(R.id.note_title);
-            holder.content = (TextView) convertView.findViewById(R.id.note_content);
-            holder.reward = (TextView) convertView.findViewById(R.id.reward);
-            holder.date = (TextView) convertView.findViewById(R.id.taskModifDate);
-
-            holder.attachmentThumbnail = (SquareImageView) convertView.findViewById(R.id.attachmentThumbnail);
-
-            convertView.setTag(R.id.holder, holder);
-
+        // Init texts
+        Spanned[] titleAndContent = TextHelper.parseTitleAndContent(task);
+        holder.mTitle.setText(titleAndContent[0]);
+        if (titleAndContent[1].length() > 0) {
+            holder.mContent.setText(titleAndContent[1]);
+            holder.mContent.setVisibility(View.VISIBLE);
         } else {
-            holder = (NoteViewHolder) convertView.getTag(R.id.holder);
+            holder.mContent.setVisibility(View.GONE);
         }
+        holder.mReward.setText(String.valueOf(task.pointReward));
 
-        initText(task, holder);
+        // Init dates
+        String dateText = getDateText(mActivity, task);
+        holder.mDate.setText(dateText);
+        holder.mDate.setCompoundDrawablesWithIntrinsicBounds(0, 0, task.alarmDate != 0 ? R.drawable.ic_alarm_grey600_18dp : 0, 0);
 
-        initDates(task, holder);
-
-
-        // Highlighted if is part of multi selection of tasks. Remember to search for child with card ui
-        if (mSelectedItems.get(position)) {
-            holder.cardLayout.setBackgroundColor(mActivity.getResources().getColor(R.color.list_bg_selected));
-        } else {
-            restoreDrawable(task, convertView);
-        }
-        initThumbnail(task, holder);
-
-        return convertView;
-    }
-
-    private void initThumbnail(Task task, NoteViewHolder holder) {
-        holder.attachmentThumbnail.setVisibility(View.GONE);
-
-        // Attachment thumbnail
+        // Init thumbnail
         if (task.getAttachmentsList() != null && !task.getAttachmentsList().isEmpty()) {
-            holder.attachmentThumbnail.setVisibility(View.VISIBLE);
+            holder.mAttachmentThumbnail.setVisibility(View.VISIBLE);
             Attachment mAttachment = task.getAttachmentsList().get(0);
             Uri thumbnailUri = mAttachment.getThumbnailUri(mActivity);
             Glide.with(mActivity)
                     .load(thumbnailUri)
                     .centerCrop()
                     .crossFade()
-                    .into(holder.attachmentThumbnail);
-        }
-    }
-
-    private void initDates(Task task, NoteViewHolder holder) {
-        String dateText = getDateText(mActivity, task);
-        holder.date.setText(dateText);
-        holder.date.setCompoundDrawablesWithIntrinsicBounds(0, 0, task.alarmDate != 0 ? R.drawable.ic_alarm_grey600_18dp : 0, 0);
-    }
-
-    private void initText(Task task, NoteViewHolder holder) {
-        Spanned[] titleAndContent = TextHelper.parseTitleAndContent(task);
-        holder.title.setText(titleAndContent[0]);
-        if (titleAndContent[1].length() > 0) {
-            holder.content.setText(titleAndContent[1]);
-            holder.content.setVisibility(View.VISIBLE);
+                    .into(holder.mAttachmentThumbnail);
         } else {
-            holder.content.setVisibility(View.GONE);
+            holder.mAttachmentThumbnail.setVisibility(View.GONE);
         }
 
-        holder.reward.setText(String.valueOf(task.pointReward));
+        // Init task and category marker colors
+        if (!TextUtils.isEmpty(task.questId)) { // If this is an official quest, let's make it quite visible
+            holder.mCardLayout.setBackgroundColor(ContextCompat.getColor(mActivity, R.color.quest_color));
+            holder.mCategoryMarker.setVisibility(View.GONE);
+        } else {
+            // Resetting transparent color to the view
+            holder.mCardLayout.setBackgroundColor(Color.TRANSPARENT);
+            holder.mCategoryMarker.setVisibility(View.VISIBLE);
+
+            // If category is set the color will be applied on the appropriate target
+            if (task.getCategory() != null && task.getCategory().color != null) {
+                holder.mCategoryMarker.setBackgroundColor(Integer.parseInt(task.getCategory().color));
+            } else {
+                holder.mCategoryMarker.setBackgroundColor(Color.TRANSPARENT);
+            }
+        }
+
+        // Highlighted if is part of multi selection of tasks. Remember to search for child with card ui
+        if (isItemSelected(position)) {
+            holder.mCardLayout.setBackgroundColor(ContextCompat.getColor(mActivity, R.color.list_bg_selected));
+        }
+
+        // set listeners
+        holder.mRoot.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onItemViewClick(v, holder.getAdapterPosition());
+            }
+        });
+        holder.mRoot.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                onItemViewLongClick(v, holder.getAdapterPosition());
+                return true;
+            }
+        });
     }
 
     /**
-     * Choosing which date must be shown depending on sorting criteria
+     * Choosing which mDate must be shown depending on sorting criteria
      *
-     * @return String with formatted date
+     * @return String with formatted mDate
      */
     public static String getDateText(Context mContext, Task task) {
         String dateText = "";
@@ -197,50 +222,84 @@ public class TaskAdapter extends ArrayAdapter<Task> implements Insertable {
         return dateText;
     }
 
-
-    public SparseBooleanArray getSelectedItems() {
-        return mSelectedItems;
+    @Override
+    public int getItemCount() {
+        return mTasks.size();
     }
 
-    public void addSelectedItem(Integer selectedItem) {
-        this.mSelectedItems.put(selectedItem, true);
+    @Override
+    public int onGetSwipeReactionType(TaskViewHolder holder, int position, int x, int y) {
+        return SwipeableItemConstants.REACTION_CAN_SWIPE_BOTH_H;
     }
 
-    public void removeSelectedItem(Integer selectedItem) {
-        this.mSelectedItems.delete(selectedItem);
+    @Override
+    public void onSetSwipeBackground(TaskViewHolder holder, int position, int type) {
+//        int bgRes = 0;
+//        switch (type) {
+//            case Swipeable.DRAWABLE_SWIPE_NEUTRAL_BACKGROUND:
+//                bgRes = R.drawable.bg_swipe_item_neutral;
+//                break;
+//            case Swipeable.DRAWABLE_SWIPE_LEFT_BACKGROUND:
+//                bgRes = R.drawable.bg_swipe_item_left;
+//                break;
+//            case Swipeable.DRAWABLE_SWIPE_RIGHT_BACKGROUND:
+//                bgRes = R.drawable.bg_swipe_item_right;
+//                break;
+//        }
+//
+//        holder.itemView.setBackgroundResource(bgRes);
     }
 
-    public void clearSelectedItems() {
-        this.mSelectedItems.clear();
+    @Override
+    public SwipeResultAction onSwipeItem(TaskViewHolder holder, final int position, int result) {
+        switch (result) {
+            // swipe
+            case SwipeableItemConstants.RESULT_SWIPED_LEFT:
+            case SwipeableItemConstants.RESULT_SWIPED_RIGHT:
+                return new SwipeResultAction(this, position);
+            // other --- do nothing
+            default:
+                return null;
+        }
     }
 
-    public void restoreDrawable(Task task, View v) {
-        final int paddingBottom = v.getPaddingBottom(), paddingLeft = v.getPaddingLeft();
-        final int paddingRight = v.getPaddingRight(), paddingTop = v.getPaddingTop();
-        v.setPadding(paddingLeft, paddingTop, paddingRight, paddingBottom);
-        colorNote(task, v);
+    public EventListener getEventListener() {
+        return mEventListener;
     }
 
-    /**
-     * Color of category marker if note is categorized a function is active in preferences
-     */
-    private void colorNote(Task task, View v) {
-        NoteViewHolder holder = (NoteViewHolder) v.getTag(R.id.holder);
+    public void setEventListener(EventListener eventListener) {
+        mEventListener = eventListener;
+    }
 
-        if (!TextUtils.isEmpty(task.questId)) { // If this is an official quest, let's make it quite visible
-            holder.cardLayout.setBackgroundColor(ContextCompat.getColor(mActivity, R.color.quest_color));
-            holder.categoryMarker.setVisibility(View.GONE);
-        } else {
-            // Resetting transparent color to the view
-            holder.cardLayout.setBackgroundColor(Color.TRANSPARENT);
-            holder.categoryMarker.setVisibility(View.VISIBLE);
+    private static class SwipeResultAction extends SwipeResultActionRemoveItem {
+        private TaskAdapter mAdapter;
+        private final int mPosition;
 
-            // If category is set the color will be applied on the appropriate target
-            if (task.getCategory() != null && task.getCategory().color != null) {
-                holder.categoryMarker.setBackgroundColor(Integer.parseInt(task.getCategory().color));
-            } else {
-                holder.categoryMarker.setBackgroundColor(Color.TRANSPARENT);
+        SwipeResultAction(TaskAdapter adapter, int position) {
+            mAdapter = adapter;
+            mPosition = position;
+        }
+
+        @Override
+        protected void onPerformAction() {
+            super.onPerformAction();
+        }
+
+        @Override
+        protected void onSlideAnimationEnd() {
+            super.onSlideAnimationEnd();
+            mAdapter.notifyItemRemoved(mPosition);
+
+            if (mAdapter.mEventListener != null) {
+                mAdapter.mEventListener.onItemRemoved(mPosition);
             }
+        }
+
+        @Override
+        protected void onCleanUp() {
+            super.onCleanUp();
+            // clear the references
+            mAdapter = null;
         }
     }
 }

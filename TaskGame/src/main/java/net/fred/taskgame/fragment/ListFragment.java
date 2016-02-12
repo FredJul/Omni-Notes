@@ -30,6 +30,8 @@ import android.support.v4.view.GravityCompat;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.view.ActionMode;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.SearchView.OnQueryTextListener;
 import android.text.TextUtils;
@@ -47,15 +49,16 @@ import android.view.ViewGroup;
 import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.inputmethod.EditorInfo;
 import android.widget.AdapterView;
-import android.widget.LinearLayout;
-import android.widget.ListView;
 
+import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.getbase.floatingactionbutton.AddFloatingActionButton;
 import com.getbase.floatingactionbutton.FloatingActionsMenu;
 import com.google.android.gms.games.Games;
-import com.nhaarman.listviewanimations.itemmanipulation.DynamicListView;
-import com.nhaarman.listviewanimations.itemmanipulation.swipedismiss.OnDismissCallback;
+import com.h6ah4i.android.widget.advrecyclerview.animator.GeneralItemAnimator;
+import com.h6ah4i.android.widget.advrecyclerview.animator.SwipeDismissItemAnimator;
+import com.h6ah4i.android.widget.advrecyclerview.swipeable.RecyclerViewSwipeManager;
+import com.h6ah4i.android.widget.advrecyclerview.touchguard.RecyclerViewTouchActionGuardManager;
 
 import net.fred.taskgame.R;
 import net.fred.taskgame.activity.CategoryActivity;
@@ -67,14 +70,12 @@ import net.fred.taskgame.model.Task;
 import net.fred.taskgame.model.adapters.NavDrawerCategoryAdapter;
 import net.fred.taskgame.model.adapters.TaskAdapter;
 import net.fred.taskgame.model.listeners.OnViewTouchedListener;
-import net.fred.taskgame.service.SyncService;
 import net.fred.taskgame.utils.Constants;
 import net.fred.taskgame.utils.DbHelper;
 import net.fred.taskgame.utils.Navigation;
 import net.fred.taskgame.utils.PrefUtils;
 import net.fred.taskgame.utils.ThrottledFlowContentObserver;
 import net.fred.taskgame.utils.UiUtils;
-import net.fred.taskgame.view.InterceptorLinearLayout;
 
 import org.parceler.Parcels;
 
@@ -84,7 +85,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static android.support.v4.view.ViewCompat.animate;
+import butterknife.Bind;
+import butterknife.ButterKnife;
 
 
 public class ListFragment extends Fragment implements OnViewTouchedListener {
@@ -92,42 +94,40 @@ public class ListFragment extends Fragment implements OnViewTouchedListener {
     private static final int REQUEST_CODE_CATEGORY = 2;
     private static final int REQUEST_CODE_CATEGORY_TASKS = 3;
 
-    private DynamicListView list;
-    private final List<Task> selectedTasks = new ArrayList<>();
-    private List<Task> modifiedTasks = new ArrayList<>();
-    private SearchView searchView;
-    private MenuItem searchMenuItem;
-    private Menu menu;
-    private int listViewPosition;
-    private int listViewPositionOffset;
-    private android.support.v7.view.ActionMode actionMode;
-    private boolean keepActionMode = false;
+    @Bind(R.id.recycler_view)
+    RecyclerView mRecyclerView;
+    @Bind(R.id.empty_view)
+    View mEmptyView;
+
+    private TaskAdapter mAdapter;
+
+    private List<Task> mModifiedTasks = new ArrayList<>();
+    private SearchView mSearchView;
+    private MenuItem mSearchMenuItem;
+    private Menu mMenu;
+    private android.support.v7.view.ActionMode mActionMode;
+    private boolean mKeepActionMode = false;
 
     // Undo archive/trash
-    private boolean undoTrash = false;
-    private boolean undoCategorize = false;
-    private Category undoCategorizeCategory = null;
-    private final SparseArray<Task> undoTasksList = new SparseArray<>();
+    private boolean mUndoTrash = false;
+    private boolean mUndoCategorize = false;
+    private Category mUndoCategorizeCategory = null;
+    private final SparseArray<Task> mUndoTasksList = new SparseArray<>();
     // Used to remember removed categories from tasks
-    private final Map<Task, Category> undoCategoryMap = new HashMap<>();
+    private final Map<Task, Category> mUndoCategoryMap = new HashMap<>();
 
     // Search variables
-    private String searchQuery;
-
-    private TaskAdapter taskAdapter;
+    private String mSearchQuery;
 
     //    Fab
-    private FloatingActionsMenu fab;
-    private boolean fabAllowed;
-    private boolean fabExpanded = false;
+    private FloatingActionsMenu mFab;
+    private boolean mFabAllowed;
+    private boolean mFabExpanded = false;
 
     private ThrottledFlowContentObserver mContentObserver = new ThrottledFlowContentObserver(100) {
         @Override
         public void onChangeThrottled() {
             initTasksList(getActivity().getIntent());
-
-            // Just notify the SyncAdapter that there was a change
-            SyncService.triggerSync(getContext(), false);
         }
     };
 
@@ -142,17 +142,14 @@ public class ListFragment extends Fragment implements OnViewTouchedListener {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         if (savedInstanceState != null) {
-            if (savedInstanceState.containsKey("listViewPosition")) {
-                listViewPosition = savedInstanceState.getInt("listViewPosition");
-                listViewPositionOffset = savedInstanceState.getInt("listViewPositionOffset");
-                searchQuery = savedInstanceState.getString("searchQuery");
-            }
-            keepActionMode = false;
+            mSearchQuery = savedInstanceState.getString("mSearchQuery");
+            mKeepActionMode = false;
         }
         View layout = inflater.inflate(R.layout.fragment_list, container, false);
+        ButterKnife.bind(this, layout);
 
         // List view initialization
-        initListView(layout);
+        initRecyclerView();
 
         // registers for callbacks from the specified tables
         mContentObserver.registerForContentChanges(inflater.getContext(), Task.class);
@@ -163,36 +160,18 @@ public class ListFragment extends Fragment implements OnViewTouchedListener {
     }
 
     @Override
-    public void onDestroyView() {
-        mContentObserver.unregisterForContentChanges(getView().getContext());
-        list = null;
-        taskAdapter = null;
-
-        super.onDestroyView();
-    }
-
-    @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        initFab();
-
-        // Activity title initialization
-        initTitle();
-
-        initTasksList(getActivity().getIntent());
-    }
-
-    private void initFab() {
-        fab = (FloatingActionsMenu) getActivity().findViewById(R.id.fab);
-        AddFloatingActionButton fabAddButton = (AddFloatingActionButton) fab.findViewById(com.getbase
-                .floatingactionbutton.R.id.fab_expand_menu_button);
+        // Init FAB
+        mFab = (FloatingActionsMenu) getActivity().findViewById(R.id.fab);
+        AddFloatingActionButton fabAddButton = (AddFloatingActionButton) mFab.findViewById(com.getbase.floatingactionbutton.R.id.fab_expand_menu_button);
         fabAddButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (fabExpanded) {
-                    fab.toggle();
-                    fabExpanded = false;
+                if (mFabExpanded) {
+                    mFab.toggle();
+                    mFabExpanded = false;
                 } else {
                     editTask(new Task());
                 }
@@ -201,13 +180,12 @@ public class ListFragment extends Fragment implements OnViewTouchedListener {
         fabAddButton.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
-                fabExpanded = !fabExpanded;
-                fab.toggle();
+                mFabExpanded = !mFabExpanded;
+                mFab.toggle();
                 return true;
             }
         });
-
-        fab.findViewById(R.id.fab_checklist).setOnClickListener(new OnClickListener() {
+        mFab.findViewById(R.id.fab_checklist).setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
                 Task task = new Task();
@@ -215,7 +193,7 @@ public class ListFragment extends Fragment implements OnViewTouchedListener {
                 editTask(task);
             }
         });
-        fab.findViewById(R.id.fab_camera).setOnClickListener(new OnClickListener() {
+        mFab.findViewById(R.id.fab_camera).setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent i = getActivity().getIntent();
@@ -224,13 +202,8 @@ public class ListFragment extends Fragment implements OnViewTouchedListener {
                 editTask(new Task());
             }
         });
-    }
 
-
-    /**
-     * Activity title initialization based on navigation
-     */
-    private void initTitle() {
+        // Init title
         String[] navigationList = getResources().getStringArray(R.array.navigation_list);
         String[] navigationListCodes = getResources().getStringArray(R.array.navigation_list_codes);
         String navigation = PrefUtils.getString(PrefUtils.PREF_NAVIGATION, navigationListCodes[0]);
@@ -245,41 +218,11 @@ public class ListFragment extends Fragment implements OnViewTouchedListener {
                 if (navigation.equals(String.valueOf(tag.id))) title = tag.name;
             }
         }
-
         title = title == null ? getString(R.string.app_name) : title;
         getMainActivity().getSupportActionBar().setTitle(title);
-    }
 
-    @Override
-    public void onPause() {
-        super.onPause();
-
-        if (!keepActionMode) {
-            commitPending();
-            list.clearChoices();
-            if (getActionMode() != null) {
-                getActionMode().finish();
-            }
-        }
-    }
-
-
-    @Override
-    public void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-        refreshListScrollPosition();
-        outState.putInt("listViewPosition", listViewPosition);
-        outState.putInt("listViewPositionOffset", listViewPositionOffset);
-        outState.putString("searchQuery", searchQuery);
-    }
-
-
-    private void refreshListScrollPosition() {
-        if (list != null) {
-            listViewPosition = list.getFirstVisiblePosition();
-            View v = list.getChildAt(0);
-            listViewPositionOffset = (v == null) ? 0 : v.getTop();
-        }
+        // Init tasks list
+        initTasksList(getActivity().getIntent());
     }
 
     @Override
@@ -292,6 +235,30 @@ public class ListFragment extends Fragment implements OnViewTouchedListener {
         }
     }
 
+    @Override
+    public void onPause() {
+        super.onPause();
+
+        if (!mKeepActionMode) {
+            commitPending();
+            finishActionMode();
+        }
+    }
+
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putString("mSearchQuery", mSearchQuery);
+    }
+
+    @Override
+    public void onDestroyView() {
+        mContentObserver.unregisterForContentChanges(getView().getContext());
+
+        super.onDestroyView();
+    }
+
     private final class ModeCallback implements android.support.v7.view.ActionMode.Callback {
 
         @Override
@@ -299,9 +266,9 @@ public class ListFragment extends Fragment implements OnViewTouchedListener {
             // Inflate the menu for the CAB
             MenuInflater inflater = mode.getMenuInflater();
             inflater.inflate(R.menu.menu_list, menu);
-            actionMode = mode;
+            mActionMode = mode;
 
-            fabAllowed = false;
+            mFabAllowed = false;
             hideFab();
 
             return true;
@@ -310,31 +277,15 @@ public class ListFragment extends Fragment implements OnViewTouchedListener {
 
         @Override
         public void onDestroyActionMode(ActionMode mode) {
-            // Here you can make any necessary updates to the activity when
-            // the CAB is removed. By default, selected items are
-            // deselected/unchecked.
-            for (int i = 0; i < taskAdapter.getSelectedItems().size(); i++) {
-                int key = taskAdapter.getSelectedItems().keyAt(i);
-                View v = list.getChildAt(key - list.getFirstVisiblePosition());
-                if (taskAdapter.getCount() > key && taskAdapter.getItem(key) != null && v != null) {
-                    taskAdapter.restoreDrawable(taskAdapter.getItem(key), v);
-                }
-            }
-
-            // Backups modified tasks in another structure to perform post-elaborations
-            modifiedTasks = new ArrayList<>(getSelectedTasks());
-
             // Clears data structures
-            selectedTasks.clear();
-            taskAdapter.clearSelectedItems();
-            list.clearChoices();
+            mAdapter.clearSelections();
 
             setFabAllowed(true);
-            if (undoTasksList.size() == 0) {
+            if (mUndoTasksList.size() == 0) {
                 showFab();
             }
 
-            actionMode = null;
+            mActionMode = null;
         }
 
 
@@ -352,52 +303,47 @@ public class ListFragment extends Fragment implements OnViewTouchedListener {
         }
     }
 
-
     private void setFabAllowed(boolean allowed) {
         if (allowed) {
             boolean showFab = Navigation.checkNavigation(new Integer[]{Navigation.TASKS, Navigation.CATEGORY});
             if (showFab) {
-                fabAllowed = true;
+                mFabAllowed = true;
             }
         } else {
-            fabAllowed = false;
+            mFabAllowed = false;
         }
     }
 
-
     private void showFab() {
-        if (fab != null && fabAllowed && isFabHidden()) {
+        if (mFab != null && mFabAllowed && isFabHidden()) {
             animateFab(0, View.VISIBLE, View.VISIBLE);
         }
     }
 
-
     private void hideFab() {
-        if (fab != null && !isFabHidden()) {
-            fab.collapse();
-            animateFab(fab.getHeight() + getMarginBottom(fab), View.VISIBLE, View.INVISIBLE);
+        if (mFab != null && !isFabHidden()) {
+            mFab.collapse();
+            animateFab(mFab.getHeight() + getMarginBottom(mFab), View.VISIBLE, View.INVISIBLE);
         }
     }
 
-
     private boolean isFabHidden() {
-        return fab.getVisibility() != View.VISIBLE;
+        return mFab.getVisibility() != View.VISIBLE;
     }
 
-
     private void animateFab(int translationY, final int visibilityBefore, final int visibilityAfter) {
-        fab.animate().setInterpolator(new AccelerateDecelerateInterpolator())
+        mFab.animate().setInterpolator(new AccelerateDecelerateInterpolator())
                 .setDuration(Constants.FAB_ANIMATION_TIME)
                 .translationY(translationY)
                 .setListener(new Animator.AnimatorListener() {
                     @Override
                     public void onAnimationStart(Animator animator) {
-                        fab.setVisibility(visibilityBefore);
+                        mFab.setVisibility(visibilityBefore);
                     }
 
                     @Override
                     public void onAnimationEnd(Animator animator) {
-                        fab.setVisibility(visibilityAfter);
+                        mFab.setVisibility(visibilityAfter);
                     }
 
                     @Override
@@ -410,7 +356,6 @@ public class ListFragment extends Fragment implements OnViewTouchedListener {
                 });
     }
 
-
     private int getMarginBottom(View view) {
         int marginBottom = 0;
         final ViewGroup.LayoutParams layoutParams = view.getLayoutParams();
@@ -421,110 +366,113 @@ public class ListFragment extends Fragment implements OnViewTouchedListener {
     }
 
     public void finishActionMode() {
-        if (getActionMode() != null) {
-            getActionMode().finish();
+        mAdapter.clearSelections();
+        if (mActionMode != null) {
+            mActionMode.finish();
         }
     }
-
 
     /**
      * Manage check/uncheck of tasks in list during multiple selection phase
      */
-    private void toggleListViewItem(View view, int position) {
-        Task task = taskAdapter.getItem(position);
-        View cardLayout = view.findViewById(R.id.card_layout);
-        if (!getSelectedTasks().contains(task)) {
-            getSelectedTasks().add(task);
-            taskAdapter.addSelectedItem(position);
-            cardLayout.setBackgroundColor(getResources().getColor(R.color.list_bg_selected));
-        } else {
-            getSelectedTasks().remove(task);
-            taskAdapter.removeSelectedItem(position);
-            taskAdapter.restoreDrawable(task, view);
-        }
-        prepareActionModeMenu();
+    private void toggleSelection(int position) {
+        mAdapter.toggleSelection(position);
 
         // Close CAB if no items are selected
-        if (getSelectedTasks().size() == 0) {
+        if (mAdapter.getSelectedItemCount() == 0) {
             finishActionMode();
+        } else {
+            prepareActionModeMenu();
         }
     }
-
 
     /**
      * Tasks list initialization. Data, actions and callback are defined here.
      */
-    private void initListView(View layout) {
-        list = (DynamicListView) layout.findViewById(R.id.list);
+    private void initRecyclerView() {
+        //noinspection ConstantConditions
+        LinearLayoutManager layoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false);
+        // touch guard manager  (this class is required to suppress scrolling while swipe-dismiss animation is running)
+        RecyclerViewTouchActionGuardManager recyclerViewTouchActionGuardManager = new RecyclerViewTouchActionGuardManager();
+        recyclerViewTouchActionGuardManager.setInterceptVerticalScrollingWhileAnimationRunning(true);
+        recyclerViewTouchActionGuardManager.setEnabled(true);
 
-        list.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
-        list.setItemsCanFocus(false);
+        // swipe manager
+        RecyclerViewSwipeManager recyclerViewSwipeManager = new RecyclerViewSwipeManager();
 
-        UiUtils.addEmptyFooterView(list, 50);
-
-        // Note long click to start CAB mode
-        list.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+        //adapter
+        mAdapter = new TaskAdapter(getActivity(), new ArrayList<Task>());
+        mAdapter.setEventListener(new TaskAdapter.EventListener() {
             @Override
-            public boolean onItemLongClick(AdapterView<?> arg0, View view, int position, long arg3) {
-                if (getActionMode() != null) {
-                    return false;
+            public void onItemRemoved(int position) {
+                // Depending on settings and note status this action will...
+
+                if (Navigation.checkNavigation(Navigation.TRASH)) { // ...restore
+                    untrashTasks(new int[]{position});
+                } else if (Navigation.checkNavigation(Navigation.CATEGORY)) { // ...removes category
+                    categorizeTasks(new int[]{position}, null);
+                } else { // ...trash
+                    trashTasks(new int[]{position});
+                }
+            }
+
+            @Override
+            public void onItemViewClicked(View v, int position) {
+                if (mActionMode == null) {
+                    editTask(mAdapter.getTasks().get(position));
+                } else {
+                    // If in CAB mode
+                    toggleSelection(position);
+                    setCabTitle();
+                }
+            }
+
+            @Override
+            public void onItemViewLongClicked(View v, int position) {
+                if (mActionMode == null) {
+                    ((MainActivity) getActivity()).startSupportActionMode(new ModeCallback());
                 }
                 // Start the CAB using the ActionMode.Callback defined above
-                ((MainActivity) getActivity()).startSupportActionMode(new ModeCallback());
-                toggleListViewItem(view, position);
-                setCabTitle();
-                return true;
-            }
-        });
-
-        // Note single click listener managed by the activity itself
-        list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> arg0, View view, int position, long arg3) {
-                if (getActionMode() == null) {
-                    editTask(taskAdapter.getItem(position));
-                    return;
-                }
-                // If in CAB mode
-                toggleListViewItem(view, position);
+                toggleSelection(position);
                 setCabTitle();
             }
         });
-
-        ((InterceptorLinearLayout) layout.findViewById(R.id.list_root))
-                .setOnViewTouchedListener(this);
-
-        list.enableSwipeToDismiss(new OnDismissCallback() {
+        mAdapter.registerAdapterDataObserver(new RecyclerView.AdapterDataObserver() {
             @Override
-            public void onDismiss(@NonNull ViewGroup viewGroup, @NonNull int[] reverseSortedPositions) {
-
-                // Avoids conflicts with action mode
-                finishActionMode();
-
-                for (int position : reverseSortedPositions) {
-                    Task task;
-                    try {
-                        task = taskAdapter.getItem(position);
-                    } catch (IndexOutOfBoundsException e) {
-                        continue;
-                    }
-                    getSelectedTasks().add(task);
-
-                    // Depending on settings and note status this action will...
-                    // ...restore
-                    if (Navigation.checkNavigation(Navigation.TRASH)) {
-                        trashTasks(false);
-                    }
-                    // ...removes category
-                    else if (Navigation.checkNavigation(Navigation.CATEGORY)) {
-                        categorizeTasksExecute(null);
-                    } else {
-                        trashTasks(true);
-                    }
-                }
+            public void onChanged() {
+                super.onChanged();
+                checkAdapterIsEmpty();
             }
         });
-        list.setEmptyView(layout.findViewById(R.id.empty_list));
+
+        RecyclerView.Adapter wrappedAdapter = recyclerViewSwipeManager.createWrappedAdapter(mAdapter);      // wrap for swiping
+
+        final GeneralItemAnimator animator = new SwipeDismissItemAnimator();
+
+        // Change animations are enabled by default since support-v7-recyclerview v22.
+        // Disable the change animation in order to make turning back animation of swiped item works properly.
+        animator.setSupportsChangeAnimations(false);
+
+        mRecyclerView.setLayoutManager(layoutManager);
+        mRecyclerView.setAdapter(wrappedAdapter);  // requires *wrapped* adapter
+        mRecyclerView.setItemAnimator(animator);
+
+        // NOTE:
+        // The initialization order is very important! This order determines the priority of touch event handling.
+        //
+        // priority: TouchActionGuard > Swipe > DragAndDrop
+        recyclerViewTouchActionGuardManager.attachRecyclerView(mRecyclerView);
+        recyclerViewSwipeManager.attachRecyclerView(mRecyclerView);
+    }
+
+    private void checkAdapterIsEmpty() {
+        if (mAdapter.getItemCount() == 0) {
+            mEmptyView.setVisibility(View.VISIBLE);
+            mRecyclerView.setVisibility(View.GONE);
+        } else {
+            mEmptyView.setVisibility(View.GONE);
+            mRecyclerView.setVisibility(View.VISIBLE);
+        }
     }
 
     @Override
@@ -532,23 +480,21 @@ public class ListFragment extends Fragment implements OnViewTouchedListener {
         commitPending();
     }
 
-
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.menu_list, menu);
         super.onCreateOptionsMenu(menu, inflater);
-        this.menu = menu;
+        this.mMenu = menu;
         // Initialization of SearchView
         initSearchView(menu);
     }
-
 
     private void initSortingSubmenu() {
         final String[] arrayDb = getResources().getStringArray(R.array.sortable_columns);
         final String[] arrayDialog = getResources().getStringArray(R.array.sortable_columns_human_readable);
         int selected = Arrays.asList(arrayDb).indexOf(PrefUtils.getString(PrefUtils.PREF_SORTING_COLUMN, arrayDb[0]));
 
-        SubMenu sortMenu = this.menu.findItem(R.id.menu_sort).getSubMenu();
+        SubMenu sortMenu = this.mMenu.findItem(R.id.menu_sort).getSubMenu();
         for (int i = 0; i < arrayDialog.length; i++) {
             if (sortMenu.findItem(i) == null) {
                 sortMenu.add(Constants.MENU_SORT_GROUP_ID, i, i, arrayDialog[i]);
@@ -558,21 +504,20 @@ public class ListFragment extends Fragment implements OnViewTouchedListener {
         sortMenu.setGroupCheckable(Constants.MENU_SORT_GROUP_ID, true, true);
     }
 
-
     @Override
     public void onPrepareOptionsMenu(Menu menu) {
         setActionItemsVisibility(menu, false);
     }
 
     private void prepareActionModeMenu() {
-        Menu menu = getActionMode().getMenu();
+        Menu menu = mActionMode.getMenu();
         int navigation = Navigation.getNavigation();
 
         if (navigation == Navigation.TRASH) {
             menu.findItem(R.id.menu_untrash).setVisible(true);
             menu.findItem(R.id.menu_delete).setVisible(true);
         } else {
-            if (getSelectedCount() == 1) {
+            if (mAdapter.getSelectedItemCount() == 1) {
                 menu.findItem(R.id.menu_share).setVisible(true);
             } else {
                 menu.findItem(R.id.menu_share).setVisible(false);
@@ -585,19 +530,12 @@ public class ListFragment extends Fragment implements OnViewTouchedListener {
         setCabTitle();
     }
 
-
-    private int getSelectedCount() {
-        return getSelectedTasks().size();
-    }
-
-
     private void setCabTitle() {
-        if (getActionMode() != null) {
-            int title = getSelectedCount();
-            getActionMode().setTitle(String.valueOf(title));
+        if (mActionMode != null) {
+            int title = mAdapter.getSelectedItemCount();
+            mActionMode.setTitle(String.valueOf(title));
         }
     }
-
 
     /**
      * SearchView initialization. It's a little complex because it's not using SearchManager but is implementing on its
@@ -606,31 +544,31 @@ public class ListFragment extends Fragment implements OnViewTouchedListener {
     private void initSearchView(final Menu menu) {
 
         // Save item as class attribute to make it collapse on drawer opening
-        searchMenuItem = menu.findItem(R.id.menu_search);
+        mSearchMenuItem = menu.findItem(R.id.menu_search);
 
         // Associate searchable configuration with the SearchView
         SearchManager searchManager = (SearchManager) getActivity().getSystemService(Context.SEARCH_SERVICE);
-        searchView = (SearchView) MenuItemCompat.getActionView(menu.findItem(R.id.menu_search));
-        searchView.setSearchableInfo(searchManager.getSearchableInfo(getActivity().getComponentName()));
-        searchView.setImeOptions(EditorInfo.IME_ACTION_SEARCH);
+        mSearchView = (SearchView) MenuItemCompat.getActionView(menu.findItem(R.id.menu_search));
+        mSearchView.setSearchableInfo(searchManager.getSearchableInfo(getActivity().getComponentName()));
+        mSearchView.setImeOptions(EditorInfo.IME_ACTION_SEARCH);
 
         // Expands the widget hiding other actionbar icons
-        searchView.setOnQueryTextFocusChangeListener(new OnFocusChangeListener() {
+        mSearchView.setOnQueryTextFocusChangeListener(new OnFocusChangeListener() {
             @Override
             public void onFocusChange(View v, boolean hasFocus) {
                 setActionItemsVisibility(menu, hasFocus);
 //                if (!hasFocus) {
-//                    MenuItemCompat.collapseActionView(searchMenuItem);
+//                    MenuItemCompat.collapseActionView(mSearchMenuItem);
 //                }
             }
         });
 
-        MenuItemCompat.setOnActionExpandListener(searchMenuItem, new MenuItemCompat.OnActionExpandListener() {
+        MenuItemCompat.setOnActionExpandListener(mSearchMenuItem, new MenuItemCompat.OnActionExpandListener() {
 
             @Override
             public boolean onMenuItemActionCollapse(MenuItem item) {
                 // Reinitialize tasks list to all tasks when search is collapsed
-                searchQuery = null;
+                mSearchQuery = null;
                 getActivity().getIntent().setAction(Intent.ACTION_MAIN);
                 initTasksList(getActivity().getIntent());
                 getActivity().supportInvalidateOptionsMenu();
@@ -640,7 +578,7 @@ public class ListFragment extends Fragment implements OnViewTouchedListener {
 
             @Override
             public boolean onMenuItemActionExpand(MenuItem item) {
-                searchView.setOnQueryTextListener(new OnQueryTextListener() {
+                mSearchView.setOnQueryTextListener(new OnQueryTextListener() {
                     @Override
                     public boolean onQueryTextSubmit(String arg0) {
                         return true;
@@ -648,8 +586,8 @@ public class ListFragment extends Fragment implements OnViewTouchedListener {
 
                     @Override
                     public boolean onQueryTextChange(String pattern) {
-                        searchQuery = pattern;
-                        onTasksLoaded(DbHelper.getTasksByPattern(searchQuery));
+                        mSearchQuery = pattern;
+                        onTasksLoaded(DbHelper.getTasksByPattern(mSearchQuery));
                         return true;
                     }
                 });
@@ -657,7 +595,6 @@ public class ListFragment extends Fragment implements OnViewTouchedListener {
             }
         });
     }
-
 
     private void setActionItemsVisibility(Menu menu, boolean searchViewHasFocus) {
         // Defines the conditions to set actionbar items visible or not
@@ -679,18 +616,16 @@ public class ListFragment extends Fragment implements OnViewTouchedListener {
         menu.findItem(R.id.menu_empty_trash).setVisible(!drawerOpen && navigationTrash);
     }
 
-
     @Override
     public boolean onOptionsItemSelected(final MenuItem item) {
         performAction(item, null);
         return super.onOptionsItemSelected(item);
     }
 
-
     /**
      * Performs one of the ActionBar button's actions
      */
-    public boolean performAction(MenuItem item, ActionMode actionMode) {
+    private boolean performAction(MenuItem item, ActionMode actionMode) {
         if (actionMode == null) {
             switch (item.getItemId()) {
                 case android.R.id.home:
@@ -710,19 +645,19 @@ public class ListFragment extends Fragment implements OnViewTouchedListener {
         } else {
             switch (item.getItemId()) {
                 case R.id.menu_category:
-                    categorizeTasks();
+                    categorizeTasks(mAdapter.getSelectedItems());
                     break;
                 case R.id.menu_share:
-                    share();
+                    shareTask(mAdapter.getSelectedItems());
                     break;
                 case R.id.menu_trash:
-                    trashTasks(true);
+                    trashTasks(mAdapter.getSelectedItems());
                     break;
                 case R.id.menu_untrash:
-                    trashTasks(false);
+                    untrashTasks(mAdapter.getSelectedItems());
                     break;
                 case R.id.menu_delete:
-                    deleteTasks();
+                    deleteTasks(mAdapter.getSelectedItems());
                     break;
                 case R.id.menu_select_all:
                     selectAllTasks();
@@ -735,7 +670,7 @@ public class ListFragment extends Fragment implements OnViewTouchedListener {
         return super.onOptionsItemSelected(item);
     }
 
-    void editTask(final Task task) {
+    private void editTask(final Task task) {
         if (task.id == IdBasedModel.INVALID_ID) {
 
             // if navigation is a category it will be set into note
@@ -752,16 +687,12 @@ public class ListFragment extends Fragment implements OnViewTouchedListener {
             }
         }
 
-        // Current list scrolling position is saved to be restored later
-        refreshListScrollPosition();
-
         // Fragments replacing
         getMainActivity().switchToDetail(task);
     }
 
     @Override
-    public// Used to show a Crouton dialog after saved (or tried to) a note
-    void onActivityResult(int requestCode, final int resultCode, Intent intent) {
+    public void onActivityResult(int requestCode, final int resultCode, Intent intent) {
         super.onActivityResult(requestCode, resultCode, intent);
 
         switch (requestCode) {
@@ -785,7 +716,7 @@ public class ListFragment extends Fragment implements OnViewTouchedListener {
             case REQUEST_CODE_CATEGORY_TASKS:
                 if (intent != null) {
                     Category tag = Parcels.unwrap(intent.getParcelableExtra(Constants.INTENT_CATEGORY));
-                    categorizeTasksExecute(tag);
+                    categorizeTasks(mAdapter.getSelectedItems(), tag);
                 }
                 break;
 
@@ -801,13 +732,8 @@ public class ListFragment extends Fragment implements OnViewTouchedListener {
             final String[] arrayDb = getResources().getStringArray(R.array.sortable_columns);
             PrefUtils.putString(PrefUtils.PREF_SORTING_COLUMN, arrayDb[item.getOrder()]);
             initTasksList(getActivity().getIntent());
-            // Resets list scrolling position
-            listViewPositionOffset = 0;
-            listViewPosition = 0;
-            list.setSelectionFromTop(listViewPosition, listViewPositionOffset);
         }
     }
-
 
     /**
      * Empties trash deleting all the tasks
@@ -816,31 +742,30 @@ public class ListFragment extends Fragment implements OnViewTouchedListener {
         MaterialDialog dialog = new MaterialDialog.Builder(getActivity())
                 .content(R.string.empty_trash_confirmation)
                 .positiveText(R.string.ok)
-                .callback(new MaterialDialog.ButtonCallback() {
+                .onPositive(new MaterialDialog.SingleButtonCallback() {
                     @Override
-                    public void onPositive(MaterialDialog materialDialog) {
-                        for (int i = 0; i < taskAdapter.getCount(); i++) {
-                            getSelectedTasks().add(taskAdapter.getItem(i));
+                    public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
+                        int[] positions = new int[mAdapter.getTasks().size()];
+                        for (int i = 0; i < positions.length; i++) {
+                            positions[i] = i;
                         }
-                        deleteTasksExecute();
+                        deleteTasksExecute(positions);
                     }
                 }).build();
         dialog.show();
     }
-
 
     /**
      * Tasks list adapter initialization and association to view
      */
     public void initTasksList(Intent intent) {
         // Searching
-        if (searchQuery != null || Intent.ACTION_SEARCH.equals(intent.getAction())) {
-
+        if (mSearchQuery != null || Intent.ACTION_SEARCH.equals(intent.getAction())) {
             // Get the intent, verify the action and get the query
             if (intent.getStringExtra(SearchManager.QUERY) != null) {
-                searchQuery = intent.getStringExtra(SearchManager.QUERY);
+                mSearchQuery = intent.getStringExtra(SearchManager.QUERY);
             }
-            onTasksLoaded(DbHelper.getTasksByPattern(searchQuery));
+            onTasksLoaded(DbHelper.getTasksByPattern(mSearchQuery));
         } else {
             // Check if is launched from a widget with categories to set tag
             if (getMainActivity().getWidgetCatId() != -1) {
@@ -852,95 +777,59 @@ public class ListFragment extends Fragment implements OnViewTouchedListener {
     }
 
     private void onTasksLoaded(List<Task> tasks) {
-        if (taskAdapter == null) {
-            taskAdapter = new TaskAdapter(getActivity(), tasks);
-            if (list != null) {
-                list.setAdapter(taskAdapter);
-            }
-        } else {
-            taskAdapter.setTasks(tasks);
-        }
-
-        // Restores list view position when turning back to list
-        if (list != null) {
-            if (tasks.size() > 0) {
-                if (list.getCount() > listViewPosition) {
-                    list.setSelectionFromTop(listViewPosition, listViewPositionOffset);
-                } else {
-                    list.setSelectionFromTop(0, 0);
-                }
-            }
-
-            // Fade in the list view
-            animate(list).setDuration(getResources().getInteger(R.integer.list_view_fade_anim)).alpha(1);
-        }
+        mAdapter.setTasks(tasks);
     }
 
-
-    /**
-     * Batch note trashing
-     */
-    public void trashTasks(boolean trash) {
-        for (Task task : getSelectedTasks()) {
-            // Restore it performed immediately, otherwise undo bar
-            if (trash) {
-                // Saves tasks to be eventually restored at right position
-                undoTasksList.put(taskAdapter.getPosition(task) + undoTasksList.size(), task);
-                modifiedTasks.add(task);
-            } else {
-                trashTask(task, false);
-            }
+    private void trashTasks(int[] positions) {
+        for (int position : positions) {
+            Task task = mAdapter.getTasks().get(position);
+            // Saves tasks to be eventually restored at right position
+            mUndoTasksList.put(position + mUndoTasksList.size(), task);
+            mModifiedTasks.add(task);
             // Removes note adapter
-            taskAdapter.remove(task);
+            mAdapter.getTasks().remove(task);
         }
-
-        // If list is empty again Mr Jingles will appear again
-        if (taskAdapter.getCount() == 0)
-            list.setEmptyView(getActivity().findViewById(R.id.empty_list));
 
         finishActionMode();
 
         // Advice to user
-        if (trash) {
-            Snackbar.make(getActivity().getWindow().getDecorView().findViewById(android.R.id.content), R.string.task_trashed, Snackbar.LENGTH_LONG)
-                    .setActionTextColor(ContextCompat.getColor(getActivity(), R.color.info))
-                    .setAction(R.string.undo, new OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            onUndo();
-                        }
-                    })
-                    .show();
-            hideFab();
-            undoTrash = true;
+        Snackbar.make(getActivity().getWindow().getDecorView().findViewById(android.R.id.content), R.string.task_trashed, Snackbar.LENGTH_LONG)
+                .setActionTextColor(ContextCompat.getColor(getActivity(), R.color.info))
+                .setAction(R.string.undo, new OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        onUndo();
+                    }
+                })
+                .show();
+        hideFab();
+        mUndoTrash = true;
+    }
 
-        } else {
-            UiUtils.showMessage(getActivity(), R.string.task_untrashed);
-            getSelectedTasks().clear();
+    private void trashTaskExecute(Task task) {
+        DbHelper.trashTask(task);
+        mAdapter.getTasks().remove(task);
+
+        if (!TextUtils.isEmpty(task.questId)) {
+            Games.Events.increment(getMainActivity().getApiClient(), task.questId, 1);
         }
     }
 
-    private android.support.v7.view.ActionMode getActionMode() {
-        return actionMode;
+    private void untrashTasks(int[] positions) {
+        for (int position : positions) {
+            Task task = mAdapter.getTasks().get(position);
+            untrashTaskExecute(task);
+        }
+
+        finishActionMode();
+
+        // Advice to user
+        UiUtils.showMessage(getActivity(), R.string.task_untrashed);
     }
 
-
-    private List<Task> getSelectedTasks() {
-        return selectedTasks;
-    }
-
-
-    /**
-     * Single note logical deletion
-     *
-     * @param task Note to be deleted
-     */
-    protected void trashTask(Task task, boolean trash) {
-        DbHelper.trashTask(task, trash);
-        // Update adapter content
-        taskAdapter.remove(task);
-        // Informs about update
-
+    private void untrashTaskExecute(Task task) {
+        DbHelper.untrashTask(task);
+        mAdapter.getTasks().remove(task);
     }
 
 
@@ -948,35 +837,23 @@ public class ListFragment extends Fragment implements OnViewTouchedListener {
      * Selects all tasks in list
      */
     private void selectAllTasks() {
-        for (int i = 0; i < list.getChildCount(); i++) {
-            LinearLayout v = (LinearLayout) list.getChildAt(i).findViewById(R.id.card_layout);
-            // Checks null to avoid the footer
-            if (v != null) {
-                v.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.list_bg_selected));
-            }
-        }
-        selectedTasks.clear();
-        for (int i = 0; i < taskAdapter.getCount(); i++) {
-            selectedTasks.add(taskAdapter.getItem(i));
-            taskAdapter.addSelectedItem(i);
-        }
+        mAdapter.selectAll();
         prepareActionModeMenu();
-        setCabTitle();
     }
 
 
     /**
      * Batch note permanent deletion
      */
-    private void deleteTasks() {
+    private void deleteTasks(final int[] positions) {
         // Confirm dialog creation
         new MaterialDialog.Builder(getActivity())
                 .content(R.string.delete_task_confirmation)
                 .positiveText(R.string.ok)
-                .callback(new MaterialDialog.ButtonCallback() {
+                .onPositive(new MaterialDialog.SingleButtonCallback() {
                     @Override
-                    public void onPositive(MaterialDialog materialDialog) {
-                        deleteTasksExecute();
+                    public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
+                        deleteTasksExecute(positions);
                     }
                 }).build().show();
     }
@@ -985,19 +862,13 @@ public class ListFragment extends Fragment implements OnViewTouchedListener {
     /**
      * Performs tasks permanent deletion after confirmation by the user
      */
-    private void deleteTasksExecute() {
-        for (Task task : getSelectedTasks()) {
-            taskAdapter.remove(task);
+    private void deleteTasksExecute(int[] positions) {
+        for (int position : positions) {
+            Task task = mAdapter.getTasks().get(position);
+            mAdapter.getTasks().remove(task);
             // Deleting note using DbHelper
             DbHelper.deleteTask(task);
-            if (!TextUtils.isEmpty(task.questId)) {
-                Games.Events.increment(getMainActivity().getApiClient(), task.questId, 1);
-            }
         }
-
-        // Clears data structures
-//		taskAdapter.clearSelectedItems();
-        list.clearChoices();
 
         finishActionMode();
 
@@ -1018,7 +889,7 @@ public class ListFragment extends Fragment implements OnViewTouchedListener {
     /**
      * Associates to or removes categories
      */
-    private void categorizeTasks() {
+    private void categorizeTasks(final int[] positions) {
         // Retrieves all available categories
         final List<Category> categories = DbHelper.getCategories();
 
@@ -1026,20 +897,20 @@ public class ListFragment extends Fragment implements OnViewTouchedListener {
                 .title(R.string.categorize_as)
                 .adapter(new NavDrawerCategoryAdapter(getActivity(), categories), null)
                 .positiveText(R.string.add_category)
-//                .neutralText(R.string.cancel)
                 .negativeText(R.string.remove_category)
-                .callback(new MaterialDialog.ButtonCallback() {
+                .onPositive(new MaterialDialog.SingleButtonCallback() {
                     @Override
-                    public void onPositive(MaterialDialog dialog) {
-                        keepActionMode = true;
+                    public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
+                        mKeepActionMode = true;
                         Intent intent = new Intent(getActivity(), CategoryActivity.class);
                         intent.putExtra("noHome", true);
                         startActivityForResult(intent, REQUEST_CODE_CATEGORY_TASKS);
                     }
-
+                })
+                .onNegative(new MaterialDialog.SingleButtonCallback() {
                     @Override
-                    public void onNegative(MaterialDialog dialog) {
-                        categorizeTasksExecute(null);
+                    public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
+                        categorizeTasks(positions, null);
                     }
                 }).build();
 
@@ -1047,49 +918,42 @@ public class ListFragment extends Fragment implements OnViewTouchedListener {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 dialog.dismiss();
-                categorizeTasksExecute(categories.get(position));
+                categorizeTasks(positions, categories.get(position));
             }
         });
 
         dialog.show();
     }
 
-    private void categorizeTasksExecute(Category category) {
-        for (Task task : getSelectedTasks()) {
+    private void categorizeTasks(int[] positions, Category category) {
+        for (int position : positions) {
+            Task task = mAdapter.getTasks().get(position);
             // If is restore it will be done immediately, otherwise the undo bar
             // will be shown
             if (category != null) {
-                categorizeNote(task, category);
+                categorizeTaskExecute(task, category);
             } else {
                 // Saves categories associated to eventually undo
-                undoCategoryMap.put(task, task.getCategory());
+                mUndoCategoryMap.put(task, task.getCategory());
                 // Saves tasks to be eventually restored at right position
-                undoTasksList.put(taskAdapter.getPosition(task) + undoTasksList.size(), task);
-                modifiedTasks.add(task);
+                mUndoTasksList.put(mAdapter.getTasks().indexOf(task) + mUndoTasksList.size(), task);
+                mModifiedTasks.add(task);
             }
             // Update adapter content if actual navigation is the category
             // associated with actually cycled note
             if (Navigation.checkNavigation(Navigation.CATEGORY) && !Navigation.checkNavigationCategory(category)) {
-                taskAdapter.remove(task);
+                mAdapter.getTasks().remove(task);
             } else {
                 task.setCategory(category);
-                taskAdapter.replace(task, taskAdapter.getPosition(task));
+                mAdapter.notifyItemChanged(mAdapter.getTasks().indexOf(task));
             }
         }
 
-        // Clears data structures
-//		taskAdapter.clearSelectedItems();
-//		list.clearChoices();
         finishActionMode();
-
-        if (getActionMode() != null) {
-            getActionMode().finish();
-        }
 
         // Advice to user
         if (category != null) {
             UiUtils.showMessage(getActivity(), getResources().getText(R.string.tasks_categorized_as) + " '" + category.name + "'");
-            getSelectedTasks().clear();
         } else {
             Snackbar.make(getActivity().getWindow().getDecorView().findViewById(android.R.id.content), R.string.tasks_category_removed, Snackbar.LENGTH_LONG)
                     .setActionTextColor(ContextCompat.getColor(getActivity(), R.color.info))
@@ -1101,69 +965,64 @@ public class ListFragment extends Fragment implements OnViewTouchedListener {
                     })
                     .show();
             hideFab();
-            undoCategorize = true;
-            undoCategorizeCategory = null;
+            mUndoCategorize = true;
+            mUndoCategorizeCategory = null;
         }
     }
 
-
-    private void categorizeNote(Task task, Category category) {
+    private void categorizeTaskExecute(Task task, Category category) {
         task.setCategory(category);
         DbHelper.updateTask(task, false);
     }
 
-    public void onUndo() {
+    private void onUndo() {
         // Cycles removed items to re-insert into adapter
-        for (Task task : modifiedTasks) {
+        for (Task task : mModifiedTasks) {
             // Manages uncategorize or archive undo
-            if ((undoCategorize && !Navigation.checkNavigationCategory(undoCategoryMap.get(task)))) {
-                if (undoCategorize) {
-                    task.setCategory(undoCategoryMap.get(task));
+            if ((mUndoCategorize && !Navigation.checkNavigationCategory(mUndoCategoryMap.get(task)))) {
+                if (mUndoCategorize) {
+                    task.setCategory(mUndoCategoryMap.get(task));
                 }
 
-                taskAdapter.replace(task, taskAdapter.getPosition(task));
-                taskAdapter.notifyDataSetChanged();
-                // Manages trash undo
-            } else {
-                list.insert(undoTasksList.keyAt(undoTasksList.indexOfValue(task)), task);
+                mAdapter.notifyItemChanged(mAdapter.getTasks().indexOf(task));
+            } else { // Manages trash undo
+                int position = mUndoTasksList.keyAt(mUndoTasksList.indexOfValue(task));
+                mAdapter.getTasks().add(position, task);
+                mAdapter.notifyItemInserted(position);
             }
         }
 
-        selectedTasks.clear();
-        undoTasksList.clear();
-        modifiedTasks.clear();
+        mUndoTasksList.clear();
+        mModifiedTasks.clear();
 
-        undoTrash = false;
-        undoCategorize = false;
-        undoTasksList.clear();
-        undoCategoryMap.clear();
-        undoCategorizeCategory = null;
+        mUndoTrash = false;
+        mUndoCategorize = false;
+        mUndoTasksList.clear();
+        mUndoCategoryMap.clear();
+        mUndoCategorizeCategory = null;
 
-        if (getActionMode() != null) {
-            getActionMode().finish();
-        }
+        finishActionMode();
     }
 
-
     public void commitPending() {
-        if (undoTrash || undoCategorize) {
+        if (mUndoTrash || mUndoCategorize) {
 
-            for (Task task : modifiedTasks) {
-                if (undoTrash)
-                    trashTask(task, true);
-                else if (undoCategorize) categorizeNote(task, undoCategorizeCategory);
+            for (Task task : mModifiedTasks) {
+                if (mUndoTrash) {
+                    trashTaskExecute(task);
+                } else if (mUndoCategorize) {
+                    categorizeTaskExecute(task, mUndoCategorizeCategory);
+                }
             }
 
-            undoTrash = false;
-            undoCategorize = false;
-            undoCategorizeCategory = null;
+            mUndoTrash = false;
+            mUndoCategorize = false;
+            mUndoCategorizeCategory = null;
 
             // Clears data structures
-            selectedTasks.clear();
-            modifiedTasks.clear();
-            undoTasksList.clear();
-            undoCategoryMap.clear();
-            list.clearChoices();
+            mModifiedTasks.clear();
+            mUndoTasksList.clear();
+            mUndoCategoryMap.clear();
 
             showFab();
         }
@@ -1172,20 +1031,17 @@ public class ListFragment extends Fragment implements OnViewTouchedListener {
     /**
      * Shares the selected note from the list
      */
-    private void share() {
+    private void shareTask(int[] positions) {
         // Only one note should be selected to perform sharing but they'll be cycled anyhow
-        for (final Task task : getSelectedTasks()) {
-            task.share(getActivity());
+        for (int position : positions) {
+            mAdapter.getTasks().get(position).share(getActivity());
         }
 
-        getSelectedTasks().clear();
-        if (getActionMode() != null) {
-            getActionMode().finish();
-        }
+        finishActionMode();
     }
 
     public MenuItem getSearchMenuItem() {
-        return searchMenuItem;
+        return mSearchMenuItem;
     }
 
     private MainActivity getMainActivity() {

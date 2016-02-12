@@ -15,62 +15,40 @@
   ~ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   -->
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-             android:layout_width="match_parent"
-             android:layout_height="match_parent"
-             android:layout_marginLeft="@dimen/activity_additional_margin"
-             android:layout_marginRight="@dimen/activity_additional_margin">
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_marginLeft="@dimen/activity_additional_margin"
+    android:layout_marginRight="@dimen/activity_additional_margin">
 
-    <net.fred.taskgame.view.InterceptorLinearLayout
-        android:id="@+id/list_root"
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/recycler_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+    <LinearLayout
+        android:id="@+id/empty_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical">
+        android:gravity="center">
 
-        <com.nhaarman.listviewanimations.itemmanipulation.DynamicListView
-            android:id="@+id/list"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:divider="@null"
-            android:dividerHeight="8dp"
-            android:paddingLeft="8dp"
-            android:paddingRight="8dp"
-            android:paddingTop="@dimen/padding_half"
-            android:clipToPadding="false"
-            android:scrollbarSize="4dp"
-            android:drawSelectorOnTop="true"
-            android:listSelector="@drawable/icon_selector"
-            android:scrollbarStyle="outsideOverlay"
-            android:scrollbarThumbVertical="@drawable/scroll_bar"
-            android:fastScrollEnabled="true"/>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:gravity="center">
-
-            <TextView
-                android:id="@+id/empty_list"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:drawablePadding="10dp"
-                android:drawableTop="@anim/jingles_animation"
-                android:gravity="center"
-                android:text="@string/no_items_in_list"
-                android:textColor="@color/list_note_dates"
-                android:textSize="20sp"
-                android:visibility="gone"/>
-        </LinearLayout>
-
-    </net.fred.taskgame.view.InterceptorLinearLayout>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:drawablePadding="10dp"
+            android:drawableTop="@anim/jingles_animation"
+            android:text="@string/no_items_in_list"
+            android:textColor="@color/list_note_dates"
+            android:textSize="20sp" />
+    </LinearLayout>
 
     <include
         android:id="@+id/fab"
-        layout="@layout/fab"/>
+        layout="@layout/fab" />
 
     <ImageView
         android:id="@+id/expanded_image"
         android:layout_width="match_parent"
-        android:scaleType="centerCrop"
-        android:layout_height="match_parent"/>
+        android:layout_height="match_parent"
+        android:scaleType="centerCrop" />
 
 </FrameLayout>

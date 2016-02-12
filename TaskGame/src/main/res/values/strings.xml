@@ -26,7 +26,6 @@
     <string name="share">Share</string>
     <string name="undo">Undo</string>
     <string name="trash">Trash</string>
-    <string name="trashed">trashed</string>
     <string name="task_trashed">Task(s) trashed</string>
     <string name="task_untrashed">Task(s) restored from trash</string>
     <string name="untrash">Restore from trash</string>
@@ -97,6 +96,7 @@
     <string name="empty_trash_confirmation">Confirm deleting all trashed tasks?</string>
     <string name="select_all">Select all</string>
     <string name="permission_audio_recording">Permission to use microphone is needed to record audio tasks</string>
+    <string name="permission_get_account">Permission to read your Google account is needed to start PlayGames authentication and save your data on the cloud</string>
     <string name="permission_not_granted">Permission not granted</string>
 
     <!-- Settings -->

@@ -48,7 +48,4 @@
     <color name="warning">#ffffb32d</color>
     <color name="error">#ffe54230</color>
 
-    <!--Undo bar-->
-    <color name="card_undobar_material_background_color">#323232</color>
-
 </resources>

@@ -42,12 +42,12 @@ import java.nio.charset.Charset;
 
 /**
  * Service to handle sync requests.
- * <p>
+ * <p/>
  * <p>This service is invoked in response to Intents with action android.content.SyncAdapter, and
  * returns a Binder connection to SyncAdapter.
- * <p>
+ * <p/>
  * <p>For performance, only one sync adapter will be initialized within this application's context.
- * <p>
+ * <p/>
  * <p>Note: The SyncService itself is not notified when a new sync occurs. It's role is to
  * manage the lifecycle of our {@link SyncAdapter} and provide a handle to said SyncAdapter to the
  * OS on request.
@@ -84,7 +84,7 @@ public class SyncService extends Service {
 
     /**
      * Return Binder handle for IPC communication with {@link SyncAdapter}.
-     * <p>
+     * <p/>
      * <p>New sync requests will be sent directly to the SyncAdapter using this channel.
      *
      * @param intent Calling intent
@@ -95,7 +95,7 @@ public class SyncService extends Service {
         return sSyncAdapter.getSyncAdapterBinder();
     }
 
-    public static void triggerSync(Context context, boolean force) {
+    public static void triggerSync(Context context) {
         AccountManager manager = (AccountManager) context.getSystemService(Context.ACCOUNT_SERVICE);
         Account[] accounts = manager.getAccountsByType("com.google");
 
@@ -104,25 +104,20 @@ public class SyncService extends Service {
             ContentResolver.setSyncAutomatically(accounts[0], FakeProvider.AUTHORITY, true);
             ContentResolver.addPeriodicSync(accounts[0], FakeProvider.AUTHORITY, Bundle.EMPTY, SYNC_INTERVAL);
 
-            Dog.i("Google account found");
-            if (force) {
-                Bundle extras = new Bundle();
-                // Disable sync backoff and ignore sync preferences. In other words...perform sync NOW!
-                extras.putBoolean(ContentResolver.SYNC_EXTRAS_MANUAL, true);
-                extras.putBoolean(ContentResolver.SYNC_EXTRAS_EXPEDITED, true);
-                ContentResolver.requestSync(accounts[0], FakeProvider.AUTHORITY, extras);
-            } else {
-                ContentResolver.requestSync(accounts[0], FakeProvider.AUTHORITY, Bundle.EMPTY);
-            }
+            // Disable sync backoff and ignore sync preferences. In other words...perform sync NOW!
+            Bundle extras = new Bundle();
+            extras.putBoolean(ContentResolver.SYNC_EXTRAS_MANUAL, true);
+            extras.putBoolean(ContentResolver.SYNC_EXTRAS_EXPEDITED, true);
+            ContentResolver.requestSync(accounts[0], FakeProvider.AUTHORITY, extras);
         }
     }
 
     /**
      * Define a sync adapter for the app.
-     * <p>
+     * <p/>
      * <p>This class is instantiated in {@link SyncService}, which also binds SyncAdapter to the system.
      * SyncAdapter should only be initialized in SyncService, never anywhere else.
-     * <p>
+     * <p/>
      * <p>The system calls onPerformSync() via an RPC call through the IBinder object supplied by
      * SyncService.
      */
@@ -149,11 +144,11 @@ public class SyncService extends Service {
          * run on a background thread. For this reason, blocking I/O and other long-running tasks can be
          * run <em>in situ</em>, and you don't have to set up a separate thread for them.
          * .
-         * <p>
+         * <p/>
          * <p>This is where we actually perform any work required to perform a sync.
          * {@link AbstractThreadedSyncAdapter} guarantees that this will be called on a non-UI thread,
          * so it is safe to perform blocking I/O here.
-         * <p>
+         * <p/>
          * <p>The syncResult argument allows you to pass information back to the method that triggered
          * the sync.
          */
@@ -162,8 +157,8 @@ public class SyncService extends Service {
             Dog.i("Beginning network synchronization");
 
             if (PrefUtils.getBoolean(PrefUtils.PREF_ALREADY_LOGGED_TO_GAMES, false)) {
+                GameHelper helper = new GameHelper(getContext());
                 try {
-                    GameHelper helper = new GameHelper(getContext());
                     helper.setup(null);
                     helper.getApiClient().blockingConnect();
 
@@ -269,6 +264,11 @@ public class SyncService extends Service {
                 } catch (Throwable t) {
                     Dog.e("ERROR", t);
                     syncResult.databaseError = true;
+                } finally {
+                    try {
+                        helper.getApiClient().disconnect();
+                    } catch (Throwable unused) {
+                    }
                 }
 
             } else {

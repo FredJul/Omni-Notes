@@ -127,10 +127,10 @@ public class ListRemoteViewsFactory implements RemoteViewsFactory {
 //
 //            row.setInt(R.id.attachmentThumbnail, "setVisibility", View.VISIBLE);
 //        } else {
-            row.setInt(R.id.attachmentThumbnail, "setVisibility", View.GONE);
+        row.setInt(R.id.attachment_thumbnail, "setVisibility", View.GONE);
 //        }
 
-        row.setTextViewText(R.id.taskModifDate, TaskAdapter.getDateText(mContext, task));
+        row.setTextViewText(R.id.date, TaskAdapter.getDateText(mContext, task));
 
         // Next, set a fill-intent, which will be used to fill in the pending intent template
         // that is set on the collection view in StackWidgetProvider.

@@ -140,7 +140,7 @@ public class MainActivity extends BaseGameActivity implements OnDateSetListener,
     @Override
     public void onSignInSucceeded() {
         PrefUtils.putBoolean(PrefUtils.PREF_ALREADY_LOGGED_TO_GAMES, true);
-        SyncService.triggerSync(this, true);
+        SyncService.triggerSync(this);
     }
 
     public MenuItem getSearchMenuItem() {
@@ -152,10 +152,10 @@ public class MainActivity extends BaseGameActivity implements OnDateSetListener,
         }
     }
 
-    public void editTag(Category tag) {
+    public void editCategory(Category category) {
         Fragment f = checkFragmentInstance(R.id.fragment_container, ListFragment.class);
         if (f != null) {
-            ((ListFragment) f).editCategory(tag);
+            ((ListFragment) f).editCategory(category);
         }
     }
 

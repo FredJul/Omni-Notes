@@ -17,6 +17,7 @@
 
 package net.fred.taskgame.fragment;
 
+import android.Manifest;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -50,9 +51,11 @@ import net.fred.taskgame.model.NavigationItem;
 import net.fred.taskgame.model.Task;
 import net.fred.taskgame.model.adapters.NavDrawerAdapter;
 import net.fred.taskgame.model.adapters.NavDrawerCategoryAdapter;
+import net.fred.taskgame.model.listeners.OnPermissionRequestedListener;
 import net.fred.taskgame.utils.Constants;
 import net.fred.taskgame.utils.DbHelper;
 import net.fred.taskgame.utils.Navigation;
+import net.fred.taskgame.utils.PermissionsHelper;
 import net.fred.taskgame.utils.PrefUtils;
 import net.fred.taskgame.utils.ThrottledFlowContentObserver;
 import net.fred.taskgame.utils.UiUtils;
@@ -306,7 +309,7 @@ public class NavigationDrawerFragment extends Fragment {
                     Object item = mDrawerCategoriesList.getAdapter().getItem(position);
                     // Ensuring that clicked item is not the ListView header
                     if (item != null) {
-                        mActivity.editTag((Category) item);
+                        mActivity.editCategory((Category) item);
                     }
                 } else {
                     UiUtils.showMessage(getActivity(), R.string.category_deleted);
@@ -411,7 +414,13 @@ public class NavigationDrawerFragment extends Fragment {
 
     @OnClick(R.id.loginBtn)
     public void onLoginBtnClicked(View v) {
-        getMainActivity().beginUserInitiatedSignIn();
+        PermissionsHelper.requestPermission(getActivity(), Manifest.permission.GET_ACCOUNTS,
+                R.string.permission_get_account, new OnPermissionRequestedListener() {
+                    @Override
+                    public void onPermissionGranted() {
+                        getMainActivity().beginUserInitiatedSignIn();
+                    }
+                });
     }
 
     @OnClick(R.id.questsBtn)
