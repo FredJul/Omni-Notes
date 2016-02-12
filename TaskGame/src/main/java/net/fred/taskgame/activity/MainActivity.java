@@ -299,12 +299,6 @@ public class MainActivity extends BaseGameActivity implements OnDateSetListener,
         }
     }
 
-
-    public Toolbar getmToolbar() {
-        return this.mToolbar;
-    }
-
-
     private void handleIntents() {
         Intent i = getIntent();
 
@@ -316,7 +310,7 @@ public class MainActivity extends BaseGameActivity implements OnDateSetListener,
                 task = DbHelper.getTask(i.getLongExtra(Constants.INTENT_KEY, 0));
             }
             // Checks if the same note is already opened to avoid to open again
-            if (task != null && noteAlreadyOpened(task)) {
+            if (task != null && isTaskAlreadyOpened(task)) {
                 return;
             }
             // Empty note instantiation
@@ -345,7 +339,7 @@ public class MainActivity extends BaseGameActivity implements OnDateSetListener,
     }
 
 
-    private boolean noteAlreadyOpened(Task task) {
+    private boolean isTaskAlreadyOpened(Task task) {
         DetailFragment detailFragment = (DetailFragment) mFragmentManager.findFragmentByTag(FRAGMENT_DETAIL_TAG);
         return detailFragment != null && detailFragment.getCurrentTask().id == task.id;
     }

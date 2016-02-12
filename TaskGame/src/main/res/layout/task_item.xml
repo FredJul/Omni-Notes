@@ -43,6 +43,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/task_title"
+                android:layout_toStartOf="@+id/attachment_thumbnail"
                 android:layout_marginStart="11dp"
                 android:maxLines="2"
                 android:textAppearance="@style/Text.Normal"
