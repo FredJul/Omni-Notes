@@ -26,7 +26,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.GravityCompat;
-import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.view.LayoutInflater;
@@ -44,6 +43,7 @@ import com.google.android.gms.games.Games;
 import com.google.android.gms.games.quest.Quests;
 
 import net.fred.taskgame.R;
+import net.fred.taskgame.activity.CategoryActivity;
 import net.fred.taskgame.activity.MainActivity;
 import net.fred.taskgame.activity.SettingsActivity;
 import net.fred.taskgame.model.Category;
@@ -61,6 +61,8 @@ import net.fred.taskgame.utils.ThrottledFlowContentObserver;
 import net.fred.taskgame.utils.UiUtils;
 import net.fred.taskgame.view.NonScrollableListView;
 
+import org.parceler.Parcels;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -77,6 +79,8 @@ import butterknife.OnClick;
  */
 public class NavigationDrawerFragment extends Fragment {
 
+    private static final int REQUEST_CODE_CATEGORY = 2;
+
     public ActionBarDrawerToggle mDrawerToggle;
     DrawerLayout mDrawerLayout;
     String[] mNavigationArray;
@@ -87,12 +91,7 @@ public class NavigationDrawerFragment extends Fragment {
     private View mCategoriesListHeader;
     private View mSettingsView, mSettingsViewCat;
     private MainActivity mActivity;
-    private CharSequence mTitle;
     private TextView mCurrentPoints;
-
-    // Categories list scrolling
-    private int mListViewPosition;
-    private int mListViewPositionOffset;
 
     private ThrottledFlowContentObserver mContentObserver = new ThrottledFlowContentObserver(100) {
         @Override
@@ -114,18 +113,12 @@ public class NavigationDrawerFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setRetainInstance(true);
+        setHasOptionsMenu(false);
     }
 
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        if (savedInstanceState != null) {
-            if (savedInstanceState.containsKey("mListViewPosition")) {
-                mListViewPosition = savedInstanceState.getInt("mListViewPosition");
-                mListViewPositionOffset = savedInstanceState.getInt("mListViewPositionOffset");
-            }
-        }
-
         // registers for callbacks from the specified tables
         mContentObserver.registerForContentChanges(inflater.getContext(), Task.class);
         mContentObserver.registerForContentChanges(inflater.getContext(), Category.class);
@@ -154,25 +147,6 @@ public class NavigationDrawerFragment extends Fragment {
         init();
     }
 
-
-    @Override
-    public void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-        refreshListScrollPosition();
-        outState.putInt("mListViewPosition", mListViewPosition);
-        outState.putInt("mListViewPositionOffset", mListViewPositionOffset);
-    }
-
-
-    private void refreshListScrollPosition() {
-        if (mDrawerCategoriesList != null) {
-            mListViewPosition = mDrawerCategoriesList.getFirstVisiblePosition();
-            View v = mDrawerCategoriesList.getChildAt(0);
-            mListViewPositionOffset = (v == null) ? 0 : v.getTop();
-        }
-    }
-
-
     /**
      * Initialization of compatibility navigation drawer
      */
@@ -194,24 +168,15 @@ public class NavigationDrawerFragment extends Fragment {
                 R.string.drawer_open,
                 R.string.drawer_close) {
             public void onDrawerClosed(View view) {
-                // Saves the scrolling of the categories list
-                refreshListScrollPosition();
-                // Restore title
-                mActivity.getSupportActionBar().setTitle(mTitle);
                 // Call to onPrepareOptionsMenu()
                 mActivity.supportInvalidateOptionsMenu();
             }
-
 
             public void onDrawerOpened(View drawerView) {
                 // Commits all pending actions
                 mActivity.commitPending();
                 // Finishes action mode
                 mActivity.finishActionMode();
-                mTitle = mActivity.getSupportActionBar().getTitle();
-                mActivity.getSupportActionBar().setTitle(mActivity.getApplicationContext().getString(R.string
-                        .app_name));
-                mActivity.supportInvalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
             }
         };
 
@@ -221,7 +186,6 @@ public class NavigationDrawerFragment extends Fragment {
         mDrawerLayout.setDrawerListener(mDrawerToggle);
         mDrawerToggle.syncState();
     }
-
 
     private void buildCategoriesMenu() {
         // Retrieves data to fill tags list
@@ -282,10 +246,6 @@ public class NavigationDrawerFragment extends Fragment {
 
                 // Commits pending deletion or archiviation
                 mActivity.commitPending();
-                // Stops search service
-                if (mActivity.getSearchMenuItem() != null && MenuItemCompat.isActionViewExpanded(mActivity
-                        .getSearchMenuItem()))
-                    MenuItemCompat.collapseActionView(mActivity.getSearchMenuItem());
 
                 Object item = mDrawerCategoriesList.getAdapter().getItem(position);
                 // Ensuring that clicked item is not the ListView header
@@ -309,7 +269,7 @@ public class NavigationDrawerFragment extends Fragment {
                     Object item = mDrawerCategoriesList.getAdapter().getItem(position);
                     // Ensuring that clicked item is not the ListView header
                     if (item != null) {
-                        mActivity.editCategory((Category) item);
+                        editCategory((Category) item);
                     }
                 } else {
                     UiUtils.showMessage(getActivity(), R.string.category_deleted);
@@ -317,15 +277,6 @@ public class NavigationDrawerFragment extends Fragment {
                 return true;
             }
         });
-
-        // Restores listview position when turning back to list
-        if (mDrawerCategoriesList != null && categories.size() > 0) {
-            if (mDrawerCategoriesList.getCount() > mListViewPosition) {
-                mDrawerCategoriesList.setSelectionFromTop(mListViewPosition, mListViewPositionOffset);
-            } else {
-                mDrawerCategoriesList.setSelectionFromTop(0, 0);
-            }
-        }
 
         mDrawerCategoriesList.justifyListViewHeightBasedOnChildren();
     }
@@ -391,25 +342,58 @@ public class NavigationDrawerFragment extends Fragment {
     private void selectNavigationItem(ListView list, int position) {
         Object itemSelected = list.getItemAtPosition(position);
         if (itemSelected.getClass().isAssignableFrom(NavigationItem.class)) {
-            mTitle = ((NavigationItem) itemSelected).getText();
-            // Is a category
-        } else {
-            mTitle = ((Category) itemSelected).name;
+            mActivity.getSupportActionBar().setTitle(((NavigationItem) itemSelected).getText());
+        } else { // Is a category
+            mActivity.getSupportActionBar().setTitle(((Category) itemSelected).name);
         }
         // Navigation drawer is closed after a while to avoid lag
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
-                mActivity.getSupportActionBar().setTitle(mTitle);
                 mDrawerLayout.closeDrawer(GravityCompat.START);
             }
-        }, 500);
-
+        }, 200);
     }
 
+    /**
+     * Categories addition and editing
+     */
+    public void editCategory(Category category) {
+        Intent categoryIntent = new Intent(getActivity(), CategoryActivity.class);
+        categoryIntent.putExtra(Constants.INTENT_CATEGORY, Parcels.wrap(category));
+        startActivityForResult(categoryIntent, REQUEST_CODE_CATEGORY);
+    }
 
     private MainActivity getMainActivity() {
         return (MainActivity) getActivity();
+    }
+
+
+    @Override
+    public void onActivityResult(int requestCode, final int resultCode, Intent intent) {
+        super.onActivityResult(requestCode, resultCode, intent);
+
+        switch (requestCode) {
+            case REQUEST_CODE_CATEGORY:
+                // Dialog retarded to give time to activity's views of being
+                // completely initialized
+                // The dialog style is chosen depending on result code
+                switch (resultCode) {
+                    case Activity.RESULT_OK:
+                        UiUtils.showMessage(getActivity(), R.string.category_saved);
+                        break;
+                    case Activity.RESULT_FIRST_USER:
+                        UiUtils.showMessage(getActivity(), R.string.category_deleted);
+                        break;
+                    default:
+                        break;
+                }
+
+                break;
+
+            default:
+                break;
+        }
     }
 
     @OnClick(R.id.loginBtn)

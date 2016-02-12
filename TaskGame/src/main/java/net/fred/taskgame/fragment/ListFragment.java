@@ -17,7 +17,6 @@
 package net.fred.taskgame.fragment;
 
 import android.animation.Animator;
-import android.app.Activity;
 import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
@@ -91,7 +90,6 @@ import butterknife.ButterKnife;
 
 public class ListFragment extends Fragment implements OnViewTouchedListener {
 
-    private static final int REQUEST_CODE_CATEGORY = 2;
     private static final int REQUEST_CODE_CATEGORY_TASKS = 3;
 
     @Bind(R.id.recycler_view)
@@ -104,7 +102,7 @@ public class ListFragment extends Fragment implements OnViewTouchedListener {
     private List<Task> mModifiedTasks = new ArrayList<>();
     private SearchView mSearchView;
     private MenuItem mSearchMenuItem;
-    private android.support.v7.view.ActionMode mActionMode;
+    private ActionMode mActionMode;
     private boolean mKeepActionMode = false;
 
     // Undo archive/trash
@@ -118,7 +116,7 @@ public class ListFragment extends Fragment implements OnViewTouchedListener {
     // Search variables
     private String mSearchQuery;
 
-    //    Fab
+    // Fab
     private FloatingActionsMenu mFab;
     private boolean mFabAllowed;
     private boolean mFabExpanded = false;
@@ -573,6 +571,7 @@ public class ListFragment extends Fragment implements OnViewTouchedListener {
             public boolean onMenuItemActionCollapse(MenuItem item) {
                 // Reinitialize tasks list to all tasks when search is collapsed
                 mSearchQuery = null;
+                mSearchView.setOnQueryTextListener(null); // to avoid a bug
                 getActivity().getIntent().setAction(Intent.ACTION_MAIN);
                 initTasksList(getActivity().getIntent());
                 getActivity().supportInvalidateOptionsMenu();
@@ -694,23 +693,6 @@ public class ListFragment extends Fragment implements OnViewTouchedListener {
         super.onActivityResult(requestCode, resultCode, intent);
 
         switch (requestCode) {
-            case REQUEST_CODE_CATEGORY:
-                // Dialog retarded to give time to activity's views of being
-                // completely initialized
-                // The dialog style is chosen depending on result code
-                switch (resultCode) {
-                    case Activity.RESULT_OK:
-                        UiUtils.showMessage(getActivity(), R.string.category_saved);
-                        break;
-                    case Activity.RESULT_FIRST_USER:
-                        UiUtils.showMessage(getActivity(), R.string.category_deleted);
-                        break;
-                    default:
-                        break;
-                }
-
-                break;
-
             case REQUEST_CODE_CATEGORY_TASKS:
                 if (intent != null) {
                     Category tag = Parcels.unwrap(intent.getParcelableExtra(Constants.INTENT_CATEGORY));
@@ -743,10 +725,16 @@ public class ListFragment extends Fragment implements OnViewTouchedListener {
         dialog.show();
     }
 
-    /**
-     * Tasks list adapter initialization and association to view
-     */
     public void initTasksList(Intent intent) {
+        initTasksList(intent, false);
+    }
+
+    public void initTasksList(Intent intent, boolean shouldStopSearch) {
+        if (shouldStopSearch && mSearchMenuItem != null && MenuItemCompat.isActionViewExpanded(mSearchMenuItem)) {
+            mSearchQuery = null;
+            MenuItemCompat.collapseActionView(mSearchMenuItem); // collapsing the menu will trigger a new call to initTasksList
+        }
+
         // Searching
         if (mSearchQuery != null || Intent.ACTION_SEARCH.equals(intent.getAction())) {
             // Get the intent, verify the action and get the query
@@ -759,7 +747,7 @@ public class ListFragment extends Fragment implements OnViewTouchedListener {
             if (getMainActivity().getWidgetCatId() != -1) {
                 onTasksLoaded(DbHelper.getTasksByCategory(getMainActivity().getWidgetCatId()));
             } else { // Gets all tasks
-                onTasksLoaded(DbHelper.getAllTasks());
+                onTasksLoaded(DbHelper.getTasksFromCurrentNavigation());
             }
         }
     }
@@ -862,15 +850,6 @@ public class ListFragment extends Fragment implements OnViewTouchedListener {
 
         // Advice to user
         UiUtils.showMessage(getActivity(), R.string.task_deleted);
-    }
-
-    /**
-     * Categories addition and editing
-     */
-    public void editCategory(Category category) {
-        Intent categoryIntent = new Intent(getActivity(), CategoryActivity.class);
-        categoryIntent.putExtra(Constants.INTENT_CATEGORY, Parcels.wrap(category));
-        startActivityForResult(categoryIntent, REQUEST_CODE_CATEGORY);
     }
 
 
@@ -1026,10 +1005,6 @@ public class ListFragment extends Fragment implements OnViewTouchedListener {
         }
 
         finishActionMode();
-    }
-
-    public MenuItem getSearchMenuItem() {
-        return mSearchMenuItem;
     }
 
     private MainActivity getMainActivity() {

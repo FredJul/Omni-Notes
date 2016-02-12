@@ -31,9 +31,6 @@ import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.Toolbar;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.animation.DecelerateInterpolator;
 import android.widget.DatePicker;
 import android.widget.TimePicker;
@@ -44,7 +41,6 @@ import net.fred.taskgame.fragment.DetailFragment;
 import net.fred.taskgame.fragment.ListFragment;
 import net.fred.taskgame.fragment.NavigationDrawerFragment;
 import net.fred.taskgame.fragment.SketchFragment;
-import net.fred.taskgame.model.Category;
 import net.fred.taskgame.model.Task;
 import net.fred.taskgame.service.SyncService;
 import net.fred.taskgame.utils.Constants;
@@ -104,15 +100,6 @@ public class MainActivity extends BaseGameActivity implements OnDateSetListener,
         super.onNewIntent(intent);
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu items for use in the action bar
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.menu_list, menu);
-
-        return super.onCreateOptionsMenu(menu);
-    }
-
     public void updateNavigation(String nav) {
         PrefUtils.putString(PrefUtils.PREF_NAVIGATION, nav);
 
@@ -143,26 +130,10 @@ public class MainActivity extends BaseGameActivity implements OnDateSetListener,
         SyncService.triggerSync(this);
     }
 
-    public MenuItem getSearchMenuItem() {
-        Fragment f = checkFragmentInstance(R.id.fragment_container, ListFragment.class);
-        if (f != null) {
-            return ((ListFragment) f).getSearchMenuItem();
-        } else {
-            return null;
-        }
-    }
-
-    public void editCategory(Category category) {
-        Fragment f = checkFragmentInstance(R.id.fragment_container, ListFragment.class);
-        if (f != null) {
-            ((ListFragment) f).editCategory(category);
-        }
-    }
-
     public void initTasksList(Intent intent) {
         Fragment f = checkFragmentInstance(R.id.fragment_container, ListFragment.class);
         if (f != null) {
-            ((ListFragment) f).initTasksList(intent);
+            ((ListFragment) f).initTasksList(intent, true);
         }
     }
 

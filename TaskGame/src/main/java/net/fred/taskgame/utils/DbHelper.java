@@ -69,7 +69,7 @@ public class DbHelper {
      *
      * @return Tasks list
      */
-    public static List<Task> getAllTasks() {
+    public static List<Task> getTasksFromCurrentNavigation() {
         int navigation = Navigation.getNavigation();
         switch (navigation) {
             case Navigation.TASKS:
