@@ -97,14 +97,14 @@ public class TaskAdapter extends MultiSelectAdapter<TaskAdapter.TaskViewHolder>
     }
 
     private void onItemViewClick(View v, int position) {
-        if (mEventListener != null) {
-            mEventListener.onItemViewClicked(v, position); // true --- pinned
+        if (mEventListener != null && position != -1) { // seems -1 is sometimes possible...
+            mEventListener.onItemViewClicked(v, position);
         }
     }
 
     private void onItemViewLongClick(View v, int position) {
-        if (mEventListener != null) {
-            mEventListener.onItemViewLongClicked(v, position); // true --- pinned
+        if (mEventListener != null && position != -1) { // seems -1 is sometimes possible...
+            mEventListener.onItemViewLongClicked(v, position);
         }
     }
 
