@@ -49,9 +49,7 @@ public class AlarmReceiver extends BroadcastReceiver {
     private void createNotification(Context mContext, Task task) {
         // Prepare text contents
         String title = task.title.length() > 0 ? task.title : task.content;
-        String alarmText = DateHelper.getString(task.alarmDate,
-                Constants.DATE_FORMAT_SHORT_DATE) + ", "
-                + DateHelper.getDateTimeShort(mContext, task.alarmDate);
+        String alarmText = DateHelper.getDateTimeShort(mContext, task.alarmDate);
         String text = task.title.length() > 0 && task.content.length() > 0 ? task.content : alarmText;
 
         Intent snoozeIntent = new Intent(mContext, SnoozeActivity.class);

@@ -40,7 +40,7 @@
     <string name="task_updated">Task updated</string>
     <string name="empty_task_not_saved">Can\'t save an empty task</string>
     <string name="share_message_chooser">Share with</string>
-    <string name="alarm_set_on">Reminder set for %s</string>
+    <string name="alarm_set_on">Reminder set for %1s</string>
     <string name="at_time">at</string>
     <string name="discard_changes">Discard changes</string>
     <string name="attachment">Attachment</string>

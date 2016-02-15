@@ -18,8 +18,6 @@
 package net.fred.taskgame.activity;
 
 import android.animation.ValueAnimator;
-import android.app.DatePickerDialog.OnDateSetListener;
-import android.app.TimePickerDialog.OnTimeSetListener;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.net.Uri;
@@ -33,8 +31,6 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.view.animation.DecelerateInterpolator;
-import android.widget.DatePicker;
-import android.widget.TimePicker;
 import android.widget.Toast;
 
 import net.fred.taskgame.R;
@@ -54,7 +50,7 @@ import org.parceler.Parcels;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 
-public class MainActivity extends BaseGameActivity implements OnDateSetListener, OnTimeSetListener, FragmentManager.OnBackStackChangedListener {
+public class MainActivity extends BaseGameActivity implements FragmentManager.OnBackStackChangedListener {
 
     public final String FRAGMENT_DRAWER_TAG = "fragment_drawer";
     public final String FRAGMENT_LIST_TAG = "fragment_list";
@@ -364,24 +360,6 @@ public class MainActivity extends BaseGameActivity implements OnDateSetListener,
             transaction.replace(R.id.fragment_container, mDetailFragment, FRAGMENT_DETAIL_TAG).addToBackStack(FRAGMENT_LIST_TAG).commitAllowingStateLoss();
         } else {
             transaction.replace(R.id.fragment_container, mDetailFragment, FRAGMENT_DETAIL_TAG).addToBackStack(FRAGMENT_DETAIL_TAG).commitAllowingStateLoss();
-        }
-    }
-
-    @Override
-    public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
-        DetailFragment f = (DetailFragment) mFragmentManager.findFragmentByTag(FRAGMENT_DETAIL_TAG);
-        if (f != null && f.isAdded()) {
-            f.onTimeSetListener.onTimeSet(view, hourOfDay, minute);
-        }
-    }
-
-
-    @Override
-    public void onDateSet(DatePicker view, int year, int monthOfYear,
-                          int dayOfMonth) {
-        DetailFragment f = (DetailFragment) mFragmentManager.findFragmentByTag(FRAGMENT_DETAIL_TAG);
-        if (f != null && f.isAdded()) {
-            f.onDateSetListener.onDateSet(view, year, monthOfYear, dayOfMonth);
         }
     }
 }

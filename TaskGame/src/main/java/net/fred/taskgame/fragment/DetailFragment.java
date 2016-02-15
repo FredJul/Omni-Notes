@@ -19,13 +19,10 @@ package net.fred.taskgame.fragment;
 import android.Manifest;
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.app.DatePickerDialog.OnDateSetListener;
-import android.app.TimePickerDialog.OnTimeSetListener;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
-import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
@@ -38,6 +35,7 @@ import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.MenuItemCompat;
 import android.text.Editable;
@@ -134,45 +132,40 @@ public class DetailFragment extends Fragment implements OnReminderPickedListener
     private static final int CATEGORY_CHANGE = 3;
     private static final int FILES = 4;
 
-    public OnDateSetListener onDateSetListener;
-    public OnTimeSetListener onTimeSetListener;
-    private MediaRecorder mRecorder = null;
-    // Toggle isChecklist view
-    private View toggleChecklistView;
-    private TextView datetime;
-    private Uri attachmentUri;
-    private AttachmentAdapter mAttachmentAdapter;
-    private ExpandableHeightGridView mGridView;
-    private PopupWindow attachmentDialog;
+    @Bind(R.id.datetime)
+    TextView mDateTime;
+    @Bind(R.id.gridview)
+    ExpandableHeightGridView mGridView;
     @Bind(R.id.detail_title)
-    EditText title;
+    EditText mTitleEditText;
     @Bind(R.id.detail_content)
-    EditText content;
+    EditText mContentEditText;
+    @Bind(R.id.content_wrapper)
+    ScrollView mScrollView;
+    @Bind(R.id.reward_spinner)
+    Spinner mRewardSpinner;
+
     private Task mTask;
     private Task mOriginalTask;
-    // Reminder
-    private String reminderDate = "", reminderTime = "";
-    private String dateTimeText = "";
     // Audio recording
-    private String recordName;
+    private String mRecordName;
     private MediaPlayer mPlayer = null;
-    private boolean isRecording = false;
-    private View isPlayingView = null;
-    private Bitmap recordingBitmap;
+    private boolean mIsRecording = false;
+    private View mIsPlayingView = null;
+    private Bitmap mRecordingBitmap;
     private ChecklistManager mChecklistManager;
     // Values to print result
-    private String exitMessage;
-    private UiUtils.MessageType exitMessageStyle = UiUtils.MessageType.TYPE_INFO;
-    // Flag to check if after editing it will return to ListActivity or not
-    // and in the last case a Toast will be shown instead than Crouton
-    private boolean afterSavedReturnsToList = true;
-    private boolean orientationChanged;
-    private long audioRecordingTimeStart;
-    private long audioRecordingTime;
-    private Attachment sketchEdited;
-    private ScrollView scrollView;
-    private Spinner mRewardSpinner;
-    private int contentLineCounter = 1;
+    private String mExitMessage;
+    private UiUtils.MessageType mExitMessageStyle = UiUtils.MessageType.TYPE_INFO;
+    private long mAudioRecordingTimeStart;
+    private long mAudioRecordingTime;
+    private Attachment mSketchEdited;
+    private int mContentLineCounter = 1;
+    private MediaRecorder mRecorder = null;
+    private Uri mAttachmentUri;
+    private AttachmentAdapter mAttachmentAdapter;
+    private PopupWindow mAttachmentDialog;
+    private View mToggleChecklistView;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -187,10 +180,9 @@ public class DetailFragment extends Fragment implements OnReminderPickedListener
 
         // Restored temp note after orientation change
         if (savedInstanceState != null) {
-            mTask = Parcels.unwrap(savedInstanceState.getParcelable("note"));
-            mOriginalTask = Parcels.unwrap(savedInstanceState.getParcelable("noteOriginal"));
-            attachmentUri = savedInstanceState.getParcelable("attachmentUri");
-            orientationChanged = savedInstanceState.getBoolean("orientationChanged");
+            mTask = Parcels.unwrap(savedInstanceState.getParcelable("mTask"));
+            mOriginalTask = Parcels.unwrap(savedInstanceState.getParcelable("mOriginalTask"));
+            mAttachmentUri = savedInstanceState.getParcelable("mAttachmentUri");
         }
 
         // Added the sketched image if present returning from SketchFragment
@@ -201,58 +193,13 @@ public class DetailFragment extends Fragment implements OnReminderPickedListener
             mTask.getAttachmentsList().add(attachment);
             getMainActivity().sketchUri = null;
             // Removes previous version of edited image
-            if (sketchEdited != null) {
-                mTask.getAttachmentsList().remove(sketchEdited);
-                sketchEdited = null;
+            if (mSketchEdited != null) {
+                mTask.getAttachmentsList().remove(mSketchEdited);
+                mSketchEdited = null;
             }
         }
 
         getMainActivity().getSupportActionBar().setTitle("");
-
-        init();
-
-        setHasOptionsMenu(true);
-        setRetainInstance(false);
-    }
-
-    @Override
-    public void onSaveInstanceState(Bundle outState) {
-        mTask.title = getTaskTitle();
-        mTask.content = getTaskContent();
-        outState.putParcelable("note", Parcels.wrap(mTask));
-        outState.putParcelable("noteOriginal", Parcels.wrap(mOriginalTask));
-        outState.putParcelable("attachmentUri", attachmentUri);
-        outState.putBoolean("orientationChanged", orientationChanged);
-        super.onSaveInstanceState(outState);
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-
-        if (mRecorder != null) {
-            mRecorder.release();
-            mRecorder = null;
-        }
-
-        // Closes keyboard on exit
-        if (toggleChecklistView != null) {
-            KeyboardUtils.hideKeyboard(toggleChecklistView);
-            content.clearFocus();
-        }
-    }
-
-
-    @Override
-    public void onConfigurationChanged(Configuration newConfig) {
-        super.onConfigurationChanged(newConfig);
-        if (getResources().getConfiguration().orientation != newConfig.orientation) {
-            orientationChanged = true;
-        }
-    }
-
-
-    private void init() {
 
         // Handling of Intent actions
         handleIntents();
@@ -266,10 +213,38 @@ public class DetailFragment extends Fragment implements OnReminderPickedListener
         }
 
         if (mTask.alarmDate != 0) {
-            dateTimeText = initReminder(mTask.alarmDate);
+            mDateTime.setText(getString(R.string.alarm_set_on, DateHelper.getDateTimeShort(getContext(), mTask.alarmDate)));
         }
 
         initViews();
+
+        setHasOptionsMenu(true);
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        mTask.title = getTaskTitle();
+        mTask.content = getTaskContent();
+        outState.putParcelable("mTask", Parcels.wrap(mTask));
+        outState.putParcelable("mOriginalTask", Parcels.wrap(mOriginalTask));
+        outState.putParcelable("mAttachmentUri", mAttachmentUri);
+        super.onSaveInstanceState(outState);
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+
+        if (mRecorder != null) {
+            mRecorder.release();
+            mRecorder = null;
+        }
+
+        // Closes keyboard on exit
+        if (mToggleChecklistView != null) {
+            KeyboardUtils.hideKeyboard(mToggleChecklistView);
+            mContentEditText.clearFocus();
+        }
     }
 
     private void handleIntents() {
@@ -278,7 +253,6 @@ public class DetailFragment extends Fragment implements OnReminderPickedListener
         // Action called from home shortcut
         if (Constants.ACTION_SHORTCUT.equals(i.getAction())
                 || Constants.ACTION_NOTIFICATION_CLICK.equals(i.getAction())) {
-            afterSavedReturnsToList = false;
             mOriginalTask = DbHelper.getTask(i.getLongExtra(Constants.INTENT_KEY, 0));
             // Checks if the note pointed from the shortcut has been deleted
             if (mOriginalTask == null) {
@@ -293,8 +267,6 @@ public class DetailFragment extends Fragment implements OnReminderPickedListener
         // Check if is launched from a widget
         if (Constants.ACTION_WIDGET.equals(i.getAction())
                 || Constants.ACTION_TAKE_PHOTO.equals(i.getAction())) {
-
-            afterSavedReturnsToList = false;
 
             //  with tags to set tag
             if (i.hasExtra(Constants.INTENT_WIDGET)) {
@@ -328,8 +300,6 @@ public class DetailFragment extends Fragment implements OnReminderPickedListener
                 || Intent.ACTION_SEND_MULTIPLE.equals(i.getAction())
                 || Constants.INTENT_GOOGLE_NOW.equals(i.getAction()))
                 && i.getType() != null) {
-
-            afterSavedReturnsToList = false;
 
             if (mTask == null) {
                 mTask = new Task();
@@ -377,20 +347,46 @@ public class DetailFragment extends Fragment implements OnReminderPickedListener
     }
 
     private void initViews() {
-        // ScrollView container
-        scrollView = (ScrollView) getView().findViewById(R.id.content_wrapper);
-
         // Color of tag marker if note is tagged a function is active in preferences
         setCategoryMarkerColor(mTask.getCategory());
 
-        // Sets links clickable in title and content Views
-        initTitle();
-        requestFocus(title);
+        // Init title edit text
+        mTitleEditText.setText(mTask.title);
+        // To avoid dropping here the dragged isChecklist items
+        mTitleEditText.setOnDragListener(new OnDragListener() {
+            @Override
+            public boolean onDrag(View v, DragEvent event) {
+                return true;
+            }
+        });
+        //When editor action is pressed focus is moved to last character in content field
+        mTitleEditText.setOnEditorActionListener(new android.widget.TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(android.widget.TextView v, int actionId, KeyEvent event) {
+                mContentEditText.requestFocus();
+                mContentEditText.setSelection(mContentEditText.getText().length());
+                return false;
+            }
+        });
+        mTitleEditText.setMovementMethod(new LinkHandler());
+        if (mTask.equals(new Task())) { // if the current task is totally empty, display the keyboard
+            KeyboardUtils.showKeyboard(mTitleEditText);
+        }
 
-        initContent();
+        // Init content edit text
+        mContentEditText.setText(mTask.content);
+        // Avoid focused line goes under the keyboard
+        mContentEditText.addTextChangedListener(this);
+        mContentEditText.setMovementMethod(new LinkHandler());
+        // Restore isChecklist
+        mToggleChecklistView = mContentEditText;
+        if (mTask.isChecklist) {
+            mTask.isChecklist = false;
+            mToggleChecklistView.setAlpha(0);
+            toggleChecklist2();
+        }
 
         // Some fields can be filled by third party application and are always shown
-        mGridView = (ExpandableHeightGridView) getView().findViewById(R.id.gridview);
         mAttachmentAdapter = new AttachmentAdapter(getActivity(), mTask.getAttachmentsList());
         mAttachmentAdapter.setOnErrorListener(this);
 
@@ -447,8 +443,8 @@ public class DetailFragment extends Fragment implements OnReminderPickedListener
 
                                 @Override
                                 public void onNegative(MaterialDialog materialDialog) {
-                                    sketchEdited = mAttachmentAdapter.getItem(position);
-                                    takeSketch(sketchEdited);
+                                    mSketchEdited = mAttachmentAdapter.getItem(position);
+                                    takeSketch(mSketchEdited);
                                 }
                             });
                 } else {
@@ -478,8 +474,6 @@ public class DetailFragment extends Fragment implements OnReminderPickedListener
                 int pickerType = PrefUtils.getBoolean("settings_simple_calendar", false) ? ReminderPickers.TYPE_AOSP : ReminderPickers.TYPE_GOOGLE;
                 ReminderPickers reminderPicker = new ReminderPickers(getActivity(), DetailFragment.this, pickerType);
                 reminderPicker.pick(mTask.alarmDate);
-                onDateSetListener = reminderPicker;
-                onTimeSetListener = reminderPicker;
             }
         });
         reminder_layout.setOnLongClickListener(new OnLongClickListener() {
@@ -491,21 +485,14 @@ public class DetailFragment extends Fragment implements OnReminderPickedListener
                         .callback(new MaterialDialog.ButtonCallback() {
                             @Override
                             public void onPositive(MaterialDialog materialDialog) {
-                                reminderDate = "";
-                                reminderTime = "";
                                 mTask.alarmDate = 0;
-                                datetime.setText("");
+                                mDateTime.setText("");
                             }
                         }).build();
                 dialog.show();
                 return true;
             }
         });
-
-
-        // Reminder
-        datetime = (TextView) getView().findViewById(R.id.datetime);
-        datetime.setText(dateTimeText);
 
         // Footer dates of creation...
         TextView creationTextView = (TextView) getView().findViewById(R.id.creation);
@@ -521,7 +508,6 @@ public class DetailFragment extends Fragment implements OnReminderPickedListener
         if (lastModificationTextView.getText().length() == 0)
             lastModificationTextView.setVisibility(View.GONE);
 
-        mRewardSpinner = (Spinner) getView().findViewById(R.id.rewardSpinner);
         if (mTask.pointReward == Task.LOW_POINT_REWARD) {
             mRewardSpinner.setSelection(0);
         } else if (mTask.pointReward == Task.NORMAL_POINT_REWARD) {
@@ -557,57 +543,6 @@ public class DetailFragment extends Fragment implements OnReminderPickedListener
             }
         });
     }
-
-    private void initTitle() {
-        title.setText(mTask.title);
-
-        // To avoid dropping here the dragged isChecklist items
-        title.setOnDragListener(new OnDragListener() {
-            @Override
-            public boolean onDrag(View v, DragEvent event) {
-                return true;
-            }
-        });
-
-        //When editor action is pressed focus is moved to last character in content field
-        title.setOnEditorActionListener(new android.widget.TextView.OnEditorActionListener() {
-            @Override
-            public boolean onEditorAction(android.widget.TextView v, int actionId, KeyEvent event) {
-                content.requestFocus();
-                content.setSelection(content.getText().length());
-                return false;
-            }
-        });
-
-        title.setMovementMethod(new LinkHandler());
-    }
-
-    private void initContent() {
-        content.setText(mTask.content);
-        // Avoid focused line goes under the keyboard
-        content.addTextChangedListener(this);
-
-        content.setMovementMethod(new LinkHandler());
-
-        // Restore isChecklist
-        toggleChecklistView = content;
-        if (mTask.isChecklist) {
-            mTask.isChecklist = false;
-            toggleChecklistView.setAlpha(0);
-            toggleChecklist2();
-        }
-    }
-
-
-    /**
-     * Force focus and shows soft keyboard
-     */
-    private void requestFocus(final EditText view) {
-        if (mTask.equals(new Task())) { // if the current task is totally empty
-            KeyboardUtils.showKeyboard(view);
-        }
-    }
-
 
     /**
      * Colors tag marker in note's title and content elements
@@ -666,21 +601,20 @@ public class DetailFragment extends Fragment implements OnReminderPickedListener
     public boolean goHome() {
         stopPlaying();
 
+        FragmentActivity activity = getActivity();
         // The activity has managed a shared intent from third party app and
         // performs a normal onBackPressed instead of returning back to ListActivity
-        if (!afterSavedReturnsToList) {
-            if (!TextUtils.isEmpty(exitMessage)) {
-                Toast.makeText(getActivity(), exitMessage, Toast.LENGTH_SHORT).show();
-            }
-            getActivity().finish();
-        } else {
-            if (!TextUtils.isEmpty(exitMessage) && exitMessageStyle != null) {
-                UiUtils.showMessage(getActivity(), exitMessage, exitMessageStyle);
+        if (activity != null && activity.getSupportFragmentManager() != null && activity.getSupportFragmentManager().getBackStackEntryCount() > 0) {
+            if (!TextUtils.isEmpty(mExitMessage) && mExitMessageStyle != null) {
+                UiUtils.showMessage(getActivity(), mExitMessage, mExitMessageStyle);
             }
 
-            if (getActivity() != null && getActivity().getSupportFragmentManager() != null) {
-                getActivity().getSupportFragmentManager().popBackStack();
+            activity.getSupportFragmentManager().popBackStack();
+        } else if (activity != null) {
+            if (!TextUtils.isEmpty(mExitMessage)) {
+                Toast.makeText(activity, mExitMessage, Toast.LENGTH_SHORT).show();
             }
+            activity.finish();
         }
 
         return true;
@@ -691,7 +625,7 @@ public class DetailFragment extends Fragment implements OnReminderPickedListener
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
-                navigateUp();
+                saveAndExit();
                 break;
             case R.id.menu_attachment:
                 showPopup(getActivity().findViewById(R.id.menu_attachment));
@@ -722,12 +656,6 @@ public class DetailFragment extends Fragment implements OnReminderPickedListener
                 break;
         }
         return super.onOptionsItemSelected(item);
-    }
-
-
-    private void navigateUp() {
-        afterSavedReturnsToList = true;
-        saveAndExit();
     }
 
     private void toggleChecklist() {
@@ -800,14 +728,14 @@ public class DetailFragment extends Fragment implements OnReminderPickedListener
         mChecklistManager.setDragVibrationEnabled(true);
 
         // Switches the views
-        View newView = mChecklistManager.convert(toggleChecklistView);
+        View newView = mChecklistManager.convert(mToggleChecklistView);
 
         // Switches the views
         if (newView != null) {
-            mChecklistManager.replaceViews(toggleChecklistView, newView);
-            toggleChecklistView = newView;
-//			fade(toggleChecklistView, true);
-            animate(toggleChecklistView).alpha(1).scaleXBy(0).scaleX(1).scaleYBy(0).scaleY(1);
+            mChecklistManager.replaceViews(mToggleChecklistView, newView);
+            mToggleChecklistView = newView;
+//			fade(mToggleChecklistView, true);
+            animate(mToggleChecklistView).alpha(1).scaleXBy(0).scaleX(1).scaleYBy(0).scaleY(1);
             mTask.isChecklist = !mTask.isChecklist;
         }
     }
@@ -865,23 +793,23 @@ public class DetailFragment extends Fragment implements OnReminderPickedListener
         View layout = inflater.inflate(R.layout.attachment_dialog, null);
 
         // Creating the PopupWindow
-        attachmentDialog = new PopupWindow(getActivity());
-        attachmentDialog.setContentView(layout);
-        attachmentDialog.setWidth(WindowManager.LayoutParams.WRAP_CONTENT);
-        attachmentDialog.setHeight(WindowManager.LayoutParams.WRAP_CONTENT);
-        attachmentDialog.setFocusable(true);
-        attachmentDialog.setOnDismissListener(new OnDismissListener() {
+        mAttachmentDialog = new PopupWindow(getActivity());
+        mAttachmentDialog.setContentView(layout);
+        mAttachmentDialog.setWidth(WindowManager.LayoutParams.WRAP_CONTENT);
+        mAttachmentDialog.setHeight(WindowManager.LayoutParams.WRAP_CONTENT);
+        mAttachmentDialog.setFocusable(true);
+        mAttachmentDialog.setOnDismissListener(new OnDismissListener() {
             @Override
             public void onDismiss() {
-                if (isRecording) {
-                    isRecording = false;
+                if (mIsRecording) {
+                    mIsRecording = false;
                     stopRecording();
                 }
             }
         });
 
         // Clear the default translucent background
-        attachmentDialog.setBackgroundDrawable(new BitmapDrawable());
+        mAttachmentDialog.setBackgroundDrawable(new BitmapDrawable());
 
         // Camera
         android.widget.TextView cameraSelection = (android.widget.TextView) layout.findViewById(R.id.camera);
@@ -900,7 +828,7 @@ public class DetailFragment extends Fragment implements OnReminderPickedListener
         sketchSelection.setOnClickListener(new AttachmentOnClickListener());
 
         try {
-            attachmentDialog.showAsDropDown(anchor);
+            mAttachmentDialog.showAsDropDown(anchor);
         } catch (Exception e) {
             Snackbar.make(getActivity().findViewById(R.id.content), R.string.error, Snackbar.LENGTH_SHORT).show();
         }
@@ -920,8 +848,8 @@ public class DetailFragment extends Fragment implements OnReminderPickedListener
             return;
         }
         // Launches intent
-        attachmentUri = Uri.fromFile(f);
-        intent.putExtra(MediaStore.EXTRA_OUTPUT, attachmentUri);
+        mAttachmentUri = Uri.fromFile(f);
+        intent.putExtra(MediaStore.EXTRA_OUTPUT, mAttachmentUri);
         startActivityForResult(intent, TAKE_PHOTO);
     }
 
@@ -937,8 +865,8 @@ public class DetailFragment extends Fragment implements OnReminderPickedListener
             UiUtils.showErrorMessage(getActivity(), R.string.error);
             return;
         }
-        attachmentUri = Uri.fromFile(f);
-        takeVideoIntent.putExtra(MediaStore.EXTRA_OUTPUT, attachmentUri);
+        mAttachmentUri = Uri.fromFile(f);
+        takeVideoIntent.putExtra(MediaStore.EXTRA_OUTPUT, mAttachmentUri);
 
         String maxVideoSizeStr = "".equals(PrefUtils.getString("settings_max_video_size", "")) ? "0" : PrefUtils.getString("settings_max_video_size", "");
         int maxVideoSize = Integer.parseInt(maxVideoSizeStr);
@@ -952,7 +880,7 @@ public class DetailFragment extends Fragment implements OnReminderPickedListener
             UiUtils.showErrorMessage(getActivity(), R.string.error);
             return;
         }
-        attachmentUri = Uri.fromFile(f);
+        mAttachmentUri = Uri.fromFile(f);
 
         // Forces portrait orientation to this fragment only
         getActivity().setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
@@ -962,7 +890,7 @@ public class DetailFragment extends Fragment implements OnReminderPickedListener
         UiUtils.animateTransition(transaction, UiUtils.TRANSITION_HORIZONTAL);
         SketchFragment sketchFragment = new SketchFragment();
         Bundle b = new Bundle();
-        b.putParcelable(MediaStore.EXTRA_OUTPUT, attachmentUri);
+        b.putParcelable(MediaStore.EXTRA_OUTPUT, mAttachmentUri);
         if (attachment != null) {
             b.putParcelable("base", attachment.uri);
         }
@@ -974,7 +902,7 @@ public class DetailFragment extends Fragment implements OnReminderPickedListener
     public void onActivityResult(int requestCode, int resultCode, Intent intent) {
         // Fetch uri from activities, store into adapter and refresh adapter
         Attachment attachment = new Attachment();
-        attachment.uri = attachmentUri;
+        attachment.uri = mAttachmentUri;
 
         if (resultCode == Activity.RESULT_OK) {
             switch (requestCode) {
@@ -1042,8 +970,8 @@ public class DetailFragment extends Fragment implements OnReminderPickedListener
         }
 
         mTask.isTrashed = trash;
-        exitMessage = trash ? getString(R.string.task_trashed) : getString(R.string.task_untrashed);
-        exitMessageStyle = trash ? UiUtils.MessageType.TYPE_WARN : UiUtils.MessageType.TYPE_INFO;
+        mExitMessage = trash ? getString(R.string.task_trashed) : getString(R.string.task_untrashed);
+        mExitMessageStyle = trash ? UiUtils.MessageType.TYPE_WARN : UiUtils.MessageType.TYPE_INFO;
         if (trash) {
             ReminderHelper.removeReminder(MainApplication.getContext(), mTask);
         } else {
@@ -1069,8 +997,8 @@ public class DetailFragment extends Fragment implements OnReminderPickedListener
 
     public void saveAndExit() {
         if (TextUtils.isEmpty(mTask.questId)) { // do not modify any quests
-            exitMessage = getString(R.string.task_updated);
-            exitMessageStyle = UiUtils.MessageType.TYPE_INFO;
+            mExitMessage = getString(R.string.task_updated);
+            mExitMessageStyle = UiUtils.MessageType.TYPE_INFO;
             saveTask();
         } else {
             goHome();
@@ -1091,8 +1019,8 @@ public class DetailFragment extends Fragment implements OnReminderPickedListener
         if (TextUtils.isEmpty(mTask.title) && TextUtils.isEmpty(mTask.content)
                 && mTask.getAttachmentsList().size() == 0) {
 
-            exitMessage = getString(R.string.empty_task_not_saved);
-            exitMessageStyle = UiUtils.MessageType.TYPE_INFO;
+            mExitMessage = getString(R.string.empty_task_not_saved);
+            mExitMessageStyle = UiUtils.MessageType.TYPE_INFO;
             goHome();
             return;
         }
@@ -1145,7 +1073,7 @@ public class DetailFragment extends Fragment implements OnReminderPickedListener
      */
     private boolean saveNotNeeded() {
         if (mTask.equals(mOriginalTask)) {
-            exitMessage = "";
+            mExitMessage = "";
             goHome();
             return true;
         }
@@ -1170,7 +1098,7 @@ public class DetailFragment extends Fragment implements OnReminderPickedListener
             Editable editableTitle = ((EditText) getActivity().findViewById(R.id.detail_title)).getText();
             res = TextUtils.isEmpty(editableTitle) ? "" : editableTitle.toString();
         } else {
-            res = title.getText() != null ? title.getText().toString() : "";
+            res = mTitleEditText.getText() != null ? mTitleEditText.getText().toString() : "";
         }
         return res;
     }
@@ -1206,30 +1134,17 @@ public class DetailFragment extends Fragment implements OnReminderPickedListener
     }
 
     /**
-     * Used to set actual reminder state when initializing a note to be edited
-     */
-    private String initReminder(long reminderDateTime) {
-        Calendar cal = Calendar.getInstance();
-        cal.setTimeInMillis(reminderDateTime);
-        reminderDate = DateHelper.onDateSet(cal.get(Calendar.YEAR), cal.get(Calendar.MONTH),
-                cal.get(Calendar.DAY_OF_MONTH), Constants.DATE_FORMAT_SHORT_DATE);
-        reminderTime = DateHelper.getTimeShort(getActivity(), cal.getTimeInMillis());
-        return getString(R.string.alarm_set_on) + " " + reminderDate + " " + getString(R.string.at_time)
-                + " " + reminderTime;
-    }
-
-    /**
      * Audio recordings playback
      */
     private void playback(View v, Uri uri) {
         // Some recording is playing right now
         if (mPlayer != null && mPlayer.isPlaying()) {
             // If the audio actually played is NOT the one from the click view the last one is played
-            if (isPlayingView != v) {
+            if (mIsPlayingView != v) {
                 stopPlaying();
-                isPlayingView = v;
+                mIsPlayingView = v;
                 startPlaying(uri);
-                recordingBitmap = ((BitmapDrawable) ((ImageView) v.findViewById(R.id.gridview_item_picture)).getDrawable()).getBitmap();
+                mRecordingBitmap = ((BitmapDrawable) ((ImageView) v.findViewById(R.id.gridview_item_picture)).getDrawable()).getBitmap();
                 ((ImageView) v.findViewById(R.id.gridview_item_picture)).setImageResource(R.drawable.stop);
                 // Otherwise just stops playing
             } else {
@@ -1237,13 +1152,13 @@ public class DetailFragment extends Fragment implements OnReminderPickedListener
             }
             // If nothing is playing audio just plays
         } else {
-            isPlayingView = v;
+            mIsPlayingView = v;
             startPlaying(uri);
             Drawable d = ((ImageView) v.findViewById(R.id.gridview_item_picture)).getDrawable();
             if (BitmapDrawable.class.isAssignableFrom(d.getClass())) {
-                recordingBitmap = ((BitmapDrawable) d).getBitmap();
+                mRecordingBitmap = ((BitmapDrawable) d).getBitmap();
             } else {
-                recordingBitmap = ((GlideBitmapDrawable) d.getCurrent()).getBitmap();
+                mRecordingBitmap = ((GlideBitmapDrawable) d.getCurrent()).getBitmap();
             }
             ((ImageView) v.findViewById(R.id.gridview_item_picture)).setImageResource(R.drawable.stop);
         }
@@ -1262,9 +1177,9 @@ public class DetailFragment extends Fragment implements OnReminderPickedListener
                 @Override
                 public void onCompletion(MediaPlayer mp) {
                     mPlayer = null;
-                    ((ImageView) isPlayingView.findViewById(R.id.gridview_item_picture)).setImageBitmap(recordingBitmap);
-                    recordingBitmap = null;
-                    isPlayingView = null;
+                    ((ImageView) mIsPlayingView.findViewById(R.id.gridview_item_picture)).setImageBitmap(mRecordingBitmap);
+                    mRecordingBitmap = null;
+                    mIsPlayingView = null;
                 }
             });
         } catch (IOException e) {
@@ -1275,9 +1190,9 @@ public class DetailFragment extends Fragment implements OnReminderPickedListener
 
     private void stopPlaying() {
         if (mPlayer != null) {
-            ((ImageView) isPlayingView.findViewById(R.id.gridview_item_picture)).setImageBitmap(recordingBitmap);
-            isPlayingView = null;
-            recordingBitmap = null;
+            ((ImageView) mIsPlayingView.findViewById(R.id.gridview_item_picture)).setImageBitmap(mRecordingBitmap);
+            mIsPlayingView = null;
+            mRecordingBitmap = null;
             mPlayer.release();
             mPlayer = null;
         }
@@ -1288,7 +1203,7 @@ public class DetailFragment extends Fragment implements OnReminderPickedListener
                 R.string.permission_audio_recording, new OnPermissionRequestedListener() {
                     @Override
                     public void onPermissionGranted() {
-                        isRecording = true;
+                        mIsRecording = true;
                         android.widget.TextView mTextView = (android.widget.TextView) v;
                         mTextView.setText(getString(R.string.stop));
                         mTextView.setTextColor(Color.parseColor("#ff0000"));
@@ -1307,11 +1222,11 @@ public class DetailFragment extends Fragment implements OnReminderPickedListener
                             mRecorder.setAudioEncodingBitRate(16);
                             mRecorder.setAudioSamplingRate(44100);
                         }
-                        recordName = f.getAbsolutePath();
-                        mRecorder.setOutputFile(recordName);
+                        mRecordName = f.getAbsolutePath();
+                        mRecorder.setOutputFile(mRecordName);
 
                         try {
-                            audioRecordingTimeStart = Calendar.getInstance().getTimeInMillis();
+                            mAudioRecordingTimeStart = Calendar.getInstance().getTimeInMillis();
                             mRecorder.prepare();
                             mRecorder.start();
                         } catch (IOException | IllegalStateException e) {
@@ -1325,7 +1240,7 @@ public class DetailFragment extends Fragment implements OnReminderPickedListener
     private void stopRecording() {
         if (mRecorder != null) {
             mRecorder.stop();
-            audioRecordingTime = Calendar.getInstance().getTimeInMillis() - audioRecordingTimeStart;
+            mAudioRecordingTime = Calendar.getInstance().getTimeInMillis() - mAudioRecordingTimeStart;
             mRecorder.release();
             mRecorder = null;
         }
@@ -1352,7 +1267,7 @@ public class DetailFragment extends Fragment implements OnReminderPickedListener
     public void onReminderPicked(long reminder) {
         mTask.alarmDate = reminder;
         if (isAdded()) {
-            datetime.setText(getString(R.string.alarm_set_on) + " " + DateHelper.getDateTimeShort(getActivity(), reminder));
+            mDateTime.setText(getString(R.string.alarm_set_on, DateHelper.getDateTimeShort(getActivity(), reminder)));
         }
     }
 
@@ -1377,15 +1292,15 @@ public class DetailFragment extends Fragment implements OnReminderPickedListener
 
     private void scrollContent() {
         if (mTask.isChecklist) {
-            if (mChecklistManager.getCount() > contentLineCounter) {
-                scrollView.scrollBy(0, 60);
+            if (mChecklistManager.getCount() > mContentLineCounter) {
+                mScrollView.scrollBy(0, 60);
             }
-            contentLineCounter = mChecklistManager.getCount();
+            mContentLineCounter = mChecklistManager.getCount();
         } else {
-            if (content.getLineCount() > contentLineCounter) {
-                scrollView.scrollBy(0, 60);
+            if (mContentEditText.getLineCount() > mContentLineCounter) {
+                mScrollView.scrollBy(0, 60);
             }
-            contentLineCounter = content.getLineCount();
+            mContentLineCounter = mContentEditText.getLineCount();
         }
     }
 
@@ -1407,31 +1322,31 @@ public class DetailFragment extends Fragment implements OnReminderPickedListener
                 // Photo from camera
                 case R.id.camera:
                     takePhoto();
-                    attachmentDialog.dismiss();
+                    mAttachmentDialog.dismiss();
                     break;
                 case R.id.recording:
-                    if (!isRecording) {
-                        isRecording = true;
+                    if (!mIsRecording) {
+                        mIsRecording = true;
                         android.widget.TextView mTextView = (android.widget.TextView) v;
                         mTextView.setText(getString(R.string.stop));
                         mTextView.setTextColor(Color.parseColor("#ff0000"));
                         startRecording(v);
                     } else {
-                        isRecording = false;
+                        mIsRecording = false;
                         stopRecording();
                         Attachment attachment = new Attachment();
-                        attachment.uri = Uri.parse(recordName);
+                        attachment.uri = Uri.parse(mRecordName);
                         attachment.mimeType = Constants.MIME_TYPE_AUDIO;
-                        attachment.length = audioRecordingTime;
+                        attachment.length = mAudioRecordingTime;
                         mTask.getAttachmentsList().add(attachment);
                         mAttachmentAdapter.notifyDataSetChanged();
                         mGridView.autoresize();
-                        attachmentDialog.dismiss();
+                        mAttachmentDialog.dismiss();
                     }
                     break;
                 case R.id.video:
                     takeVideo();
-                    attachmentDialog.dismiss();
+                    mAttachmentDialog.dismiss();
                     break;
                 case R.id.files:
                     Intent filesIntent;
@@ -1440,11 +1355,11 @@ public class DetailFragment extends Fragment implements OnReminderPickedListener
                     filesIntent.addCategory(Intent.CATEGORY_OPENABLE);
                     filesIntent.setType("*/*");
                     startActivityForResult(filesIntent, FILES);
-                    attachmentDialog.dismiss();
+                    mAttachmentDialog.dismiss();
                     break;
                 case R.id.sketch:
                     takeSketch(null);
-                    attachmentDialog.dismiss();
+                    mAttachmentDialog.dismiss();
                     break;
             }
         }

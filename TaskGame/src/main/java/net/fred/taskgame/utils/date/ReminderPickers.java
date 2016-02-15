@@ -22,6 +22,7 @@ import android.app.TimePickerDialog.OnTimeSetListener;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentActivity;
+import android.text.format.DateFormat;
 import android.widget.DatePicker;
 
 import com.fourmob.datetimepicker.date.DatePickerDialog;
@@ -95,7 +96,7 @@ public class ReminderPickers implements OnDateSetListener, OnTimeSetListener {
                                             mOnReminderPickedListener.onReminderPicked(c.getTimeInMillis());
                                         }
                                     }
-                                }, now.get(Calendar.HOUR_OF_DAY), now.get(Calendar.MINUTE), DateHelper.is24HourMode(mActivity));
+                                }, now.get(Calendar.HOUR_OF_DAY), now.get(Calendar.MINUTE), DateFormat.is24HourFormat(mActivity));
                         mRadialTimePickerDialog.show(mActivity.getSupportFragmentManager(), Constants.TAG);
                     }
 

@@ -26,43 +26,7 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 
-
-/**
- * Helper per la generazione di date nel formato specificato nelle costanti
- *
- * @author 17000026
- */
 public class DateHelper {
-
-    public static String getString(long date, String format) {
-        Date d = new Date(date);
-        return getString(d, format);
-    }
-
-    public static String getString(Date d, String format) {
-        SimpleDateFormat sdf = new SimpleDateFormat(format);
-        return sdf.format(d);
-    }
-
-
-    /**
-     * Build a formatted date string starting from values obtained by a DatePicker
-     *
-     * @param year
-     * @param month
-     * @param day
-     * @param format
-     * @return
-     */
-    public static String onDateSet(int year, int month, int day, String format) {
-        SimpleDateFormat sdf = new SimpleDateFormat(format);
-        Calendar cal = Calendar.getInstance();
-        cal.set(Calendar.YEAR, year);
-        cal.set(Calendar.MONTH, month);
-        cal.set(Calendar.DAY_OF_MONTH, day);
-        return sdf.format(cal.getTime());
-    }
-
 
     public static Calendar getCalendar(Long dateTime) {
         Calendar cal = Calendar.getInstance();
@@ -117,30 +81,6 @@ public class DateHelper {
         return DateUtils.formatDateTime(mContext, date, flags)
                 + " " + DateUtils.formatDateTime(mContext, date, DateUtils.FORMAT_SHOW_TIME);
     }
-
-
-    /**
-     * @param mContext
-     * @param time
-     * @return
-     */
-    public static String getTimeShort(Context mContext, Long time) {
-        if (time == null)
-            return "";
-        Calendar c = Calendar.getInstance();
-        c.setTimeInMillis(time);
-        return DateUtils.formatDateTime(mContext, time, DateUtils.FORMAT_SHOW_TIME);
-    }
-
-
-    public static boolean is24HourMode(Context mContext) {
-        boolean res;
-        Calendar c = Calendar.getInstance();
-        String timeFormatted = DateUtils.formatDateTime(mContext, c.getTimeInMillis(), DateUtils.FORMAT_SHOW_TIME);
-        res = !timeFormatted.toLowerCase().contains("am") && !timeFormatted.toLowerCase().contains("pm");
-        return res;
-    }
-
 
     /**
      * Formats a short time period (minutes)

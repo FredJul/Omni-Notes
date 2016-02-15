@@ -75,7 +75,7 @@
         </LinearLayout>
 
         <Spinner
-            android:id="@+id/rewardSpinner"
+            android:id="@+id/reward_spinner"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginBottom="10dp"
