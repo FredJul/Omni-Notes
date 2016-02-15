@@ -123,7 +123,9 @@ public class ListFragment extends Fragment implements OnViewTouchedListener {
     private ThrottledFlowContentObserver mContentObserver = new ThrottledFlowContentObserver(100) {
         @Override
         public void onChangeThrottled() {
-            initTasksList(getActivity().getIntent());
+            if (getActivity() != null) {
+                initTasksList(getActivity().getIntent());
+            }
         }
     };
 

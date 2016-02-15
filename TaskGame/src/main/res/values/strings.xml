@@ -97,6 +97,10 @@
     <string name="permission_audio_recording">Permission to use microphone is needed to record audio tasks</string>
     <string name="permission_get_account">Permission to read your Google account is needed to start PlayGames authentication and save your data on the cloud</string>
     <string name="permission_not_granted">Permission not granted</string>
+    <string name="open_link_dialog_title">Do you want to open the link or modify it?</string>
+    <string name="open_link">Open</string>
+    <string name="modify_link">Modify</string>
+    <string name="app_not_found">You did not installed any application which can handle this kind of link</string>
 
     <!-- Settings -->
     <string name="settings">Settings</string>

@@ -107,5 +107,9 @@
     <string name="settings_checked_items_behavior_summary">What to do when an item is checked?</string>
     <string name="settings_notification_ringtone">Ringtone</string>
     <string name="settings_notification_snooze_delay">Second reminder delay</string>
+    <string name="open_link_dialog_title">Voulez-vous ouvrir ou modifier le lien?</string>
+    <string name="open_link">Ouvrir</string>
+    <string name="modify_link">Modifier</string>
+    <string name="app_not_found">Vous n\'avez installé aucune application capable de gérer ce type de lien</string>
 
 </resources>

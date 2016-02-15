@@ -18,8 +18,10 @@ package net.fred.taskgame.fragment;
 
 import android.Manifest;
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.DatePickerDialog.OnDateSetListener;
 import android.app.TimePickerDialog.OnTimeSetListener;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
@@ -32,7 +34,6 @@ import android.media.MediaPlayer;
 import android.media.MediaPlayer.OnCompletionListener;
 import android.media.MediaRecorder;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.design.widget.Snackbar;
@@ -40,8 +41,12 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.MenuItemCompat;
 import android.text.Editable;
+import android.text.Layout;
+import android.text.Spannable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
+import android.text.method.LinkMovementMethod;
+import android.text.style.URLSpan;
 import android.util.DisplayMetrics;
 import android.view.DragEvent;
 import android.view.KeyEvent;
@@ -49,6 +54,7 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.View.OnDragListener;
@@ -110,6 +116,8 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
+import butterknife.Bind;
+import butterknife.ButterKnife;
 import it.feio.android.checklistview.ChecklistManager;
 import it.feio.android.checklistview.interfaces.CheckListChangedListener;
 import me.tatarka.rxloader.RxLoaderObserver;
@@ -136,7 +144,10 @@ public class DetailFragment extends Fragment implements OnReminderPickedListener
     private AttachmentAdapter mAttachmentAdapter;
     private ExpandableHeightGridView mGridView;
     private PopupWindow attachmentDialog;
-    private EditText title, content;
+    @Bind(R.id.detail_title)
+    EditText title;
+    @Bind(R.id.detail_content)
+    EditText content;
     private Task mTask;
     private Task mOriginalTask;
     // Reminder
@@ -165,7 +176,9 @@ public class DetailFragment extends Fragment implements OnReminderPickedListener
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_detail, container, false);
+        View layout = inflater.inflate(R.layout.fragment_detail, container, false);
+        ButterKnife.bind(this, layout);
+        return layout;
     }
 
     @Override
@@ -364,7 +377,6 @@ public class DetailFragment extends Fragment implements OnReminderPickedListener
     }
 
     private void initViews() {
-
         // ScrollView container
         scrollView = (ScrollView) getView().findViewById(R.id.content_wrapper);
 
@@ -372,10 +384,10 @@ public class DetailFragment extends Fragment implements OnReminderPickedListener
         setCategoryMarkerColor(mTask.getCategory());
 
         // Sets links clickable in title and content Views
-        title = initTitle();
+        initTitle();
         requestFocus(title);
 
-        content = initContent();
+        initContent();
 
         // Some fields can be filled by third party application and are always shown
         mGridView = (ExpandableHeightGridView) getView().findViewById(R.id.gridview);
@@ -546,19 +558,17 @@ public class DetailFragment extends Fragment implements OnReminderPickedListener
         });
     }
 
-    private EditText initTitle() {
-        EditText title = (EditText) getView().findViewById(R.id.detail_title);
+    private void initTitle() {
         title.setText(mTask.title);
+
         // To avoid dropping here the dragged isChecklist items
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-            title.setOnDragListener(new OnDragListener() {
-                @Override
-                public boolean onDrag(View v, DragEvent event) {
-//					((View)event.getLocalState()).setVisibility(View.VISIBLE);
-                    return true;
-                }
-            });
-        }
+        title.setOnDragListener(new OnDragListener() {
+            @Override
+            public boolean onDrag(View v, DragEvent event) {
+                return true;
+            }
+        });
+
         //When editor action is pressed focus is moved to last character in content field
         title.setOnEditorActionListener(new android.widget.TextView.OnEditorActionListener() {
             @Override
@@ -568,14 +578,16 @@ public class DetailFragment extends Fragment implements OnReminderPickedListener
                 return false;
             }
         });
-        return title;
+
+        title.setMovementMethod(new LinkHandler());
     }
 
-    private EditText initContent() {
-        EditText content = (EditText) getView().findViewById(R.id.detail_content);
+    private void initContent() {
         content.setText(mTask.content);
         // Avoid focused line goes under the keyboard
         content.addTextChangedListener(this);
+
+        content.setMovementMethod(new LinkHandler());
 
         // Restore isChecklist
         toggleChecklistView = content;
@@ -584,8 +596,6 @@ public class DetailFragment extends Fragment implements OnReminderPickedListener
             toggleChecklistView.setAlpha(0);
             toggleChecklist2();
         }
-
-        return content;
     }
 
 
@@ -1437,6 +1447,52 @@ public class DetailFragment extends Fragment implements OnReminderPickedListener
                     attachmentDialog.dismiss();
                     break;
             }
+        }
+    }
+
+    public class LinkHandler extends LinkMovementMethod {
+
+        public boolean onTouchEvent(TextView widget, Spannable buffer, MotionEvent event) {
+            if (event.getAction() != MotionEvent.ACTION_UP)
+                return super.onTouchEvent(widget, buffer, event);
+
+            int x = (int) event.getX();
+            int y = (int) event.getY();
+
+            x -= widget.getTotalPaddingLeft();
+            y -= widget.getTotalPaddingTop();
+
+            x += widget.getScrollX();
+            y += widget.getScrollY();
+
+            Layout layout = widget.getLayout();
+            int line = layout.getLineForVertical(y);
+            int off = layout.getOffsetForHorizontal(line, x);
+
+            URLSpan[] link = buffer.getSpans(off, off, URLSpan.class);
+            if (link.length != 0) {
+                onLinkClick(link[0].getURL());
+            }
+            return true;
+        }
+
+        public void onLinkClick(final String url) {
+            new AlertDialog.Builder(getActivity())
+                    .setTitle(R.string.open_link_dialog_title)
+                    .setPositiveButton(R.string.open_link, new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                            try {
+                                startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
+                            } catch (Exception e) {
+                                UiUtils.showErrorMessage(getActivity(), R.string.app_not_found);
+                            }
+                        }
+                    })
+                    .setNegativeButton(R.string.modify_link, new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                            // Nothing to do
+                        }
+                    }).show();
         }
     }
 }
