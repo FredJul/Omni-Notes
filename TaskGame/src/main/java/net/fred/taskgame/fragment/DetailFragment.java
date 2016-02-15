@@ -496,14 +496,14 @@ public class DetailFragment extends Fragment implements OnReminderPickedListener
 
         // Footer dates of creation...
         TextView creationTextView = (TextView) getView().findViewById(R.id.creation);
-        String creation = mTask.getCreationShort(getActivity());
+        String creation = DateHelper.getDateTimeShort(getActivity(), mTask.creationDate);
         creationTextView.append(creation.length() > 0 ? getString(R.string.creation, creation) : "");
         if (creationTextView.getText().length() == 0)
             creationTextView.setVisibility(View.GONE);
 
         // ... and last modification
         TextView lastModificationTextView = (TextView) getView().findViewById(R.id.last_modification);
-        String lastModification = mTask.getLastModificationShort(getActivity());
+        String lastModification = DateHelper.getDateTimeShort(getActivity(), mTask.lastModificationDate);
         lastModificationTextView.append(lastModification.length() > 0 ? getString(R.string.last_update, lastModification) : "");
         if (lastModificationTextView.getText().length() == 0)
             lastModificationTextView.setVisibility(View.GONE);

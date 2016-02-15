@@ -28,16 +28,16 @@ import java.util.Date;
 
 public class DateHelper {
 
-    public static Calendar getCalendar(Long dateTime) {
+    public static Calendar getCalendar(long dateTime) {
         Calendar cal = Calendar.getInstance();
-        if (dateTime != null && dateTime != 0) {
+        if (dateTime > 0) {
             cal.setTimeInMillis(dateTime);
         }
         return cal;
     }
 
 
-    public static String getLocalizedDateTime(Context mContext, String dateString, String format) {
+    public static String getLocalizedDateTime(Context context, String dateString, String format) {
         String res = null;
         SimpleDateFormat sdf = new SimpleDateFormat(format);
         Date date = null;
@@ -53,8 +53,8 @@ public class DateHelper {
         }
 
         if (date != null) {
-            String dateFormatted = DateUtils.formatDateTime(mContext, date.getTime(), DateUtils.FORMAT_ABBREV_MONTH);
-            String timeFormatted = DateUtils.formatDateTime(mContext, date.getTime(), DateUtils.FORMAT_SHOW_TIME);
+            String dateFormatted = DateUtils.formatDateTime(context, date.getTime(), DateUtils.FORMAT_ABBREV_MONTH);
+            String timeFormatted = DateUtils.formatDateTime(context, date.getTime(), DateUtils.FORMAT_SHOW_TIME);
             res = dateFormatted + " " + timeFormatted;
         }
 
@@ -63,13 +63,14 @@ public class DateHelper {
 
 
     /**
-     * @param mContext
+     * @param context
      * @param date
      * @return
      */
-    public static String getDateTimeShort(Context mContext, Long date) {
-        if (date == null)
+    public static String getDateTimeShort(Context context, long date) {
+        if (date <= 0) {
             return "";
+        }
 
         Calendar now = Calendar.getInstance();
         Calendar c = Calendar.getInstance();
@@ -78,8 +79,8 @@ public class DateHelper {
         int flags = DateUtils.FORMAT_ABBREV_MONTH;
         if (c.get(Calendar.YEAR) != now.get(Calendar.YEAR))
             flags = flags | DateUtils.FORMAT_SHOW_YEAR;
-        return DateUtils.formatDateTime(mContext, date, flags)
-                + " " + DateUtils.formatDateTime(mContext, date, DateUtils.FORMAT_SHOW_TIME);
+        return DateUtils.formatDateTime(context, date, flags)
+                + " " + DateUtils.formatDateTime(context, date, DateUtils.FORMAT_SHOW_TIME);
     }
 
     /**

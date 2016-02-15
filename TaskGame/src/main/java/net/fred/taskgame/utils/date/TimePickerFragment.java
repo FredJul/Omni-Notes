@@ -34,14 +34,14 @@ public class TimePickerFragment extends DialogFragment {
 
     private Activity mActivity;
     private OnTimeSetListener mListener;
-    private Long defaultTime = null;
+    private long mDefaultTime;
 
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
         mActivity = activity;
         if (getArguments().containsKey(DEFAULT_TIME)) {
-            this.defaultTime = getArguments().getLong(DEFAULT_TIME);
+            mDefaultTime = getArguments().getLong(DEFAULT_TIME);
         }
 
         try {
@@ -55,7 +55,7 @@ public class TimePickerFragment extends DialogFragment {
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
 
-        Calendar cal = DateHelper.getCalendar(defaultTime);
+        Calendar cal = DateHelper.getCalendar(mDefaultTime);
         int hour = cal.get(Calendar.HOUR_OF_DAY);
         int minute = cal.get(Calendar.MINUTE);
 

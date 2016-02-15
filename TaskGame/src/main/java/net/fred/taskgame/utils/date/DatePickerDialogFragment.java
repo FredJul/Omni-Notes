@@ -65,13 +65,13 @@ public class DatePickerDialogFragment extends DialogFragment {
     public static final String DEFAULT_DATE = "default_date";
 
     private OnDateSetListener mListener;
-    private Long defaultDate;
+    private long mDefaultDate;
 
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
         if (getArguments().containsKey(DEFAULT_DATE)) {
-            this.defaultDate = getArguments().getLong(DEFAULT_DATE);
+            mDefaultDate = getArguments().getLong(DEFAULT_DATE);
         }
 
         try {
@@ -91,7 +91,7 @@ public class DatePickerDialogFragment extends DialogFragment {
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         // Use the current date as the default date in the picker
-        Calendar cal = DateHelper.getCalendar(defaultDate);
+        Calendar cal = DateHelper.getCalendar(mDefaultDate);
         int y = cal.get(Calendar.YEAR);
         int m = cal.get(Calendar.MONTH);
         int d = cal.get(Calendar.DAY_OF_MONTH);

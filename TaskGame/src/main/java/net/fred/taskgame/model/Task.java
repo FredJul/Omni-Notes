@@ -27,7 +27,6 @@ import com.raizlabs.android.dbflow.sql.language.Select;
 
 import net.fred.taskgame.R;
 import net.fred.taskgame.utils.EqualityChecker;
-import net.fred.taskgame.utils.date.DateHelper;
 
 import org.parceler.Parcel;
 
@@ -162,29 +161,7 @@ public class Task extends IdBasedModel {
         return title;
     }
 
-    public String getCreationShort(Context mContext) {
-        if (creationDate == 0) {
-            return "";
-        }
-        return DateHelper.getDateTimeShort(mContext, creationDate);
-    }
-
-    public String getLastModificationShort(Context mContext) {
-        if (lastModificationDate == 0) {
-            return "";
-        }
-        return DateHelper.getDateTimeShort(mContext, lastModificationDate);
-    }
-
-    public String getAlarmShort(Context mContext) {
-        if (alarmDate == 0) {
-            return "";
-        }
-        return DateHelper.getDateTimeShort(mContext, alarmDate);
-    }
-
     public void share(Context context) {
-
         String titleText = title;
         String contentText = titleText
                 + System.getProperty("line.separator")
