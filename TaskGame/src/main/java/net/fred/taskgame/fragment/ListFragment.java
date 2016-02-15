@@ -266,8 +266,10 @@ public class ListFragment extends Fragment implements OnViewTouchedListener {
             // Clears data structures
             mAdapter.clearSelections();
 
-            setFabAllowed(true);
-            if (mUndoTasksList.size() == 0) {
+            // Defines the conditions to set actionbar items visible or not
+            boolean navigationTrash = Navigation.checkNavigation(Navigation.TRASH);
+            if (!navigationTrash) {
+                mFabAllowed = true;
                 showFab();
             }
 
@@ -286,17 +288,6 @@ public class ListFragment extends Fragment implements OnViewTouchedListener {
         public boolean onActionItemClicked(final ActionMode mode, final MenuItem item) {
             performAction(item, mode);
             return true;
-        }
-    }
-
-    private void setFabAllowed(boolean allowed) {
-        if (allowed) {
-            boolean showFab = Navigation.checkNavigation(new Integer[]{Navigation.TASKS, Navigation.CATEGORY});
-            if (showFab) {
-                mFabAllowed = true;
-            }
-        } else {
-            mFabAllowed = false;
         }
     }
 
@@ -594,10 +585,10 @@ public class ListFragment extends Fragment implements OnViewTouchedListener {
         boolean navigationTrash = Navigation.checkNavigation(Navigation.TRASH);
 
         if (!navigationTrash) {
-            setFabAllowed(true);
-                showFab();
+            mFabAllowed = true;
+            showFab();
         } else {
-            setFabAllowed(false);
+            mFabAllowed = false;
             hideFab();
         }
         menu.findItem(R.id.menu_empty_trash).setVisible(navigationTrash);
@@ -763,7 +754,6 @@ public class ListFragment extends Fragment implements OnViewTouchedListener {
                     }
                 })
                 .show();
-        hideFab();
         mUndoTrash = true;
     }
 
@@ -916,7 +906,6 @@ public class ListFragment extends Fragment implements OnViewTouchedListener {
                         }
                     })
                     .show();
-            hideFab();
             mUndoCategorize = true;
             mUndoCategorizeCategory = null;
         }
@@ -975,8 +964,6 @@ public class ListFragment extends Fragment implements OnViewTouchedListener {
             mModifiedTasks.clear();
             mUndoTasksList.clear();
             mUndoCategoryMap.clear();
-
-            showFab();
         }
     }
 
