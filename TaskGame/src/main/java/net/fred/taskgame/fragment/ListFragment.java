@@ -516,6 +516,7 @@ public class ListFragment extends Fragment implements OnViewTouchedListener {
             menu.findItem(R.id.menu_category).setVisible(true);
             menu.findItem(R.id.menu_trash).setVisible(true);
         }
+        menu.findItem(R.id.menu_search).setVisible(false);
         menu.findItem(R.id.menu_select_all).setVisible(true);
 
         setCabTitle();
