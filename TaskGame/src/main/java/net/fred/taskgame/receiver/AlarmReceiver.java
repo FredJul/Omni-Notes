@@ -83,7 +83,7 @@ public class AlarmReceiver extends BroadcastReceiver {
                 PendingIntent.FLAG_UPDATE_CURRENT);
 
         NotificationsHelper notificationsHelper = new NotificationsHelper(mContext);
-        notificationsHelper.createNotification(R.drawable.ic_stat_notification_icon, title, notifyIntent);
+        notificationsHelper.createNotification(R.drawable.ic_launcher, title, notifyIntent);
         notificationsHelper.setLargeIcon(R.drawable.ic_launcher).setMessage(text);
 
         notificationsHelper.getBuilder().addAction(R.drawable.ic_snooze_reminder,

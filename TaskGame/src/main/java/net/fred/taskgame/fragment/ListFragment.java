@@ -104,8 +104,7 @@ public class ListFragment extends Fragment implements OnViewTouchedListener {
     private ActionMode mActionMode;
     private boolean mKeepActionMode = false;
 
-    // Undo archive/trash
-    private boolean mUndoTrash = false;
+    private boolean mUndoFinishTask = false;
     private boolean mUndoCategorize = false;
     private Category mUndoCategorizeCategory = null;
     private final SparseArray<Task> mUndoTasksList = new SparseArray<>();
@@ -269,8 +268,7 @@ public class ListFragment extends Fragment implements OnViewTouchedListener {
             mAdapter.clearSelections();
 
             // Defines the conditions to set actionbar items visible or not
-            boolean navigationTrash = Navigation.checkNavigation(Navigation.TRASH);
-            if (!navigationTrash) {
+            if (!Navigation.checkNavigation(Navigation.FINISHED)) {
                 mFabAllowed = true;
                 showFab();
             }
@@ -383,12 +381,12 @@ public class ListFragment extends Fragment implements OnViewTouchedListener {
             public void onItemRemoved(int position) {
                 // Depending on settings and note status this action will...
 
-                if (Navigation.checkNavigation(Navigation.TRASH)) { // ...restore
-                    untrashTasks(new int[]{position});
+                if (Navigation.checkNavigation(Navigation.FINISHED)) { // ...restore
+                    restoreTasks(new int[]{position});
                 } else if (Navigation.checkNavigation(Navigation.CATEGORY)) { // ...removes category
                     categorizeTasks(new int[]{position}, null);
-                } else { // ...trash
-                    trashTasks(new int[]{position});
+                } else { // ...finish
+                    finishTasks(new int[]{position});
                 }
             }
 
@@ -497,8 +495,8 @@ public class ListFragment extends Fragment implements OnViewTouchedListener {
         Menu menu = mActionMode.getMenu();
         int navigation = Navigation.getNavigation();
 
-        if (navigation == Navigation.TRASH) {
-            menu.findItem(R.id.menu_untrash).setVisible(true);
+        if (navigation == Navigation.FINISHED) {
+            menu.findItem(R.id.menu_restore_task).setVisible(true);
             menu.findItem(R.id.menu_delete).setVisible(true);
         } else {
             if (mAdapter.getSelectedItemCount() == 1) {
@@ -507,7 +505,7 @@ public class ListFragment extends Fragment implements OnViewTouchedListener {
                 menu.findItem(R.id.menu_share).setVisible(false);
             }
             menu.findItem(R.id.menu_category).setVisible(true);
-            menu.findItem(R.id.menu_trash).setVisible(true);
+            menu.findItem(R.id.menu_finish_task).setVisible(true);
         }
         menu.findItem(R.id.menu_search).setVisible(false);
         menu.findItem(R.id.menu_select_all).setVisible(true);
@@ -584,16 +582,16 @@ public class ListFragment extends Fragment implements OnViewTouchedListener {
 
     private void setActionItemsVisibility(Menu menu) {
         // Defines the conditions to set actionbar items visible or not
-        boolean navigationTrash = Navigation.checkNavigation(Navigation.TRASH);
+        boolean isInFinishedTasksView = Navigation.checkNavigation(Navigation.FINISHED);
 
-        if (!navigationTrash) {
+        if (!isInFinishedTasksView) {
             mFabAllowed = true;
             showFab();
         } else {
             mFabAllowed = false;
             hideFab();
         }
-        menu.findItem(R.id.menu_empty_trash).setVisible(navigationTrash);
+        menu.findItem(R.id.menu_delete_all_finished_tasks).setVisible(isInFinishedTasksView);
     }
 
     @Override
@@ -615,8 +613,8 @@ public class ListFragment extends Fragment implements OnViewTouchedListener {
                         getMainActivity().getDrawerLayout().openDrawer(GravityCompat.START);
                     }
                     break;
-                case R.id.menu_empty_trash:
-                    emptyTrash();
+                case R.id.menu_delete_all_finished_tasks:
+                    deleteAllFinishedTasks();
                     break;
             }
         } else {
@@ -627,11 +625,11 @@ public class ListFragment extends Fragment implements OnViewTouchedListener {
                 case R.id.menu_share:
                     shareTask(mAdapter.getSelectedItems());
                     break;
-                case R.id.menu_trash:
-                    trashTasks(mAdapter.getSelectedItems());
+                case R.id.menu_finish_task:
+                    finishTasks(mAdapter.getSelectedItems());
                     break;
-                case R.id.menu_untrash:
-                    untrashTasks(mAdapter.getSelectedItems());
+                case R.id.menu_restore_task:
+                    restoreTasks(mAdapter.getSelectedItems());
                     break;
                 case R.id.menu_delete:
                     deleteTasks(mAdapter.getSelectedItems());
@@ -683,12 +681,9 @@ public class ListFragment extends Fragment implements OnViewTouchedListener {
         }
     }
 
-    /**
-     * Empties trash deleting all the tasks
-     */
-    private void emptyTrash() {
+    private void deleteAllFinishedTasks() {
         MaterialDialog dialog = new MaterialDialog.Builder(getActivity())
-                .content(R.string.empty_trash_confirmation)
+                .content(R.string.delete_finished_tasks_confirmation)
                 .positiveText(R.string.ok)
                 .onPositive(new MaterialDialog.SingleButtonCallback() {
                     @Override
@@ -734,7 +729,7 @@ public class ListFragment extends Fragment implements OnViewTouchedListener {
         mAdapter.setTasks(tasks);
     }
 
-    private void trashTasks(int[] positions) {
+    private void finishTasks(int[] positions) {
         for (int position : positions) {
             Task task = mAdapter.getTasks().get(position);
             // Saves tasks to be eventually restored at right position
@@ -747,7 +742,7 @@ public class ListFragment extends Fragment implements OnViewTouchedListener {
         finishActionMode();
 
         // Advice to user
-        Snackbar.make(getActivity().getWindow().getDecorView().findViewById(android.R.id.content), R.string.task_trashed, Snackbar.LENGTH_LONG)
+        Snackbar.make(getActivity().getWindow().getDecorView().findViewById(android.R.id.content), R.string.task_finished, Snackbar.LENGTH_LONG)
                 .setActionTextColor(ContextCompat.getColor(getActivity(), R.color.info))
                 .setAction(R.string.undo, new OnClickListener() {
                     @Override
@@ -756,11 +751,11 @@ public class ListFragment extends Fragment implements OnViewTouchedListener {
                     }
                 })
                 .show();
-        mUndoTrash = true;
+        mUndoFinishTask = true;
     }
 
-    private void trashTaskExecute(Task task) {
-        DbHelper.trashTask(task);
+    private void finishTaskExecute(Task task) {
+        DbHelper.finishTask(task);
         mAdapter.getTasks().remove(task);
 
         if (!TextUtils.isEmpty(task.questId)) {
@@ -768,20 +763,20 @@ public class ListFragment extends Fragment implements OnViewTouchedListener {
         }
     }
 
-    private void untrashTasks(int[] positions) {
+    private void restoreTasks(int[] positions) {
         for (int position : positions) {
             Task task = mAdapter.getTasks().get(position);
-            untrashTaskExecute(task);
+            restoreTaskExecute(task);
         }
 
         finishActionMode();
 
         // Advice to user
-        UiUtils.showMessage(getActivity(), R.string.task_untrashed);
+        UiUtils.showMessage(getActivity(), R.string.task_restored);
     }
 
-    private void untrashTaskExecute(Task task) {
-        DbHelper.untrashTask(task);
+    private void restoreTaskExecute(Task task) {
+        DbHelper.restoreTask(task);
         mAdapter.getTasks().remove(task);
     }
 
@@ -928,7 +923,7 @@ public class ListFragment extends Fragment implements OnViewTouchedListener {
                 }
 
                 mAdapter.notifyItemChanged(mAdapter.getTasks().indexOf(task));
-            } else { // Manages trash undo
+            } else { // Manages finish undo
                 int position = mUndoTasksList.keyAt(mUndoTasksList.indexOfValue(task));
                 mAdapter.getTasks().add(position, task);
                 mAdapter.notifyItemInserted(position);
@@ -938,7 +933,7 @@ public class ListFragment extends Fragment implements OnViewTouchedListener {
         mUndoTasksList.clear();
         mModifiedTasks.clear();
 
-        mUndoTrash = false;
+        mUndoFinishTask = false;
         mUndoCategorize = false;
         mUndoTasksList.clear();
         mUndoCategoryMap.clear();
@@ -948,17 +943,17 @@ public class ListFragment extends Fragment implements OnViewTouchedListener {
     }
 
     public void commitPending() {
-        if (mUndoTrash || mUndoCategorize) {
+        if (mUndoFinishTask || mUndoCategorize) {
 
             for (Task task : mModifiedTasks) {
-                if (mUndoTrash) {
-                    trashTaskExecute(task);
+                if (mUndoFinishTask) {
+                    finishTaskExecute(task);
                 } else if (mUndoCategorize) {
                     categorizeTaskExecute(task, mUndoCategorizeCategory);
                 }
             }
 
-            mUndoTrash = false;
+            mUndoFinishTask = false;
             mUndoCategorize = false;
             mUndoCategorizeCategory = null;
 

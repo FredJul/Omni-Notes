@@ -60,7 +60,7 @@ public class Task extends IdBasedModel {
     public int displayPriority;
     @Column
     @Expose
-    public boolean isTrashed;
+    public boolean isFinished;
     @Column
     @Expose
     public long alarmDate;
@@ -89,7 +89,8 @@ public class Task extends IdBasedModel {
         content = task.content;
         creationDate = task.creationDate;
         lastModificationDate = task.lastModificationDate;
-        isTrashed = task.isTrashed;
+        displayPriority = task.displayPriority;
+        isFinished = task.isFinished;
         alarmDate = task.alarmDate;
         isChecklist = task.isChecklist;
         categoryId = task.categoryId;
@@ -146,9 +147,9 @@ public class Task extends IdBasedModel {
             return res;
         }
 
-        Object[] a = {id, title, content, creationDate, lastModificationDate, isTrashed,
+        Object[] a = {id, title, content, creationDate, lastModificationDate, displayPriority, isFinished,
                 alarmDate, isChecklist, categoryId, pointReward, questId, getAttachmentsList()};
-        Object[] b = {task.id, task.title, task.content, task.creationDate, task.lastModificationDate, task.isTrashed,
+        Object[] b = {task.id, task.title, task.content, task.creationDate, task.lastModificationDate, task.displayPriority, task.isFinished,
                 task.alarmDate, task.isChecklist, task.categoryId, task.pointReward, task.questId, task.getAttachmentsList()};
         if (EqualityChecker.check(a, b)) {
             res = true;

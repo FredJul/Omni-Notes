@@ -21,14 +21,12 @@
     <style name="BaseTheme" parent="Theme.AppCompat.Light.NoActionBar">
         <item name="android:windowContentOverlay">@null</item>
         <item name="android:windowBackground">@color/colorPrimaryDark</item>
-        <!--<item name="showcaseViewStyle">@style/CustomShowcaseTheme</item>-->
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
         <item name="windowActionModeOverlay">true</item>
         <item name="actionModeBackground">@color/colorPrimaryDark</item>
         <item name="android:button">@android:drawable/checkbox_off_background</item>
-        <item name="searchViewStyle">@style/SearchViewStyle</item>
     </style>
 
     <style name="PreferencesTheme" parent="Theme.AppCompat.Light.NoActionBar">
@@ -53,18 +51,6 @@
         <item name="android:windowFrame">@null</item>
         <item name="android:windowNoTitle">true</item>
         <item name="android:windowIsFloating">true</item>
-    </style>
-
-    <style name="SearchViewStyle" parent="Widget.AppCompat.SearchView">
-        <item name="closeIcon">@drawable/ic_cancel_white_24dp</item>
-    </style>
-
-    <style name="AppTheme.ActionBar.Fullscreen.TitleTextStyle" parent="@android:style/TextAppearance">
-        <item name="android:textColor">@android:color/white</item>
-    </style>
-
-    <style name="Theme.AppCompat.Dialog.About" parent="Theme.AppCompat.Dialog">
-        <item name="android:windowBackground">@color/about_bg</item>
     </style>
 
     <style name="Button.Dialog" parent="MD_ActionButton">

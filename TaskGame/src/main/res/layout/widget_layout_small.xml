@@ -35,7 +35,7 @@
             android:background="@drawable/icon_selector"
             android:gravity="center"
             android:padding="10dp"
-            android:src="@drawable/ic_action_on"/>
+            android:src="@drawable/ic_launcher" />
     </LinearLayout>
 
 </FrameLayout>

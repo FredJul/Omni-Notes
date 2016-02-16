@@ -295,8 +295,8 @@ public class NavigationDrawerFragment extends Fragment {
         boolean skippable = false;
         boolean dynamicMenu = PrefUtils.getBoolean(PrefUtils.PREF_DYNAMIC_MENU, true);
         switch (i) {
-            case Navigation.TRASH:
-                if (DbHelper.getTasksTrashed().size() == 0 && dynamicMenu)
+            case Navigation.FINISHED:
+                if (DbHelper.getFinishedTasks().size() == 0 && dynamicMenu)
                     skippable = true;
                 break;
         }

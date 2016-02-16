@@ -29,7 +29,7 @@ import java.util.Arrays;
 public class Navigation {
 
     public static final int TASKS = 0;
-    public static final int TRASH = 1;
+    public static final int FINISHED = 1;
     public static final int CATEGORY = 2;
 
 
@@ -43,8 +43,8 @@ public class Navigation {
 
         if (navigationListCodes[TASKS].equals(navigation)) {
             return TASKS;
-        } else if (navigationListCodes[TRASH].equals(navigation)) {
-            return TRASH;
+        } else if (navigationListCodes[FINISHED].equals(navigation)) {
+            return FINISHED;
         } else {
             return CATEGORY;
         }

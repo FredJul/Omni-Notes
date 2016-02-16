@@ -25,10 +25,10 @@
     <string name="content">Content</string>
     <string name="share">Share</string>
     <string name="undo">Undo</string>
-    <string name="trash">Trash</string>
-    <string name="task_trashed">Task(s) trashed</string>
-    <string name="task_untrashed">Task(s) restored from trash</string>
-    <string name="untrash">Restore from trash</string>
+    <string name="finish_task">Finish task</string>
+    <string name="task_finished">Task(s) finished</string>
+    <string name="task_restored">Task(s) restored</string>
+    <string name="restore_task">Restore task</string>
     <string name="delete">Delete</string>
     <string name="task_deleted">Task(s) deleted permanently</string>
     <string name="creation">Created: %s</string>
@@ -91,8 +91,8 @@
     <string name="error">Error</string>
     <string name="files">Files</string>
     <string name="not_set">not set</string>
-    <string name="empty_trash">Empty trash</string>
-    <string name="empty_trash_confirmation">Confirm deleting all trashed tasks?</string>
+    <string name="delete_all_finished_tasks">Delete all finished tasks</string>
+    <string name="delete_finished_tasks_confirmation">Confirm deleting all finished tasks?</string>
     <string name="select_all">Select all</string>
     <string name="permission_audio_recording">Permission to use microphone is needed to record audio tasks</string>
     <string name="permission_get_account">Permission to read your Google account is needed to start PlayGames authentication and save your data on the cloud</string>

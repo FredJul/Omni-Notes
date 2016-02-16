@@ -24,10 +24,10 @@
     <string name="content">Contenu</string>
     <string name="share">Partager</string>
     <string name="undo">Annuler</string>
-    <string name="trash">Corbeille</string>
-    <string name="task_trashed">Tâche(s) mise(s) à la corbeille</string>
-    <string name="task_untrashed">Tâche(s) restaurée(s) depuis la corbeille</string>
-    <string name="untrash">Restaurer depuis la corbeille</string>
+    <string name="finish_task">Finir tâche</string>
+    <string name="task_finished">Tâche(s) marquée(s) comme finie(s)</string>
+    <string name="task_restored">Tâche(s) restaurée(s)</string>
+    <string name="restore_task">Restaurer tâche</string>
     <string name="delete">Supprimer</string>
     <string name="task_deleted">Tâche(s) définitivement supprimée(s)</string>
     <string name="creation">Créé : %s</string>
@@ -90,8 +90,8 @@
     <string name="error">Erreur</string>
     <string name="files">Fichiers</string>
     <string name="not_set">non défini</string>
-    <string name="empty_trash">Vider la corbeille</string>
-    <string name="empty_trash_confirmation">Confirmer la suppression de toutes les tâches de la corbeille ?</string>
+    <string name="delete_all_finished_tasks">Supprimer toutes les tâches finies</string>
+    <string name="delete_finished_tasks_confirmation">Confirmer la suppression de toutes les tâches finies ?</string>
     <string name="select_all">Tout sélectionner</string>
     <string name="permission_audio_recording">La permission d\'utiliser le microphone est nécessaire pour enregistrer des tâches audios</string>
     <string name="permission_get_account">La permission de lire votre compte Google est nécessaire pour s\'authentifier avec PlayGames et sauvegarder vos données sur les serveurs de Google</string>

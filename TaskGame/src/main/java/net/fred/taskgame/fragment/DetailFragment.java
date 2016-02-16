@@ -383,7 +383,7 @@ public class DetailFragment extends Fragment implements OnReminderPickedListener
         if (mTask.isChecklist) {
             mTask.isChecklist = false;
             mToggleChecklistView.setAlpha(0);
-            toggleChecklist2();
+            toggleChecklist();
         }
 
         // Some fields can be filled by third party application and are always shown
@@ -588,13 +588,13 @@ public class DetailFragment extends Fragment implements OnReminderPickedListener
 
         menu.findItem(R.id.menu_checklist_on).setVisible(!mTask.isChecklist);
         menu.findItem(R.id.menu_checklist_off).setVisible(mTask.isChecklist);
-        // If note is isTrashed only this options will be available from menu
-        if (mTask.isTrashed) {
-            menu.findItem(R.id.menu_untrash).setVisible(true);
+        // If note is isFinished only this options will be available from menu
+        if (mTask.isFinished) {
+            menu.findItem(R.id.menu_restore_task).setVisible(true);
             menu.findItem(R.id.menu_delete).setVisible(true);
             // Otherwise all other actions will be available
         } else {
-            menu.findItem(R.id.menu_trash).setVisible(!newNote);
+            menu.findItem(R.id.menu_finish_task).setVisible(!newNote);
         }
     }
 
@@ -637,16 +637,16 @@ public class DetailFragment extends Fragment implements OnReminderPickedListener
                 shareTask();
                 break;
             case R.id.menu_checklist_on:
-                toggleChecklist();
+                toggleChecklistAndKeepChecked();
                 break;
             case R.id.menu_checklist_off:
-                toggleChecklist();
+                toggleChecklistAndKeepChecked();
                 break;
-            case R.id.menu_trash:
-                trashTask(true);
+            case R.id.menu_finish_task:
+                finishTask();
                 break;
-            case R.id.menu_untrash:
-                trashTask(false);
+            case R.id.menu_restore_task:
+                restoreTask();
                 break;
             case R.id.menu_discard_changes:
                 discard();
@@ -658,19 +658,19 @@ public class DetailFragment extends Fragment implements OnReminderPickedListener
         return super.onOptionsItemSelected(item);
     }
 
-    private void toggleChecklist() {
+    private void toggleChecklistAndKeepChecked() {
 
         // In case isChecklist is active a prompt will ask about many options
         // to decide hot to convert back to simple text
         if (!mTask.isChecklist) {
-            toggleChecklist2();
+            toggleChecklist();
             return;
         }
 
         // If isChecklist is active but no items are checked the conversion in done automatically
         // without prompting user
         if (mChecklistManager.getCheckedCount() == 0) {
-            toggleChecklist2(true, false);
+            toggleChecklist(true, false);
             return;
         }
 
@@ -693,7 +693,7 @@ public class DetailFragment extends Fragment implements OnReminderPickedListener
                         PrefUtils.putBoolean(PrefUtils.PREF_KEEP_CHECKED, keepChecked.isChecked());
                         PrefUtils.putBoolean(PrefUtils.PREF_KEEP_CHECKMARKS, keepCheckmarks.isChecked());
 
-                        toggleChecklist2();
+                        toggleChecklist();
                     }
                 }).build().show();
     }
@@ -702,13 +702,13 @@ public class DetailFragment extends Fragment implements OnReminderPickedListener
     /**
      * Toggles isChecklist view
      */
-    private void toggleChecklist2() {
+    private void toggleChecklist() {
         boolean keepChecked = PrefUtils.getBoolean(PrefUtils.PREF_KEEP_CHECKED, true);
         boolean showChecks = PrefUtils.getBoolean(PrefUtils.PREF_KEEP_CHECKMARKS, true);
-        toggleChecklist2(keepChecked, showChecks);
+        toggleChecklist(keepChecked, showChecks);
     }
 
-    private void toggleChecklist2(final boolean keepChecked, final boolean showChecks) {
+    private void toggleChecklist(final boolean keepChecked, final boolean showChecks) {
         // Get instance and set options to convert EditText to CheckListView
         mChecklistManager = ChecklistManager.getInstance(getActivity());
         mChecklistManager.setMoveCheckedOnBottom(Integer.valueOf(PrefUtils.getString("settings_checked_items_behavior",
@@ -738,6 +738,8 @@ public class DetailFragment extends Fragment implements OnReminderPickedListener
             animate(mToggleChecklistView).alpha(1).scaleXBy(0).scaleX(1).scaleYBy(0).scaleY(1);
             mTask.isChecklist = !mTask.isChecklist;
         }
+
+        getActivity().supportInvalidateOptionsMenu();
     }
 
 
@@ -962,21 +964,31 @@ public class DetailFragment extends Fragment implements OnReminderPickedListener
         goHome();
     }
 
-    private void trashTask(boolean trash) {
+    private void finishTask() {
         // Simply go back if is a new note
         if (mTask.id == IdBasedModel.INVALID_ID) {
             goHome();
             return;
         }
 
-        mTask.isTrashed = trash;
-        mExitMessage = trash ? getString(R.string.task_trashed) : getString(R.string.task_untrashed);
-        mExitMessageStyle = trash ? UiUtils.MessageType.TYPE_WARN : UiUtils.MessageType.TYPE_INFO;
-        if (trash) {
-            ReminderHelper.removeReminder(MainApplication.getContext(), mTask);
-        } else {
-            ReminderHelper.addReminder(MainApplication.getContext(), mTask);
+        mTask.isFinished = true;
+        mExitMessage = getString(R.string.task_finished);
+        mExitMessageStyle = UiUtils.MessageType.TYPE_WARN;
+        ReminderHelper.removeReminder(MainApplication.getContext(), mTask);
+        saveTask();
+    }
+
+    private void restoreTask() {
+        // Simply go back if is a new note
+        if (mTask.id == IdBasedModel.INVALID_ID) {
+            goHome();
+            return;
         }
+
+        mTask.isFinished = false;
+        mExitMessage = getString(R.string.task_restored);
+        mExitMessageStyle = UiUtils.MessageType.TYPE_INFO;
+        ReminderHelper.addReminder(MainApplication.getContext(), mTask);
         saveTask();
     }
 
@@ -1082,13 +1094,13 @@ public class DetailFragment extends Fragment implements OnReminderPickedListener
 
 
     /**
-     * Checks if only tag, archive or trash status have been changed
+     * Checks if only category or finish status have been changed
      * and then force to not update last modification date*
      */
     private boolean lastModificationUpdatedNeeded() {
         Task tmpTask = new Task(mTask);
         tmpTask.setCategory(mTask.getCategory());
-        tmpTask.isTrashed = mTask.isTrashed;
+        tmpTask.isFinished = mTask.isFinished;
         return !tmpTask.equals(mOriginalTask);
     }
 

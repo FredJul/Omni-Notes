@@ -47,31 +47,32 @@
         android:visible="false"
         app:showAsAction="always"/>
     <item
-        android:id="@+id/menu_trash"
-        android:icon="@drawable/ic_delete_grey600_48dp"
+        android:id="@+id/menu_finish_task"
+        android:icon="@drawable/ic_assignment_turned_in_white_24dp"
         android:orderInCategory="1100"
-        android:title="@string/trash"
+        android:title="@string/finish_task"
         android:visible="false"
         app:showAsAction="ifRoom"/>
     <item
-        android:id="@+id/menu_untrash"
-        android:icon="@drawable/ic_undelete_white_24dp"
+        android:id="@+id/menu_restore_task"
+        android:icon="@drawable/ic_assignment_return_white_24dp"
         android:orderInCategory="1100"
-        android:title="@string/untrash"
+        android:title="@string/restore_task"
         android:visible="false"
         app:showAsAction="ifRoom"/>
     <item
         android:id="@+id/menu_delete"
-        android:icon="@drawable/ic_cancel_white_24dp"
+        android:icon="@drawable/ic_delete_white_24dp"
         android:orderInCategory="1200"
         android:title="@string/delete"
         android:visible="false"
         app:showAsAction="ifRoom"/>
     <item
-        android:id="@+id/menu_empty_trash"
+        android:id="@+id/menu_delete_all_finished_tasks"
+        android:icon="@drawable/ic_delete_white_24dp"
         android:orderInCategory="900"
         app:showAsAction="never"
-        android:title="@string/empty_trash"
+        android:title="@string/delete_all_finished_tasks"
         android:visible="false"/>
 
 

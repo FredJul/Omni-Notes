@@ -74,8 +74,8 @@ public class DbHelper {
         switch (navigation) {
             case Navigation.TASKS:
                 return getTasksActive();
-            case Navigation.TRASH:
-                return getTasksTrashed();
+            case Navigation.FINISHED:
+                return getFinishedTasks();
             case Navigation.CATEGORY:
                 return getTasksByCategory(Navigation.getCategory());
             default:
@@ -85,11 +85,11 @@ public class DbHelper {
 
 
     public static List<Task> getTasksActive() {
-        return getTasks(Task_Table.isTrashed.eq(false));
+        return getTasks(Task_Table.isFinished.eq(false));
     }
 
-    public static List<Task> getTasksTrashed() {
-        return getTasks(Task_Table.isTrashed.eq(true));
+    public static List<Task> getFinishedTasks() {
+        return getTasks(Task_Table.isFinished.eq(true));
     }
 
 
@@ -115,15 +115,15 @@ public class DbHelper {
         return new Select().from(Task.class).where(conditions).orderByAll(orderByList).queryList();
     }
 
-    public static void trashTask(Task task) {
-        task.isTrashed = true;
+    public static void finishTask(Task task) {
+        task.isFinished = true;
         ReminderHelper.removeReminder(MainApplication.getContext(), task);
         PrefUtils.putLong(PrefUtils.PREF_CURRENT_POINTS, PrefUtils.getLong(PrefUtils.PREF_CURRENT_POINTS, 0) + task.pointReward);
         updateTask(task, false);
     }
 
-    public static void untrashTask(Task task) {
-        task.isTrashed = false;
+    public static void restoreTask(Task task) {
+        task.isFinished = false;
         updateTask(task, false);
     }
 
@@ -161,7 +161,7 @@ public class DbHelper {
     public static List<Task> getTasksByPattern(String pattern) {
         ArrayList<SQLCondition> conditionList = new ArrayList<>();
 
-        conditionList.add(Task_Table.isTrashed.is(Navigation.checkNavigation(Navigation.TRASH)));
+        conditionList.add(Task_Table.isFinished.is(Navigation.checkNavigation(Navigation.FINISHED)));
 
         if (Navigation.checkNavigation(Navigation.CATEGORY)) {
             conditionList.add(Task_Table.categoryId.eq(Navigation.getCategory()));
@@ -188,7 +188,7 @@ public class DbHelper {
             conditionList.add(Task_Table.alarmDate.isNotNull());
         }
 
-        conditionList.add(Task_Table.isTrashed.isNot(true));
+        conditionList.add(Task_Table.isFinished.isNot(true));
 
         return getTasks(conditionList.toArray(new SQLCondition[]{}));
     }
@@ -203,7 +203,7 @@ public class DbHelper {
         ArrayList<SQLCondition> conditionList = new ArrayList<>();
 
         conditionList.add(Task_Table.categoryId.eq(categoryId));
-        conditionList.add(Task_Table.isTrashed.isNot(true));
+        conditionList.add(Task_Table.isFinished.isNot(true));
 
         return getTasks(conditionList.toArray(new SQLCondition[]{}));
     }
