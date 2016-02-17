@@ -18,7 +18,6 @@ package net.fred.taskgame.fragment;
 
 import android.animation.Animator;
 import android.app.SearchManager;
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -530,9 +529,7 @@ public class ListFragment extends Fragment implements OnViewTouchedListener {
         mSearchMenuItem = menu.findItem(R.id.menu_search);
 
         // Associate searchable configuration with the SearchView
-        SearchManager searchManager = (SearchManager) getActivity().getSystemService(Context.SEARCH_SERVICE);
-        mSearchView = (SearchView) MenuItemCompat.getActionView(menu.findItem(R.id.menu_search));
-        mSearchView.setSearchableInfo(searchManager.getSearchableInfo(getActivity().getComponentName()));
+        mSearchView = (SearchView) MenuItemCompat.getActionView(mSearchMenuItem);
         mSearchView.setImeOptions(EditorInfo.IME_ACTION_SEARCH);
 
         // Expands the widget hiding other actionbar icons
@@ -540,9 +537,6 @@ public class ListFragment extends Fragment implements OnViewTouchedListener {
             @Override
             public void onFocusChange(View v, boolean hasFocus) {
                 setActionItemsVisibility(menu);
-//                if (!hasFocus) {
-//                    MenuItemCompat.collapseActionView(mSearchMenuItem);
-//                }
             }
         });
 
