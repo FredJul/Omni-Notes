@@ -59,7 +59,7 @@ public class UiUtils {
     }
 
     static public void showMessage(@NonNull Activity activity, @NonNull String message, MessageType type) {
-        Snackbar snackbar = Snackbar.make(activity.getWindow().getDecorView().findViewById(android.R.id.content), message, Snackbar.LENGTH_SHORT);
+        Snackbar snackbar = Snackbar.make(activity.findViewById(R.id.coordinator_layout), message, Snackbar.LENGTH_SHORT);
         switch (type) {
             case TYPE_WARN: {
                 TextView textView = (TextView) snackbar.getView().findViewById(R.id.snackbar_text);

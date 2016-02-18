@@ -21,12 +21,9 @@
     <color name="colorPrimary">#2aac7d</color>
     <color name="colorPrimaryDark">#ff1d805c</color>
     <color name="colorAccent">#ff218f67</color>
-    <color name="colorAccentPressed">#ff1b7755</color>
 
     <!--Floating action button-->
     <color name="white">#fafafa</color>
-    <color name="action_color">#B78B00</color>
-    <color name="action_color_pressed">#916E02</color>
 
     <color name="quest_color">#c1ded3</color>
     <color name="navigation_bg">#ffffffff</color>

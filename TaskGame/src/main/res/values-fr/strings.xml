@@ -20,7 +20,6 @@
     <string name="title_item_list">Tâches</string>
     <string name="title">Titre </string>
     <string name="search">Rechercher</string>
-    <string name="search_hint">Rechercher dans les tâches</string>
     <string name="content">Contenu</string>
     <string name="share">Partager</string>
     <string name="undo">Annuler</string>
@@ -40,7 +39,6 @@
     <string name="empty_task_not_saved">Tâche vide non enregistrée</string>
     <string name="share_message_chooser">Partager avec</string>
     <string name="alarm_set_on">Rappel défini le %1s</string>
-    <string name="at_time">à</string>
     <string name="discard_changes">Annuler les modifications</string>
     <string name="attachment">Pièce jointe</string>
     <string name="camera">Appareil photo</string>

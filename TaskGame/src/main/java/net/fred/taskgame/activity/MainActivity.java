@@ -22,6 +22,7 @@ import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
@@ -65,18 +66,19 @@ public class MainActivity extends BaseGameActivity implements FragmentManager.On
     Toolbar mToolbar;
     @Bind(R.id.drawer_layout)
     DrawerLayout mDrawerLayout;
+    @Bind(R.id.fab)
+    FloatingActionButton mFab;
 
     private ActionBarDrawerToggle mDrawerToggle;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
 
         setSupportActionBar(mToolbar);
-        mDrawerLayout.setFocusableInTouchMode(false);
-
         getSupportActionBar().setHomeButtonEnabled(true);
         getSupportActionBar().setDisplayShowTitleEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
@@ -213,8 +215,12 @@ public class MainActivity extends BaseGameActivity implements FragmentManager.On
     public void displayHomeOrUpIcon() {
         //Enable Up button only if there are entries in the back stack
         boolean canUp = getSupportFragmentManager().getBackStackEntryCount() > 0;
-        mDrawerLayout.setDrawerLockMode(canUp ? DrawerLayout.LOCK_MODE_LOCKED_CLOSED : DrawerLayout.LOCK_MODE_UNLOCKED);
 
+        if (canUp) {
+            mFab.hide();
+        }
+
+        mDrawerLayout.setDrawerLockMode(canUp ? DrawerLayout.LOCK_MODE_LOCKED_CLOSED : DrawerLayout.LOCK_MODE_UNLOCKED);
         // Use the drawerToggle to animate the icon
         ValueAnimator anim = ValueAnimator.ofFloat(canUp ? 0 : 1, canUp ? 1 : 0);
         anim.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
@@ -249,10 +255,8 @@ public class MainActivity extends BaseGameActivity implements FragmentManager.On
      */
     @Override
     public void onBackPressed() {
-        Fragment f;
-
         // SketchFragment
-        f = checkFragmentInstance(R.id.fragment_container, SketchFragment.class);
+        Fragment f = checkFragmentInstance(R.id.fragment_container, SketchFragment.class);
         if (f != null) {
             ((SketchFragment) f).save();
 
@@ -271,18 +275,12 @@ public class MainActivity extends BaseGameActivity implements FragmentManager.On
             return;
         }
 
-        // ListFragment
-        f = checkFragmentInstance(R.id.fragment_container, ListFragment.class);
-        if (f != null) {
-            // Before exiting from app the navigation drawer is opened
-            if (mDrawerLayout.isDrawerOpen(GravityCompat.START)) {
-                mDrawerLayout.closeDrawer(GravityCompat.START);
-            } else {
-                super.onBackPressed();
-            }
-            return;
+        // Before exiting from app the navigation drawer is opened
+        if (mDrawerLayout.isDrawerOpen(GravityCompat.START)) {
+            mDrawerLayout.closeDrawer(GravityCompat.START);
+        } else {
+            super.onBackPressed();
         }
-        super.onBackPressed();
     }
 
     /**

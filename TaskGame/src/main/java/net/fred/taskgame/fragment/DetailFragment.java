@@ -832,7 +832,7 @@ public class DetailFragment extends Fragment implements OnReminderPickedListener
         try {
             mAttachmentDialog.showAsDropDown(anchor);
         } catch (Exception e) {
-            Snackbar.make(getActivity().findViewById(R.id.content), R.string.error, Snackbar.LENGTH_SHORT).show();
+            Snackbar.make(getActivity().findViewById(R.id.coordinator_layout), R.string.error, Snackbar.LENGTH_SHORT).show();
         }
     }
 

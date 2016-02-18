@@ -21,7 +21,6 @@
     <string name="title_item_list">Tasks</string>
     <string name="title">Title</string>
     <string name="search">Search</string>
-    <string name="search_hint">Search in tasks</string>
     <string name="content">Content</string>
     <string name="share">Share</string>
     <string name="undo">Undo</string>
@@ -41,7 +40,6 @@
     <string name="empty_task_not_saved">Can\'t save an empty task</string>
     <string name="share_message_chooser">Share with</string>
     <string name="alarm_set_on">Reminder set for %1s</string>
-    <string name="at_time">at</string>
     <string name="discard_changes">Discard changes</string>
     <string name="attachment">Attachment</string>
     <string name="camera">Camera</string>

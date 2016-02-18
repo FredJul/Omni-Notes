@@ -16,11 +16,11 @@
  */
 package net.fred.taskgame.fragment;
 
-import android.animation.Animator;
 import android.app.SearchManager;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
@@ -41,15 +41,13 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.View.OnFocusChangeListener;
+import android.view.View.OnLongClickListener;
 import android.view.ViewGroup;
-import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.inputmethod.EditorInfo;
 import android.widget.AdapterView;
 
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
-import com.getbase.floatingactionbutton.AddFloatingActionButton;
-import com.getbase.floatingactionbutton.FloatingActionsMenu;
 import com.google.android.gms.games.Games;
 import com.h6ah4i.android.widget.advrecyclerview.animator.GeneralItemAnimator;
 import com.h6ah4i.android.widget.advrecyclerview.animator.SwipeDismissItemAnimator;
@@ -95,6 +93,8 @@ public class ListFragment extends Fragment implements OnViewTouchedListener {
     @Bind(R.id.empty_view)
     View mEmptyView;
 
+    private FloatingActionButton mFab;
+
     private TaskAdapter mAdapter;
 
     private List<Task> mModifiedTasks = new ArrayList<>();
@@ -112,11 +112,6 @@ public class ListFragment extends Fragment implements OnViewTouchedListener {
 
     // Search variables
     private String mSearchQuery;
-
-    // Fab
-    private FloatingActionsMenu mFab;
-    private boolean mFabAllowed;
-    private boolean mFabExpanded = false;
 
     private ThrottledFlowContentObserver mContentObserver = new ThrottledFlowContentObserver(100) {
         @Override
@@ -159,43 +154,20 @@ public class ListFragment extends Fragment implements OnViewTouchedListener {
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        // Init FAB
-        mFab = (FloatingActionsMenu) getActivity().findViewById(R.id.fab);
-        AddFloatingActionButton fabAddButton = (AddFloatingActionButton) mFab.findViewById(com.getbase.floatingactionbutton.R.id.fab_expand_menu_button);
-        fabAddButton.setOnClickListener(new OnClickListener() {
+        mFab = (FloatingActionButton) getActivity().findViewById(R.id.fab);
+        mFab.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (mFabExpanded) {
-                    mFab.toggle();
-                    mFabExpanded = false;
-                } else {
-                    editTask(new Task());
-                }
+                editTask(new Task());
             }
         });
-        fabAddButton.setOnLongClickListener(new View.OnLongClickListener() {
+        mFab.setOnLongClickListener(new OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
-                mFabExpanded = !mFabExpanded;
-                mFab.toggle();
+                Task taskWithChecklist = new Task();
+                taskWithChecklist.isChecklist = true;
+                editTask(taskWithChecklist);
                 return true;
-            }
-        });
-        mFab.findViewById(R.id.fab_checklist).setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Task task = new Task();
-                task.isChecklist = true;
-                editTask(task);
-            }
-        });
-        mFab.findViewById(R.id.fab_camera).setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent i = getActivity().getIntent();
-                i.setAction(Constants.ACTION_TAKE_PHOTO);
-                getActivity().setIntent(i);
-                editTask(new Task());
             }
         });
 
@@ -254,8 +226,7 @@ public class ListFragment extends Fragment implements OnViewTouchedListener {
             inflater.inflate(R.menu.menu_list, menu);
             mActionMode = mode;
 
-            mFabAllowed = false;
-            hideFab();
+            mFab.hide();
 
             return true;
         }
@@ -268,8 +239,7 @@ public class ListFragment extends Fragment implements OnViewTouchedListener {
 
             // Defines the conditions to set actionbar items visible or not
             if (!Navigation.checkNavigation(Navigation.FINISHED)) {
-                mFabAllowed = true;
-                showFab();
+                mFab.show();
             }
 
             mActionMode = null;
@@ -288,57 +258,6 @@ public class ListFragment extends Fragment implements OnViewTouchedListener {
             performAction(item, mode);
             return true;
         }
-    }
-
-    private void showFab() {
-        if (mFab != null && mFabAllowed && isFabHidden()) {
-            animateFab(0, View.VISIBLE, View.VISIBLE);
-        }
-    }
-
-    private void hideFab() {
-        if (mFab != null && !isFabHidden()) {
-            mFab.collapse();
-            animateFab(mFab.getHeight() + getMarginBottom(mFab), View.VISIBLE, View.INVISIBLE);
-        }
-    }
-
-    private boolean isFabHidden() {
-        return mFab.getVisibility() != View.VISIBLE;
-    }
-
-    private void animateFab(int translationY, final int visibilityBefore, final int visibilityAfter) {
-        mFab.animate().setInterpolator(new AccelerateDecelerateInterpolator())
-                .setDuration(Constants.FAB_ANIMATION_TIME)
-                .translationY(translationY)
-                .setListener(new Animator.AnimatorListener() {
-                    @Override
-                    public void onAnimationStart(Animator animator) {
-                        mFab.setVisibility(visibilityBefore);
-                    }
-
-                    @Override
-                    public void onAnimationEnd(Animator animator) {
-                        mFab.setVisibility(visibilityAfter);
-                    }
-
-                    @Override
-                    public void onAnimationCancel(Animator animator) {
-                    }
-
-                    @Override
-                    public void onAnimationRepeat(Animator animator) {
-                    }
-                });
-    }
-
-    private int getMarginBottom(View view) {
-        int marginBottom = 0;
-        final ViewGroup.LayoutParams layoutParams = view.getLayoutParams();
-        if (layoutParams instanceof ViewGroup.MarginLayoutParams) {
-            marginBottom = ((ViewGroup.MarginLayoutParams) layoutParams).bottomMargin;
-        }
-        return marginBottom;
     }
 
     public void finishActionMode() {
@@ -579,11 +498,9 @@ public class ListFragment extends Fragment implements OnViewTouchedListener {
         boolean isInFinishedTasksView = Navigation.checkNavigation(Navigation.FINISHED);
 
         if (!isInFinishedTasksView) {
-            mFabAllowed = true;
-            showFab();
+            mFab.show();
         } else {
-            mFabAllowed = false;
-            hideFab();
+            mFab.hide();
         }
         menu.findItem(R.id.menu_delete_all_finished_tasks).setVisible(isInFinishedTasksView);
     }
@@ -736,7 +653,7 @@ public class ListFragment extends Fragment implements OnViewTouchedListener {
         finishActionMode();
 
         // Advice to user
-        Snackbar.make(getActivity().getWindow().getDecorView().findViewById(android.R.id.content), R.string.task_finished, Snackbar.LENGTH_LONG)
+        Snackbar.make(getActivity().findViewById(R.id.coordinator_layout), R.string.task_finished, Snackbar.LENGTH_LONG)
                 .setActionTextColor(ContextCompat.getColor(getActivity(), R.color.info))
                 .setAction(R.string.undo, new OnClickListener() {
                     @Override
@@ -888,7 +805,7 @@ public class ListFragment extends Fragment implements OnViewTouchedListener {
         if (category != null) {
             UiUtils.showMessage(getActivity(), getResources().getText(R.string.tasks_categorized_as) + " '" + category.name + "'");
         } else {
-            Snackbar.make(getActivity().getWindow().getDecorView().findViewById(android.R.id.content), R.string.tasks_category_removed, Snackbar.LENGTH_LONG)
+            Snackbar.make(getActivity().findViewById(R.id.coordinator_layout), R.string.tasks_category_removed, Snackbar.LENGTH_LONG)
                     .setActionTextColor(ContextCompat.getColor(getActivity(), R.color.info))
                     .setAction(R.string.undo, new OnClickListener() {
                         @Override

@@ -30,7 +30,6 @@
         android:layout_height="0dp"
         android:layout_weight="1"
         android:animateLayoutChanges="true"
-        android:background="@color/gray_bg"
         android:orientation="vertical"
         android:paddingLeft="@dimen/padding_half"
         android:paddingRight="@dimen/padding_half"

@@ -40,7 +40,7 @@ public class PermissionsHelper {
         if (ContextCompat.checkSelfPermission(activity, permission) != PackageManager.PERMISSION_GRANTED) {
 
             if (ActivityCompat.shouldShowRequestPermissionRationale(activity, permission)) {
-                Snackbar.make(activity.getWindow().getDecorView().findViewById(android.R.id.content), rationaleDescription, Snackbar.LENGTH_INDEFINITE)
+                Snackbar.make(activity.findViewById(R.id.coordinator_layout), rationaleDescription, Snackbar.LENGTH_INDEFINITE)
                         .setAction(R.string.ok, new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
