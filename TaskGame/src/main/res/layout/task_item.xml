@@ -33,6 +33,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="5dp"
+                android:layout_marginEnd="5dp"
                 android:layout_marginTop="5dp"
                 android:layout_toStartOf="@+id/attachment_thumbnail"
                 android:singleLine="true"
@@ -46,6 +47,7 @@
                 android:layout_below="@+id/task_title"
                 android:layout_toStartOf="@+id/attachment_thumbnail"
                 android:layout_marginStart="5dp"
+                android:layout_marginEnd="5dp"
                 android:maxLines="2"
                 android:textAppearance="@style/Text.Normal"
                 android:visibility="gone" />
