@@ -65,7 +65,6 @@ import android.widget.AdapterView.OnItemLongClickListener;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.PopupWindow;
 import android.widget.PopupWindow.OnDismissListener;
 import android.widget.ScrollView;
@@ -132,20 +131,28 @@ public class DetailFragment extends Fragment implements OnReminderPickedListener
     private static final int CATEGORY_CHANGE = 3;
     private static final int FILES = 4;
 
-    @Bind(R.id.datetime)
-    TextView mDateTime;
+    @Bind(R.id.reminder_date)
+    TextView mReminderDateTextView;
     @Bind(R.id.gridview)
     ExpandableHeightGridView mGridView;
     @Bind(R.id.detail_title)
     EditText mTitleEditText;
+    @Bind(R.id.category_marker)
+    View mCategoryMarker;
     @Bind(R.id.detail_content)
     EditText mContentEditText;
     @Bind(R.id.content_wrapper)
     ScrollView mScrollView;
     @Bind(R.id.reward_layout)
     View mRewardLayout;
+    @Bind(R.id.reminder_layout)
+    View mReminderLayout;
     @Bind(R.id.reward_spinner)
     Spinner mRewardSpinner;
+    @Bind(R.id.creation_date)
+    TextView mCreationDateTextView;
+    @Bind(R.id.last_modification_date)
+    TextView mLastModificationDateTextView;
 
     private Task mTask;
     private Task mOriginalTask;
@@ -215,7 +222,7 @@ public class DetailFragment extends Fragment implements OnReminderPickedListener
         }
 
         if (mTask.alarmDate != 0) {
-            mDateTime.setText(getString(R.string.alarm_set_on, DateHelper.getDateTimeShort(getContext(), mTask.alarmDate)));
+            mReminderDateTextView.setText(getString(R.string.alarm_set_on, DateHelper.getDateTimeShort(getContext(), mTask.alarmDate)));
         }
 
         initViews();
@@ -225,7 +232,7 @@ public class DetailFragment extends Fragment implements OnReminderPickedListener
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
-        mTask.title = getTaskTitle();
+        mTask.title = mTitleEditText.getText().toString();
         mTask.content = getTaskContent();
         outState.putParcelable("mTask", Parcels.wrap(mTask));
         outState.putParcelable("mOriginalTask", Parcels.wrap(mOriginalTask));
@@ -469,8 +476,7 @@ public class DetailFragment extends Fragment implements OnReminderPickedListener
 
 
         // Preparation for reminder icon
-        LinearLayout reminder_layout = (LinearLayout) getView().findViewById(R.id.reminder_layout);
-        reminder_layout.setOnClickListener(new OnClickListener() {
+        mReminderLayout.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
                 int pickerType = PrefUtils.getBoolean("settings_simple_calendar", false) ? ReminderPickers.TYPE_AOSP : ReminderPickers.TYPE_GOOGLE;
@@ -478,7 +484,7 @@ public class DetailFragment extends Fragment implements OnReminderPickedListener
                 reminderPicker.pick(mTask.alarmDate);
             }
         });
-        reminder_layout.setOnLongClickListener(new OnLongClickListener() {
+        mReminderLayout.setOnLongClickListener(new OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
                 MaterialDialog dialog = new MaterialDialog.Builder(getActivity())
@@ -488,7 +494,7 @@ public class DetailFragment extends Fragment implements OnReminderPickedListener
                             @Override
                             public void onPositive(MaterialDialog materialDialog) {
                                 mTask.alarmDate = 0;
-                                mDateTime.setText("");
+                                mReminderDateTextView.setText("");
                             }
                         }).build();
                 dialog.show();
@@ -497,18 +503,16 @@ public class DetailFragment extends Fragment implements OnReminderPickedListener
         });
 
         // Footer dates of creation...
-        TextView creationTextView = (TextView) getView().findViewById(R.id.creation);
         String creation = DateHelper.getDateTimeShort(getActivity(), mTask.creationDate);
-        creationTextView.append(creation.length() > 0 ? getString(R.string.creation, creation) : "");
-        if (creationTextView.getText().length() == 0)
-            creationTextView.setVisibility(View.GONE);
+        mCreationDateTextView.append(creation.length() > 0 ? getString(R.string.creation, creation) : "");
+        if (mCreationDateTextView.getText().length() == 0)
+            mCreationDateTextView.setVisibility(View.GONE);
 
         // ... and last modification
-        TextView lastModificationTextView = (TextView) getView().findViewById(R.id.last_modification);
         String lastModification = DateHelper.getDateTimeShort(getActivity(), mTask.lastModificationDate);
-        lastModificationTextView.append(lastModification.length() > 0 ? getString(R.string.last_update, lastModification) : "");
-        if (lastModificationTextView.getText().length() == 0)
-            lastModificationTextView.setVisibility(View.GONE);
+        mLastModificationDateTextView.append(lastModification.length() > 0 ? getString(R.string.last_update, lastModification) : "");
+        if (mLastModificationDateTextView.getText().length() == 0)
+            mLastModificationDateTextView.setVisibility(View.GONE);
 
         if (TextUtils.isEmpty(mTask.questId)) {
             if (mTask.pointReward == Task.LOW_POINT_REWARD) {
@@ -545,8 +549,10 @@ public class DetailFragment extends Fragment implements OnReminderPickedListener
 
                 }
             });
-        } else {
-            mRewardLayout.setVisibility(View.GONE); // Do not display reward for a quest
+        } else { // For a quest: do not display or allow edition of some fields
+            mTitleEditText.setEnabled(false);
+            mContentEditText.setEnabled(false);
+            mRewardLayout.setVisibility(View.GONE);
         }
     }
 
@@ -554,12 +560,11 @@ public class DetailFragment extends Fragment implements OnReminderPickedListener
      * Colors tag marker in note's title and content elements
      */
     private void setCategoryMarkerColor(Category tag) {
-        View marker = getView().findViewById(R.id.category_marker);
         // Coloring the target
         if (tag != null && tag.color != null) {
-            marker.setBackgroundColor(Integer.parseInt(tag.color));
+            mCategoryMarker.setBackgroundColor(Integer.parseInt(tag.color));
         } else {
-            marker.setBackgroundColor(Color.TRANSPARENT);
+            mCategoryMarker.setBackgroundColor(Color.TRANSPARENT);
         }
     }
 
@@ -1029,7 +1034,7 @@ public class DetailFragment extends Fragment implements OnReminderPickedListener
      */
     void saveTask() {
         // Changed fields
-        mTask.title = getTaskTitle();
+        mTask.title = mTitleEditText.getText().toString();
         mTask.content = getTaskContent();
 
         // Check if some text or attachments of any type have been inserted or
@@ -1110,28 +1115,10 @@ public class DetailFragment extends Fragment implements OnReminderPickedListener
         return !tmpTask.equals(mOriginalTask);
     }
 
-    private String getTaskTitle() {
-        String res;
-        if (getActivity() != null && getActivity().findViewById(R.id.detail_title) != null) {
-            Editable editableTitle = ((EditText) getActivity().findViewById(R.id.detail_title)).getText();
-            res = TextUtils.isEmpty(editableTitle) ? "" : editableTitle.toString();
-        } else {
-            res = mTitleEditText.getText() != null ? mTitleEditText.getText().toString() : "";
-        }
-        return res;
-    }
-
     private String getTaskContent() {
         String content = "";
         if (!mTask.isChecklist) {
-            try {
-                try {
-                    content = ((EditText) getActivity().findViewById(R.id.detail_content)).getText().toString();
-                } catch (ClassCastException e) {
-                    content = ((android.widget.EditText) getActivity().findViewById(R.id.detail_content)).getText().toString();
-                }
-            } catch (NullPointerException e) {
-            }
+            content = mContentEditText.getText().toString();
         } else {
             if (mChecklistManager != null) {
                 mChecklistManager.setKeepChecked(true);
@@ -1146,7 +1133,7 @@ public class DetailFragment extends Fragment implements OnReminderPickedListener
      * Updates share intent
      */
     private void shareTask() {
-        mTask.title = getTaskTitle();
+        mTask.title = mTitleEditText.getText().toString();
         mTask.content = getTaskContent();
         mTask.share(getActivity());
     }
@@ -1285,7 +1272,7 @@ public class DetailFragment extends Fragment implements OnReminderPickedListener
     public void onReminderPicked(long reminder) {
         mTask.alarmDate = reminder;
         if (isAdded()) {
-            mDateTime.setText(getString(R.string.alarm_set_on, DateHelper.getDateTimeShort(getActivity(), reminder)));
+            mReminderDateTextView.setText(getString(R.string.alarm_set_on, DateHelper.getDateTimeShort(getActivity(), reminder)));
         }
     }
 
