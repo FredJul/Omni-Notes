@@ -99,6 +99,7 @@
     <string name="open_link">Open</string>
     <string name="modify_link">Modify</string>
     <string name="app_not_found">You did not installed any application which can handle this kind of link</string>
+    <string name="difficulty">Difficulty:</string>
 
     <!-- Settings -->
     <string name="settings">Settings</string>

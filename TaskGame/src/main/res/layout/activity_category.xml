@@ -19,7 +19,6 @@
               android:layout_height="match_parent"
               android:orientation="vertical"
               android:padding="15dp"
-              android:background="@drawable/bg_card"
               android:gravity="center_horizontal">
 
     <EditText

@@ -142,6 +142,8 @@ public class DetailFragment extends Fragment implements OnReminderPickedListener
     EditText mContentEditText;
     @Bind(R.id.content_wrapper)
     ScrollView mScrollView;
+    @Bind(R.id.reward_layout)
+    View mRewardLayout;
     @Bind(R.id.reward_spinner)
     Spinner mRewardSpinner;
 
@@ -508,40 +510,44 @@ public class DetailFragment extends Fragment implements OnReminderPickedListener
         if (lastModificationTextView.getText().length() == 0)
             lastModificationTextView.setVisibility(View.GONE);
 
-        if (mTask.pointReward == Task.LOW_POINT_REWARD) {
-            mRewardSpinner.setSelection(0);
-        } else if (mTask.pointReward == Task.NORMAL_POINT_REWARD) {
-            mRewardSpinner.setSelection(1);
-        } else if (mTask.pointReward == Task.HIGH_POINT_REWARD) {
-            mRewardSpinner.setSelection(2);
-        } else if (mTask.pointReward == Task.VERY_HIGH_POINT_REWARD) {
-            mRewardSpinner.setSelection(3);
-        }
+        if (TextUtils.isEmpty(mTask.questId)) {
+            if (mTask.pointReward == Task.LOW_POINT_REWARD) {
+                mRewardSpinner.setSelection(0);
+            } else if (mTask.pointReward == Task.NORMAL_POINT_REWARD) {
+                mRewardSpinner.setSelection(1);
+            } else if (mTask.pointReward == Task.HIGH_POINT_REWARD) {
+                mRewardSpinner.setSelection(2);
+            } else if (mTask.pointReward == Task.VERY_HIGH_POINT_REWARD) {
+                mRewardSpinner.setSelection(3);
+            }
 
-        mRewardSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                switch (position) {
-                    case 0:
-                        mTask.pointReward = Task.LOW_POINT_REWARD;
-                        break;
-                    case 1:
-                        mTask.pointReward = Task.NORMAL_POINT_REWARD;
-                        break;
-                    case 2:
-                        mTask.pointReward = Task.HIGH_POINT_REWARD;
-                        break;
-                    case 3:
-                        mTask.pointReward = Task.VERY_HIGH_POINT_REWARD;
-                        break;
+            mRewardSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                @Override
+                public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                    switch (position) {
+                        case 0:
+                            mTask.pointReward = Task.LOW_POINT_REWARD;
+                            break;
+                        case 1:
+                            mTask.pointReward = Task.NORMAL_POINT_REWARD;
+                            break;
+                        case 2:
+                            mTask.pointReward = Task.HIGH_POINT_REWARD;
+                            break;
+                        case 3:
+                            mTask.pointReward = Task.VERY_HIGH_POINT_REWARD;
+                            break;
+                    }
                 }
-            }
 
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
+                @Override
+                public void onNothingSelected(AdapterView<?> parent) {
 
-            }
-        });
+                }
+            });
+        } else {
+            mRewardLayout.setVisibility(View.GONE); // Do not display reward for a quest
+        }
     }
 
     /**

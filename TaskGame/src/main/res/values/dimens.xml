@@ -23,7 +23,7 @@
 
     <dimen name="horizontal_margin">16dp</dimen>
 
-    <dimen name="padding_half">8dp</dimen>
+    <dimen name="padding_half">6dp</dimen>
 
 
     <dimen name="icon_text_margin">12dp</dimen>

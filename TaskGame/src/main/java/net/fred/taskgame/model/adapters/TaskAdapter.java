@@ -5,6 +5,7 @@ import android.graphics.Color;
 import android.net.Uri;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewCompat;
+import android.support.v7.widget.CardView;
 import android.text.Spanned;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
@@ -52,9 +53,7 @@ public class TaskAdapter extends MultiSelectAdapter<TaskAdapter.TaskViewHolder>
     public static class TaskViewHolder extends AbstractDraggableSwipeableItemViewHolder {
 
         @Bind(R.id.container)
-        View mContainer;
-        @Bind(R.id.card_layout)
-        View mCardLayout;
+        CardView mContainer;
         @Bind(R.id.drag_handle)
         View mDragHandle;
         @Bind(R.id.task_title)
@@ -156,11 +155,11 @@ public class TaskAdapter extends MultiSelectAdapter<TaskAdapter.TaskViewHolder>
 
         // Init task and category marker colors
         if (!TextUtils.isEmpty(task.questId)) { // If this is an official quest, let's make it quite visible
-            holder.mCardLayout.setBackgroundColor(ContextCompat.getColor(mActivity, R.color.quest_color));
+            holder.mContainer.setCardBackgroundColor(ContextCompat.getColor(mActivity, R.color.quest_color));
             holder.mDragHandle.setBackgroundColor(Color.TRANSPARENT);
         } else {
             // Resetting transparent color to the view
-            holder.mCardLayout.setBackgroundColor(Color.TRANSPARENT);
+            holder.mContainer.setCardBackgroundColor(Color.WHITE);
 
             // If category is set the color will be applied on the appropriate target
             if (task.getCategory() != null && task.getCategory().color != null) {
@@ -172,7 +171,7 @@ public class TaskAdapter extends MultiSelectAdapter<TaskAdapter.TaskViewHolder>
 
         // Highlighted if is part of multi selection of tasks. Remember to search for child with card ui
         if (isItemSelected(position)) {
-            holder.mCardLayout.setBackgroundColor(ContextCompat.getColor(mActivity, R.color.list_bg_selected));
+            holder.mContainer.setCardBackgroundColor(ContextCompat.getColor(mActivity, R.color.list_bg_selected));
         }
 
         // set listeners
