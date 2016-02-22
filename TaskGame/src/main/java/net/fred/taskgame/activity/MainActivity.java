@@ -79,6 +79,7 @@ public class MainActivity extends BaseGameActivity implements FragmentManager.On
         ButterKnife.bind(this);
 
         setSupportActionBar(mToolbar);
+        //noinspection ConstantConditions
         getSupportActionBar().setHomeButtonEnabled(true);
         getSupportActionBar().setDisplayShowTitleEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
@@ -161,6 +162,7 @@ public class MainActivity extends BaseGameActivity implements FragmentManager.On
     public long getWidgetCatId() {
         // Check if is launched from a widget with categories to set tag
         if (getIntent() != null && getIntent().hasExtra(Constants.INTENT_WIDGET)) {
+            //noinspection ConstantConditions
             String widgetId = getIntent().getExtras().get(Constants.INTENT_WIDGET).toString();
             return PrefUtils.getLong(PrefUtils.PREF_WIDGET_PREFIX + widgetId, -1);
         }

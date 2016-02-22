@@ -76,6 +76,12 @@ public class Task extends IdBasedModel {
     @Column
     @Expose
     public String questId = "";
+    @Column
+    @Expose
+    public String questMilestoneId = "";
+    @Column
+    @Expose
+    public String questEventId = "";
 
     private transient Category mCategory;
     private transient List<Attachment> mAttachmentsList;
@@ -148,9 +154,9 @@ public class Task extends IdBasedModel {
         }
 
         Object[] a = {id, title, content, creationDate, lastModificationDate, displayPriority, isFinished,
-                alarmDate, isChecklist, categoryId, pointReward, questId, getAttachmentsList()};
+                alarmDate, isChecklist, categoryId, pointReward, questId, questMilestoneId, questEventId, getAttachmentsList()};
         Object[] b = {task.id, task.title, task.content, task.creationDate, task.lastModificationDate, task.displayPriority, task.isFinished,
-                task.alarmDate, task.isChecklist, task.categoryId, task.pointReward, task.questId, task.getAttachmentsList()};
+                task.alarmDate, task.isChecklist, task.categoryId, task.pointReward, task.questId, task.questMilestoneId, task.questEventId, task.getAttachmentsList()};
         if (EqualityChecker.check(a, b)) {
             res = true;
         }

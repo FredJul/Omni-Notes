@@ -12,9 +12,11 @@ import android.content.SyncResult;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.util.Pair;
 
 import com.google.android.gms.games.Games;
 import com.google.android.gms.games.GamesStatusCodes;
+import com.google.android.gms.games.quest.Milestone;
 import com.google.android.gms.games.quest.Quest;
 import com.google.android.gms.games.quest.QuestBuffer;
 import com.google.android.gms.games.quest.Quests;
@@ -34,11 +36,14 @@ import net.fred.taskgame.model.Task;
 import net.fred.taskgame.model.Task_Table;
 import net.fred.taskgame.provider.FakeProvider;
 import net.fred.taskgame.utils.Constants;
+import net.fred.taskgame.utils.DbHelper;
 import net.fred.taskgame.utils.Dog;
 import net.fred.taskgame.utils.GameHelper;
 import net.fred.taskgame.utils.PrefUtils;
 
 import java.nio.charset.Charset;
+import java.util.HashSet;
+import java.util.List;
 
 /**
  * Service to handle sync requests.
@@ -230,24 +235,30 @@ public class SyncService extends Service {
                         return; // We just got a timeout, it's maybe because we left, it's better to not continue
                     }
 
-                    Dog.i("retrieve quests");
+                    // Retrieve quests
                     Quests.LoadQuestsResult questsResult = Games.Quests.load(helper.getApiClient(), new int[]{Games.Quests.SELECT_ACCEPTED}, Games.Quests.SORT_ORDER_ENDING_SOON_FIRST, false).await();
                     if (questsResult.getStatus().isSuccess()) {
+                        HashSet<Pair<String, String>> questsIds = new HashSet<>();
+
                         Dog.i("retrieve quests success");
                         QuestBuffer quests = questsResult.getQuests();
                         for (Quest quest : quests) {
-                            Dog.i("quest: " + quest);
                             String questId = quest.getQuestId();
+                            Milestone questMilestone = quest.getCurrentMilestone();
+                            questsIds.add(new Pair<>(questId, questMilestone.getMilestoneId()));
+
+                            Dog.i("quest: " + quest);
                             Task task = new Select().from(Task.class).where(Task_Table.questId.eq(questId)).querySingle();
                             if (task == null) {
                                 task = new Task();
                             }
 
                             task.questId = questId;
+                            task.questMilestoneId = questMilestone.getMilestoneId();
+                            task.questEventId = questMilestone.getEventId();
                             task.title = quest.getName();
                             task.content = quest.getDescription();
-                            String reward = new String(quest.getCurrentMilestone().getCompletionRewardData(), Charset.forName("UTF-8"));
-                            Dog.i("quest reward: " + reward);
+                            String reward = new String(questMilestone.getCompletionRewardData(), Charset.forName("UTF-8"));
                             task.pointReward = Integer.valueOf(reward);
 
                             task.save();
@@ -260,7 +271,17 @@ public class SyncService extends Service {
                             attachment.uri = Uri.parse(quest.getIconImageUrl());
                             attachment.save();
                         }
+
+                        // Delete old quests
+                        List<Task> questTasks = new Select().from(Task.class).where(Task_Table.questId.isNotNull()).and(Task_Table.questId.isNot("")).queryList();
+                        for (Task questTask : questTasks) {
+                            if (!questsIds.contains(new Pair<>(questTask.questId, questTask.questMilestoneId))) {
+                                Dog.i("old quest deleted: " + questTask);
+                                DbHelper.deleteTask(questTask);
+                            }
+                        }
                     }
+
                 } catch (Throwable t) {
                     Dog.e("ERROR", t);
                     syncResult.databaseError = true;

@@ -50,6 +50,7 @@ import net.fred.taskgame.model.Task;
 import net.fred.taskgame.model.adapters.NavDrawerAdapter;
 import net.fred.taskgame.model.adapters.NavDrawerCategoryAdapter;
 import net.fred.taskgame.model.listeners.OnPermissionRequestedListener;
+import net.fred.taskgame.service.SyncService;
 import net.fred.taskgame.utils.Constants;
 import net.fred.taskgame.utils.DbHelper;
 import net.fred.taskgame.utils.Navigation;
@@ -78,6 +79,7 @@ import butterknife.OnClick;
 public class NavigationDrawerFragment extends Fragment {
 
     private static final int REQUEST_CODE_CATEGORY = 2;
+    private static final int REQUEST_CODE_QUESTS = 3;
 
     String[] mNavigationArray;
     TypedArray mNavigationIconsArray;
@@ -358,7 +360,10 @@ public class NavigationDrawerFragment extends Fragment {
                 }
 
                 break;
-
+            case REQUEST_CODE_QUESTS:
+                // Just to refresh the list of quests if one has been accepted
+                SyncService.triggerSync(getContext());
+                break;
             default:
                 break;
         }
@@ -378,7 +383,7 @@ public class NavigationDrawerFragment extends Fragment {
     @OnClick(R.id.questsBtn)
     public void onQuestsBtnClicked(View v) {
         try {
-            startActivityForResult(Games.Quests.getQuestsIntent(getMainActivity().getApiClient(), Quests.SELECT_ALL_QUESTS), 0);
+            startActivityForResult(Games.Quests.getQuestsIntent(getMainActivity().getApiClient(), Quests.SELECT_ALL_QUESTS), REQUEST_CODE_QUESTS);
         } catch (Exception ignored) {
         }
     }

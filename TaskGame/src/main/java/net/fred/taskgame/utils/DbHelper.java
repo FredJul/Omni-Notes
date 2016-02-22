@@ -136,6 +136,7 @@ public class DbHelper {
         for (Attachment attachment : task.getAttachmentsList()) {
             StorageHelper.delete(MainApplication.getContext(), attachment.uri.getPath());
         }
+        ReminderHelper.removeReminder(MainApplication.getContext(), task);
 
         // Delete task's attachments
         Delete.table(Attachment.class, Attachment_Table.taskId.eq(task.id));

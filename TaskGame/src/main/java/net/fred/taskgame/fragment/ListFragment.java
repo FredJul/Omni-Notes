@@ -666,12 +666,18 @@ public class ListFragment extends Fragment implements OnViewTouchedListener {
     }
 
     private void finishTaskExecute(Task task) {
-        DbHelper.finishTask(task);
-        mAdapter.getTasks().remove(task);
+        if (TextUtils.isEmpty(task.questId)) {
+            DbHelper.finishTask(task);
+        } else {
+            // we directly delete quests (to ot be able to restore them), but we still add the reward
+            PrefUtils.putLong(PrefUtils.PREF_CURRENT_POINTS, PrefUtils.getLong(PrefUtils.PREF_CURRENT_POINTS, 0) + task.pointReward);
+            Games.Events.increment(getMainActivity().getApiClient(), task.questEventId, 1);
+            Games.Quests.claim(getMainActivity().getApiClient(), task.questId, task.questMilestoneId);
 
-        if (!TextUtils.isEmpty(task.questId)) {
-            Games.Events.increment(getMainActivity().getApiClient(), task.questId, 1);
+            DbHelper.deleteTask(task);
         }
+
+        mAdapter.getTasks().remove(task);
     }
 
     private void restoreTasks(int[] positions) {
