@@ -20,7 +20,7 @@
     android:layout_marginLeft="@dimen/activity_additional_margin"
     android:layout_marginRight="@dimen/activity_additional_margin">
 
-    <android.support.v7.widget.RecyclerView
+    <net.fred.taskgame.view.EmptyRecyclerView
         android:id="@+id/recycler_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />

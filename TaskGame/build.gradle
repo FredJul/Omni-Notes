@@ -75,7 +75,4 @@ dependencies {
     compile 'me.tatarka.rxloader:rxloader:+'
     compile 'com.jakewharton:butterknife:+'
     compile 'com.tbruyelle.rxpermissions:rxpermissions:0.5.1@aar'
-    compile('com.h6ah4i.android.widget.advrecyclerview:advrecyclerview:0.8.6@aar') {
-        transitive = true
-    }
 }

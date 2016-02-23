@@ -28,16 +28,15 @@ import android.support.v4.view.GravityCompat;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.view.ActionMode;
 import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.SearchView.OnQueryTextListener;
+import android.support.v7.widget.helper.ItemTouchHelper;
 import android.text.TextUtils;
 import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.View.OnFocusChangeListener;
@@ -49,11 +48,9 @@ import android.widget.AdapterView;
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.google.android.gms.games.Games;
-import com.h6ah4i.android.widget.advrecyclerview.animator.GeneralItemAnimator;
-import com.h6ah4i.android.widget.advrecyclerview.animator.SwipeDismissItemAnimator;
-import com.h6ah4i.android.widget.advrecyclerview.draggable.RecyclerViewDragDropManager;
-import com.h6ah4i.android.widget.advrecyclerview.swipeable.RecyclerViewSwipeManager;
-import com.h6ah4i.android.widget.advrecyclerview.touchguard.RecyclerViewTouchActionGuardManager;
+import com.raizlabs.android.dbflow.runtime.TransactionManager;
+import com.raizlabs.android.dbflow.runtime.transaction.process.ProcessModelInfo;
+import com.raizlabs.android.dbflow.runtime.transaction.process.SaveModelTransaction;
 
 import net.fred.taskgame.R;
 import net.fred.taskgame.activity.CategoryActivity;
@@ -64,18 +61,21 @@ import net.fred.taskgame.model.IdBasedModel;
 import net.fred.taskgame.model.Task;
 import net.fred.taskgame.model.adapters.NavDrawerCategoryAdapter;
 import net.fred.taskgame.model.adapters.TaskAdapter;
-import net.fred.taskgame.model.listeners.OnViewTouchedListener;
 import net.fred.taskgame.utils.Constants;
 import net.fred.taskgame.utils.DbHelper;
 import net.fred.taskgame.utils.Navigation;
 import net.fred.taskgame.utils.PrefUtils;
 import net.fred.taskgame.utils.ThrottledFlowContentObserver;
 import net.fred.taskgame.utils.UiUtils;
+import net.fred.taskgame.utils.recycler.ItemActionListener;
+import net.fred.taskgame.utils.recycler.SimpleItemTouchHelperCallback;
+import net.fred.taskgame.view.EmptyRecyclerView;
 
 import org.parceler.Parcels;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -84,12 +84,12 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 
 
-public class ListFragment extends Fragment implements OnViewTouchedListener {
+public class ListFragment extends Fragment {
 
     private static final int REQUEST_CODE_CATEGORY_TASKS = 3;
 
     @Bind(R.id.recycler_view)
-    RecyclerView mRecyclerView;
+    EmptyRecyclerView mRecyclerView;
     @Bind(R.id.empty_view)
     View mEmptyView;
 
@@ -270,9 +270,7 @@ public class ListFragment extends Fragment implements OnViewTouchedListener {
     /**
      * Manage check/uncheck of tasks in list during multiple selection phase
      */
-    private void toggleSelection(int position) {
-        mAdapter.toggleSelection(position);
-
+    private void updateActionMode() {
         // Close CAB if no items are selected
         if (mAdapter.getSelectedItemCount() == 0) {
             finishActionMode();
@@ -287,16 +285,38 @@ public class ListFragment extends Fragment implements OnViewTouchedListener {
     private void initRecyclerView() {
         //noinspection ConstantConditions
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false);
-        // touch guard manager  (this class is required to suppress scrolling while swipe-dismiss animation is running)
-        RecyclerViewTouchActionGuardManager recyclerViewTouchActionGuardManager = new RecyclerViewTouchActionGuardManager();
-        recyclerViewTouchActionGuardManager.setInterceptVerticalScrollingWhileAnimationRunning(true);
-        recyclerViewTouchActionGuardManager.setEnabled(true);
 
         //adapter
-        mAdapter = new TaskAdapter(getActivity(), new ArrayList<Task>());
-        mAdapter.setEventListener(new TaskAdapter.EventListener() {
+        ItemActionListener listener = new ItemActionListener() {
             @Override
-            public void onItemRemoved(int position) {
+            public boolean onItemMove(int fromPosition, int toPosition) {
+                if (fromPosition == toPosition) {
+                    return true;
+                }
+
+                Collections.swap(mAdapter.getTasks(), fromPosition, toPosition);
+                mAdapter.notifyItemMoved(fromPosition, toPosition);
+
+                return true;
+            }
+
+            @Override
+            public void onItemMoveFinished() {
+                List<Task> tasks = mAdapter.getTasks();
+                int count = tasks.size();
+
+                for (int i = 0; i < count; i++) {
+                    Task task = tasks.get(i);
+                    task.displayPriority = count - 1 - i;
+                }
+
+                TransactionManager.getInstance().addTransaction(new SaveModelTransaction<>(ProcessModelInfo.withModels(tasks)));
+
+                finishActionMode();
+            }
+
+            @Override
+            public void onItemSwiped(int position) {
                 // Depending on settings and note status this action will...
 
                 if (Navigation.checkNavigation(Navigation.FINISHED)) { // ...restore
@@ -306,94 +326,41 @@ public class ListFragment extends Fragment implements OnViewTouchedListener {
                 } else { // ...finish
                     finishTasks(new int[]{position});
                 }
+
+                mAdapter.notifyItemRemoved(position);
             }
 
             @Override
-            public void onItemMoved(int fromPosition, int toPosition) {
-                List<Task> tasks = mAdapter.getTasks();
-                int newPriorityForMovedItem = tasks.get(toPosition).displayPriority + 1;
-
-                for (int i = 0; i < tasks.size(); i++) {
-                    Task task = tasks.get(i);
-                    if (i == fromPosition) { // that's the item we moved
-                        task.displayPriority = newPriorityForMovedItem;
-                    } else if ((i < toPosition && fromPosition > toPosition) || (i <= toPosition && fromPosition < toPosition)) {
-                        task.displayPriority = task.displayPriority + 2;
-                    }
-                    task.async().save();
-                }
+            public void onItemClicked(int position) {
+                editTask(mAdapter.getTasks().get(position));
             }
 
             @Override
-            public void onItemViewClicked(View v, int position) {
-                if (mActionMode == null) {
-                    editTask(mAdapter.getTasks().get(position));
-                } else {
-                    // If in CAB mode
-                    toggleSelection(position);
-                    setCabTitle();
-                }
-            }
-
-            @Override
-            public void onItemViewLongClicked(View v, int position) {
+            public void onItemSelected(int position) {
                 if (mActionMode == null) {
                     ((MainActivity) getActivity()).startSupportActionMode(new ModeCallback());
                 }
+
                 // Start the CAB using the ActionMode.Callback defined above
-                toggleSelection(position);
+                updateActionMode();
                 setCabTitle();
             }
-        });
-        mAdapter.registerAdapterDataObserver(new RecyclerView.AdapterDataObserver() {
+
             @Override
-            public void onChanged() {
-                super.onChanged();
-                checkAdapterIsEmpty();
+            public void onItemUnselected(int position) {
+                // Start the CAB using the ActionMode.Callback defined above
+                updateActionMode();
+                setCabTitle();
             }
-        });
-
-
-        // drag & drop manager
-        RecyclerViewDragDropManager recyclerViewDragDropManager = new RecyclerViewDragDropManager();
-        RecyclerView.Adapter wrappedAdapter = recyclerViewDragDropManager.createWrappedAdapter(mAdapter);      // wrap for dragging
-
-        // swipe manager
-        RecyclerViewSwipeManager recyclerViewSwipeManager = new RecyclerViewSwipeManager();
-        wrappedAdapter = recyclerViewSwipeManager.createWrappedAdapter(wrappedAdapter);      // wrap for swiping
-
-        final GeneralItemAnimator animator = new SwipeDismissItemAnimator();
-
-        // Change animations are enabled by default since support-v7-recyclerview v22.
-        // Disable the change animation in order to make turning back animation of swiped item works properly.
-        animator.setSupportsChangeAnimations(false);
+        };
+        mAdapter = new TaskAdapter(getActivity(), listener, mRecyclerView, new ArrayList<Task>());
+        mRecyclerView.setEmptyView(mEmptyView);
 
         mRecyclerView.setLayoutManager(layoutManager);
-        mRecyclerView.setAdapter(wrappedAdapter);  // requires *wrapped* adapter
-        mRecyclerView.setItemAnimator(animator);
 
-        // NOTE:
-        // The initialization order is very important! This order determines the priority of touch event handling.
-        //
-        // priority: TouchActionGuard > Swipe > DragAndDrop
-        recyclerViewTouchActionGuardManager.attachRecyclerView(mRecyclerView);
-        recyclerViewSwipeManager.attachRecyclerView(mRecyclerView);
-        recyclerViewDragDropManager.attachRecyclerView(mRecyclerView);
-    }
-
-    private void checkAdapterIsEmpty() {
-        if (mAdapter.getItemCount() == 0) {
-            mEmptyView.setVisibility(View.VISIBLE);
-            mRecyclerView.setVisibility(View.GONE);
-        } else {
-            mEmptyView.setVisibility(View.GONE);
-            mRecyclerView.setVisibility(View.VISIBLE);
-        }
-    }
-
-    @Override
-    public void onViewTouchOccurred(MotionEvent ev) {
-        commitPending();
+        ItemTouchHelper.Callback callback = new SimpleItemTouchHelperCallback(mAdapter);
+        ItemTouchHelper itemTouchHelper = new ItemTouchHelper(callback);
+        itemTouchHelper.attachToRecyclerView(mRecyclerView);
     }
 
     @Override
