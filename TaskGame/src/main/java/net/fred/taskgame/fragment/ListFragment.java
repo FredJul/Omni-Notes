@@ -321,8 +321,6 @@ public class ListFragment extends Fragment {
 
                 if (Navigation.checkNavigation(Navigation.FINISHED)) { // ...restore
                     restoreTasks(new int[]{position});
-                } else if (Navigation.checkNavigation(Navigation.CATEGORY)) { // ...removes category
-                    categorizeTasks(new int[]{position}, null);
                 } else { // ...finish
                     finishTasks(new int[]{position});
                 }
@@ -765,6 +763,7 @@ public class ListFragment extends Fragment {
             // Update adapter content if actual navigation is the category
             // associated with actually cycled note
             if (Navigation.checkNavigation(Navigation.CATEGORY) && !Navigation.checkNavigationCategory(category)) {
+                mAdapter.notifyItemRemoved(mAdapter.getTasks().indexOf(task));
                 mAdapter.getTasks().remove(task);
             } else {
                 task.setCategory(category);
