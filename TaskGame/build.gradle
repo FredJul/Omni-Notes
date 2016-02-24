@@ -55,24 +55,22 @@ dependencies {
     apt 'com.github.Raizlabs.DBFlow:dbflow-processor:+'
     compile "com.github.Raizlabs.DBFlow:dbflow-core:+"
     compile "com.github.Raizlabs.DBFlow:dbflow:+"
-    compile "com.android.support:appcompat-v7:+"
-    compile "com.google.android.gms:play-services-games:+"
-
     compile 'org.parceler:parceler-api:+'
     apt 'org.parceler:parceler:+'
     compile 'com.google.code.gson:gson:+'
+    compile 'com.jakewharton:butterknife:+'
+    compile 'io.reactivex:rxjava:+'
+    compile 'me.tatarka.rxloader:rxloader:+'
+    compile 'com.tbruyelle.rxpermissions:rxpermissions:0.5.1@aar'
 
-    compile 'com.github.flavienlaurent.datetimepicker:library:+'
-    compile 'com.larswerkman:HoloColorPicker:+'
-    compile 'com.jakewharton:disklrucache:+'
-    compile 'com.github.bumptech.glide:glide:+'
-    compile 'commons-io:commons-io:+'
-    compile 'com.github.afollestad.material-dialogs:core:+@aar'
+    compile "com.android.support:appcompat-v7:+"
     compile 'com.android.support:recyclerview-v7:+'
     compile 'com.android.support:cardview-v7:+'
     compile 'com.android.support:design:+'
-    compile 'io.reactivex:rxjava:+'
-    compile 'me.tatarka.rxloader:rxloader:+'
-    compile 'com.jakewharton:butterknife:+'
-    compile 'com.tbruyelle.rxpermissions:rxpermissions:0.5.1@aar'
+    compile "com.google.android.gms:play-services-games:+"
+    compile 'commons-io:commons-io:+'
+    compile 'com.github.bumptech.glide:glide:+'
+    compile 'com.github.flavienlaurent.datetimepicker:library:+'
+    compile 'com.larswerkman:HoloColorPicker:+'
+    compile 'com.github.afollestad.material-dialogs:core:+@aar'
 }

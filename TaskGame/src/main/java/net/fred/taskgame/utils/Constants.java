@@ -20,10 +20,6 @@ public interface Constants {
 
     String TAG = "TaskGame";
 
-    // Floating action button
-    int FAB_ANIMATION_TIME = 200;
-
-    String DATE_FORMAT_SHORT_DATE = "d MMM yyyy";
     String DATE_FORMAT_SORTABLE = "yyyyMMdd_HHmmss_S";
     String DATE_FORMAT_SORTABLE_OLD = "yyyyMMddHHmmss";
 
@@ -54,8 +50,6 @@ public interface Constants {
     String MIME_TYPE_AUDIO_EXT = ".mp3";
     String MIME_TYPE_VIDEO_EXT = ".mp4";
     String MIME_TYPE_SKETCH_EXT = ".png";
-
-    int MENU_SORT_GROUP_ID = 11998811;
 
     String LEADERBOARD_ID = "CgkI--6GstwWEAIQAw";
 }
