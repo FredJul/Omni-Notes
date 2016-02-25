@@ -374,7 +374,7 @@ public class MainActivity extends BaseGameActivity implements FragmentManager.On
 
                 if (item.getItemId() == R.string.drawer_tasks_item) {
                     updateNavigation(NavigationUtils.TASKS);
-                } else if (item.getItemId() == R.string.drawer_tasks_item) {
+                } else if (item.getItemId() == R.string.drawer_finished_tasks_item) {
                     updateNavigation(NavigationUtils.FINISHED_TASKS);
                 } else { // This is a category
                     updateNavigation(item.getIntent().getLongExtra("category", 0));
