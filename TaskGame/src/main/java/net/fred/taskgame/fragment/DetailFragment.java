@@ -731,6 +731,9 @@ public class DetailFragment extends Fragment implements OnReminderPickedListener
         if (newView != null) {
             mChecklistManager.replaceViews(mToggleChecklistView, newView);
             mToggleChecklistView = newView;
+            if (newView instanceof EditText) {
+                mContentEditText = (EditText) newView; // not beautiful, but fix a bug
+            }
 //			fade(mToggleChecklistView, true);
             animate(mToggleChecklistView).alpha(1).scaleXBy(0).scaleX(1).scaleYBy(0).scaleY(1);
             mTask.isChecklist = !mTask.isChecklist;
