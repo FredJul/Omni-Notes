@@ -117,5 +117,9 @@
     <!-- Accessibility -->
     <string name="drawer_open">drawer open</string>
     <string name="drawer_close">drawer closed</string>
+    <string name="not_logged_in">Not logged in</string>
+    <string name="quests">Quests</string>
+    <string name="leaderboard">Leaderboard</string>
+    <string name="sign_out_confirmation">Do you want to sign out?</string>
 
 </resources>

@@ -20,9 +20,12 @@ package net.fred.taskgame.activity;
 import android.Manifest;
 import android.animation.ValueAnimator;
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
+import android.graphics.Bitmap;
 import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Bundle;
@@ -31,6 +34,8 @@ import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.graphics.drawable.RoundedBitmapDrawable;
+import android.support.v4.graphics.drawable.RoundedBitmapDrawableFactory;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -41,10 +46,14 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.DecelerateInterpolator;
+import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.target.BitmapImageViewTarget;
 import com.google.android.gms.games.Games;
+import com.google.android.gms.games.Player;
 import com.google.android.gms.games.quest.Quests;
 
 import net.fred.taskgame.R;
@@ -90,6 +99,10 @@ public class MainActivity extends BaseGameActivity implements FragmentManager.On
     @Bind(R.id.navigation_view)
     NavigationView mNavigationView;
 
+    private ImageView mPlayerImageView;
+    private TextView mPlayerName;
+    private Button mLeaderboardBtn;
+    private Button mQuestsBtn;
     private TextView mCurrentPoints;
     private ActionBarDrawerToggle mDrawerToggle;
 
@@ -271,41 +284,47 @@ public class MainActivity extends BaseGameActivity implements FragmentManager.On
                 // Initialized the views which was not inflated before
                 if (mCurrentPoints == null) {
                     mCurrentPoints = (TextView) mNavigationView.findViewById(R.id.currentPoints);
+
+                    mPlayerImageView = (ImageView) mNavigationView.findViewById(R.id.player);
+                    mPlayerImageView.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            PermissionsHelper.requestPermission(MainActivity.this, Manifest.permission.GET_ACCOUNTS,
+                                    R.string.permission_get_account, new OnPermissionRequestedListener() {
+                                        @Override
+                                        public void onPermissionGranted() {
+                                            beginUserInitiatedSignIn();
+                                        }
+                                    });
+                        }
+                    });
+
+                    mPlayerName = (TextView) mNavigationView.findViewById(R.id.player_name);
+
+                    mLeaderboardBtn = (Button) mNavigationView.findViewById(R.id.leaderboard_btn);
+                    mLeaderboardBtn.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            try {
+                                startActivityForResult(Games.Leaderboards.getLeaderboardIntent(getApiClient(), Constants.LEADERBOARD_ID), 0);
+                            } catch (Exception ignored) {
+                            }
+                        }
+                    });
+
+                    mQuestsBtn = (Button) mNavigationView.findViewById(R.id.quests_btn);
+                    mQuestsBtn.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            try {
+                                startActivityForResult(Games.Quests.getQuestsIntent(getApiClient(), Quests.SELECT_ALL_QUESTS), REQUEST_CODE_QUESTS);
+                            } catch (Exception ignored) {
+                            }
+                        }
+                    });
                 }
                 mCurrentPoints.setText(String.valueOf(PrefUtils.getLong(PrefUtils.PREF_CURRENT_POINTS, 0)));
 
-                mNavigationView.findViewById(R.id.login_btn).setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        PermissionsHelper.requestPermission(MainActivity.this, Manifest.permission.GET_ACCOUNTS,
-                                R.string.permission_get_account, new OnPermissionRequestedListener() {
-                                    @Override
-                                    public void onPermissionGranted() {
-                                        beginUserInitiatedSignIn();
-                                    }
-                                });
-                    }
-                });
-
-                mNavigationView.findViewById(R.id.quests_btn).setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        try {
-                            startActivityForResult(Games.Quests.getQuestsIntent(getApiClient(), Quests.SELECT_ALL_QUESTS), REQUEST_CODE_QUESTS);
-                        } catch (Exception ignored) {
-                        }
-                    }
-                });
-
-                mNavigationView.findViewById(R.id.leaderboard_btn).setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        try {
-                            startActivityForResult(Games.Leaderboards.getLeaderboardIntent(getApiClient(), Constants.LEADERBOARD_ID), 0);
-                        } catch (Exception ignored) {
-                        }
-                    }
-                });
 
                 // Small hack to handle the long press on menu item
                 ViewGroup navigationList = (ViewGroup) mNavigationView.findViewById(android.support.design.R.id.design_navigation_view);
@@ -388,14 +407,61 @@ public class MainActivity extends BaseGameActivity implements FragmentManager.On
     }
 
     @Override
-    public void onSignInFailed() {
-        Toast.makeText(this, "sign in failed", Toast.LENGTH_SHORT).show();
-    }
-
-    @Override
     public void onSignInSucceeded() {
         PrefUtils.putBoolean(PrefUtils.PREF_ALREADY_LOGGED_TO_GAMES, true);
         SyncService.triggerSync(this);
+
+        Player player = Games.Players.getCurrentPlayer(getApiClient());
+        Glide.with(this).load(player.getIconImageUrl()).asBitmap().centerCrop().into(new BitmapImageViewTarget(mPlayerImageView) {
+            @Override
+            protected void setResource(Bitmap resource) {
+                RoundedBitmapDrawable circularBitmapDrawable = RoundedBitmapDrawableFactory.create(getResources(), resource);
+                circularBitmapDrawable.setCircular(true);
+                getView().setImageDrawable(circularBitmapDrawable);
+            }
+        });
+        mPlayerImageView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                new AlertDialog.Builder(MainActivity.this)
+                        .setMessage(R.string.sign_out_confirmation)
+                        .setPositiveButton(R.string.confirm, new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                signOut();
+                                Glide.with(MainActivity.this).load(android.R.drawable.sym_def_app_icon).into(mPlayerImageView);
+                                mPlayerName.setText(R.string.not_logged_in);
+                                mLeaderboardBtn.setVisibility(View.GONE);
+                                mQuestsBtn.setVisibility(View.GONE);
+
+                                mPlayerImageView.setOnClickListener(new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View v) {
+                                        PermissionsHelper.requestPermission(MainActivity.this, Manifest.permission.GET_ACCOUNTS,
+                                                R.string.permission_get_account, new OnPermissionRequestedListener() {
+                                                    @Override
+                                                    public void onPermissionGranted() {
+                                                        beginUserInitiatedSignIn();
+                                                    }
+                                                });
+                                    }
+                                });
+                            }
+                        })
+                        .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                            }
+                        }).show();
+            }
+        });
+
+        mPlayerName.setText(player.getDisplayName());
+
+        mLeaderboardBtn.setVisibility(View.VISIBLE);
+        mQuestsBtn.setVisibility(View.VISIBLE);
+    }
+
+    @Override
+    public void onSignInFailed() {
     }
 
     public void commitPending() {
