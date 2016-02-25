@@ -577,8 +577,17 @@ public class ListFragment extends Fragment {
             // Check if is launched from a widget with categories to set tag
             if (getMainActivity().getWidgetCatId() != -1) {
                 onTasksLoaded(DbHelper.getTasksByCategory(getMainActivity().getWidgetCatId()));
+                getMainActivity().getSupportActionBar().setTitle(DbHelper.getCategory(getMainActivity().getWidgetCatId()).name);
             } else { // Gets all tasks
                 onTasksLoaded(DbHelper.getTasksFromCurrentNavigation());
+                long currentNavigation = NavigationUtils.getNavigation();
+                if (currentNavigation == NavigationUtils.TASKS) {
+                    getMainActivity().getSupportActionBar().setTitle(R.string.drawer_tasks_item);
+                } else if (currentNavigation == NavigationUtils.FINISHED_TASKS) {
+                    getMainActivity().getSupportActionBar().setTitle(R.string.drawer_finished_tasks_item);
+                } else {
+                    getMainActivity().getSupportActionBar().setTitle(DbHelper.getCategory(currentNavigation).name);
+                }
             }
         }
     }

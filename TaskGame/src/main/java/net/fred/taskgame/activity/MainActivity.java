@@ -233,7 +233,6 @@ public class MainActivity extends BaseGameActivity implements FragmentManager.On
         item.setIcon(R.drawable.ic_assignment_grey600_24dp);
         if (currentNavigation == NavigationUtils.TASKS) {
             item.setChecked(true);
-            getSupportActionBar().setTitle(item.getTitle());
         }
         nbItems++;
 
@@ -242,7 +241,6 @@ public class MainActivity extends BaseGameActivity implements FragmentManager.On
             item.setIcon(R.drawable.ic_assignment_turned_in_grey600_24dp);
             if (currentNavigation == NavigationUtils.FINISHED_TASKS) {
                 item.setChecked(true);
-                getSupportActionBar().setTitle(item.getTitle());
             }
             nbItems++;
         }
@@ -253,7 +251,6 @@ public class MainActivity extends BaseGameActivity implements FragmentManager.On
             item.setIcon(new ColorDrawable(category.color));
             if (currentNavigation == category.id) {
                 item.setChecked(true);
-                getSupportActionBar().setTitle(item.getTitle());
             }
 
             nbItems++;
@@ -363,7 +360,6 @@ public class MainActivity extends BaseGameActivity implements FragmentManager.On
                 break;
         }
 
-        getSupportActionBar().setTitle(item.getTitle());
         mDrawerLayout.closeDrawer(GravityCompat.START);
         return true;
     }
