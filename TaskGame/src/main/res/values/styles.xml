@@ -48,18 +48,6 @@
         <item name="android:windowIsFloating">true</item>
     </style>
 
-    <style name="Button.Dialog" parent="MD_ActionButton">
-        <item name="android:textColor">@color/colorPrimary</item>
-        <item name="android:background">@null</item>
-        <item name="android:textCursorDrawable">@null</item>
-    </style>
-
-    <style name="Button.Dialog.Accent" parent="MD_ActionButton">
-        <item name="android:textColor">@color/colorAccent</item>
-        <item name="android:background">@null</item>
-        <item name="android:textCursorDrawable">@null</item>
-    </style>
-
     <style name="Text" parent="android:TextAppearance.Holo.Medium.Inverse">
         <item name="android:textColor">@color/text_color</item>
         <item name="android:textColorHint">@color/text_color_lighter</item>

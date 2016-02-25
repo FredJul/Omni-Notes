@@ -18,6 +18,8 @@
 package net.fred.taskgame.activity;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.view.View;
@@ -26,7 +28,6 @@ import android.view.View.OnLongClickListener;
 import android.widget.Button;
 import android.widget.EditText;
 
-import com.afollestad.materialdialogs.MaterialDialog;
 import com.larswerkman.holocolorpicker.ColorPicker;
 import com.larswerkman.holocolorpicker.ColorPicker.OnColorChangedListener;
 import com.larswerkman.holocolorpicker.SaturationBar;
@@ -160,14 +161,11 @@ public class CategoryActivity extends Activity {
             msg = getString(R.string.delete_category_confirmation).replace("$1$", String.valueOf(count));
         }
 
-        new MaterialDialog.Builder(this)
-                .title(R.string.delete_unused_category_confirmation)
-                .content(msg)
-                .positiveText(R.string.confirm)
-                .positiveColorRes(R.color.colorAccent)
-                .callback(new MaterialDialog.ButtonCallback() {
-                    @Override
-                    public void onPositive(MaterialDialog dialog) {
+        new AlertDialog.Builder(this)
+                .setTitle(R.string.delete_unused_category_confirmation)
+                .setMessage(msg)
+                .setPositiveButton(R.string.confirm, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
                         // Changes navigation if actually are shown tasks associated with this category
                         if (NavigationUtils.isDisplayingCategory(category)) {
                             NavigationUtils.setNavigation(NavigationUtils.TASKS);
@@ -179,6 +177,6 @@ public class CategoryActivity extends Activity {
                         setResult(RESULT_FIRST_USER);
                         finish();
                     }
-                }).build().show();
+                }).show();
     }
 }

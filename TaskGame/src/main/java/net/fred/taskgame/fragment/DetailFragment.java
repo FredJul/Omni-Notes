@@ -72,8 +72,6 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.afollestad.materialdialogs.DialogAction;
-import com.afollestad.materialdialogs.MaterialDialog;
 import com.bumptech.glide.load.resource.bitmap.GlideBitmapDrawable;
 
 import net.fred.taskgame.MainApplication;
@@ -432,44 +430,37 @@ public class DetailFragment extends Fragment implements OnReminderPickedListener
             public boolean onItemLongClick(AdapterView<?> parent, View v, final int position, long id) {
 
                 // To avoid deleting audio attachment during playback
-                if (mPlayer != null) return false;
-
-                MaterialDialog.Builder dialogBuilder = new MaterialDialog.Builder(getActivity())
-                        .positiveText(R.string.delete);
+                if (mPlayer != null) {
+                    return false;
+                }
 
                 // If is an image user could want to sketch it!
                 if (Constants.MIME_TYPE_SKETCH.equals(mAttachmentAdapter.getItem(position).mimeType)) {
-                    dialogBuilder
-                            .content(R.string.delete_selected_image)
-                            .negativeText(R.string.edit)
-                            .callback(new MaterialDialog.ButtonCallback() {
-                                @Override
-                                public void onPositive(MaterialDialog materialDialog) {
+                    new AlertDialog.Builder(getActivity()).setMessage(R.string.delete_selected_image)
+                            .setPositiveButton(R.string.delete, new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int id) {
                                     mTask.getAttachmentsList().remove(position);
                                     mAttachmentAdapter.notifyDataSetChanged();
                                     mGridView.autoresize();
                                 }
-
-                                @Override
-                                public void onNegative(MaterialDialog materialDialog) {
+                            })
+                            .setNegativeButton(R.string.edit, new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int id) {
                                     mSketchEdited = mAttachmentAdapter.getItem(position);
                                     takeSketch(mSketchEdited);
                                 }
-                            });
+                            }).show();
                 } else {
-                    dialogBuilder
-                            .content(R.string.delete_selected_image)
-                            .callback(new MaterialDialog.ButtonCallback() {
-                                @Override
-                                public void onPositive(MaterialDialog materialDialog) {
+                    new AlertDialog.Builder(getActivity()).setMessage(R.string.delete_selected_image)
+                            .setPositiveButton(R.string.delete, new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int id) {
                                     mTask.getAttachmentsList().remove(position);
                                     mAttachmentAdapter.notifyDataSetChanged();
                                     mGridView.autoresize();
                                 }
-                            });
+                            }).show();
                 }
 
-                dialogBuilder.build().show();
                 return true;
             }
         });
@@ -487,17 +478,14 @@ public class DetailFragment extends Fragment implements OnReminderPickedListener
         mReminderLayout.setOnLongClickListener(new OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
-                MaterialDialog dialog = new MaterialDialog.Builder(getActivity())
-                        .content(R.string.remove_reminder)
-                        .positiveText(R.string.ok)
-                        .callback(new MaterialDialog.ButtonCallback() {
-                            @Override
-                            public void onPositive(MaterialDialog materialDialog) {
+                new AlertDialog.Builder(getActivity())
+                        .setMessage(R.string.remove_reminder)
+                        .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
                                 mTask.alarmDate = 0;
                                 mReminderDateTextView.setText("");
                             }
-                        }).build();
-                dialog.show();
+                        }).show();
                 return true;
             }
         });
@@ -687,7 +675,7 @@ public class DetailFragment extends Fragment implements OnReminderPickedListener
 
         // Inflate the popup_layout.xml
         LayoutInflater inflater = (LayoutInflater) getActivity().getSystemService(Activity.LAYOUT_INFLATER_SERVICE);
-        final View layout = inflater.inflate(R.layout.dialog_remove_checklist_layout, null);
+        View layout = inflater.inflate(R.layout.dialog_remove_checklist_layout, null);
 
         // Retrieves options checkboxes and initialize their values
         final CheckBox keepChecked = (CheckBox) layout.findViewById(R.id.checklist_keep_checked);
@@ -695,18 +683,16 @@ public class DetailFragment extends Fragment implements OnReminderPickedListener
         keepChecked.setChecked(PrefUtils.getBoolean(PrefUtils.PREF_KEEP_CHECKED, true));
         keepCheckmarks.setChecked(PrefUtils.getBoolean(PrefUtils.PREF_KEEP_CHECKMARKS, true));
 
-        new MaterialDialog.Builder(getActivity())
-                .customView(layout, false)
-                .positiveText(R.string.ok)
-                .callback(new MaterialDialog.ButtonCallback() {
-                    @Override
-                    public void onPositive(MaterialDialog materialDialog) {
+        new AlertDialog.Builder(getActivity())
+                .setView(layout)
+                .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
                         PrefUtils.putBoolean(PrefUtils.PREF_KEEP_CHECKED, keepChecked.isChecked());
                         PrefUtils.putBoolean(PrefUtils.PREF_KEEP_CHECKMARKS, keepCheckmarks.isChecked());
 
                         toggleChecklist();
                     }
-                }).build().show();
+                }).show();
     }
 
 
@@ -761,38 +747,28 @@ public class DetailFragment extends Fragment implements OnReminderPickedListener
         // Retrieves all available categories
         final List<Category> categories = DbHelper.getCategories();
 
-        final MaterialDialog dialog = new MaterialDialog.Builder(getActivity())
-                .title(R.string.categorize_as)
-                .adapter(new CategoryAdapter(getActivity(), categories), null)
-                .positiveText(R.string.add_category)
-                .negativeText(R.string.remove_category)
-                .onPositive(new MaterialDialog.SingleButtonCallback() {
-                    @Override
-                    public void onClick(MaterialDialog dialog, DialogAction which) {
+        new AlertDialog.Builder(getActivity()).setTitle(R.string.categorize_as)
+                .setAdapter(new CategoryAdapter(getActivity(), categories), new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int position) {
+                        mTask.setCategory(categories.get(position));
+                        setCategoryMarkerColor(categories.get(position));
+                        dialog.dismiss();
+                    }
+                })
+                .setPositiveButton(R.string.add_category, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
                         Intent intent = new Intent(getActivity(), CategoryActivity.class);
                         intent.putExtra("noHome", true);
                         startActivityForResult(intent, CATEGORY_CHANGE);
                     }
                 })
-                .onNegative(new MaterialDialog.SingleButtonCallback() {
-                    @Override
-                    public void onClick(MaterialDialog dialog, DialogAction which) {
+                .setNegativeButton(R.string.remove_category, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
                         mTask.setCategory(null);
                         setCategoryMarkerColor(null);
                     }
-                })
-                .build();
+                }).show();
 
-        dialog.getListView().setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                mTask.setCategory(categories.get(position));
-                setCategoryMarkerColor(categories.get(position));
-                dialog.dismiss();
-            }
-        });
-
-        dialog.show();
     }
 
 
@@ -1005,17 +981,15 @@ public class DetailFragment extends Fragment implements OnReminderPickedListener
 
     private void deleteTask() {
         // Confirm dialog creation
-        new MaterialDialog.Builder(getActivity())
-                .content(R.string.delete_task_confirmation)
-                .positiveText(R.string.ok)
-                .onPositive(new MaterialDialog.SingleButtonCallback() {
-                    @Override
-                    public void onClick(MaterialDialog dialog, DialogAction which) {
+        new AlertDialog.Builder(getActivity())
+                .setMessage(R.string.delete_task_confirmation)
+                .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
                         DbHelper.deleteTask(mTask);
                         UiUtils.showMessage(getActivity(), R.string.task_deleted);
                         goHome();
                     }
-                }).build().show();
+                }).show();
     }
 
     public void saveAndExit() {

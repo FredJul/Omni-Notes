@@ -16,11 +16,12 @@
  */
 package net.fred.taskgame.fragment;
 
+import android.app.AlertDialog;
 import android.app.SearchManager;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
@@ -44,10 +45,7 @@ import android.view.View.OnFocusChangeListener;
 import android.view.View.OnLongClickListener;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
-import android.widget.AdapterView;
 
-import com.afollestad.materialdialogs.DialogAction;
-import com.afollestad.materialdialogs.MaterialDialog;
 import com.google.android.gms.games.Games;
 import com.raizlabs.android.dbflow.runtime.TransactionManager;
 import com.raizlabs.android.dbflow.runtime.transaction.process.ProcessModelInfo;
@@ -545,20 +543,17 @@ public class ListFragment extends Fragment {
     }
 
     private void deleteAllFinishedTasks() {
-        MaterialDialog dialog = new MaterialDialog.Builder(getActivity())
-                .content(R.string.delete_finished_tasks_confirmation)
-                .positiveText(R.string.ok)
-                .onPositive(new MaterialDialog.SingleButtonCallback() {
-                    @Override
-                    public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
+        new AlertDialog.Builder(getActivity())
+                .setMessage(R.string.delete_finished_tasks_confirmation)
+                .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
                         int[] positions = new int[mAdapter.getTasks().size()];
                         for (int i = 0; i < positions.length; i++) {
                             positions[i] = i;
                         }
                         deleteTasksExecute(positions);
                     }
-                }).build();
-        dialog.show();
+                }).show();
     }
 
     private void initTasksList(Intent intent) {
@@ -664,15 +659,13 @@ public class ListFragment extends Fragment {
      */
     private void deleteTasks(final int[] positions) {
         // Confirm dialog creation
-        new MaterialDialog.Builder(getActivity())
-                .content(R.string.delete_task_confirmation)
-                .positiveText(R.string.ok)
-                .onPositive(new MaterialDialog.SingleButtonCallback() {
-                    @Override
-                    public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
+        new AlertDialog.Builder(getActivity())
+                .setMessage(R.string.delete_task_confirmation)
+                .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
                         deleteTasksExecute(positions);
                     }
-                }).build().show();
+                }).show();
     }
 
 
@@ -701,36 +694,26 @@ public class ListFragment extends Fragment {
         // Retrieves all available categories
         final List<Category> categories = DbHelper.getCategories();
 
-        final MaterialDialog dialog = new MaterialDialog.Builder(getActivity())
-                .title(R.string.categorize_as)
-                .adapter(new CategoryAdapter(getActivity(), categories), null)
-                .positiveText(R.string.add_category)
-                .negativeText(R.string.remove_category)
-                .onPositive(new MaterialDialog.SingleButtonCallback() {
-                    @Override
-                    public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
+        new AlertDialog.Builder(getActivity()).setTitle(R.string.categorize_as)
+                .setAdapter(new CategoryAdapter(getActivity(), categories), new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int position) {
+                        dialog.dismiss();
+                        categorizeTasks(positions, categories.get(position));
+                    }
+                })
+                .setPositiveButton(R.string.add_category, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
                         mKeepActionMode = true;
                         Intent intent = new Intent(getActivity(), CategoryActivity.class);
                         intent.putExtra("noHome", true);
                         startActivityForResult(intent, REQUEST_CODE_CATEGORY_TASKS);
                     }
                 })
-                .onNegative(new MaterialDialog.SingleButtonCallback() {
-                    @Override
-                    public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
+                .setNegativeButton(R.string.remove_category, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
                         categorizeTasks(positions, null);
                     }
-                }).build();
-
-        dialog.getListView().setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                dialog.dismiss();
-                categorizeTasks(positions, categories.get(position));
-            }
-        });
-
-        dialog.show();
+                }).show();
     }
 
     private void categorizeTasks(int[] positions, Category category) {

@@ -1,10 +1,9 @@
 package net.fred.taskgame.activity;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.os.Bundle;
-
-import com.afollestad.materialdialogs.DialogAction;
-import com.afollestad.materialdialogs.MaterialDialog;
 
 import net.fred.taskgame.R;
 import net.fred.taskgame.utils.PrefUtils;
@@ -23,40 +22,30 @@ public class RequestPointsActivity extends Activity {
         final long currentPoints = PrefUtils.getLong(PrefUtils.PREF_CURRENT_POINTS, 0);
 
         if (currentPoints < pointsNeeded) {
-            MaterialDialog dialog = new MaterialDialog.Builder(this)
-                    .content("You only have " + currentPoints + " points... Sorry")
-                    .positiveText(R.string.ok)
-                    .onPositive(new MaterialDialog.SingleButtonCallback() {
-                        @Override
-                        public void onClick(MaterialDialog dialog, DialogAction which) {
+            new AlertDialog.Builder(this)
+                    .setMessage("You only have " + currentPoints + " points... Sorry")
+                    .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
                             setResult(Activity.RESULT_CANCELED);
                             finish();
                         }
-                    })
-                    .build();
-            dialog.show();
+                    }).show();
         } else {
-            MaterialDialog dialog = new MaterialDialog.Builder(this)
-                    .content("" + pointsNeeded + " points needed. Do you accept?")
-                    .positiveText(R.string.ok)
-                    .negativeText(R.string.not_set)
-                    .onPositive(new MaterialDialog.SingleButtonCallback() {
-                        @Override
-                        public void onClick(MaterialDialog dialog, DialogAction which) {
+            new AlertDialog.Builder(this)
+                    .setMessage("" + pointsNeeded + " points needed. Do you accept?")
+                    .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
                             PrefUtils.putLong(PrefUtils.PREF_CURRENT_POINTS, currentPoints - pointsNeeded);
                             setResult(Activity.RESULT_OK);
                             finish();
                         }
                     })
-                    .onNegative(new MaterialDialog.SingleButtonCallback() {
-                        @Override
-                        public void onClick(MaterialDialog dialog, DialogAction which) {
+                    .setNegativeButton(R.string.not_set, new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
                             setResult(Activity.RESULT_CANCELED);
                             finish();
                         }
-                    })
-                    .build();
-            dialog.show();
+                    }).show();
         }
     }
 }

@@ -56,10 +56,10 @@
 
     <Button
         android:id="@+id/widget_config_confirm"
-        style="@style/Button.Dialog"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
-        android:text="@string/confirm"/>
+        android:text="@string/confirm"
+        style="?android:attr/buttonBarButtonStyle" />
 
 </LinearLayout>

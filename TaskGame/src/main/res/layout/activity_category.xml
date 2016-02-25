@@ -84,18 +84,18 @@
 
         <Button
             android:id="@+id/delete"
-            style="@style/Button.Dialog"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/delete_this_category"
-            android:visibility="gone"/>
+            android:visibility="gone"
+            style="?android:attr/buttonBarButtonStyle" />
 
         <Button
             android:id="@+id/save"
-            style="@style/Button.Dialog.Accent"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/ok"/>
+            android:text="@string/ok"
+            style="?android:attr/buttonBarButtonStyle" />
     </LinearLayout>
 
 </LinearLayout>
