@@ -247,7 +247,10 @@ public class MainActivity extends BaseGameActivity implements FragmentManager.On
 
         // Retrieves data to fill tags list
         for (Category category : DbHelper.getCategories()) {
-            item = menu.add(1, (int) category.id, Menu.NONE, category.name);
+            item = menu.add(1, R.string.category, Menu.NONE, category.name);
+            Intent extraIntent = new Intent();
+            extraIntent.putExtra("category", category.id);
+            item.setIntent(extraIntent);
             item.setIcon(new ColorDrawable(category.color));
             if (currentNavigation == category.id) {
                 item.setChecked(true);
@@ -354,8 +357,8 @@ public class MainActivity extends BaseGameActivity implements FragmentManager.On
                     updateNavigation(NavigationUtils.TASKS);
                 } else if (item.getItemId() == R.string.drawer_tasks_item) {
                     updateNavigation(NavigationUtils.FINISHED_TASKS);
-                } else {
-                    updateNavigation(item.getItemId());
+                } else { // This is a category
+                    updateNavigation(item.getIntent().getLongExtra("category", 0));
                 }
                 break;
         }
