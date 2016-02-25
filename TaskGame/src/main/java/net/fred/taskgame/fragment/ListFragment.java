@@ -18,6 +18,7 @@ package net.fred.taskgame.fragment;
 
 import android.app.SearchManager;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
@@ -59,11 +60,11 @@ import net.fred.taskgame.model.Attachment;
 import net.fred.taskgame.model.Category;
 import net.fred.taskgame.model.IdBasedModel;
 import net.fred.taskgame.model.Task;
-import net.fred.taskgame.model.adapters.NavDrawerCategoryAdapter;
+import net.fred.taskgame.model.adapters.CategoryAdapter;
 import net.fred.taskgame.model.adapters.TaskAdapter;
 import net.fred.taskgame.utils.Constants;
 import net.fred.taskgame.utils.DbHelper;
-import net.fred.taskgame.utils.Navigation;
+import net.fred.taskgame.utils.NavigationUtils;
 import net.fred.taskgame.utils.PrefUtils;
 import net.fred.taskgame.utils.ThrottledFlowContentObserver;
 import net.fred.taskgame.utils.UiUtils;
@@ -74,7 +75,6 @@ import net.fred.taskgame.view.EmptyRecyclerView;
 import org.parceler.Parcels;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -117,6 +117,15 @@ public class ListFragment extends Fragment {
         @Override
         public void onChangeThrottled() {
             if (getActivity() != null) {
+                initTasksList(getActivity().getIntent(), true);
+            }
+        }
+    };
+
+    private SharedPreferences.OnSharedPreferenceChangeListener mPrefListener = new SharedPreferences.OnSharedPreferenceChangeListener() {
+        @Override
+        public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+            if (getActivity() != null && PrefUtils.PREF_NAVIGATION.equals(key)) {
                 initTasksList(getActivity().getIntent());
             }
         }
@@ -147,6 +156,8 @@ public class ListFragment extends Fragment {
         mContentObserver.registerForContentChanges(inflater.getContext(), Category.class);
         mContentObserver.registerForContentChanges(inflater.getContext(), Attachment.class);
 
+        PrefUtils.registerOnPrefChangeListener(mPrefListener);
+
         return layout;
     }
 
@@ -170,24 +181,6 @@ public class ListFragment extends Fragment {
                 return true;
             }
         });
-
-        // Init title
-        String[] navigationList = getResources().getStringArray(R.array.navigation_list);
-        String[] navigationListCodes = getResources().getStringArray(R.array.navigation_list_codes);
-        String navigation = PrefUtils.getString(PrefUtils.PREF_NAVIGATION, navigationListCodes[0]);
-        int index = Arrays.asList(navigationListCodes).indexOf(navigation);
-        CharSequence title = "";
-        // If is a traditional navigation item
-        if (index >= 0 && index < navigationListCodes.length) {
-            title = navigationList[index];
-        } else {
-            List<Category> categories = DbHelper.getCategories();
-            for (Category tag : categories) {
-                if (navigation.equals(String.valueOf(tag.id))) title = tag.name;
-            }
-        }
-        title = title == null ? getString(R.string.app_name) : title;
-        getMainActivity().getSupportActionBar().setTitle(title);
 
         // Init tasks list
         initTasksList(getActivity().getIntent());
@@ -213,6 +206,7 @@ public class ListFragment extends Fragment {
     @Override
     public void onDestroyView() {
         mContentObserver.unregisterForContentChanges(getView().getContext());
+        PrefUtils.unregisterOnPrefChangeListener(mPrefListener);
 
         super.onDestroyView();
     }
@@ -238,7 +232,7 @@ public class ListFragment extends Fragment {
             mAdapter.clearSelections();
 
             // Defines the conditions to set actionbar items visible or not
-            if (!Navigation.checkNavigation(Navigation.FINISHED)) {
+            if (!(NavigationUtils.getNavigation() == NavigationUtils.FINISHED_TASKS)) {
                 mFab.show();
             }
 
@@ -319,7 +313,7 @@ public class ListFragment extends Fragment {
             public void onItemSwiped(int position) {
                 // Depending on settings and note status this action will...
 
-                if (Navigation.checkNavigation(Navigation.FINISHED)) { // ...restore
+                if (NavigationUtils.getNavigation() == NavigationUtils.FINISHED_TASKS) { // ...restore
                     restoreTasks(new int[]{position});
                 } else { // ...finish
                     finishTasks(new int[]{position});
@@ -376,9 +370,8 @@ public class ListFragment extends Fragment {
 
     private void prepareActionModeMenu() {
         Menu menu = mActionMode.getMenu();
-        int navigation = Navigation.getNavigation();
 
-        if (navigation == Navigation.FINISHED) {
+        if (NavigationUtils.getNavigation() == NavigationUtils.FINISHED_TASKS) {
             menu.findItem(R.id.menu_restore_task).setVisible(true);
             menu.findItem(R.id.menu_delete).setVisible(true);
         } else {
@@ -460,7 +453,7 @@ public class ListFragment extends Fragment {
 
     private void setActionItemsVisibility(Menu menu) {
         // Defines the conditions to set actionbar items visible or not
-        boolean isInFinishedTasksView = Navigation.checkNavigation(Navigation.FINISHED);
+        boolean isInFinishedTasksView = (NavigationUtils.getNavigation() == NavigationUtils.FINISHED_TASKS);
 
         if (!isInFinishedTasksView) {
             mFab.show();
@@ -523,16 +516,10 @@ public class ListFragment extends Fragment {
         if (task.id == IdBasedModel.INVALID_ID) {
 
             // if navigation is a category it will be set into note
-            try {
-                long categoryId;
-                if (getMainActivity().getWidgetCatId() != -1) {
-                    categoryId = getMainActivity().getWidgetCatId();
-                } else {
-                    categoryId = Navigation.getCategory();
-                }
-
-                task.setCategory(DbHelper.getCategory(categoryId));
-            } catch (NumberFormatException e) {
+            if (getMainActivity().getWidgetCatId() != -1) {
+                task.setCategory(DbHelper.getCategory(getMainActivity().getWidgetCatId()));
+            } else if (NavigationUtils.isDisplayingACategory()) {
+                task.setCategory(DbHelper.getCategory(NavigationUtils.getNavigation()));
             }
         }
 
@@ -574,11 +561,11 @@ public class ListFragment extends Fragment {
         dialog.show();
     }
 
-    public void initTasksList(Intent intent) {
+    private void initTasksList(Intent intent) {
         initTasksList(intent, false);
     }
 
-    public void initTasksList(Intent intent, boolean shouldStopSearch) {
+    private void initTasksList(Intent intent, boolean shouldStopSearch) {
         if (shouldStopSearch && mSearchMenuItem != null && MenuItemCompat.isActionViewExpanded(mSearchMenuItem)) {
             mSearchQuery = null;
             MenuItemCompat.collapseActionView(mSearchMenuItem); // collapsing the menu will trigger a new call to initTasksList
@@ -716,7 +703,7 @@ public class ListFragment extends Fragment {
 
         final MaterialDialog dialog = new MaterialDialog.Builder(getActivity())
                 .title(R.string.categorize_as)
-                .adapter(new NavDrawerCategoryAdapter(getActivity(), categories), null)
+                .adapter(new CategoryAdapter(getActivity(), categories), null)
                 .positiveText(R.string.add_category)
                 .negativeText(R.string.remove_category)
                 .onPositive(new MaterialDialog.SingleButtonCallback() {
@@ -762,7 +749,7 @@ public class ListFragment extends Fragment {
             }
             // Update adapter content if actual navigation is the category
             // associated with actually cycled note
-            if (Navigation.checkNavigation(Navigation.CATEGORY) && !Navigation.checkNavigationCategory(category)) {
+            if (!NavigationUtils.isDisplayingCategory(category)) {
                 mAdapter.notifyItemRemoved(mAdapter.getTasks().indexOf(task));
                 mAdapter.getTasks().remove(task);
             } else {
@@ -800,7 +787,7 @@ public class ListFragment extends Fragment {
         // Cycles removed items to re-insert into adapter
         for (Task task : mModifiedTasks) {
             // Manages uncategorize or archive undo
-            if ((mUndoCategorize && !Navigation.checkNavigationCategory(mUndoCategoryMap.get(task)))) {
+            if ((mUndoCategorize && !NavigationUtils.isDisplayingCategory(mUndoCategoryMap.get(task)))) {
                 if (mUndoCategorize) {
                     task.setCategory(mUndoCategoryMap.get(task));
                 }

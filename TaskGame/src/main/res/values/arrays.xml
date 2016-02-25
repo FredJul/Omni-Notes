@@ -15,27 +15,6 @@
   ~ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   -->
 <resources>
-
-    <string-array name="navigation_list">
-        <item>Tasks</item>
-        <item>Finished</item>
-    </string-array>
-
-    <string-array name="navigation_list_codes" translatable="false">
-        <item>Tasks</item>
-        <item>Finished</item>
-    </string-array>
-
-    <integer-array name="navigation_list_icons">
-        <item>@drawable/ic_assignment_grey600_24dp</item>
-        <item>@drawable/ic_assignment_turned_in_grey600_24dp</item>
-    </integer-array>
-
-    <integer-array name="navigation_list_icons_selected">
-        <item>@drawable/ic_assignment_black_24dp</item>
-        <item>@drawable/ic_assignment_turned_in_black_24dp</item>
-    </integer-array>
-
     <string-array name="checked_items_behavior">
         <item>Keep position</item>
         <item>Move to the end of the list</item>

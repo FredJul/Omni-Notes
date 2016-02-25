@@ -36,7 +36,7 @@ import net.fred.taskgame.R;
 import net.fred.taskgame.model.Category;
 import net.fred.taskgame.utils.Constants;
 import net.fred.taskgame.utils.DbHelper;
-import net.fred.taskgame.utils.PrefUtils;
+import net.fred.taskgame.utils.NavigationUtils;
 
 import org.parceler.Parcels;
 
@@ -48,7 +48,6 @@ public class CategoryActivity extends Activity {
     ColorPicker picker;
     Button deleteBtn;
     Button saveBtn;
-    private boolean colorChanged = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -76,7 +75,6 @@ public class CategoryActivity extends Activity {
             @Override
             public void onColorChanged(int color) {
                 picker.setOldCenterColor(picker.getColor());
-                colorChanged = true;
             }
         });
         // Long click on color picker to remove color
@@ -130,11 +128,8 @@ public class CategoryActivity extends Activity {
         title.setText(category.name);
         description.setText(category.description);
         // Reset picker to saved color
-        String color = category.color;
-        if (color != null && color.length() > 0) {
-            picker.setColor(Integer.parseInt(color));
-            picker.setOldCenterColor(Integer.parseInt(color));
-        }
+        picker.setColor(category.color);
+        picker.setOldCenterColor(category.color);
         deleteBtn.setVisibility(View.VISIBLE);
     }
 
@@ -145,8 +140,7 @@ public class CategoryActivity extends Activity {
     private void saveCategory() {
         category.name = title.getText().toString();
         category.description = description.getText().toString();
-        if (colorChanged || category.color == null)
-            category.color = String.valueOf(picker.getColor());
+        category.color = picker.getColor();
 
         // Saved to DB and new id or update result catched
         category.save();
@@ -175,10 +169,9 @@ public class CategoryActivity extends Activity {
                     @Override
                     public void onPositive(MaterialDialog dialog) {
                         // Changes navigation if actually are shown tasks associated with this category
-                        String navTasks = getResources().getStringArray(R.array.navigation_list_codes)[0];
-                        String navigation = PrefUtils.getString(PrefUtils.PREF_NAVIGATION, navTasks);
-                        if (String.valueOf(category.id).equals(navigation))
-                            PrefUtils.putString(PrefUtils.PREF_NAVIGATION, navTasks);
+                        if (NavigationUtils.isDisplayingCategory(category)) {
+                            NavigationUtils.setNavigation(NavigationUtils.TASKS);
+                        }
                         // Removes category and edit tasks associated with it
                         DbHelper.deleteCategoryAsync(category);
 

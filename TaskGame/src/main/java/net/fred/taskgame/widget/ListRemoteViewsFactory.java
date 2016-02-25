@@ -171,8 +171,8 @@ public class ListRemoteViewsFactory implements RemoteViewsFactory {
         row.setInt(R.id.category_marker, "setBackgroundColor", Color.TRANSPARENT);
 
         // If tag is set the color will be applied on the appropriate target
-        if (task.getCategory() != null && task.getCategory().color != null) {
-            row.setInt(R.id.category_marker, "setBackgroundColor", Integer.parseInt(task.getCategory().color));
+        if (task.getCategory() != null) {
+            row.setInt(R.id.category_marker, "setBackgroundColor", task.getCategory().color);
         } else {
             row.setInt(R.id.category_marker, "setBackgroundColor", Color.TRANSPARENT);
         }

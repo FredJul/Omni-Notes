@@ -16,6 +16,8 @@
  */
 package net.fred.taskgame.model;
 
+import android.support.annotation.ColorInt;
+
 import com.google.gson.annotations.Expose;
 import com.raizlabs.android.dbflow.annotation.Column;
 import com.raizlabs.android.dbflow.annotation.Table;
@@ -34,7 +36,8 @@ public class Category extends IdBasedModel {
     public String description = "";
     @Column
     @Expose
-    public String color = "";
+    @ColorInt
+    public int color;
 
     public Category() {
     }

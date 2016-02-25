@@ -33,20 +33,20 @@ import android.widget.TextView;
 import net.fred.taskgame.R;
 import net.fred.taskgame.activity.MainActivity;
 import net.fred.taskgame.model.Category;
-import net.fred.taskgame.utils.PrefUtils;
+import net.fred.taskgame.utils.NavigationUtils;
 
 import java.util.List;
 
-public class NavDrawerCategoryAdapter extends BaseAdapter {
+public class CategoryAdapter extends BaseAdapter {
 
     private final Activity mActivity;
     private final int layout;
     private final List<Category> categories;
     private final LayoutInflater inflater;
 
-    public NavDrawerCategoryAdapter(Activity mActivity, List<Category> categories) {
+    public CategoryAdapter(Activity mActivity, List<Category> categories) {
         this.mActivity = mActivity;
-        this.layout = R.layout.drawer_list_item;
+        this.layout = R.layout.category_list_item;
         this.categories = categories;
         inflater = (LayoutInflater) mActivity.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     }
@@ -71,17 +71,17 @@ public class NavDrawerCategoryAdapter extends BaseAdapter {
         // Finds elements
         Category category = categories.get(position);
 
-        NoteDrawerCategoryAdapterViewHolder holder;
+        CategoryViewHolder holder;
         if (convertView == null) {
             convertView = inflater.inflate(layout, parent, false);
 
-            holder = new NoteDrawerCategoryAdapterViewHolder();
+            holder = new CategoryViewHolder();
 
             holder.imgIcon = (ImageView) convertView.findViewById(R.id.icon);
             holder.txtTitle = (TextView) convertView.findViewById(R.id.title);
             convertView.setTag(holder);
         } else {
-            holder = (NoteDrawerCategoryAdapterViewHolder) convertView.getTag();
+            holder = (CategoryViewHolder) convertView.getTag();
         }
 
         // Set the results into TextViews
@@ -96,14 +96,12 @@ public class NavDrawerCategoryAdapter extends BaseAdapter {
         }
 
         // Set the results into ImageView checking if an icon is present before
-        if (category.color != null && category.color.length() > 0) {
-            Drawable img = mActivity.getResources().getDrawable(R.drawable.square);
-            ColorFilter cf = new LightingColorFilter(Color.TRANSPARENT, Integer.parseInt(category.color));
-            img.mutate().setColorFilter(cf);
-            holder.imgIcon.setImageDrawable(img);
-            int padding = 12;
-            holder.imgIcon.setPadding(padding, padding, padding, padding);
-        }
+        Drawable img = mActivity.getResources().getDrawable(R.drawable.square);
+        ColorFilter cf = new LightingColorFilter(Color.TRANSPARENT, category.color);
+        img.mutate().setColorFilter(cf);
+        holder.imgIcon.setImageDrawable(img);
+        int padding = 12;
+        holder.imgIcon.setPadding(padding, padding, padding, padding);
 
         return convertView;
     }
@@ -111,27 +109,16 @@ public class NavDrawerCategoryAdapter extends BaseAdapter {
 
     private boolean isSelected(int position) {
 
-        // Getting actual navigation selection
-        String[] navigationListCodes = mActivity.getResources().getStringArray(R.array.navigation_list_codes);
-
         // Managing temporary navigation indicator when coming from a widget
         long widgetCatId = mActivity instanceof MainActivity ? ((MainActivity) mActivity).getWidgetCatId() : -1;
 
-        String navigation = widgetCatId != -1 ? String.valueOf(widgetCatId)
-                : PrefUtils.getString(PrefUtils.PREF_NAVIGATION, navigationListCodes[0]);
-
-        return navigation.equals(String.valueOf(categories.get(position).id));
+        long navigation = widgetCatId != -1 ? widgetCatId : NavigationUtils.getNavigation();
+        return (navigation == categories.get(position).id);
     }
 
 }
 
-
-/**
- * Holder object
- *
- * @author fede
- */
-class NoteDrawerCategoryAdapterViewHolder {
+class CategoryViewHolder {
     ImageView imgIcon;
     TextView txtTitle;
 }

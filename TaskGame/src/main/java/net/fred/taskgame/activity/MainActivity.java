@@ -17,12 +17,17 @@
 
 package net.fred.taskgame.activity;
 
+import android.Manifest;
 import android.animation.ValueAnimator;
+import android.app.Activity;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
+import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
@@ -30,20 +35,32 @@ import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.Toolbar;
+import android.util.SparseArray;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.animation.DecelerateInterpolator;
+import android.widget.TextView;
 import android.widget.Toast;
+
+import com.google.android.gms.games.Games;
+import com.google.android.gms.games.quest.Quests;
 
 import net.fred.taskgame.R;
 import net.fred.taskgame.fragment.DetailFragment;
 import net.fred.taskgame.fragment.ListFragment;
-import net.fred.taskgame.fragment.NavigationDrawerFragment;
 import net.fred.taskgame.fragment.SketchFragment;
+import net.fred.taskgame.model.Category;
 import net.fred.taskgame.model.Task;
+import net.fred.taskgame.model.listeners.OnPermissionRequestedListener;
 import net.fred.taskgame.service.SyncService;
 import net.fred.taskgame.utils.Constants;
 import net.fred.taskgame.utils.DbHelper;
+import net.fred.taskgame.utils.NavigationUtils;
+import net.fred.taskgame.utils.PermissionsHelper;
 import net.fred.taskgame.utils.PrefUtils;
+import net.fred.taskgame.utils.ThrottledFlowContentObserver;
 import net.fred.taskgame.utils.UiUtils;
 
 import org.parceler.Parcels;
@@ -51,9 +68,11 @@ import org.parceler.Parcels;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 
-public class MainActivity extends BaseGameActivity implements FragmentManager.OnBackStackChangedListener {
+public class MainActivity extends BaseGameActivity implements FragmentManager.OnBackStackChangedListener, NavigationView.OnNavigationItemSelectedListener {
 
-    public final String FRAGMENT_DRAWER_TAG = "fragment_drawer";
+    private static final int REQUEST_CODE_CATEGORY = 2;
+    private static final int REQUEST_CODE_QUESTS = 3;
+
     public final String FRAGMENT_LIST_TAG = "fragment_list";
     public final String FRAGMENT_DETAIL_TAG = "fragment_detail";
     public final String FRAGMENT_SKETCH_TAG = "fragment_sketch";
@@ -68,8 +87,27 @@ public class MainActivity extends BaseGameActivity implements FragmentManager.On
     DrawerLayout mDrawerLayout;
     @Bind(R.id.fab)
     FloatingActionButton mFab;
+    @Bind(R.id.navigation_view)
+    NavigationView mNavigationView;
 
+    private TextView mCurrentPoints;
     private ActionBarDrawerToggle mDrawerToggle;
+
+    private ThrottledFlowContentObserver mContentObserver = new ThrottledFlowContentObserver(100) {
+        @Override
+        public void onChangeThrottled() {
+            initNavigationMenu();
+        }
+    };
+
+    private SharedPreferences.OnSharedPreferenceChangeListener mCurrentPointsObserver = new SharedPreferences.OnSharedPreferenceChangeListener() {
+        @Override
+        public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+            if (mCurrentPoints != null && PrefUtils.PREF_CURRENT_POINTS.equals(key)) {
+                mCurrentPoints.setText(String.valueOf(PrefUtils.getLong(PrefUtils.PREF_CURRENT_POINTS, 0)));
+            }
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -122,12 +160,6 @@ public class MainActivity extends BaseGameActivity implements FragmentManager.On
 
         mFragmentManager = getSupportFragmentManager();
 
-        NavigationDrawerFragment mNavigationDrawerFragment = (NavigationDrawerFragment) mFragmentManager.findFragmentById(R.id.navigation_drawer);
-        if (mNavigationDrawerFragment == null) {
-            FragmentTransaction fragmentTransaction = mFragmentManager.beginTransaction();
-            fragmentTransaction.replace(R.id.navigation_drawer, new NavigationDrawerFragment(), FRAGMENT_DRAWER_TAG).commit();
-        }
-
         if (mFragmentManager.findFragmentByTag(FRAGMENT_LIST_TAG) == null) {
             FragmentTransaction fragmentTransaction = mFragmentManager.beginTransaction();
             fragmentTransaction.add(R.id.fragment_container, new ListFragment(), FRAGMENT_LIST_TAG).commit();
@@ -140,6 +172,164 @@ public class MainActivity extends BaseGameActivity implements FragmentManager.On
         mFragmentManager.addOnBackStackChangedListener(this);
         //Handle when activity is recreated like on orientation Change
         displayHomeOrUpIcon();
+
+        // registers for callbacks from the specified tables
+        mContentObserver.registerForContentChanges(this, Task.class);
+        mContentObserver.registerForContentChanges(this, Category.class);
+
+        PrefUtils.registerOnPrefChangeListener(mCurrentPointsObserver);
+
+        mNavigationView.setNavigationItemSelectedListener(this);
+        mNavigationView.setItemIconTintList(null);
+        initNavigationMenu();
+    }
+
+    @Override
+    protected void onDestroy() {
+        mContentObserver.unregisterForContentChanges(this);
+        PrefUtils.unregisterOnPrefChangeListener(mCurrentPointsObserver);
+
+        super.onDestroy();
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, final int resultCode, Intent intent) {
+        super.onActivityResult(requestCode, resultCode, intent);
+
+        switch (requestCode) {
+            case REQUEST_CODE_CATEGORY:
+                // Dialog retarded to give time to activity's views of being
+                // completely initialized
+                // The dialog style is chosen depending on result code
+                switch (resultCode) {
+                    case Activity.RESULT_OK:
+                        UiUtils.showMessage(this, R.string.category_saved);
+                        break;
+                    case Activity.RESULT_FIRST_USER:
+                        UiUtils.showMessage(this, R.string.category_deleted);
+                        break;
+                    default:
+                        break;
+                }
+
+                break;
+            case REQUEST_CODE_QUESTS:
+                // Just to refresh the list of quests if one has been accepted
+                SyncService.triggerSync(this);
+                break;
+            default:
+                break;
+        }
+    }
+
+    private void initNavigationMenu() {
+        Menu menu = mNavigationView.getMenu();
+        menu.clear();
+        int nbItems = 0;
+        final SparseArray<Category> listCategories = new SparseArray<>();
+        long currentNavigation = NavigationUtils.getNavigation();
+
+        MenuItem item = menu.add(1, R.string.drawer_tasks_item, Menu.NONE, R.string.drawer_tasks_item);
+        item.setIcon(R.drawable.ic_assignment_grey600_24dp);
+        if (currentNavigation == NavigationUtils.TASKS) {
+            item.setChecked(true);
+            getSupportActionBar().setTitle(item.getTitle());
+        }
+        nbItems++;
+
+        if (DbHelper.getFinishedTaskCount() != 0) {
+            item = menu.add(1, R.string.drawer_finished_tasks_item, Menu.NONE, R.string.drawer_finished_tasks_item);
+            item.setIcon(R.drawable.ic_assignment_turned_in_grey600_24dp);
+            if (currentNavigation == NavigationUtils.FINISHED_TASKS) {
+                item.setChecked(true);
+                getSupportActionBar().setTitle(item.getTitle());
+            }
+            nbItems++;
+        }
+
+        // Retrieves data to fill tags list
+        for (Category category : DbHelper.getCategories()) {
+            item = menu.add(1, (int) category.id, Menu.NONE, category.name);
+            item.setIcon(new ColorDrawable(category.color));
+            if (currentNavigation == category.id) {
+                item.setChecked(true);
+                getSupportActionBar().setTitle(item.getTitle());
+            }
+
+            nbItems++;
+            listCategories.put(nbItems, category);
+        }
+
+        menu.setGroupCheckable(1, true, true);
+
+        item = menu.add(Menu.NONE, R.string.settings, Menu.NONE, R.string.settings);
+        item.setIcon(R.drawable.ic_settings_grey600_24dp);
+
+        mNavigationView.post(new Runnable() {
+            @Override
+            public void run() {
+                // Initialized the views which was not inflated before
+                if (mCurrentPoints == null) {
+                    mCurrentPoints = (TextView) mNavigationView.findViewById(R.id.currentPoints);
+                }
+                mCurrentPoints.setText(String.valueOf(PrefUtils.getLong(PrefUtils.PREF_CURRENT_POINTS, 0)));
+
+                mNavigationView.findViewById(R.id.login_btn).setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        PermissionsHelper.requestPermission(MainActivity.this, Manifest.permission.GET_ACCOUNTS,
+                                R.string.permission_get_account, new OnPermissionRequestedListener() {
+                                    @Override
+                                    public void onPermissionGranted() {
+                                        beginUserInitiatedSignIn();
+                                    }
+                                });
+                    }
+                });
+
+                mNavigationView.findViewById(R.id.quests_btn).setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        try {
+                            startActivityForResult(Games.Quests.getQuestsIntent(getApiClient(), Quests.SELECT_ALL_QUESTS), REQUEST_CODE_QUESTS);
+                        } catch (Exception ignored) {
+                        }
+                    }
+                });
+
+                mNavigationView.findViewById(R.id.leaderboard_btn).setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        try {
+                            startActivityForResult(Games.Leaderboards.getLeaderboardIntent(getApiClient(), Constants.LEADERBOARD_ID), 0);
+                        } catch (Exception ignored) {
+                        }
+                    }
+                });
+
+                // Small hack to handle the long press on menu item
+                ViewGroup navigationList = (ViewGroup) mNavigationView.findViewById(android.support.design.R.id.design_navigation_view);
+                for (int i = 0; i < listCategories.size(); i++) {
+                    final int catPos = listCategories.keyAt(i);
+                    navigationList.getChildAt(catPos).setOnLongClickListener(new View.OnLongClickListener() {
+                        @Override
+                        public boolean onLongClick(View v) {
+                            editCategory(listCategories.get(catPos));
+                            return true;
+                        }
+                    });
+                }
+            }
+        });
+    }
+
+    /**
+     * Categories addition and editing
+     */
+    public void editCategory(Category category) {
+        Intent categoryIntent = new Intent(this, CategoryActivity.class);
+        categoryIntent.putExtra(Constants.INTENT_CATEGORY, Parcels.wrap(category));
+        startActivityForResult(categoryIntent, REQUEST_CODE_CATEGORY);
     }
 
     @Override
@@ -150,8 +340,36 @@ public class MainActivity extends BaseGameActivity implements FragmentManager.On
         super.onNewIntent(intent);
     }
 
-    public void updateNavigation(String nav) {
-        PrefUtils.putString(PrefUtils.PREF_NAVIGATION, nav);
+    @Override
+    public boolean onNavigationItemSelected(MenuItem item) {
+        // Handle navigation view item clicks here.
+        switch (item.getItemId()) {
+            case R.string.settings:
+                Intent settingsIntent = new Intent(this, SettingsActivity.class);
+                startActivity(settingsIntent);
+                break;
+            default: // tasks, finished tasks, categories
+                commitPending();
+                // Reset intent
+                getIntent().setAction(Intent.ACTION_MAIN);
+
+                if (item.getItemId() == R.string.drawer_tasks_item) {
+                    updateNavigation(NavigationUtils.TASKS);
+                } else if (item.getItemId() == R.string.drawer_tasks_item) {
+                    updateNavigation(NavigationUtils.FINISHED_TASKS);
+                } else {
+                    updateNavigation(item.getItemId());
+                }
+                break;
+        }
+
+        getSupportActionBar().setTitle(item.getTitle());
+        mDrawerLayout.closeDrawer(GravityCompat.START);
+        return true;
+    }
+
+    public void updateNavigation(long navigation) {
+        NavigationUtils.setNavigation(navigation);
 
         if (getIntent() != null && getIntent().hasExtra(Constants.INTENT_WIDGET)) {
             getIntent().removeExtra(Constants.INTENT_WIDGET);
@@ -179,13 +397,6 @@ public class MainActivity extends BaseGameActivity implements FragmentManager.On
     public void onSignInSucceeded() {
         PrefUtils.putBoolean(PrefUtils.PREF_ALREADY_LOGGED_TO_GAMES, true);
         SyncService.triggerSync(this);
-    }
-
-    public void initTasksList(Intent intent) {
-        Fragment f = checkFragmentInstance(R.id.fragment_container, ListFragment.class);
-        if (f != null) {
-            ((ListFragment) f).initTasksList(intent, true);
-        }
     }
 
     public void commitPending() {
@@ -340,14 +551,12 @@ public class MainActivity extends BaseGameActivity implements FragmentManager.On
         return detailFragment != null && detailFragment.getCurrentTask().id == task.id;
     }
 
-
     public void switchToList() {
         FragmentTransaction transaction = mFragmentManager.beginTransaction();
         UiUtils.animateTransition(transaction, UiUtils.TRANSITION_HORIZONTAL);
         ListFragment mListFragment = new ListFragment();
         transaction.replace(R.id.fragment_container, mListFragment, FRAGMENT_LIST_TAG).addToBackStack(FRAGMENT_DETAIL_TAG).commitAllowingStateLoss();
     }
-
 
     public void switchToDetail(Task task) {
         FragmentTransaction transaction = mFragmentManager.beginTransaction();

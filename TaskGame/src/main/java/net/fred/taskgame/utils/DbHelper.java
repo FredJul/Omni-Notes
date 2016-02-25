@@ -70,16 +70,13 @@ public class DbHelper {
      * @return Tasks list
      */
     public static List<Task> getTasksFromCurrentNavigation() {
-        int navigation = Navigation.getNavigation();
-        switch (navigation) {
-            case Navigation.TASKS:
-                return getTasksActive();
-            case Navigation.FINISHED:
-                return getFinishedTasks();
-            case Navigation.CATEGORY:
-                return getTasksByCategory(Navigation.getCategory());
-            default:
-                return getTasks();
+        long navigation = NavigationUtils.getNavigation();
+        if (navigation == NavigationUtils.TASKS) {
+            return getTasksActive();
+        } else if (navigation == NavigationUtils.FINISHED_TASKS) {
+            return getFinishedTasks();
+        } else {
+            return getTasksByCategory(navigation);
         }
     }
 
@@ -162,10 +159,10 @@ public class DbHelper {
     public static List<Task> getTasksByPattern(String pattern) {
         ArrayList<SQLCondition> conditionList = new ArrayList<>();
 
-        conditionList.add(Task_Table.isFinished.is(Navigation.checkNavigation(Navigation.FINISHED)));
+        conditionList.add(Task_Table.isFinished.is(NavigationUtils.getNavigation() == NavigationUtils.FINISHED_TASKS));
 
-        if (Navigation.checkNavigation(Navigation.CATEGORY)) {
-            conditionList.add(Task_Table.categoryId.eq(Navigation.getCategory()));
+        if (NavigationUtils.isDisplayingACategory()) {
+            conditionList.add(Task_Table.categoryId.eq(NavigationUtils.getNavigation()));
         }
 
         conditionList.add(ConditionGroup.clause().and(Task_Table.title.like("%" + pattern + "%")).or(Task_Table.content.like("%" + pattern + "%")));
@@ -224,6 +221,14 @@ public class DbHelper {
         return new Select().from(Category.class).where(Category_Table.id.eq(categoryId)).querySingle();
     }
 
+    public static long getFinishedTaskCount() {
+        try {
+            return new Select().from(Task.class).where(Task_Table.isFinished.eq(true)).count();
+        } catch (SQLiteDoneException e) {
+            // I do not know why this happen when count=0
+            return 0;
+        }
+    }
 
     public static long getCategorizedCount(Category category) {
         try {

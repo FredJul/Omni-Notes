@@ -17,6 +17,8 @@
   ~ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   -->
 <resources>
+    <string name="drawer_tasks_item">Tâches à faire</string>
+    <string name="drawer_finished_tasks_item">Tâches finies</string>
     <string name="title_item_list">Tâches</string>
     <string name="title">Titre </string>
     <string name="search">Rechercher</string>

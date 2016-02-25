@@ -18,6 +18,8 @@
   -->
 <resources>
     <!-- Activities -->
+    <string name="drawer_tasks_item">To-do tasks</string>
+    <string name="drawer_finished_tasks_item">Finished tasks</string>
     <string name="title_item_list">Tasks</string>
     <string name="title">Title</string>
     <string name="search">Search</string>

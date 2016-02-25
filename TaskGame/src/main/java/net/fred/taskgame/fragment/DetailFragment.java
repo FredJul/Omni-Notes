@@ -86,7 +86,7 @@ import net.fred.taskgame.model.Category;
 import net.fred.taskgame.model.IdBasedModel;
 import net.fred.taskgame.model.Task;
 import net.fred.taskgame.model.adapters.AttachmentAdapter;
-import net.fred.taskgame.model.adapters.NavDrawerCategoryAdapter;
+import net.fred.taskgame.model.adapters.CategoryAdapter;
 import net.fred.taskgame.model.listeners.OnAttachingFileListener;
 import net.fred.taskgame.model.listeners.OnPermissionRequestedListener;
 import net.fred.taskgame.model.listeners.OnReminderPickedListener;
@@ -557,12 +557,12 @@ public class DetailFragment extends Fragment implements OnReminderPickedListener
     }
 
     /**
-     * Colors tag marker in note's title and content elements
+     * Colors category marker in note's title and content elements
      */
-    private void setCategoryMarkerColor(Category tag) {
+    private void setCategoryMarkerColor(Category category) {
         // Coloring the target
-        if (tag != null && tag.color != null) {
-            mCategoryMarker.setBackgroundColor(Integer.parseInt(tag.color));
+        if (category != null) {
+            mCategoryMarker.setBackgroundColor(category.color);
         } else {
             mCategoryMarker.setBackgroundColor(Color.TRANSPARENT);
         }
@@ -687,7 +687,7 @@ public class DetailFragment extends Fragment implements OnReminderPickedListener
 
         // Inflate the popup_layout.xml
         LayoutInflater inflater = (LayoutInflater) getActivity().getSystemService(Activity.LAYOUT_INFLATER_SERVICE);
-        final View layout = inflater.inflate(R.layout.dialog_remove_checklist_layout, (ViewGroup) getView().findViewById(R.id.layout_root));
+        final View layout = inflater.inflate(R.layout.dialog_remove_checklist_layout, null);
 
         // Retrieves options checkboxes and initialize their values
         final CheckBox keepChecked = (CheckBox) layout.findViewById(R.id.checklist_keep_checked);
@@ -763,7 +763,7 @@ public class DetailFragment extends Fragment implements OnReminderPickedListener
 
         final MaterialDialog dialog = new MaterialDialog.Builder(getActivity())
                 .title(R.string.categorize_as)
-                .adapter(new NavDrawerCategoryAdapter(getActivity(), categories), null)
+                .adapter(new CategoryAdapter(getActivity(), categories), null)
                 .positiveText(R.string.add_category)
                 .negativeText(R.string.remove_category)
                 .onPositive(new MaterialDialog.SingleButtonCallback() {

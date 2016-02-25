@@ -138,8 +138,8 @@ public class TaskAdapter extends MultiSelectAdapter<TaskAdapter.TaskViewHolder> 
             holder.mCategoryMarker.setBackgroundColor(Color.TRANSPARENT);
         } else {
             // If category is set the color will be applied on the appropriate target
-            if (task.getCategory() != null && task.getCategory().color != null) {
-                holder.mCategoryMarker.setBackgroundColor(Integer.parseInt(task.getCategory().color));
+            if (task.getCategory() != null) {
+                holder.mCategoryMarker.setBackgroundColor(task.getCategory().color);
             } else {
                 holder.mCategoryMarker.setBackgroundColor(Color.TRANSPARENT);
             }
