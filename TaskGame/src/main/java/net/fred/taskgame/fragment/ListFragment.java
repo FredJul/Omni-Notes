@@ -299,7 +299,7 @@ public class ListFragment extends Fragment {
 
                 for (int i = 0; i < count; i++) {
                     Task task = tasks.get(i);
-                    task.displayPriority = count - 1 - i;
+                    task.displayPriority = i;
                 }
 
                 TransactionManager.getInstance().addTransaction(new SaveModelTransaction<>(ProcessModelInfo.withModels(tasks)));

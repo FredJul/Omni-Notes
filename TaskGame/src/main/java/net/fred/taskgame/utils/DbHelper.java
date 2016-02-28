@@ -106,8 +106,8 @@ public class DbHelper {
      */
     public static List<Task> getTasks(SQLCondition... conditions) {
         ArrayList<OrderBy> orderByList = new ArrayList<>();
-        orderByList.add(OrderBy.fromProperty(Task_Table.displayPriority).descending());
-        orderByList.add(OrderBy.fromProperty(Task_Table.creationDate).ascending());
+        orderByList.add(OrderBy.fromProperty(Task_Table.displayPriority).ascending());
+        orderByList.add(OrderBy.fromProperty(Task_Table.creationDate).descending());
 
         return new Select().from(Task.class).where(conditions).orderByAll(orderByList).queryList();
     }
