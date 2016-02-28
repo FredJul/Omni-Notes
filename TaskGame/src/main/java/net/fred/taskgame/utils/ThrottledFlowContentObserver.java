@@ -54,16 +54,14 @@ public abstract class ThrottledFlowContentObserver extends FlowContentObserver {
         abstract public void onChangeThrottled();
     }
 
-    private final ThrottledFlowContentListener mModelChangeListener;
-
     public ThrottledFlowContentObserver(long delayMS) {
-        mModelChangeListener = new ThrottledFlowContentListener(delayMS) {
+        ThrottledFlowContentListener modelChangeListener = new ThrottledFlowContentListener(delayMS) {
             @Override
             public void onChangeThrottled() {
                 ThrottledFlowContentObserver.this.onChangeThrottled();
             }
         };
-        addModelChangeListener(mModelChangeListener);
+        addModelChangeListener(modelChangeListener);
     }
 
     abstract public void onChangeThrottled();

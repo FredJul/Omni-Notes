@@ -6,7 +6,6 @@ buildscript {
 
     dependencies {
         classpath 'com.android.tools.build:gradle:+'
-        classpath 'com.droidtitan:lint-cleaner-plugin:+'
         classpath 'com.neenbedankt.gradle.plugins:android-apt:+'
     }
 }

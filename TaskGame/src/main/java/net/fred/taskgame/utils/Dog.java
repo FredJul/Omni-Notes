@@ -267,13 +267,7 @@ public class Dog {
                 if (TextUtils.isEmpty(top.getMethodName())) {
                     return className;
                 } else {
-                    StringBuilder tag = new StringBuilder(className);
-                    tag.append(".");
-                    tag.append(top.getMethodName());
-                    tag.append("(");
-                    tag.append(top.getLineNumber());
-                    tag.append(")");
-                    return tag.toString();
+                    return className + "." + top.getMethodName() + "(" + top.getLineNumber() + ")";
                 }
             }
         } else {

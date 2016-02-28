@@ -56,7 +56,7 @@ public class AttachmentTask extends AsyncTask<Void, Void, Attachment> {
             if (attachment != null) {
                 mOnAttachingFileListener.onAttachingFileFinished(attachment);
             } else {
-                mOnAttachingFileListener.onAttachingFileErrorOccurred(attachment);
+                mOnAttachingFileListener.onAttachingFileErrorOccurred(null);
             }
         } else {
             if (attachment != null) {

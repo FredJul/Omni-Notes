@@ -135,16 +135,14 @@ public class StorageHelper {
 
         boolean res = false;
         File file = new File(name);
-        if (file != null) {
-            if (file.isFile()) {
-                res = file.delete();
-            } else if (file.isDirectory()) {
-                File[] files = file.listFiles();
-                for (File file2 : files) {
-                    delete(mContext, file2.getAbsolutePath());
-                }
-                res = file.delete();
+        if (file.isFile()) {
+            res = file.delete();
+        } else if (file.isDirectory()) {
+            File[] files = file.listFiles();
+            for (File file2 : files) {
+                delete(mContext, file2.getAbsolutePath());
             }
+            res = file.delete();
         }
 
         return res;
@@ -269,7 +267,6 @@ public class StorageHelper {
             attachment.uri = Uri.fromFile(f);
             attachment.mimeType = StorageHelper.getMimeTypeInternal(mContext, uri);
             attachment.name = name;
-            attachment.size = f.length();
         }
         return attachment;
     }

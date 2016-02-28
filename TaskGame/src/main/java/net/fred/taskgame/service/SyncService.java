@@ -104,7 +104,7 @@ public class SyncService extends Service {
         AccountManager manager = (AccountManager) context.getSystemService(Context.ACCOUNT_SERVICE);
         Account[] accounts = manager.getAccountsByType("com.google");
 
-        if (accounts != null && accounts.length > 0) {
+        if (accounts.length > 0) {
             ContentResolver.setIsSyncable(accounts[0], FakeProvider.AUTHORITY, 1);
             ContentResolver.setSyncAutomatically(accounts[0], FakeProvider.AUTHORITY, true);
             ContentResolver.addPeriodicSync(accounts[0], FakeProvider.AUTHORITY, Bundle.EMPTY, SYNC_INTERVAL);

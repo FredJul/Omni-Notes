@@ -37,8 +37,6 @@ public class Attachment extends IdBasedModel {
     @Column
     public String name = "";
     @Column
-    public long size;
-    @Column
     public long length;
     @Column
     public String mimeType = "";

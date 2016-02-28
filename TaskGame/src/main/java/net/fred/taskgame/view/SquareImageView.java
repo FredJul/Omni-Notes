@@ -18,11 +18,8 @@
 package net.fred.taskgame.view;
 
 import android.content.Context;
-import android.os.AsyncTask;
 import android.util.AttributeSet;
 import android.widget.ImageView;
-
-import java.lang.ref.WeakReference;
 
 public class SquareImageView extends ImageView {
 

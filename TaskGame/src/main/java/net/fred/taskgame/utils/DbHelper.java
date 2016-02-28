@@ -167,7 +167,7 @@ public class DbHelper {
 
         conditionList.add(ConditionGroup.clause().and(Task_Table.title.like("%" + pattern + "%")).or(Task_Table.content.like("%" + pattern + "%")));
 
-        return getTasks(conditionList.toArray(new SQLCondition[]{}));
+        return getTasks(conditionList.toArray(new SQLCondition[conditionList.size()]));
     }
 
 
@@ -188,7 +188,7 @@ public class DbHelper {
 
         conditionList.add(Task_Table.isFinished.isNot(true));
 
-        return getTasks(conditionList.toArray(new SQLCondition[]{}));
+        return getTasks(conditionList.toArray(new SQLCondition[conditionList.size()]));
     }
 
     /**
@@ -203,7 +203,7 @@ public class DbHelper {
         conditionList.add(Task_Table.categoryId.eq(categoryId));
         conditionList.add(Task_Table.isFinished.isNot(true));
 
-        return getTasks(conditionList.toArray(new SQLCondition[]{}));
+        return getTasks(conditionList.toArray(new SQLCondition[conditionList.size()]));
     }
 
     /**

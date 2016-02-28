@@ -15,7 +15,7 @@ public class EqualityChecker {
                 if (a != null) {
                     res = a.equals(b);
                 } else if (b != null) {
-                    res = b.equals(a);
+                    res = false;
                 }
 
                 // Exit if not equals
