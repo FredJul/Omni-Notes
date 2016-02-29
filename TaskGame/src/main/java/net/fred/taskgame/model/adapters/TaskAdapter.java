@@ -146,7 +146,7 @@ public class TaskAdapter extends MultiSelectAdapter<TaskAdapter.TaskViewHolder> 
         }
 
         // set listeners
-        holder.mCardView.setOnClickListener(new View.OnClickListener() {
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (holder.getAdapterPosition() != -1) { // seems -1 is sometimes possible...
@@ -163,6 +163,14 @@ public class TaskAdapter extends MultiSelectAdapter<TaskAdapter.TaskViewHolder> 
                         mItemActionListener.onItemClicked(position);
                     }
                 }
+            }
+        });
+
+        // This is a small hack to avoid clicking on the item just after a D&D long press...
+        holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                return true;
             }
         });
     }
