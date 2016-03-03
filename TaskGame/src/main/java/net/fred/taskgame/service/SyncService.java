@@ -184,6 +184,8 @@ public class SyncService extends Service {
 
                         if (syncedData.lastSyncDate > PrefUtils.getLong(PrefUtils.PREF_LAST_SYNC_DATE, -1)) {
                             PrefUtils.putLong(PrefUtils.PREF_CURRENT_POINTS, syncedData.currentPoints);
+
+                            // TODO should improve that to avoid empty the list then put it again. Moreover the attachments are not handled
                             Delete.tables(Category.class, Task.class);
                             for (Category cat : syncedData.categories) {
                                 Dog.i("write cat " + cat);

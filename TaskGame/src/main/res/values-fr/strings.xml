@@ -35,8 +35,6 @@
     <string name="last_update">Mis à jour : %s</string>
     <string name="delete_task_confirmation">Confirmer la suppression de la tâche ?</string>
     <string name="confirm">Confirmer</string>
-    <string name="ok">OK</string>
-    <string name="cancel">Annuler</string>
     <string name="task_updated">Tâche mise à jour</string>
     <string name="empty_task_not_saved">Tâche vide non enregistrée</string>
     <string name="share_message_chooser">Partager avec</string>
@@ -116,5 +114,7 @@
     <string name="quests">Quêtes</string>
     <string name="leaderboard">Classement</string>
     <string name="sign_out_confirmation">Voulez-vous vous déconnecter ?</string>
+    <string name="not_enough_points">Vous avez seulement %s feuilles... Désolé</string>
+    <string name="points_needed">%s feuilles vont être dépensées. Voulez-vous continuer?</string>
 
 </resources>

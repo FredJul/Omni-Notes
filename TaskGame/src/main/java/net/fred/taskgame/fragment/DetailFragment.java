@@ -480,7 +480,7 @@ public class DetailFragment extends Fragment implements OnReminderPickedListener
             public boolean onLongClick(View v) {
                 new AlertDialog.Builder(getActivity())
                         .setMessage(R.string.remove_reminder)
-                        .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+                        .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int id) {
                                 mTask.alarmDate = 0;
                                 mReminderDateTextView.setText("");
@@ -685,7 +685,7 @@ public class DetailFragment extends Fragment implements OnReminderPickedListener
 
         new AlertDialog.Builder(getActivity())
                 .setView(layout)
-                .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+                .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
                         PrefUtils.putBoolean(PrefUtils.PREF_KEEP_CHECKED, keepChecked.isChecked());
                         PrefUtils.putBoolean(PrefUtils.PREF_KEEP_CHECKMARKS, keepCheckmarks.isChecked());
@@ -986,7 +986,7 @@ public class DetailFragment extends Fragment implements OnReminderPickedListener
         // Confirm dialog creation
         new AlertDialog.Builder(getActivity())
                 .setMessage(R.string.delete_task_confirmation)
-                .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+                .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
                         DbHelper.deleteTask(mTask);
                         UiUtils.showMessage(getActivity(), R.string.task_deleted);

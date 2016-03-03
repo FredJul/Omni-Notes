@@ -36,8 +36,6 @@
     <string name="last_update">Updated: %s</string>
     <string name="delete_task_confirmation">Confirm task deletion?</string>
     <string name="confirm">Confirm</string>
-    <string name="ok">OK</string>
-    <string name="cancel">Cancel</string>
     <string name="task_updated">Task updated</string>
     <string name="empty_task_not_saved">Can\'t save an empty task</string>
     <string name="share_message_chooser">Share with</string>
@@ -102,6 +100,8 @@
     <string name="modify_link">Modify</string>
     <string name="app_not_found">You did not installed any application which can handle this kind of link</string>
     <string name="difficulty">Difficulty:</string>
+    <string name="not_enough_points">You only have %s leaves... Sorry</string>
+    <string name="points_needed">%s leaves will be spent. Do you want to continue?</string>
 
     <!-- Settings -->
     <string name="settings">Settings</string>

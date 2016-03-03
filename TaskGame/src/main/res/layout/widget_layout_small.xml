@@ -30,5 +30,5 @@
         android:background="@drawable/icon_selector"
         android:gravity="center"
         android:padding="10dp"
-        android:src="@drawable/ic_launcher" />
+        android:src="@mipmap/ic_launcher" />
 </LinearLayout>

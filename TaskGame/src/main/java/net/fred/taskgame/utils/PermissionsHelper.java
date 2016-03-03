@@ -41,7 +41,7 @@ public class PermissionsHelper {
 
             if (ActivityCompat.shouldShowRequestPermissionRationale(activity, permission)) {
                 Snackbar.make(activity.findViewById(R.id.coordinator_layout), rationaleDescription, Snackbar.LENGTH_INDEFINITE)
-                        .setAction(R.string.ok, new View.OnClickListener() {
+                        .setAction(android.R.string.ok, new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
                                 requestPermissionExecute(activity, permission, onPermissionRequestedListener);

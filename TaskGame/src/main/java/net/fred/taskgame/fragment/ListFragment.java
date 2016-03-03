@@ -545,7 +545,7 @@ public class ListFragment extends Fragment {
     private void deleteAllFinishedTasks() {
         new AlertDialog.Builder(getActivity())
                 .setMessage(R.string.delete_finished_tasks_confirmation)
-                .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+                .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
                         int[] positions = new int[mAdapter.getTasks().size()];
                         for (int i = 0; i < positions.length; i++) {
@@ -670,7 +670,7 @@ public class ListFragment extends Fragment {
         // Confirm dialog creation
         new AlertDialog.Builder(getActivity())
                 .setMessage(R.string.delete_task_confirmation)
-                .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+                .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
                         deleteTasksExecute(positions);
                     }

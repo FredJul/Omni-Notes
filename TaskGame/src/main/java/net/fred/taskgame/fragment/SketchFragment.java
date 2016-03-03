@@ -168,7 +168,7 @@ public class SketchFragment extends Fragment implements OnDrawChangedListener {
                             public void onClick(DialogInterface dialog, int id) {
                                 mSketchView.erase();
                             }
-                        }).setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+                        }).setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int id) {
                         dialog.cancel();

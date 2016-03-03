@@ -94,7 +94,7 @@
             android:id="@+id/save"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/ok"
+            android:text="@android:string/ok"
             style="?android:attr/buttonBarButtonStyle" />
     </LinearLayout>
 

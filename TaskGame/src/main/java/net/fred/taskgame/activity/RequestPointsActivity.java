@@ -15,7 +15,6 @@ public class RequestPointsActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        // setContentView(R.layout.activity_category);
 
         // Retrieving intent
         final long pointsNeeded = getIntent().getLongExtra(INTENT_EXTRA_POINT_AMOUNT_NEEDED, 0);
@@ -23,8 +22,10 @@ public class RequestPointsActivity extends Activity {
 
         if (currentPoints < pointsNeeded) {
             new AlertDialog.Builder(this)
-                    .setMessage("You only have " + currentPoints + " points... Sorry")
-                    .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+                    .setTitle(R.string.app_name)
+                    .setIcon(R.mipmap.ic_launcher)
+                    .setMessage(getString(R.string.not_enough_points, currentPoints))
+                    .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int id) {
                             setResult(Activity.RESULT_CANCELED);
                             finish();
@@ -32,15 +33,17 @@ public class RequestPointsActivity extends Activity {
                     }).show();
         } else {
             new AlertDialog.Builder(this)
-                    .setMessage("" + pointsNeeded + " points needed. Do you accept?")
-                    .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+                    .setTitle(R.string.app_name)
+                    .setIcon(R.mipmap.ic_launcher)
+                    .setMessage(getString(R.string.points_needed, pointsNeeded))
+                    .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int id) {
                             PrefUtils.putLong(PrefUtils.PREF_CURRENT_POINTS, currentPoints - pointsNeeded);
                             setResult(Activity.RESULT_OK);
                             finish();
                         }
                     })
-                    .setNegativeButton(R.string.not_set, new DialogInterface.OnClickListener() {
+                    .setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int id) {
                             setResult(Activity.RESULT_CANCELED);
                             finish();
