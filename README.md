@@ -3,18 +3,20 @@ TaskGame
 
 TaskGame is an open source task management gamified Android application based on OmniNotes.
 
-### Make your life funnier!
+### Motivate yourself to do borring tasks and make your life funnier!
 
-Each time you finish a task, you'll earn some points and will be able to spend them into a game as a reward. Several games can support TaskGame points, you are not limited to one and can regularly change.
+Each time you finish a task, you'll earn some points and will be able to spend them into a game as a reward. Several Android games can support TaskGame points, you are not limited to one and can regularly change.
 
-### Make the world better! 
+### Make our old Earth a better place! 
 
-In addition of your own task, you can accept some public-interest quests and do them in exchange of a large quantity of points
+In addition of your own task, you can accept some public-interest quests and do them in exchange of a large quantity of points. You may just cheat to get the points, but if only few people do it for real it's already a great victory. Try it!
 
 
-### How to use TaskGame points into my app?
+### How to use TaskGame points into my game?
 
-You just need to add this small utils file into your project:
+***Important notice: I'm currently searching for people who would like to modify their game to support TaskGame points. I'll refer to their app into TaskGame.***
+
+To support TaskGame points into your game, you just need to add this small utils file into your Android project:
 ```
 import android.content.ActivityNotFoundException;
 import android.content.Context;
@@ -88,6 +90,3 @@ public void onActivityResult(int requestCode, int resultCode, Intent data) {
 	super.onActivityResult(requestCode, resultCode, data);
 }
 ```
-
-
-***Important notice: I'm currently searching for people who would like to modify their game to support TaskGame points. I'll refer to their app into TaskGame***
