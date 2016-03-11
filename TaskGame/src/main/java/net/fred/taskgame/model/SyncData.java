@@ -21,7 +21,7 @@ public class SyncData {
         syncData.currentPoints = PrefUtils.getLong(PrefUtils.PREF_CURRENT_POINTS, 0);
         syncData.categories = new Select().from(Category.class).queryList().toArray(new Category[]{});
         syncData.tasks = new Select().from(Task.class).queryList().toArray(new Task[]{});
-
+// TODO do not handle attachments
         return syncData;
     }
 }

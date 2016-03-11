@@ -137,6 +137,8 @@ public class TaskAdapter extends MultiSelectAdapter<TaskAdapter.TaskViewHolder> 
             holder.mCardView.setCardBackgroundColor(ContextCompat.getColor(mActivity, R.color.quest_color));
             holder.mCategoryMarker.setBackgroundColor(Color.TRANSPARENT);
         } else {
+            holder.mCardView.setCardBackgroundColor(Color.WHITE);
+
             // If category is set the color will be applied on the appropriate target
             if (task.getCategory() != null) {
                 holder.mCategoryMarker.setBackgroundColor(task.getCategory().color);

@@ -330,13 +330,16 @@ public class MainActivity extends BaseGameActivity implements FragmentManager.On
                 ViewGroup navigationList = (ViewGroup) mNavigationView.findViewById(android.support.design.R.id.design_navigation_view);
                 for (int i = 0; i < listCategories.size(); i++) {
                     final int catPos = listCategories.keyAt(i);
-                    navigationList.getChildAt(catPos).setOnLongClickListener(new View.OnLongClickListener() {
-                        @Override
-                        public boolean onLongClick(View v) {
-                            editCategory(listCategories.get(catPos));
-                            return true;
-                        }
-                    });
+                    View categoryView = navigationList.getChildAt(catPos);
+                    if (categoryView != null) {
+                        categoryView.setOnLongClickListener(new View.OnLongClickListener() {
+                            @Override
+                            public boolean onLongClick(View v) {
+                                editCategory(listCategories.get(catPos));
+                                return true;
+                            }
+                        });
+                    }
                 }
             }
         });
