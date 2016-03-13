@@ -19,12 +19,6 @@
       xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
-        android:id="@+id/menu_attachment"
-        android:icon="@drawable/ic_attachment_white_24dp"
-        android:orderInCategory="100"
-        android:title="@string/attachment"
-        app:showAsAction="always"/>
-    <item
         android:id="@+id/menu_category"
         android:icon="@drawable/ic_folder_special_white_24dp"
         android:orderInCategory="200"

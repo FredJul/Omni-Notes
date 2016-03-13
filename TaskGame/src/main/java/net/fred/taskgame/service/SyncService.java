@@ -9,7 +9,6 @@ import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SyncResult;
-import android.net.Uri;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.util.Pair;
@@ -28,8 +27,6 @@ import com.google.gson.GsonBuilder;
 import com.raizlabs.android.dbflow.sql.language.Delete;
 import com.raizlabs.android.dbflow.sql.language.Select;
 
-import net.fred.taskgame.model.Attachment;
-import net.fred.taskgame.model.Attachment_Table;
 import net.fred.taskgame.model.Category;
 import net.fred.taskgame.model.SyncData;
 import net.fred.taskgame.model.Task;
@@ -185,7 +182,7 @@ public class SyncService extends Service {
                         if (syncedData.lastSyncDate > PrefUtils.getLong(PrefUtils.PREF_LAST_SYNC_DATE, -1)) {
                             PrefUtils.putLong(PrefUtils.PREF_CURRENT_POINTS, syncedData.currentPoints);
 
-                            // TODO should improve that to avoid empty the list then put it again. Moreover the attachments are not handled
+                            // TODO should improve that to avoid empty the list then put it again.
                             Delete.tables(Category.class, Task.class);
                             for (Category cat : syncedData.categories) {
                                 Dog.i("write cat " + cat);
@@ -238,7 +235,7 @@ public class SyncService extends Service {
                     }
 
                     // Retrieve quests
-                    Quests.LoadQuestsResult questsResult = Games.Quests.load(helper.getApiClient(), new int[]{Games.Quests.SELECT_ACCEPTED}, Games.Quests.SORT_ORDER_ENDING_SOON_FIRST, false).await();
+                    Quests.LoadQuestsResult questsResult = Games.Quests.load(helper.getApiClient(), new int[]{Quests.SELECT_ACCEPTED}, Quests.SORT_ORDER_ENDING_SOON_FIRST, false).await();
                     if (questsResult.getStatus().isSuccess()) {
                         HashSet<Pair<String, String>> questsIds = new HashSet<>();
 
@@ -264,14 +261,6 @@ public class SyncService extends Service {
                             task.pointReward = Integer.valueOf(reward);
 
                             task.save();
-
-                            // Delete task's attachments
-                            Delete.table(Attachment.class, Attachment_Table.taskId.eq(task.id));
-                            Attachment attachment = new Attachment();
-                            attachment.taskId = task.id;
-                            attachment.mimeType = Constants.MIME_TYPE_IMAGE;
-                            attachment.uri = Uri.parse(quest.getIconImageUrl());
-                            attachment.save();
                         }
 
                         // Delete old quests
@@ -290,7 +279,7 @@ public class SyncService extends Service {
                 } finally {
                     try {
                         helper.getApiClient().disconnect();
-                    } catch (Throwable unused) {
+                    } catch (Throwable ignored) {
                     }
                 }
 

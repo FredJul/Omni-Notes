@@ -44,7 +44,6 @@
             android:textColor="@color/drawer_text"/>
 
         <TextView
-            android:id="@+id/count"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:paddingEnd="@dimen/horizontal_margin"

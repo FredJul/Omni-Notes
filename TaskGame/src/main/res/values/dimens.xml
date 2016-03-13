@@ -20,29 +20,12 @@
     <!-- Default screen margins, per the Android Design guidelines. -->
     <dimen name="activity_horizontal_margin">16dp</dimen>
     <dimen name="activity_vertical_margin">16dp</dimen>
-
     <dimen name="horizontal_margin">16dp</dimen>
-
     <dimen name="padding_half">6dp</dimen>
-
-
     <dimen name="icon_text_margin">12dp</dimen>
-
     <dimen name="navigation_drawer_line_height">48dp</dimen>
     <dimen name="navigation_drawer_icon_size">28dp</dimen>
     <dimen name="navigation_drawer_header_height">190dp</dimen>
-
-
-
     <dimen name="widget_height">56dp</dimen>
-
-    <!-- Tasks layout in list -->
-    <dimen name="note_item_min_height_inner">80dp</dimen>
-
-
-    <!-- Attachment dialog -->
-    <dimen name="attachment_dialog_text_size">16sp</dimen>
-    <dimen name="attachment_dialog_drawable_padding">10dp</dimen>
-    <dimen name="attachment_dialog_items_padding">10dp</dimen>
 
 </resources>

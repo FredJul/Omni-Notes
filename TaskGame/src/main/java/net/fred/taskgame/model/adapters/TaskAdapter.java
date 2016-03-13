@@ -2,7 +2,6 @@ package net.fred.taskgame.model.adapters;
 
 import android.app.Activity;
 import android.graphics.Color;
-import android.net.Uri;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
@@ -13,15 +12,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.bumptech.glide.Glide;
-
 import net.fred.taskgame.R;
-import net.fred.taskgame.model.Attachment;
 import net.fred.taskgame.model.Task;
 import net.fred.taskgame.utils.TextHelper;
 import net.fred.taskgame.utils.recycler.ItemActionListener;
 import net.fred.taskgame.utils.recycler.ItemActionViewHolder;
-import net.fred.taskgame.view.SquareImageView;
 
 import java.util.List;
 
@@ -32,7 +27,7 @@ public class TaskAdapter extends MultiSelectAdapter<TaskAdapter.TaskViewHolder> 
 
     private final Activity mActivity;
     private final List<Task> mTasks;
-    private ItemActionListener mItemActionListener;
+    private final ItemActionListener mItemActionListener;
 
     public static class TaskViewHolder extends RecyclerView.ViewHolder implements ItemActionViewHolder {
 
@@ -46,8 +41,6 @@ public class TaskAdapter extends MultiSelectAdapter<TaskAdapter.TaskViewHolder> 
         TextView mContent;
         @Bind(R.id.reward)
         TextView mReward;
-        @Bind(R.id.attachment_thumbnail)
-        SquareImageView mAttachmentThumbnail;
 
         public TaskViewHolder(View v) {
             super(v);
@@ -117,20 +110,6 @@ public class TaskAdapter extends MultiSelectAdapter<TaskAdapter.TaskViewHolder> 
             holder.mContent.setVisibility(View.GONE);
         }
         holder.mReward.setText(String.valueOf(task.pointReward));
-
-        // Init thumbnail
-        if (task.getAttachmentsList() != null && !task.getAttachmentsList().isEmpty()) {
-            holder.mAttachmentThumbnail.setVisibility(View.VISIBLE);
-            Attachment mAttachment = task.getAttachmentsList().get(0);
-            Uri thumbnailUri = mAttachment.getThumbnailUri(mActivity);
-            Glide.with(mActivity)
-                    .load(thumbnailUri)
-                    .centerCrop()
-                    .crossFade()
-                    .into(holder.mAttachmentThumbnail);
-        } else {
-            holder.mAttachmentThumbnail.setVisibility(View.GONE);
-        }
 
         // Init task and category marker colors
         if (!TextUtils.isEmpty(task.questId)) { // If this is an official quest, let's make it quite visible

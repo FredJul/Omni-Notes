@@ -64,9 +64,4 @@
             android:textColor="@color/list_note_title" />
 
     </LinearLayout>
-
-    <ImageView
-        android:id="@+id/attachment_thumbnail"
-        android:layout_width="80dp"
-        android:layout_height="match_parent" />
 </LinearLayout>

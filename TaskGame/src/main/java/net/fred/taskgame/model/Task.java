@@ -18,7 +18,6 @@ package net.fred.taskgame.model;
 
 import android.content.Context;
 import android.content.Intent;
-import android.net.Uri;
 
 import com.google.gson.annotations.Expose;
 import com.raizlabs.android.dbflow.annotation.Column;
@@ -29,10 +28,6 @@ import net.fred.taskgame.R;
 import net.fred.taskgame.utils.EqualityChecker;
 
 import org.parceler.Parcel;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
 
 @Parcel
 @Table(database = AppDatabase.class)
@@ -84,7 +79,6 @@ public class Task extends IdBasedModel {
     public String questEventId = "";
 
     private transient Category mCategory;
-    private transient List<Attachment> mAttachmentsList;
 
     public Task() {
     }
@@ -103,27 +97,6 @@ public class Task extends IdBasedModel {
         pointReward = task.pointReward;
         questId = task.questId;
         mCategory = task.mCategory;
-
-        if (task.mAttachmentsList != null) {
-            mAttachmentsList = new ArrayList<>(task.mAttachmentsList);
-        }
-    }
-
-    public List<Attachment> getAttachmentsList() {
-        if (mAttachmentsList == null) {
-            if (id != INVALID_ID) {
-                mAttachmentsList = new Select().from(Attachment.class).where(Attachment_Table.taskId.is(id)).queryList();
-            } else {
-                mAttachmentsList = new ArrayList<>();
-            }
-        }
-
-        return mAttachmentsList;
-    }
-
-    @SuppressWarnings("unused")
-    public void setAttachmentsList(List<Attachment> attachmentsList) {
-        mAttachmentsList = attachmentsList;
     }
 
     public Category getCategory() {
@@ -154,9 +127,9 @@ public class Task extends IdBasedModel {
         }
 
         Object[] a = {id, title, content, creationDate, lastModificationDate, displayPriority, isFinished,
-                alarmDate, isChecklist, categoryId, pointReward, questId, questMilestoneId, questEventId, getAttachmentsList()};
+                alarmDate, isChecklist, categoryId, pointReward, questId, questMilestoneId, questEventId};
         Object[] b = {task.id, task.title, task.content, task.creationDate, task.lastModificationDate, task.displayPriority, task.isFinished,
-                task.alarmDate, task.isChecklist, task.categoryId, task.pointReward, task.questId, task.questMilestoneId, task.questEventId, task.getAttachmentsList()};
+                task.alarmDate, task.isChecklist, task.categoryId, task.pointReward, task.questId, task.questMilestoneId, task.questEventId};
         if (EqualityChecker.check(a, b)) {
             res = true;
         }
@@ -176,42 +149,11 @@ public class Task extends IdBasedModel {
 
 
         Intent shareIntent = new Intent();
-        // Prepare sharing intent with only text
-        if (getAttachmentsList().size() == 0) {
-            shareIntent.setAction(Intent.ACTION_SEND);
+
+        shareIntent.setAction(Intent.ACTION_SEND);
             shareIntent.setType("text/plain");
             shareIntent.putExtra(Intent.EXTRA_SUBJECT, titleText);
             shareIntent.putExtra(Intent.EXTRA_TEXT, contentText);
-
-            // Intent with single image attachment
-        } else if (getAttachmentsList().size() == 1) {
-            shareIntent.setAction(Intent.ACTION_SEND);
-            shareIntent.setType(getAttachmentsList().get(0).mimeType);
-            shareIntent.putExtra(Intent.EXTRA_STREAM, getAttachmentsList().get(0).uri);
-            shareIntent.putExtra(Intent.EXTRA_SUBJECT, titleText);
-            shareIntent.putExtra(Intent.EXTRA_TEXT, contentText);
-
-            // Intent with multiple images
-        } else if (getAttachmentsList().size() > 1) {
-            shareIntent.setAction(Intent.ACTION_SEND_MULTIPLE);
-            ArrayList<Uri> uris = new ArrayList<>();
-            // A check to decide the mime type of attachments to share is done here
-            HashMap<String, Boolean> mimeTypes = new HashMap<>();
-            for (Attachment attachment : getAttachmentsList()) {
-                uris.add(attachment.uri);
-                mimeTypes.put(attachment.mimeType, true);
-            }
-            // If many mime types are present a general type is assigned to intent
-            if (mimeTypes.size() > 1) {
-                shareIntent.setType("*/*");
-            } else {
-                shareIntent.setType((String) mimeTypes.keySet().toArray()[0]);
-            }
-
-            shareIntent.putParcelableArrayListExtra(Intent.EXTRA_STREAM, uris);
-            shareIntent.putExtra(Intent.EXTRA_SUBJECT, titleText);
-            shareIntent.putExtra(Intent.EXTRA_TEXT, contentText);
-        }
 
         context.startActivity(Intent.createChooser(shareIntent, context.getResources().getString(R.string.share_message_chooser)));
     }

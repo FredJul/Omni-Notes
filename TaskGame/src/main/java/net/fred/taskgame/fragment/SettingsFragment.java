@@ -41,23 +41,6 @@ public class SettingsFragment extends PreferenceFragment {
     public void onResume() {
         super.onResume();
 
-        // Maximum video attachment size
-        final EditTextPreference maxVideoSize = (EditTextPreference) findPreference("settings_max_video_size");
-        if (maxVideoSize != null) {
-            String maxVideoSizeValue = PrefUtils.getString("settings_max_video_size", getString(R.string.not_set));
-            maxVideoSize.setSummary(getString(R.string.settings_max_video_size_summary) + ": " + String.valueOf
-                    (maxVideoSizeValue));
-            maxVideoSize.setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
-                @Override
-                public boolean onPreferenceChange(Preference preference, Object newValue) {
-                    maxVideoSize.setSummary(getString(R.string.settings_max_video_size_summary) + ": " + String
-                            .valueOf(newValue));
-                    PrefUtils.putString("settings_max_video_size", newValue.toString());
-                    return false;
-                }
-            });
-        }
-
         // Checklists
         final ListPreference checklist = (ListPreference) findPreference("settings_checked_items_behavior");
         if (checklist != null) {

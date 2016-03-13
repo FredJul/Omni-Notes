@@ -24,10 +24,8 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.pm.ActivityInfo;
 import android.graphics.Bitmap;
 import android.graphics.drawable.ColorDrawable;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
@@ -59,7 +57,6 @@ import com.google.android.gms.games.quest.Quests;
 import net.fred.taskgame.R;
 import net.fred.taskgame.fragment.DetailFragment;
 import net.fred.taskgame.fragment.ListFragment;
-import net.fred.taskgame.fragment.SketchFragment;
 import net.fred.taskgame.model.Category;
 import net.fred.taskgame.model.Task;
 import net.fred.taskgame.model.listeners.OnPermissionRequestedListener;
@@ -88,8 +85,6 @@ public class MainActivity extends BaseGameActivity implements FragmentManager.On
 
     private FragmentManager mFragmentManager;
 
-    public Uri sketchUri;
-
     @Bind(R.id.toolbar)
     Toolbar mToolbar;
     @Bind(R.id.drawer_layout)
@@ -106,14 +101,14 @@ public class MainActivity extends BaseGameActivity implements FragmentManager.On
     private TextView mCurrentPoints;
     private ActionBarDrawerToggle mDrawerToggle;
 
-    private ThrottledFlowContentObserver mContentObserver = new ThrottledFlowContentObserver(100) {
+    private final ThrottledFlowContentObserver mContentObserver = new ThrottledFlowContentObserver(100) {
         @Override
         public void onChangeThrottled() {
             initNavigationMenu();
         }
     };
 
-    private SharedPreferences.OnSharedPreferenceChangeListener mCurrentPointsObserver = new SharedPreferences.OnSharedPreferenceChangeListener() {
+    private final SharedPreferences.OnSharedPreferenceChangeListener mCurrentPointsObserver = new SharedPreferences.OnSharedPreferenceChangeListener() {
         @Override
         public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
             if (mCurrentPoints != null && PrefUtils.PREF_CURRENT_POINTS.equals(key)) {
@@ -536,21 +531,8 @@ public class MainActivity extends BaseGameActivity implements FragmentManager.On
      */
     @Override
     public void onBackPressed() {
-        // SketchFragment
-        Fragment f = checkFragmentInstance(R.id.fragment_container, SketchFragment.class);
-        if (f != null) {
-            ((SketchFragment) f).save();
-
-            // Removes forced portrait orientation for this fragment
-            setRequestedOrientation(
-                    ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
-
-            mFragmentManager.popBackStack();
-            return;
-        }
-
         // DetailFragment
-        f = checkFragmentInstance(R.id.fragment_container, DetailFragment.class);
+        Fragment f = checkFragmentInstance(R.id.fragment_container, DetailFragment.class);
         if (f != null) {
             ((DetailFragment) f).saveAndExit();
             return;

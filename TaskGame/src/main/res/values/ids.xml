@@ -2,5 +2,4 @@
 
 <resources>
     <string name="app_id" translatable="false">780715276155</string>
-    <item name="holder" type="id"/>
 </resources>

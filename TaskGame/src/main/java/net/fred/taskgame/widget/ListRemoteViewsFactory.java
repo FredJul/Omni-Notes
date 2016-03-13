@@ -23,12 +23,10 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.text.Spanned;
-import android.view.View;
 import android.widget.RemoteViews;
 import android.widget.RemoteViewsService.RemoteViewsFactory;
 
 import net.fred.taskgame.R;
-import net.fred.taskgame.model.Attachment;
 import net.fred.taskgame.model.Category;
 import net.fred.taskgame.model.Task;
 import net.fred.taskgame.model.Task_Table;
@@ -48,7 +46,7 @@ public class ListRemoteViewsFactory implements RemoteViewsFactory {
     private final int appWidgetId;
     private List<Task> tasks;
 
-    private ThrottledFlowContentObserver mContentObserver = new ThrottledFlowContentObserver(100) {
+    private final ThrottledFlowContentObserver mContentObserver = new ThrottledFlowContentObserver(100) {
         @Override
         public void onChangeThrottled() {
             AppWidgetManager.getInstance(mContext).notifyAppWidgetViewDataChanged(appWidgetId, R.id.widget_list);
@@ -66,7 +64,6 @@ public class ListRemoteViewsFactory implements RemoteViewsFactory {
         getTasks();
         mContentObserver.registerForContentChanges(mContext, Task.class);
         mContentObserver.registerForContentChanges(mContext, Category.class);
-        mContentObserver.registerForContentChanges(mContext, Attachment.class);
     }
 
     @Override
@@ -111,23 +108,6 @@ public class ListRemoteViewsFactory implements RemoteViewsFactory {
         row.setTextViewText(R.id.task_content, titleAndContent[1]);
 
         color(task, row);
-
-//        if (task.getAttachmentsList().size() > 0) {
-//            Attachment attachment = task.getAttachmentsList().get(0);
-//
-//            AppWidgetTarget target = new AppWidgetTarget(mContext, row, R.id.attachmentThumbnail, 80, 80, new int[]{appWidgetId});
-//
-//            Uri thumbnailUri = attachment.getThumbnailUri(mContext);
-//            Glide.with(mContext)
-//                    .load(thumbnailUri)
-//                    .asBitmap()
-//                    .centerCrop()
-//                    .into(target);
-//
-//            row.setInt(R.id.attachmentThumbnail, "setVisibility", View.VISIBLE);
-//        } else {
-        row.setInt(R.id.attachment_thumbnail, "setVisibility", View.GONE);
-//        }
 
         // Next, set a fill-intent, which will be used to fill in the pending intent template
         // that is set on the collection view in StackWidgetProvider.

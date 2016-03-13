@@ -19,15 +19,12 @@ package net.fred.taskgame.utils;
 import android.database.sqlite.SQLiteDoneException;
 
 import com.raizlabs.android.dbflow.sql.language.ConditionGroup;
-import com.raizlabs.android.dbflow.sql.language.Delete;
 import com.raizlabs.android.dbflow.sql.language.OrderBy;
 import com.raizlabs.android.dbflow.sql.language.SQLCondition;
 import com.raizlabs.android.dbflow.sql.language.Select;
 import com.raizlabs.android.dbflow.sql.language.Update;
 
 import net.fred.taskgame.MainApplication;
-import net.fred.taskgame.model.Attachment;
-import net.fred.taskgame.model.Attachment_Table;
 import net.fred.taskgame.model.Category;
 import net.fred.taskgame.model.Category_Table;
 import net.fred.taskgame.model.Task;
@@ -46,11 +43,6 @@ public class DbHelper {
         }
 
         task.save();
-
-        for (Attachment attachment : task.getAttachmentsList()) {
-            attachment.taskId = task.id;
-            attachment.async().save();
-        }
     }
 
     /**
@@ -129,25 +121,9 @@ public class DbHelper {
      * Deleting single task
      */
     public static void deleteTask(Task task) {
-        // Attachment deletion from storage
-        for (Attachment attachment : task.getAttachmentsList()) {
-            StorageHelper.delete(MainApplication.getContext(), attachment.uri.getPath());
-        }
         ReminderHelper.removeReminder(MainApplication.getContext(), task);
 
-        // Delete task's attachments
-        Delete.table(Attachment.class, Attachment_Table.taskId.eq(task.id));
-
         task.delete();
-    }
-
-    /**
-     * Deleting single attachment
-     */
-    public static void deleteAttachment(Attachment attachment) {
-        // Attachment deletion from storage
-        StorageHelper.delete(MainApplication.getContext(), attachment.uri.getPath());
-        attachment.delete();
     }
 
     /**

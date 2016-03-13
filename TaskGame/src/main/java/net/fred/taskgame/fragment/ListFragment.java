@@ -54,7 +54,6 @@ import com.raizlabs.android.dbflow.runtime.transaction.process.SaveModelTransact
 import net.fred.taskgame.R;
 import net.fred.taskgame.activity.CategoryActivity;
 import net.fred.taskgame.activity.MainActivity;
-import net.fred.taskgame.model.Attachment;
 import net.fred.taskgame.model.Category;
 import net.fred.taskgame.model.IdBasedModel;
 import net.fred.taskgame.model.Task;
@@ -95,7 +94,7 @@ public class ListFragment extends Fragment {
 
     private TaskAdapter mAdapter;
 
-    private List<Task> mModifiedTasks = new ArrayList<>();
+    private final List<Task> mModifiedTasks = new ArrayList<>();
     private SearchView mSearchView;
     private MenuItem mSearchMenuItem;
     private ActionMode mActionMode;
@@ -111,7 +110,7 @@ public class ListFragment extends Fragment {
     // Search variables
     private String mSearchQuery;
 
-    private ThrottledFlowContentObserver mContentObserver = new ThrottledFlowContentObserver(100) {
+    private final ThrottledFlowContentObserver mContentObserver = new ThrottledFlowContentObserver(100) {
         @Override
         public void onChangeThrottled() {
             if (getActivity() != null) {
@@ -120,7 +119,7 @@ public class ListFragment extends Fragment {
         }
     };
 
-    private SharedPreferences.OnSharedPreferenceChangeListener mPrefListener = new SharedPreferences.OnSharedPreferenceChangeListener() {
+    private final SharedPreferences.OnSharedPreferenceChangeListener mPrefListener = new SharedPreferences.OnSharedPreferenceChangeListener() {
         @Override
         public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
             if (getActivity() != null && PrefUtils.PREF_NAVIGATION.equals(key)) {
@@ -152,7 +151,6 @@ public class ListFragment extends Fragment {
         // registers for callbacks from the specified tables
         mContentObserver.registerForContentChanges(inflater.getContext(), Task.class);
         mContentObserver.registerForContentChanges(inflater.getContext(), Category.class);
-        mContentObserver.registerForContentChanges(inflater.getContext(), Attachment.class);
 
         PrefUtils.registerOnPrefChangeListener(mPrefListener);
 

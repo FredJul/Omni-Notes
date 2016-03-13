@@ -19,12 +19,7 @@ package net.fred.taskgame.utils.date;
 import android.content.Context;
 import android.text.format.DateUtils;
 
-import net.fred.taskgame.utils.Constants;
-
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.Calendar;
-import java.util.Date;
 
 public class DateHelper {
 
@@ -35,32 +30,6 @@ public class DateHelper {
         }
         return cal;
     }
-
-
-    public static String getLocalizedDateTime(Context context, String dateString, String format) {
-        String res = null;
-        SimpleDateFormat sdf = new SimpleDateFormat(format);
-        Date date = null;
-        try {
-            date = sdf.parse(dateString);
-        } catch (ParseException e) {
-            sdf = new SimpleDateFormat(Constants.DATE_FORMAT_SORTABLE_OLD);
-            try {
-                date = sdf.parse(dateString);
-            } catch (ParseException e1) {
-
-            }
-        }
-
-        if (date != null) {
-            String dateFormatted = DateUtils.formatDateTime(context, date.getTime(), DateUtils.FORMAT_ABBREV_MONTH);
-            String timeFormatted = DateUtils.formatDateTime(context, date.getTime(), DateUtils.FORMAT_SHOW_TIME);
-            res = dateFormatted + " " + timeFormatted;
-        }
-
-        return res;
-    }
-
 
     /**
      * @param context
@@ -82,18 +51,4 @@ public class DateHelper {
         return DateUtils.formatDateTime(context, date, flags)
                 + " " + DateUtils.formatDateTime(context, date, DateUtils.FORMAT_SHOW_TIME);
     }
-
-    /**
-     * Formats a short time period (minutes)
-     *
-     * @param time
-     * @return
-     */
-    public static String formatShortTime(long time) {
-//		return DateUtils.formatDateTime(mContext, time, DateUtils.FORMAT_SHOW_TIME);
-        String m = String.valueOf(time / 1000 / 60);
-        String s = String.format("%02d", (time / 1000) % 60);
-        return m + ":" + s;
-    }
-
 }

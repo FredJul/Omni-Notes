@@ -23,6 +23,7 @@ import android.graphics.ColorFilter;
 import android.graphics.LightingColorFilter;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
+import android.support.v4.content.ContextCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -91,12 +92,12 @@ public class CategoryAdapter extends BaseAdapter {
             holder.txtTitle.setTextColor(Color.BLACK);
             holder.txtTitle.setTypeface(null, Typeface.BOLD);
         } else {
-            holder.txtTitle.setTextColor(mActivity.getResources().getColor(R.color.drawer_text));
+            holder.txtTitle.setTextColor(ContextCompat.getColor(mActivity, R.color.drawer_text));
             holder.txtTitle.setTypeface(null, Typeface.NORMAL);
         }
 
         // Set the results into ImageView checking if an icon is present before
-        Drawable img = mActivity.getResources().getDrawable(R.drawable.square);
+        Drawable img = ContextCompat.getDrawable(mActivity, R.drawable.square);
         ColorFilter cf = new LightingColorFilter(Color.TRANSPARENT, category.color);
         img.mutate().setColorFilter(cf);
         holder.imgIcon.setImageDrawable(img);

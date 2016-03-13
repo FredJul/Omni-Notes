@@ -20,9 +20,6 @@ public interface Constants {
 
     String TAG = "TaskGame";
 
-    String DATE_FORMAT_SORTABLE = "yyyyMMdd_HHmmss_S";
-    String DATE_FORMAT_SORTABLE_OLD = "yyyyMMddHHmmss";
-
     String INTENT_KEY = "task_id";
     String INTENT_TASK = "task";
     int INTENT_ALARM_CODE = 12345;
@@ -39,17 +36,6 @@ public interface Constants {
     String ACTION_TAKE_PHOTO = "action_widget_take_photo";
     String ACTION_WIDGET_SHOW_LIST = "action_widget_show_list";
     String ACTION_NOTIFICATION_CLICK = "action_notification_click";
-
-    String MIME_TYPE_IMAGE = "image/jpeg";
-    String MIME_TYPE_AUDIO = "audio/mp3";
-    String MIME_TYPE_VIDEO = "video/mp4";
-    String MIME_TYPE_SKETCH = "image/png";
-    String MIME_TYPE_FILES = "file/*";
-
-    String MIME_TYPE_IMAGE_EXT = ".jpeg";
-    String MIME_TYPE_AUDIO_EXT = ".mp3";
-    String MIME_TYPE_VIDEO_EXT = ".mp4";
-    String MIME_TYPE_SKETCH_EXT = ".png";
 
     String LEADERBOARD_ID = "CgkI--6GstwWEAIQAw";
 }
