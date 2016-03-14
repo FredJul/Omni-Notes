@@ -2,7 +2,6 @@ package net.fred.taskgame.model.adapters;
 
 import android.app.Activity;
 import android.graphics.Color;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.text.Spanned;
@@ -10,6 +9,7 @@ import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import net.fred.taskgame.R;
@@ -35,11 +35,13 @@ public class TaskAdapter extends MultiSelectAdapter<TaskAdapter.TaskViewHolder> 
         CardView mCardView;
         @Bind(R.id.category_marker)
         View mCategoryMarker;
+        @Bind(R.id.quest_icon)
+        ImageView mQuestIcon;
         @Bind(R.id.task_title)
         TextView mTitle;
         @Bind(R.id.task_content)
         TextView mContent;
-        @Bind(R.id.reward)
+        @Bind(R.id.reward_points)
         TextView mReward;
 
         public TaskViewHolder(View v) {
@@ -113,10 +115,10 @@ public class TaskAdapter extends MultiSelectAdapter<TaskAdapter.TaskViewHolder> 
 
         // Init task and category marker colors
         if (!TextUtils.isEmpty(task.questId)) { // If this is an official quest, let's make it quite visible
-            holder.mCardView.setCardBackgroundColor(ContextCompat.getColor(mActivity, R.color.quest_color));
+            holder.mQuestIcon.setVisibility(View.VISIBLE);
             holder.mCategoryMarker.setBackgroundColor(Color.TRANSPARENT);
         } else {
-            holder.mCardView.setCardBackgroundColor(Color.WHITE);
+            holder.mQuestIcon.setVisibility(View.GONE);
 
             // If category is set the color will be applied on the appropriate target
             if (task.getCategory() != null) {

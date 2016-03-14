@@ -25,7 +25,6 @@
     <!--Floating action button-->
     <color name="white">#fafafa</color>
 
-    <color name="quest_color">#c1ded3</color>
     <color name="gray_bg">#e2e2e2</color>
     <color name="kitkat_gray_light">#19000000</color>
     <color name="list_note_title">#cc000000</color>

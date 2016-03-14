@@ -26,6 +26,18 @@
         android:text="@string/not_logged_in" />
 
     <Button
+        android:id="@+id/quests_btn"
+        style="?android:attr/buttonBarButtonStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:text="@string/quests"
+        android:textColor="@android:color/white"
+        android:drawableStart="@drawable/ic_quest"
+        android:drawablePadding="5dp"
+        android:visibility="gone" />
+
+    <Button
         android:id="@+id/leaderboard_btn"
         style="?android:attr/buttonBarButtonStyle"
         android:layout_width="wrap_content"
@@ -33,18 +45,9 @@
         android:layout_alignParentBottom="true"
         android:text="@string/leaderboard"
         android:textColor="@android:color/white"
-        android:visibility="gone" />
-
-    <Button
-        android:id="@+id/quests_btn"
-        style="?android:attr/buttonBarButtonStyle"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_toEndOf="@+id/leaderboard_btn"
-        android:text="@string/quests"
-        android:textColor="@android:color/white"
-        android:layout_marginStart="30dp"
+        android:drawableStart="@drawable/ic_leaderboard"
+        android:layout_toEndOf="@+id/quests_btn"
+        android:drawablePadding="5dp"
         android:visibility="gone" />
 
     <TextView
@@ -53,7 +56,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentEnd="true"
         android:layout_alignParentBottom="true"
-        android:drawableEnd="@drawable/point_icon"
+        android:drawableStart="@drawable/point_icon"
         android:drawablePadding="3dp"
         android:layout_marginBottom="40dp"
         android:padding="15dp"

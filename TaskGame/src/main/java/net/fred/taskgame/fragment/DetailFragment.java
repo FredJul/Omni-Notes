@@ -104,6 +104,8 @@ public class DetailFragment extends Fragment implements OnReminderPickedListener
     ScrollView mScrollView;
     @Bind(R.id.reward_layout)
     View mRewardLayout;
+    @Bind(R.id.reward_points)
+    TextView mRewardPoints;
     @Bind(R.id.reminder_layout)
     View mReminderLayout;
     @Bind(R.id.reward_spinner)
@@ -337,6 +339,7 @@ public class DetailFragment extends Fragment implements OnReminderPickedListener
             } else if (mTask.pointReward == Task.VERY_HIGH_POINT_REWARD) {
                 mRewardSpinner.setSelection(3);
             }
+            mRewardPoints.setText(String.valueOf(mTask.pointReward));
 
             mRewardSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
                 @Override
@@ -355,6 +358,7 @@ public class DetailFragment extends Fragment implements OnReminderPickedListener
                             mTask.pointReward = Task.VERY_HIGH_POINT_REWARD;
                             break;
                     }
+                    mRewardPoints.setText(String.valueOf(mTask.pointReward));
                 }
 
                 @Override
