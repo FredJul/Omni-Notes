@@ -44,6 +44,12 @@ public abstract class BaseGameActivity extends AppCompatActivity implements Game
     }
 
     @Override
+    protected void onDestroy() {
+        mHelper.onDestroy();
+        super.onDestroy();
+    }
+
+    @Override
     protected void onActivityResult(int request, int response, Intent data) {
         super.onActivityResult(request, response, data);
         mHelper.onActivityResult(request, response, data);

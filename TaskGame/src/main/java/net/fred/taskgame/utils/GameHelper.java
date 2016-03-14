@@ -282,6 +282,14 @@ public class GameHelper implements GoogleApiClient.ConnectionCallbacks, GoogleAp
     }
 
     /**
+     * Call this method from your Activity's onDestroy().
+     */
+    public void onDestroy() {
+        mListener = null;
+    }
+
+
+    /**
      * Sign out and disconnect from the APIs.
      */
     public void signOut() {

@@ -81,7 +81,6 @@ public class MainActivity extends BaseGameActivity implements FragmentManager.On
 
     public final String FRAGMENT_LIST_TAG = "fragment_list";
     public final String FRAGMENT_DETAIL_TAG = "fragment_detail";
-    public final String FRAGMENT_SKETCH_TAG = "fragment_sketch";
 
     private FragmentManager mFragmentManager;
 
