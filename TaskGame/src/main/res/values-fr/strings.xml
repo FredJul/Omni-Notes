@@ -19,7 +19,8 @@
 <resources>
     <string name="drawer_tasks_item">Tâches à faire</string>
     <string name="drawer_finished_tasks_item">Tâches finies</string>
-    <string name="title_item_list">Tâches</string>
+    <string name="task">Tâche</string>
+    <string name="tasks">Tâches</string>
     <string name="title">Titre </string>
     <string name="search">Rechercher</string>
     <string name="content">Contenu</string>
@@ -86,6 +87,7 @@
     <string name="app_not_found">Vous n\'avez installé aucune application capable de gérer ce type de lien</string>
     <string name="difficulty">Difficulté:</string>
     <string name="not_logged_in">Non connecté</string>
+    <string name="quest">Quête</string>
     <string name="quests">Quêtes</string>
     <string name="leaderboard">Classement</string>
     <string name="sign_out_confirmation">Voulez-vous vous déconnecter ?</string>

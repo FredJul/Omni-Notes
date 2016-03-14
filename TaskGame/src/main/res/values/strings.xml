@@ -17,10 +17,10 @@
   ~ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   -->
 <resources>
-    <!-- Activities -->
     <string name="drawer_tasks_item">To-do tasks</string>
     <string name="drawer_finished_tasks_item">Finished tasks</string>
-    <string name="title_item_list">Tasks</string>
+    <string name="task">Task</string>
+    <string name="tasks">Tasks</string>
     <string name="title">Title</string>
     <string name="search">Search</string>
     <string name="content">Content</string>
@@ -79,8 +79,6 @@
     <string name="difficulty">Difficulty:</string>
     <string name="not_enough_points">You only have %s leaves… Sorry</string>
     <string name="points_needed">%s leaves will be spent. Do you want to continue?</string>
-
-    <!-- Settings -->
     <string name="settings">Settings</string>
     <string name="settings_enable_vibration">Vibration</string>
     <string name="settings_checked_items_behavior">Checklists</string>
@@ -88,11 +86,10 @@
     <string name="settings_notification_ringtone">Ringtone</string>
     <string name="settings_notification_snooze_delay">Second reminder delay</string>
     <string name="minutes">minutes</string>
-
-    <!-- Accessibility -->
     <string name="drawer_open">drawer open</string>
     <string name="drawer_close">drawer closed</string>
     <string name="not_logged_in">Not logged in</string>
+    <string name="quest">Quest</string>
     <string name="quests">Quests</string>
     <string name="leaderboard">Leaderboard</string>
     <string name="sign_out_confirmation">Do you want to sign out?</string>

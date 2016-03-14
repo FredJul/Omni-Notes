@@ -141,8 +141,6 @@ public class DetailFragment extends Fragment implements OnReminderPickedListener
             mOriginalTask = Parcels.unwrap(savedInstanceState.getParcelable("mOriginalTask"));
         }
 
-        getMainActivity().getSupportActionBar().setTitle("");
-
         // Handling of Intent actions
         handleIntents();
 
@@ -156,6 +154,12 @@ public class DetailFragment extends Fragment implements OnReminderPickedListener
 
         if (mTask.alarmDate != 0) {
             mReminderDateTextView.setText(getString(R.string.alarm_set_on, DateHelper.getDateTimeShort(getContext(), mTask.alarmDate)));
+        }
+
+        if (TextUtils.isEmpty(mTask.questId)) {
+            getMainActivity().getSupportActionBar().setTitle(R.string.task);
+        } else {
+            getMainActivity().getSupportActionBar().setTitle(R.string.quest);
         }
 
         initViews();
