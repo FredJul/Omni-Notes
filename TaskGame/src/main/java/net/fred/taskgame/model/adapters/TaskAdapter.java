@@ -100,6 +100,8 @@ public class TaskAdapter extends MultiSelectAdapter<TaskAdapter.TaskViewHolder> 
 
     @Override
     public void onBindViewHolder(final TaskViewHolder holder, int position) {
+        super.onBindViewHolder(holder, position);
+
         Task task = mTasks.get(position);
 
         // Init texts

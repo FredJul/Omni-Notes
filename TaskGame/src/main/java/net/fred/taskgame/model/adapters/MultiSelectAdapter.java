@@ -51,6 +51,15 @@ public abstract class MultiSelectAdapter<VH extends RecyclerView.ViewHolder & It
         return itemsPos;
     }
 
+    @Override
+    public void onBindViewHolder(final VH holder, int position) {
+        if (isItemSelected(position)) {
+            holder.onItemSelected();
+        } else {
+            holder.onItemClear();
+        }
+    }
+
     protected void toggleSelection(boolean select, int position) {
         updateView(mRecyclerView, position, !select);
 
@@ -62,7 +71,7 @@ public abstract class MultiSelectAdapter<VH extends RecyclerView.ViewHolder & It
     }
 
     private void updateView(RecyclerView recyclerView, int position, boolean isCurrentlySelected) {
-        View child = recyclerView.getChildAt(position);
+        View child = mRecyclerView.getLayoutManager().findViewByPosition(position);
         if (child != null) {
             ItemActionViewHolder viewHolder = (ItemActionViewHolder) recyclerView.getChildViewHolder(child);
             // Let the view holder know that this item is being moved or dragged
