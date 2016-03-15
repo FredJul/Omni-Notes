@@ -18,6 +18,9 @@ package net.fred.taskgame.utils;
 
 import android.database.sqlite.SQLiteDoneException;
 
+import com.raizlabs.android.dbflow.runtime.TransactionManager;
+import com.raizlabs.android.dbflow.runtime.transaction.process.DeleteModelListTransaction;
+import com.raizlabs.android.dbflow.runtime.transaction.process.ProcessModelInfo;
 import com.raizlabs.android.dbflow.sql.language.ConditionGroup;
 import com.raizlabs.android.dbflow.sql.language.OrderBy;
 import com.raizlabs.android.dbflow.sql.language.SQLCondition;
@@ -124,6 +127,14 @@ public class DbHelper {
         ReminderHelper.removeReminder(MainApplication.getContext(), task);
 
         task.delete();
+    }
+
+    public static void deleteTasks(List<Task> tasks) {
+        for (Task task : tasks) {
+            ReminderHelper.removeReminder(MainApplication.getContext(), task);
+        }
+
+        TransactionManager.getInstance().addTransaction(new DeleteModelListTransaction<>(ProcessModelInfo.withModels(tasks)));
     }
 
     /**

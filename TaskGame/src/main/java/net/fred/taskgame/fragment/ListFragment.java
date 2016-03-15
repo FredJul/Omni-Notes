@@ -680,12 +680,13 @@ public class ListFragment extends Fragment {
      * Performs tasks permanent deletion after confirmation by the user
      */
     private void deleteTasksExecute(int[] positions) {
+        ArrayList<Task> tasksToDelete = new ArrayList<>();
         for (int position : positions) {
             Task task = mAdapter.getTasks().get(position);
-            mAdapter.getTasks().remove(task);
-            // Deleting note using DbHelper
-            DbHelper.deleteTask(task);
+            tasksToDelete.add(task);
         }
+        mAdapter.getTasks().removeAll(tasksToDelete);
+        DbHelper.deleteTasks(tasksToDelete);
 
         finishActionMode();
 
