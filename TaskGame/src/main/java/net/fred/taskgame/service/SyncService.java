@@ -24,8 +24,12 @@ import com.google.android.gms.games.snapshot.SnapshotMetadataChange;
 import com.google.android.gms.games.snapshot.Snapshots;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.raizlabs.android.dbflow.sql.language.Delete;
+import com.raizlabs.android.dbflow.runtime.TransactionManager;
+import com.raizlabs.android.dbflow.runtime.transaction.process.DeleteModelListTransaction;
+import com.raizlabs.android.dbflow.runtime.transaction.process.ProcessModelInfo;
+import com.raizlabs.android.dbflow.runtime.transaction.process.SaveModelTransaction;
 import com.raizlabs.android.dbflow.sql.language.Select;
+import com.raizlabs.android.dbflow.structure.Model;
 
 import net.fred.taskgame.model.Category;
 import net.fred.taskgame.model.SyncData;
@@ -39,6 +43,7 @@ import net.fred.taskgame.utils.GameHelper;
 import net.fred.taskgame.utils.PrefUtils;
 
 import java.nio.charset.Charset;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 
@@ -182,15 +187,38 @@ public class SyncService extends Service {
                         if (syncedData.lastSyncDate > PrefUtils.getLong(PrefUtils.PREF_LAST_SYNC_DATE, -1)) {
                             PrefUtils.putLong(PrefUtils.PREF_CURRENT_POINTS, syncedData.currentPoints);
 
-                            // TODO should improve that to avoid empty the list then put it again.
-                            Delete.tables(Category.class, Task.class);
-                            for (Category cat : syncedData.categories) {
-                                Dog.i("write cat " + cat);
-                                cat.save();
+                            ArrayList<Model> objectsToSave = new ArrayList<>();
+                            ArrayList<Model> objectsToDelete = new ArrayList<>();
+
+                            // Sync categories
+                            List<Category> originalCategories = new Select().from(Category.class).queryList();
+                            HashSet<Long> syncedCategories = new HashSet<>();
+                            for (Category category : syncedData.categories) {
+                                objectsToSave.add(category);
+                                syncedCategories.add(category.id);
                             }
+                            for (Category categoryToDelete : originalCategories) {
+                                if (!syncedCategories.contains(categoryToDelete.id)) {
+                                    objectsToDelete.add(categoryToDelete);
+                                }
+                            }
+
+                            // Sync tasks
+                            List<Task> originalTasks = new Select().from(Task.class).queryList();
+                            HashSet<Long> syncedTasks = new HashSet<>();
                             for (Task task : syncedData.tasks) {
-                                task.save();
+                                objectsToSave.add(task);
+                                syncedTasks.add(task.id);
                             }
+                            for (Task taskToDelete : originalTasks) {
+                                if (!syncedTasks.contains(taskToDelete.id)) {
+                                    objectsToDelete.add(taskToDelete);
+                                }
+                            }
+
+                            // Do the transactions itself
+                            TransactionManager.getInstance().addTransaction(new SaveModelTransaction<>(ProcessModelInfo.withModels(objectsToSave)));
+                            TransactionManager.getInstance().addTransaction(new DeleteModelListTransaction<>(ProcessModelInfo.withModels(objectsToDelete)));
                         }
 
                         SyncData syncData = SyncData.getLastData();
