@@ -279,8 +279,7 @@ public class MainActivity extends BaseGameActivity implements FragmentManager.On
                 if (mCurrentPoints == null) {
                     mCurrentPoints = (TextView) mNavigationView.findViewById(R.id.currentPoints);
 
-                    mPlayerImageView = (ImageView) mNavigationView.findViewById(R.id.player);
-                    mPlayerImageView.setOnClickListener(new View.OnClickListener() {
+                    View.OnClickListener loginListener = new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
                             PermissionsHelper.requestPermission(MainActivity.this, Manifest.permission.GET_ACCOUNTS,
@@ -291,9 +290,12 @@ public class MainActivity extends BaseGameActivity implements FragmentManager.On
                                         }
                                     });
                         }
-                    });
+                    };
+                    mPlayerImageView = (ImageView) mNavigationView.findViewById(R.id.player);
+                    mPlayerImageView.setOnClickListener(loginListener);
 
                     mPlayerName = (TextView) mNavigationView.findViewById(R.id.player_name);
+                    mPlayerName.setOnClickListener(loginListener);
 
                     mLeaderboardBtn = (Button) mNavigationView.findViewById(R.id.leaderboard_btn);
                     mLeaderboardBtn.setOnClickListener(new View.OnClickListener() {
@@ -417,7 +419,8 @@ public class MainActivity extends BaseGameActivity implements FragmentManager.On
                 getView().setImageDrawable(circularBitmapDrawable);
             }
         });
-        mPlayerImageView.setOnClickListener(new View.OnClickListener() {
+
+        View.OnClickListener logoutListener = new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 new AlertDialog.Builder(MainActivity.this)
@@ -430,7 +433,7 @@ public class MainActivity extends BaseGameActivity implements FragmentManager.On
                                 mLeaderboardBtn.setVisibility(View.GONE);
                                 mQuestsBtn.setVisibility(View.GONE);
 
-                                mPlayerImageView.setOnClickListener(new View.OnClickListener() {
+                                View.OnClickListener loginListener = new View.OnClickListener() {
                                     @Override
                                     public void onClick(View v) {
                                         PermissionsHelper.requestPermission(MainActivity.this, Manifest.permission.GET_ACCOUNTS,
@@ -441,7 +444,9 @@ public class MainActivity extends BaseGameActivity implements FragmentManager.On
                                                     }
                                                 });
                                     }
-                                });
+                                };
+                                mPlayerImageView.setOnClickListener(loginListener);
+                                mPlayerName.setOnClickListener(loginListener);
                             }
                         })
                         .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
@@ -449,7 +454,9 @@ public class MainActivity extends BaseGameActivity implements FragmentManager.On
                             }
                         }).show();
             }
-        });
+        };
+        mPlayerImageView.setOnClickListener(logoutListener);
+        mPlayerName.setOnClickListener(logoutListener);
 
         mPlayerName.setText(player.getDisplayName());
 

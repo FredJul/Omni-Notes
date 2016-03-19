@@ -24,12 +24,11 @@ public class IdBasedModel extends BaseModel {
             if (maxIdCursor != null) {
                 if (maxIdCursor.moveToFirst()) {
                     id = maxIdCursor.getLong(0) + 1;
-                    super.save();
                 }
                 maxIdCursor.close();
             }
-        } else {
-            super.save();
         }
+
+        super.save();
     }
 }
