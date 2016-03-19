@@ -138,7 +138,7 @@
     <orderEntry type="library" exported="" name="HoloColorPicker-1.5" level="project" />
     <orderEntry type="library" exported="" name="dbflow-core-3.0.0-beta5" level="project" />
     <orderEntry type="library" exported="" name="play-services-games-8.4.0" level="project" />
-    <orderEntry type="library" exported="" name="rxjava-1.1.1" level="project" />
+    <orderEntry type="library" exported="" name="rxjava-1.1.2" level="project" />
     <orderEntry type="library" exported="" name="design-23.2.0" level="project" />
     <orderEntry type="library" exported="" name="play-services-basement-8.4.0" level="project" />
     <orderEntry type="module" module-name="checklistview" exported="" />
