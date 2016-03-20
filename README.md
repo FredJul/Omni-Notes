@@ -1,14 +1,13 @@
 TaskGame
 ==========
 
-TaskGame is an open source task management gamified Android application based on OmniNotes.
+TaskGame is a gamified todo-list Android application. It's also open-sourced and based on OmniNotes.
 All derivative works need to respect the GPLv3 license of this software and publish their source code under the same license.
 
 ![](https://lh3.googleusercontent.com/fvMvVPiu2fTVA5FWUNvhr2iwXfE9WCDxQ0C2I5fYozEY-NQ8d8ZGU7AjVrps3BEU3Q=h310) _
 ![](https://lh3.googleusercontent.com/-GuoW_H1RJScFMhh36zXnYQmqWRwZtDLcOFfdM3Pgkd--k6iHhhDy3qxBdgawCS6e6Q=h310) _
 ![](https://lh3.googleusercontent.com/qFC0H8zPJRTvz7nQ9OpujExqGwmvqTLD8S1UnH7nSnzTnIx4iDVndNZcXcc2jIr6vA=h310) _
 ![](https://lh3.googleusercontent.com/9T_ILE4FrvDZyT0FRM6l9Y9FsnG3nYItUPK8d5PI7O7KCyE9o2fLfL5kU2AepTGEOb9F=h310) _
-
 
 ### Motivate yourself to do borring tasks and make your life funnier!
 
@@ -18,6 +17,11 @@ Each time you finish a task, you'll earn some points and will be able to spend t
 
 In addition of your own task, you can accept some public-interest quests and do them in exchange of a large quantity of points. You may just cheat to get the points, but if only few people do it for real it's already a great victory. Try it!
 
+### How to install TaskGame?
+
+To get access to the alpha version on PlayStore just go here: https://play.google.com/apps/testing/net.fred.taskgame
+
+To install a demo game consuming TaskGame points you can manually install this APK: https://github.com/FredJul/memory-game/blob/master/TaskGame-memory.apk
 
 ### How to use TaskGame points into my game?
 
