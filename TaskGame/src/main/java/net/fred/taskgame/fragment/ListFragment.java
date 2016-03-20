@@ -595,6 +595,8 @@ public class ListFragment extends Fragment {
     }
 
     private void finishTasks(int[] positions) {
+        commitPending(); // to avoid potential crashes
+
         for (int position : positions) {
             Task task = mAdapter.getTasks().get(position);
             // Saves tasks to be eventually restored at right position
@@ -725,6 +727,8 @@ public class ListFragment extends Fragment {
     }
 
     private void categorizeTasks(int[] positions, Category category) {
+        commitPending(); // to avoid potential crashes
+
         for (int position : positions) {
             Task task = mAdapter.getTasks().get(position);
             // If is restore it will be done immediately, otherwise the undo bar
