@@ -4,6 +4,12 @@ TaskGame
 TaskGame is an open source task management gamified Android application based on OmniNotes.
 All derivative works need to respect the GPLv3 license of this software and publish their source code under the same license.
 
+![](https://lh3.googleusercontent.com/fvMvVPiu2fTVA5FWUNvhr2iwXfE9WCDxQ0C2I5fYozEY-NQ8d8ZGU7AjVrps3BEU3Q=h310) _
+![](https://lh3.googleusercontent.com/-GuoW_H1RJScFMhh36zXnYQmqWRwZtDLcOFfdM3Pgkd--k6iHhhDy3qxBdgawCS6e6Q=h310) _
+![](https://lh3.googleusercontent.com/qFC0H8zPJRTvz7nQ9OpujExqGwmvqTLD8S1UnH7nSnzTnIx4iDVndNZcXcc2jIr6vA=h310) _
+![](https://lh3.googleusercontent.com/9T_ILE4FrvDZyT0FRM6l9Y9FsnG3nYItUPK8d5PI7O7KCyE9o2fLfL5kU2AepTGEOb9F=h310) _
+
+
 ### Motivate yourself to do borring tasks and make your life funnier!
 
 Each time you finish a task, you'll earn some points and will be able to spend them into a game as a reward. Several Android games can support TaskGame points, you are not limited to one and can regularly change.
