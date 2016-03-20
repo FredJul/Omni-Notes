@@ -38,4 +38,9 @@ public interface Constants {
     String ACTION_NOTIFICATION_CLICK = "action_notification_click";
 
     String LEADERBOARD_ID = "CgkI--6GstwWEAIQAw";
+    String ACHIEVEMENT_FIRST_TASK_COMPLETED = "CgkI--6GstwWEAIQBA";
+    String ACHIEVEMENT_FIRST_QUEST_COMPLETED = "CgkI--6GstwWEAIQCg";
+    String ACHIEVEMENT_FIRST_POINT_USE_INTO_GAME = "CgkI--6GstwWEAIQCw";
+    String ACHIEVEMENT_REGULAR_USER = "CgkI--6GstwWEAIQDA";
+    String ACHIEVEMENT_EFFICIENT_PEOPLE = "CgkI--6GstwWEAIQDQ";
 }
