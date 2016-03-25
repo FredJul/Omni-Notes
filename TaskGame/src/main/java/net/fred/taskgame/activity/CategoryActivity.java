@@ -155,7 +155,7 @@ public class CategoryActivity extends Activity {
     private void deleteCategory() {
 
         // Retrieving how many tasks are categorized with category to be deleted
-        long count = DbHelper.getCategorizedCount(category);
+        long count = DbHelper.getActiveTaskCountByCategory(category);
         String msg = "";
         if (count > 0) {
             msg = getString(R.string.delete_category_confirmation).replace("$1$", String.valueOf(count));

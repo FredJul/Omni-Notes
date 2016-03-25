@@ -67,7 +67,7 @@ public class DbHelper {
     public static List<Task> getTasksFromCurrentNavigation() {
         long navigation = NavigationUtils.getNavigation();
         if (navigation == NavigationUtils.TASKS) {
-            return getTasksActive();
+            return getActiveTasks();
         } else if (navigation == NavigationUtils.FINISHED_TASKS) {
             return getFinishedTasks();
         } else {
@@ -76,7 +76,7 @@ public class DbHelper {
     }
 
 
-    public static List<Task> getTasksActive() {
+    public static List<Task> getActiveTasks() {
         return getTasks(Task_Table.isFinished.eq(false));
     }
 
@@ -208,6 +208,15 @@ public class DbHelper {
         return new Select().from(Category.class).where(Category_Table.id.eq(categoryId)).querySingle();
     }
 
+    public static long getActiveTaskCount() {
+        try {
+            return new Select().from(Task.class).where(Task_Table.isFinished.eq(false)).count();
+        } catch (SQLiteDoneException e) {
+            // I do not know why this happen when count=0
+            return 0;
+        }
+    }
+
     public static long getFinishedTaskCount() {
         try {
             return new Select().from(Task.class).where(Task_Table.isFinished.eq(true)).count();
@@ -217,9 +226,9 @@ public class DbHelper {
         }
     }
 
-    public static long getCategorizedCount(Category category) {
+    public static long getActiveTaskCountByCategory(Category category) {
         try {
-            return new Select().from(Task.class).where(Task_Table.categoryId.eq(category.id)).count();
+            return new Select().from(Task.class).where(Task_Table.isFinished.eq(false), Task_Table.categoryId.eq(category.id)).count();
         } catch (SQLiteDoneException e) {
             // I do not know why this happen when count=0
             return 0;

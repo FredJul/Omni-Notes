@@ -238,12 +238,17 @@ public class MainActivity extends BaseGameActivity implements FragmentManager.On
 
         MenuItem item = menu.add(1, R.string.drawer_tasks_item, Menu.NONE, R.string.drawer_tasks_item);
         item.setIcon(R.drawable.ic_assignment_grey600_24dp);
+        long activeTaskCount = DbHelper.getActiveTaskCount();
+        if (activeTaskCount > 0) {
+            item.setActionView(R.layout.menu_counter);
+            ((TextView) item.getActionView()).setText(String.valueOf(activeTaskCount));
+        }
         if (currentNavigation == NavigationUtils.TASKS) {
             item.setChecked(true);
         }
         nbItems++;
 
-        if (DbHelper.getFinishedTaskCount() != 0) {
+        if (DbHelper.getFinishedTaskCount() > 0) {
             item = menu.add(1, R.string.drawer_finished_tasks_item, Menu.NONE, R.string.drawer_finished_tasks_item);
             item.setIcon(R.drawable.ic_assignment_turned_in_grey600_24dp);
             if (currentNavigation == NavigationUtils.FINISHED_TASKS) {
@@ -255,6 +260,11 @@ public class MainActivity extends BaseGameActivity implements FragmentManager.On
         // Retrieves data to fill tags list
         for (Category category : DbHelper.getCategories()) {
             item = menu.add(1, R.string.category, Menu.NONE, category.name);
+            long categoryCount = DbHelper.getActiveTaskCountByCategory(category);
+            if (categoryCount > 0) {
+                item.setActionView(R.layout.menu_counter);
+                ((TextView) item.getActionView()).setText(String.valueOf(categoryCount));
+            }
             Intent extraIntent = new Intent();
             extraIntent.putExtra("category", category.id);
             item.setIntent(extraIntent);
