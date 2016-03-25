@@ -627,15 +627,19 @@ public class ListFragment extends Fragment {
 
         if (TextUtils.isEmpty(task.questId)) {
             DbHelper.finishTask(task);
-            Games.Achievements.increment(gameApiClient, Constants.ACHIEVEMENT_FIRST_TASK_COMPLETED, 1);
-            Games.Achievements.increment(gameApiClient, Constants.ACHIEVEMENT_REGULAR_USER, 1);
-            Games.Achievements.increment(gameApiClient, Constants.ACHIEVEMENT_EFFICIENT_PEOPLE, 1);
+            if (gameApiClient != null && gameApiClient.isConnected()) {
+                Games.Achievements.increment(gameApiClient, Constants.ACHIEVEMENT_FIRST_TASK_COMPLETED, 1);
+                Games.Achievements.increment(gameApiClient, Constants.ACHIEVEMENT_REGULAR_USER, 1);
+                Games.Achievements.increment(gameApiClient, Constants.ACHIEVEMENT_EFFICIENT_PEOPLE, 1);
+            }
         } else {
             // we directly delete quests (to ot be able to restore them), but we still add the reward
             PrefUtils.putLong(PrefUtils.PREF_CURRENT_POINTS, PrefUtils.getLong(PrefUtils.PREF_CURRENT_POINTS, 0) + task.pointReward);
-            Games.Events.increment(gameApiClient, task.questEventId, 1);
-            Games.Quests.claim(gameApiClient, task.questId, task.questMilestoneId);
-            Games.Achievements.increment(gameApiClient, Constants.ACHIEVEMENT_FIRST_QUEST_COMPLETED, 1);
+            if (gameApiClient != null && gameApiClient.isConnected()) {
+                Games.Events.increment(gameApiClient, task.questEventId, 1);
+                Games.Quests.claim(gameApiClient, task.questId, task.questMilestoneId);
+                Games.Achievements.increment(gameApiClient, Constants.ACHIEVEMENT_FIRST_QUEST_COMPLETED, 1);
+            }
 
             DbHelper.deleteTask(task);
         }
