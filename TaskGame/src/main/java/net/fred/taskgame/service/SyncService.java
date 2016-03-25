@@ -240,6 +240,45 @@ public class SyncService extends Service {
                             TransactionManager.getInstance().addTransaction(new DeleteModelListTransaction<>(ProcessModelInfo.withModels(objectsToDelete)));
                         }
 
+                        // Retrieve quests
+                        Quests.LoadQuestsResult questsResult = Games.Quests.load(helper.getApiClient(), new int[]{Quests.SELECT_ACCEPTED}, Quests.SORT_ORDER_ENDING_SOON_FIRST, false).await();
+                        if (questsResult.getStatus().isSuccess()) {
+                            HashSet<Pair<String, String>> questsIds = new HashSet<>();
+
+                            Dog.i("retrieve quests success");
+                            QuestBuffer quests = questsResult.getQuests();
+                            for (Quest quest : quests) {
+                                String questId = quest.getQuestId();
+                                Milestone questMilestone = quest.getCurrentMilestone();
+                                questsIds.add(new Pair<>(questId, questMilestone.getMilestoneId()));
+
+                                Dog.i("quest: " + quest);
+                                Task task = new Select().from(Task.class).where(Task_Table.questId.eq(questId)).querySingle();
+                                if (task == null) {
+                                    task = new Task();
+                                }
+
+                                task.questId = questId;
+                                task.questMilestoneId = questMilestone.getMilestoneId();
+                                task.questEventId = questMilestone.getEventId();
+                                task.title = quest.getName();
+                                task.content = quest.getDescription();
+                                String reward = new String(questMilestone.getCompletionRewardData(), Charset.forName("UTF-8"));
+                                task.pointReward = Integer.valueOf(reward);
+
+                                task.save();
+                            }
+
+                            // Delete old quests
+                            List<Task> questTasks = new Select().from(Task.class).where(Task_Table.questId.isNotNull()).and(Task_Table.questId.isNot("")).queryList();
+                            for (Task questTask : questTasks) {
+                                if (!questsIds.contains(new Pair<>(questTask.questId, questTask.questMilestoneId))) {
+                                    Dog.i("old quest deleted: " + questTask);
+                                    DbHelper.deleteTask(questTask);
+                                }
+                            }
+                        }
+
                         SyncData syncData = SyncData.getLastData();
                         json = gson.toJson(syncData);
                         Dog.i("write " + json);
@@ -257,48 +296,8 @@ public class SyncService extends Service {
                         Games.Snapshots.commitAndClose(helper.getApiClient(), snapshot, metadataChange);
                         PrefUtils.putLong(PrefUtils.PREF_LAST_SYNC_DATE, syncData.lastSyncDate);
 
-                    } else { // it failed, we stopped everything...
-                        Dog.i("error status: " + result.getStatus().getStatusCode());
-                        return; // We just got a timeout, it's maybe because we left, it's better to not continue
-                    }
-
-                    // Retrieve quests
-                    Quests.LoadQuestsResult questsResult = Games.Quests.load(helper.getApiClient(), new int[]{Quests.SELECT_ACCEPTED}, Quests.SORT_ORDER_ENDING_SOON_FIRST, false).await();
-                    if (questsResult.getStatus().isSuccess()) {
-                        HashSet<Pair<String, String>> questsIds = new HashSet<>();
-
-                        Dog.i("retrieve quests success");
-                        QuestBuffer quests = questsResult.getQuests();
-                        for (Quest quest : quests) {
-                            String questId = quest.getQuestId();
-                            Milestone questMilestone = quest.getCurrentMilestone();
-                            questsIds.add(new Pair<>(questId, questMilestone.getMilestoneId()));
-
-                            Dog.i("quest: " + quest);
-                            Task task = new Select().from(Task.class).where(Task_Table.questId.eq(questId)).querySingle();
-                            if (task == null) {
-                                task = new Task();
-                            }
-
-                            task.questId = questId;
-                            task.questMilestoneId = questMilestone.getMilestoneId();
-                            task.questEventId = questMilestone.getEventId();
-                            task.title = quest.getName();
-                            task.content = quest.getDescription();
-                            String reward = new String(questMilestone.getCompletionRewardData(), Charset.forName("UTF-8"));
-                            task.pointReward = Integer.valueOf(reward);
-
-                            task.save();
-                        }
-
-                        // Delete old quests
-                        List<Task> questTasks = new Select().from(Task.class).where(Task_Table.questId.isNotNull()).and(Task_Table.questId.isNot("")).queryList();
-                        for (Task questTask : questTasks) {
-                            if (!questsIds.contains(new Pair<>(questTask.questId, questTask.questMilestoneId))) {
-                                Dog.i("old quest deleted: " + questTask);
-                                DbHelper.deleteTask(questTask);
-                            }
-                        }
+                    } else {
+                        Dog.e("error status: " + result.getStatus().getStatusCode());
                     }
 
                 } catch (Throwable t) {
