@@ -38,7 +38,19 @@ public class Category extends IdBasedModel {
     @Expose
     @ColorInt
     public int color;
+    @Column
+    @Expose
+    public long creationDate;
 
     public Category() {
+    }
+
+    @Override
+    public void save() {
+        if (creationDate == 0) {
+            creationDate = System.currentTimeMillis();
+        }
+
+        super.save();
     }
 }

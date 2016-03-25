@@ -14,7 +14,6 @@ import android.os.IBinder;
 import android.util.Pair;
 
 import com.google.android.gms.games.Games;
-import com.google.android.gms.games.GamesStatusCodes;
 import com.google.android.gms.games.quest.Milestone;
 import com.google.android.gms.games.quest.Quest;
 import com.google.android.gms.games.quest.QuestBuffer;
@@ -170,47 +169,31 @@ public class SyncService extends Service {
                     helper.getApiClient().blockingConnect();
 
                     // Open the saved game using its name.
-                    Snapshots.OpenSnapshotResult result = Games.Snapshots.open(helper.getApiClient(), "save", true).await();
+                    Snapshots.OpenSnapshotResult result = Games.Snapshots.open(helper.getApiClient(), "save", true, Snapshots.RESOLUTION_POLICY_MOST_RECENTLY_MODIFIED).await();
 
                     Snapshot snapshot = result.getSnapshot();
                     Gson gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
 
-                    // Conflict resolving
-                    boolean conflictResolved = false;
-                    if (result.getStatus().getStatusCode() == GamesStatusCodes.STATUS_SNAPSHOT_CONFLICT) {
-                        Dog.i("Save conflict, use last version");
-
-                        Snapshot conflictSnapshot = result.getConflictingSnapshot();
-                        // Resolve between conflicts by selecting the newest of the conflicting snapshots.
-                        Snapshot resolvedSnapshot = snapshot;
-
-                        if (snapshot.getMetadata().getLastModifiedTimestamp() <
-                                conflictSnapshot.getMetadata().getLastModifiedTimestamp()) {
-                            resolvedSnapshot = conflictSnapshot;
-                        }
-                        // Set the data payload for the snapshot
-                        snapshot.getSnapshotContents().writeBytes(resolvedSnapshot.getSnapshotContents().readFully());
-                        Games.Snapshots.resolveConflict(helper.getApiClient(), result.getConflictId(), resolvedSnapshot);
-                        conflictResolved = true;
-                    }
-
                     // Put back the server data locally
-                    if (conflictResolved || result.getStatus().isSuccess()) {
-                        // Read the byte content of the saved game.
+                    if (result.getStatus().isSuccess()) {
                         byte[] savedBytes = snapshot.getSnapshotContents().readFully();
 
                         String json = new String(savedBytes);
                         Dog.i("get back " + json);
                         SyncData syncedData = gson.fromJson(json, SyncData.class);
 
-                        if (syncedData.lastSyncDate > PrefUtils.getLong(PrefUtils.PREF_LAST_SYNC_DATE, -1)) {
+                        long savedLastSyncDate = PrefUtils.getLong(PrefUtils.PREF_LAST_SYNC_DATE, -1);
+
+                        if (syncedData.lastSyncDate > savedLastSyncDate) {
                             PrefUtils.putLong(PrefUtils.PREF_CURRENT_POINTS, syncedData.currentPoints);
 
                             ArrayList<Model> objectsToSave = new ArrayList<>();
                             ArrayList<Model> objectsToDelete = new ArrayList<>();
 
-                            // Sync categories
                             List<Category> originalCategories = new Select().from(Category.class).queryList();
+                            List<Task> originalTasks = new Select().from(Task.class).queryList();
+
+                            // Sync categories
                             HashSet<Long> syncedCategories = new HashSet<>();
                             for (Category category : syncedData.categories) {
                                 objectsToSave.add(category);
@@ -218,19 +201,22 @@ public class SyncService extends Service {
                             }
                             for (Category categoryToDelete : originalCategories) {
                                 if (!syncedCategories.contains(categoryToDelete.id)) {
-                                    objectsToDelete.add(categoryToDelete);
+                                    // This is a candidate to deletion, but let's verify before it has not been recently created
+                                    if (!syncedCategories.contains(categoryToDelete.id) && categoryToDelete.creationDate < savedLastSyncDate) {
+                                        objectsToDelete.add(categoryToDelete);
+                                    }
                                 }
                             }
 
                             // Sync tasks
-                            List<Task> originalTasks = new Select().from(Task.class).queryList();
                             HashSet<Long> syncedTasks = new HashSet<>();
                             for (Task task : syncedData.tasks) {
                                 objectsToSave.add(task);
                                 syncedTasks.add(task.id);
                             }
                             for (Task taskToDelete : originalTasks) {
-                                if (!syncedTasks.contains(taskToDelete.id)) {
+                                // This is a candidate to deletion, but let's verify before it has not been recently created
+                                if (!syncedTasks.contains(taskToDelete.id) && taskToDelete.creationDate < savedLastSyncDate) {
                                     objectsToDelete.add(taskToDelete);
                                 }
                             }
@@ -289,11 +275,7 @@ public class SyncService extends Service {
                         // Set the data payload for the snapshot
                         snapshot.getSnapshotContents().writeBytes(json.getBytes());
 
-                        // Create the change operation
-                        SnapshotMetadataChange metadataChange = new SnapshotMetadataChange.Builder().build();
-
-                        // Commit the operation
-                        Games.Snapshots.commitAndClose(helper.getApiClient(), snapshot, metadataChange);
+                        Games.Snapshots.commitAndClose(helper.getApiClient(), snapshot, new SnapshotMetadataChange.Builder().build());
                         PrefUtils.putLong(PrefUtils.PREF_LAST_SYNC_DATE, syncData.lastSyncDate);
 
                     } else {

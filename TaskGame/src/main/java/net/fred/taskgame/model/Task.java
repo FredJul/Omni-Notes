@@ -64,7 +64,7 @@ public class Task extends IdBasedModel {
     public boolean isChecklist;
     @Column
     @Expose
-    long categoryId = INVALID_ID;
+    public long categoryId = INVALID_ID;
     @Column
     @Expose
     public long pointReward = NORMAL_POINT_REWARD;
