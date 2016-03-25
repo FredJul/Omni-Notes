@@ -175,8 +175,27 @@ public class SyncService extends Service {
                     Snapshot snapshot = result.getSnapshot();
                     Gson gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
 
-                    // Check the result of the open operation
-                    if (result.getStatus().isSuccess()) {
+                    // Conflict resolving
+                    boolean conflictResolved = false;
+                    if (result.getStatus().getStatusCode() == GamesStatusCodes.STATUS_SNAPSHOT_CONFLICT) {
+                        Dog.i("Save conflict, use last version");
+
+                        Snapshot conflictSnapshot = result.getConflictingSnapshot();
+                        // Resolve between conflicts by selecting the newest of the conflicting snapshots.
+                        Snapshot resolvedSnapshot = snapshot;
+
+                        if (snapshot.getMetadata().getLastModifiedTimestamp() <
+                                conflictSnapshot.getMetadata().getLastModifiedTimestamp()) {
+                            resolvedSnapshot = conflictSnapshot;
+                        }
+                        // Set the data payload for the snapshot
+                        snapshot.getSnapshotContents().writeBytes(resolvedSnapshot.getSnapshotContents().readFully());
+                        Games.Snapshots.resolveConflict(helper.getApiClient(), result.getConflictId(), resolvedSnapshot);
+                        conflictResolved = true;
+                    }
+
+                    // Put back the server data locally
+                    if (conflictResolved || result.getStatus().isSuccess()) {
                         // Read the byte content of the saved game.
                         byte[] savedBytes = snapshot.getSnapshotContents().readFully();
 
@@ -238,26 +257,7 @@ public class SyncService extends Service {
                         Games.Snapshots.commitAndClose(helper.getApiClient(), snapshot, metadataChange);
                         PrefUtils.putLong(PrefUtils.PREF_LAST_SYNC_DATE, syncData.lastSyncDate);
 
-                    } else if (result.getStatus().getStatusCode() == GamesStatusCodes.STATUS_SNAPSHOT_CONFLICT) {
-                        Dog.i("Save conflict, use last version");
-
-                        SyncData syncData = SyncData.getLastData();
-                        String json = gson.toJson(syncData);
-                        Dog.i("write " + json);
-
-                        Snapshot conflictSnapshot = result.getConflictingSnapshot();
-                        // Resolve between conflicts by selecting the newest of the conflicting snapshots.
-                        Snapshot resolvedSnapshot = snapshot;
-
-                        if (snapshot.getMetadata().getLastModifiedTimestamp() <
-                                conflictSnapshot.getMetadata().getLastModifiedTimestamp()) {
-                            resolvedSnapshot = conflictSnapshot;
-                        }
-                        // Set the data payload for the snapshot
-                        snapshot.getSnapshotContents().writeBytes(json.getBytes());
-                        Games.Snapshots.resolveConflict(helper.getApiClient(), result.getConflictId(), resolvedSnapshot);
-                        PrefUtils.putLong(PrefUtils.PREF_LAST_SYNC_DATE, syncData.lastSyncDate);
-                    } else {
+                    } else { // it failed, we stopped everything...
                         Dog.i("error status: " + result.getStatus().getStatusCode());
                         return; // We just got a timeout, it's maybe because we left, it's better to not continue
                     }
