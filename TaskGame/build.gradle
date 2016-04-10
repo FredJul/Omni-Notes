@@ -3,7 +3,7 @@ apply plugin: 'com.neenbedankt.android-apt'
 
 android {
     compileSdkVersion 23
-    buildToolsVersion "23.0.2"
+    buildToolsVersion "23.0.3"
 
     defaultConfig {
         applicationId "net.fred.taskgame"
@@ -61,12 +61,12 @@ dependencies {
     compile 'com.jakewharton:butterknife:+'
     compile 'io.reactivex:rxjava:+'
     compile 'me.tatarka.rxloader:rxloader:+'
-    compile 'com.tbruyelle.rxpermissions:rxpermissions:0.5.2@aar'
+    compile 'com.tbruyelle.rxpermissions:rxpermissions:+@aar'
 
-    compile "com.android.support:appcompat-v7:23.2.0"
-    compile 'com.android.support:recyclerview-v7:23.2.0'
-    compile 'com.android.support:cardview-v7:23.2.0'
-    compile 'com.android.support:design:23.2.0'
+    compile "com.android.support:appcompat-v7:23.3.+"
+    compile 'com.android.support:recyclerview-v7:23.3.+'
+    compile 'com.android.support:cardview-v7:23.3.+'
+    compile 'com.android.support:design:23.3.+'
     compile "com.google.android.gms:play-services-games:+"
     compile 'com.github.bumptech.glide:glide:+'
     compile 'com.github.flavienlaurent.datetimepicker:library:+'
