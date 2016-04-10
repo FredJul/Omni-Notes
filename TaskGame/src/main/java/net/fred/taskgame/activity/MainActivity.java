@@ -417,61 +417,66 @@ public class MainActivity extends BaseGameActivity implements FragmentManager.On
 
     @Override
     public void onSignInSucceeded() {
-        PrefUtils.putBoolean(PrefUtils.PREF_ALREADY_LOGGED_TO_GAMES, true);
-        SyncService.triggerSync(this);
-
-        Player player = Games.Players.getCurrentPlayer(getApiClient());
-        Glide.with(this).load(player.getIconImageUrl()).asBitmap().centerCrop().into(new BitmapImageViewTarget(mPlayerImageView) {
+        mNavigationView.post(new Runnable() { // Needed because can be called before the drawer header is inflated
             @Override
-            protected void setResource(Bitmap resource) {
-                RoundedBitmapDrawable circularBitmapDrawable = RoundedBitmapDrawableFactory.create(getResources(), resource);
-                circularBitmapDrawable.setCircular(true);
-                getView().setImageDrawable(circularBitmapDrawable);
+            public void run() {
+                PrefUtils.putBoolean(PrefUtils.PREF_ALREADY_LOGGED_TO_GAMES, true);
+                SyncService.triggerSync(MainActivity.this);
+
+                Player player = Games.Players.getCurrentPlayer(getApiClient());
+                Glide.with(MainActivity.this).load(player.getIconImageUrl()).asBitmap().centerCrop().into(new BitmapImageViewTarget(mPlayerImageView) {
+                    @Override
+                    protected void setResource(Bitmap resource) {
+                        RoundedBitmapDrawable circularBitmapDrawable = RoundedBitmapDrawableFactory.create(getResources(), resource);
+                        circularBitmapDrawable.setCircular(true);
+                        getView().setImageDrawable(circularBitmapDrawable);
+                    }
+                });
+
+                View.OnClickListener logoutListener = new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        new AlertDialog.Builder(MainActivity.this)
+                                .setMessage(R.string.sign_out_confirmation)
+                                .setPositiveButton(R.string.confirm, new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog, int id) {
+                                        signOut();
+                                        Glide.with(MainActivity.this).load(android.R.drawable.sym_def_app_icon).into(mPlayerImageView);
+                                        mPlayerName.setText(R.string.not_logged_in);
+                                        mLeaderboardBtn.setVisibility(View.GONE);
+                                        mQuestsBtn.setVisibility(View.GONE);
+
+                                        View.OnClickListener loginListener = new View.OnClickListener() {
+                                            @Override
+                                            public void onClick(View v) {
+                                                PermissionsHelper.requestPermission(MainActivity.this, Manifest.permission.GET_ACCOUNTS,
+                                                        R.string.permission_get_account, new OnPermissionRequestedListener() {
+                                                            @Override
+                                                            public void onPermissionGranted() {
+                                                                beginUserInitiatedSignIn();
+                                                            }
+                                                        });
+                                            }
+                                        };
+                                        mPlayerImageView.setOnClickListener(loginListener);
+                                        mPlayerName.setOnClickListener(loginListener);
+                                    }
+                                })
+                                .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog, int id) {
+                                    }
+                                }).show();
+                    }
+                };
+                mPlayerImageView.setOnClickListener(logoutListener);
+                mPlayerName.setOnClickListener(logoutListener);
+
+                mPlayerName.setText(player.getDisplayName());
+
+                mLeaderboardBtn.setVisibility(View.VISIBLE);
+                mQuestsBtn.setVisibility(View.VISIBLE);
             }
         });
-
-        View.OnClickListener logoutListener = new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                new AlertDialog.Builder(MainActivity.this)
-                        .setMessage(R.string.sign_out_confirmation)
-                        .setPositiveButton(R.string.confirm, new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int id) {
-                                signOut();
-                                Glide.with(MainActivity.this).load(android.R.drawable.sym_def_app_icon).into(mPlayerImageView);
-                                mPlayerName.setText(R.string.not_logged_in);
-                                mLeaderboardBtn.setVisibility(View.GONE);
-                                mQuestsBtn.setVisibility(View.GONE);
-
-                                View.OnClickListener loginListener = new View.OnClickListener() {
-                                    @Override
-                                    public void onClick(View v) {
-                                        PermissionsHelper.requestPermission(MainActivity.this, Manifest.permission.GET_ACCOUNTS,
-                                                R.string.permission_get_account, new OnPermissionRequestedListener() {
-                                                    @Override
-                                                    public void onPermissionGranted() {
-                                                        beginUserInitiatedSignIn();
-                                                    }
-                                                });
-                                    }
-                                };
-                                mPlayerImageView.setOnClickListener(loginListener);
-                                mPlayerName.setOnClickListener(loginListener);
-                            }
-                        })
-                        .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int id) {
-                            }
-                        }).show();
-            }
-        };
-        mPlayerImageView.setOnClickListener(logoutListener);
-        mPlayerName.setOnClickListener(logoutListener);
-
-        mPlayerName.setText(player.getDisplayName());
-
-        mLeaderboardBtn.setVisibility(View.VISIBLE);
-        mQuestsBtn.setVisibility(View.VISIBLE);
     }
 
     @Override
