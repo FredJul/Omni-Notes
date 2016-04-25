@@ -23,13 +23,12 @@ import com.google.android.gms.games.snapshot.SnapshotMetadataChange;
 import com.google.android.gms.games.snapshot.Snapshots;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.raizlabs.android.dbflow.runtime.TransactionManager;
-import com.raizlabs.android.dbflow.runtime.transaction.process.DeleteModelListTransaction;
-import com.raizlabs.android.dbflow.runtime.transaction.process.ProcessModelInfo;
-import com.raizlabs.android.dbflow.runtime.transaction.process.SaveModelTransaction;
+import com.raizlabs.android.dbflow.config.FlowManager;
 import com.raizlabs.android.dbflow.sql.language.Select;
 import com.raizlabs.android.dbflow.structure.Model;
+import com.raizlabs.android.dbflow.structure.database.transaction.ProcessModelTransaction;
 
+import net.fred.taskgame.model.AppDatabase;
 import net.fred.taskgame.model.Category;
 import net.fred.taskgame.model.SyncData;
 import net.fred.taskgame.model.Task;
@@ -222,8 +221,20 @@ public class SyncService extends Service {
                             }
 
                             // Do the transactions itself
-                            TransactionManager.getInstance().addTransaction(new SaveModelTransaction<>(ProcessModelInfo.withModels(objectsToSave)));
-                            TransactionManager.getInstance().addTransaction(new DeleteModelListTransaction<>(ProcessModelInfo.withModels(objectsToDelete)));
+                            FlowManager.getDatabase(AppDatabase.class).beginTransactionAsync(new ProcessModelTransaction.Builder<>(objectsToSave,
+                                    new ProcessModelTransaction.ProcessModel<Model>() {
+                                        @Override
+                                        public void processModel(Model model) {
+                                            model.save();
+                                        }
+                                    }).build()).build().execute();
+                            FlowManager.getDatabase(AppDatabase.class).beginTransactionAsync(new ProcessModelTransaction.Builder<>(objectsToDelete,
+                                    new ProcessModelTransaction.ProcessModel<Model>() {
+                                        @Override
+                                        public void processModel(Model model) {
+                                            model.delete();
+                                        }
+                                    }).build()).build().execute();
                         }
 
                         // Retrieve quests

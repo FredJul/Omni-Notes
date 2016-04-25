@@ -1,6 +1,5 @@
 package net.fred.taskgame.model.adapters;
 
-import android.app.Activity;
 import android.graphics.Color;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
@@ -25,7 +24,6 @@ import butterknife.ButterKnife;
 
 public class TaskAdapter extends MultiSelectAdapter<TaskAdapter.TaskViewHolder> {
 
-    private final Activity mActivity;
     private final List<Task> mTasks;
     private final ItemActionListener mItemActionListener;
 
@@ -61,10 +59,9 @@ public class TaskAdapter extends MultiSelectAdapter<TaskAdapter.TaskViewHolder> 
         }
     }
 
-    public TaskAdapter(Activity activity, ItemActionListener listener, RecyclerView recyclerView, List<Task> tasks) {
+    public TaskAdapter(ItemActionListener listener, RecyclerView recyclerView, List<Task> tasks) {
         super(listener, recyclerView);
         mItemActionListener = listener;
-        mActivity = activity;
         mTasks = tasks;
 
         setHasStableIds(true);

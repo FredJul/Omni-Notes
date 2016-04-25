@@ -48,13 +48,14 @@ import android.view.inputmethod.EditorInfo;
 
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.games.Games;
-import com.raizlabs.android.dbflow.runtime.TransactionManager;
-import com.raizlabs.android.dbflow.runtime.transaction.process.ProcessModelInfo;
-import com.raizlabs.android.dbflow.runtime.transaction.process.SaveModelTransaction;
+import com.raizlabs.android.dbflow.config.FlowManager;
+import com.raizlabs.android.dbflow.structure.Model;
+import com.raizlabs.android.dbflow.structure.database.transaction.ProcessModelTransaction;
 
 import net.fred.taskgame.R;
 import net.fred.taskgame.activity.CategoryActivity;
 import net.fred.taskgame.activity.MainActivity;
+import net.fred.taskgame.model.AppDatabase;
 import net.fred.taskgame.model.Category;
 import net.fred.taskgame.model.IdBasedModel;
 import net.fred.taskgame.model.Task;
@@ -301,7 +302,15 @@ public class ListFragment extends Fragment {
                     task.displayPriority = i;
                 }
 
-                TransactionManager.getInstance().addTransaction(new SaveModelTransaction<>(ProcessModelInfo.withModels(tasks)));
+                ArrayList<Model> objectsToSave = new ArrayList<>();
+                objectsToSave.addAll(tasks);
+                FlowManager.getDatabase(AppDatabase.class).beginTransactionAsync(new ProcessModelTransaction.Builder<>(objectsToSave,
+                        new ProcessModelTransaction.ProcessModel<Model>() {
+                            @Override
+                            public void processModel(Model model) {
+                                model.save();
+                            }
+                        }).build()).build().execute();
 
                 finishActionMode();
             }
@@ -342,7 +351,7 @@ public class ListFragment extends Fragment {
                 setCabTitle();
             }
         };
-        mAdapter = new TaskAdapter(getActivity(), listener, mRecyclerView, new ArrayList<Task>());
+        mAdapter = new TaskAdapter(listener, mRecyclerView, new ArrayList<Task>());
         mRecyclerView.setEmptyView(mEmptyView);
 
         mRecyclerView.setLayoutManager(layoutManager);

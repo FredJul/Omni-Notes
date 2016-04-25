@@ -16,18 +16,18 @@
  */
 package net.fred.taskgame.utils;
 
-import android.database.sqlite.SQLiteDoneException;
-
-import com.raizlabs.android.dbflow.runtime.TransactionManager;
-import com.raizlabs.android.dbflow.runtime.transaction.process.DeleteModelListTransaction;
-import com.raizlabs.android.dbflow.runtime.transaction.process.ProcessModelInfo;
+import com.raizlabs.android.dbflow.config.FlowManager;
 import com.raizlabs.android.dbflow.sql.language.ConditionGroup;
+import com.raizlabs.android.dbflow.sql.language.Method;
 import com.raizlabs.android.dbflow.sql.language.OrderBy;
 import com.raizlabs.android.dbflow.sql.language.SQLCondition;
 import com.raizlabs.android.dbflow.sql.language.Select;
 import com.raizlabs.android.dbflow.sql.language.Update;
+import com.raizlabs.android.dbflow.structure.Model;
+import com.raizlabs.android.dbflow.structure.database.transaction.ProcessModelTransaction;
 
 import net.fred.taskgame.MainApplication;
+import net.fred.taskgame.model.AppDatabase;
 import net.fred.taskgame.model.Category;
 import net.fred.taskgame.model.Category_Table;
 import net.fred.taskgame.model.Task;
@@ -134,7 +134,15 @@ public class DbHelper {
             ReminderHelper.removeReminder(MainApplication.getContext(), task);
         }
 
-        TransactionManager.getInstance().addTransaction(new DeleteModelListTransaction<>(ProcessModelInfo.withModels(tasks)));
+        ArrayList<Model> objectsToDelete = new ArrayList<>();
+        objectsToDelete.addAll(tasks);
+        FlowManager.getDatabase(AppDatabase.class).beginTransactionAsync(new ProcessModelTransaction.Builder<>(objectsToDelete,
+                new ProcessModelTransaction.ProcessModel<Model>() {
+                    @Override
+                    public void processModel(Model model) {
+                        model.delete();
+                    }
+                }).build()).build().execute();
     }
 
     /**
@@ -199,9 +207,7 @@ public class DbHelper {
      * @return List of categories
      */
     public static List<Category> getCategories() {
-//        return new Select().from(Category.class).where().groupBy(Category_Table.id, Category_Table.name, Category_Table.description, Category_Table.color)
-//                .orderBy("IFNULL(NULLIF(" + Category_Table.name.getContainerKey() + ", ''),'zzzzzzzz')").queryList();
-        return new Select().from(Category.class).queryList();
+        return new Select().from(Category.class).orderBy(Category_Table.creationDate, false).queryList();
     }
 
     public static Category getCategory(long categoryId) {
@@ -209,30 +215,15 @@ public class DbHelper {
     }
 
     public static long getActiveTaskCount() {
-        try {
-            return new Select().from(Task.class).where(Task_Table.isFinished.eq(false)).count();
-        } catch (SQLiteDoneException e) {
-            // I do not know why this happen when count=0
-            return 0;
-        }
+        return new Select(Method.count()).from(Task.class).where(Task_Table.isFinished.eq(false)).count();
     }
 
     public static long getFinishedTaskCount() {
-        try {
-            return new Select().from(Task.class).where(Task_Table.isFinished.eq(true)).count();
-        } catch (SQLiteDoneException e) {
-            // I do not know why this happen when count=0
-            return 0;
-        }
+        return new Select(Method.count()).from(Task.class).where(Task_Table.isFinished.eq(true)).count();
     }
 
     public static long getActiveTaskCountByCategory(Category category) {
-        try {
-            return new Select().from(Task.class).where(Task_Table.isFinished.eq(false), Task_Table.categoryId.eq(category.id)).count();
-        } catch (SQLiteDoneException e) {
-            // I do not know why this happen when count=0
-            return 0;
-        }
+        return new Select(Method.count()).from(Task.class).where(Task_Table.isFinished.eq(false), Task_Table.categoryId.eq(category.id)).count();
     }
 
     public static void deleteCategoryAsync(Category category) {

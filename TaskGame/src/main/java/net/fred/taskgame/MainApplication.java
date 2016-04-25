@@ -20,6 +20,7 @@ package net.fred.taskgame;
 import android.app.Application;
 import android.content.Context;
 
+import com.raizlabs.android.dbflow.config.FlowConfig;
 import com.raizlabs.android.dbflow.config.FlowManager;
 
 public class MainApplication extends Application {
@@ -32,7 +33,7 @@ public class MainApplication extends Application {
 
         mContext = getApplicationContext();
 
-        FlowManager.init(this);
+        FlowManager.init(new FlowConfig.Builder(this).build());
     }
 
     @Override
