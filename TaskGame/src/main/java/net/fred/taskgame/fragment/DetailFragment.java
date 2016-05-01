@@ -31,7 +31,7 @@ import android.text.Layout;
 import android.text.Spannable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
-import android.text.method.ScrollingMovementMethod;
+import android.text.method.MovementMethod;
 import android.text.style.URLSpan;
 import android.view.DragEvent;
 import android.view.KeyEvent;
@@ -809,8 +809,38 @@ public class DetailFragment extends Fragment implements OnReminderPickedListener
         return mTask;
     }
 
-    public class LinkHandler extends ScrollingMovementMethod {
 
+    public class LinkHandler implements MovementMethod {
+
+        @Override
+        public void initialize(TextView widget, Spannable text) {
+        }
+
+        @Override
+        public boolean onKeyDown(TextView widget, Spannable text, int keyCode, KeyEvent event) {
+            return false;
+        }
+
+        @Override
+        public boolean onKeyUp(TextView widget, Spannable text, int keyCode, KeyEvent event) {
+            return false;
+        }
+
+        @Override
+        public boolean onKeyOther(TextView view, Spannable text, KeyEvent event) {
+            return false;
+        }
+
+        @Override
+        public void onTakeFocus(TextView widget, Spannable text, int direction) {
+        }
+
+        @Override
+        public boolean onTrackballEvent(TextView widget, Spannable text, MotionEvent event) {
+            return false;
+        }
+
+        @Override
         public boolean onTouchEvent(TextView widget, Spannable buffer, MotionEvent event) {
             int action = event.getAction();
 
@@ -836,10 +866,20 @@ public class DetailFragment extends Fragment implements OnReminderPickedListener
                 }
             }
 
-            return super.onTouchEvent(widget, buffer, event);
+            return false;
         }
 
-        public void onLinkClick(final String url) {
+        @Override
+        public boolean onGenericMotionEvent(TextView widget, Spannable text, MotionEvent event) {
+            return false;
+        }
+
+        @Override
+        public boolean canSelectArbitrarily() {
+            return true;
+        }
+
+        private void onLinkClick(final String url) {
             new AlertDialog.Builder(getActivity())
                     .setTitle(R.string.open_link_dialog_title)
                     .setPositiveButton(R.string.open_link, new DialogInterface.OnClickListener() {
