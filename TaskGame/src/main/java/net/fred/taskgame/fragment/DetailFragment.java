@@ -77,7 +77,7 @@ import org.parceler.Parcels;
 import java.util.Calendar;
 import java.util.List;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 import it.feio.android.checklistview.ChecklistManager;
 import it.feio.android.checklistview.interfaces.CheckListChangedListener;
@@ -92,27 +92,27 @@ public class DetailFragment extends Fragment implements OnReminderPickedListener
 
     private static final int CATEGORY_CHANGE = 1;
 
-    @Bind(R.id.reminder_date)
+    @BindView(R.id.reminder_date)
     TextView mReminderDateTextView;
-    @Bind(R.id.detail_title)
+    @BindView(R.id.detail_title)
     EditText mTitleEditText;
-    @Bind(R.id.category_marker)
+    @BindView(R.id.category_marker)
     View mCategoryMarker;
-    @Bind(R.id.detail_content)
+    @BindView(R.id.detail_content)
     EditText mContentEditText;
-    @Bind(R.id.content_wrapper)
+    @BindView(R.id.content_wrapper)
     ScrollView mScrollView;
-    @Bind(R.id.reward_layout)
+    @BindView(R.id.reward_layout)
     View mRewardLayout;
-    @Bind(R.id.reward_points)
+    @BindView(R.id.reward_points)
     TextView mRewardPoints;
-    @Bind(R.id.reminder_layout)
+    @BindView(R.id.reminder_layout)
     View mReminderLayout;
-    @Bind(R.id.reward_spinner)
+    @BindView(R.id.reward_spinner)
     Spinner mRewardSpinner;
-    @Bind(R.id.creation_date)
+    @BindView(R.id.creation_date)
     TextView mCreationDateTextView;
-    @Bind(R.id.last_modification_date)
+    @BindView(R.id.last_modification_date)
     TextView mLastModificationDateTextView;
 
     private Task mTask;

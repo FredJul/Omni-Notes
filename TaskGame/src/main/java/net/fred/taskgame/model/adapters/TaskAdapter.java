@@ -19,7 +19,7 @@ import net.fred.taskgame.utils.recycler.ItemActionViewHolder;
 
 import java.util.List;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 
 public class TaskAdapter extends MultiSelectAdapter<TaskAdapter.TaskViewHolder> {
@@ -29,17 +29,17 @@ public class TaskAdapter extends MultiSelectAdapter<TaskAdapter.TaskViewHolder> 
 
     public static class TaskViewHolder extends RecyclerView.ViewHolder implements ItemActionViewHolder {
 
-        @Bind(R.id.card_view)
+        @BindView(R.id.card_view)
         CardView mCardView;
-        @Bind(R.id.category_marker)
+        @BindView(R.id.category_marker)
         View mCategoryMarker;
-        @Bind(R.id.quest_icon)
+        @BindView(R.id.quest_icon)
         ImageView mQuestIcon;
-        @Bind(R.id.task_title)
+        @BindView(R.id.task_title)
         TextView mTitle;
-        @Bind(R.id.task_content)
+        @BindView(R.id.task_content)
         TextView mContent;
-        @Bind(R.id.reward_points)
+        @BindView(R.id.reward_points)
         TextView mReward;
 
         public TaskViewHolder(View v) {

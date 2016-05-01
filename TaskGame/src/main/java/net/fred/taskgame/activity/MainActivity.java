@@ -71,7 +71,7 @@ import net.fred.taskgame.utils.UiUtils;
 
 import org.parceler.Parcels;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 
 public class MainActivity extends BaseGameActivity implements FragmentManager.OnBackStackChangedListener, NavigationView.OnNavigationItemSelectedListener {
@@ -84,13 +84,13 @@ public class MainActivity extends BaseGameActivity implements FragmentManager.On
 
     private FragmentManager mFragmentManager;
 
-    @Bind(R.id.toolbar)
+    @BindView(R.id.toolbar)
     Toolbar mToolbar;
-    @Bind(R.id.drawer_layout)
+    @BindView(R.id.drawer_layout)
     DrawerLayout mDrawerLayout;
-    @Bind(R.id.fab)
+    @BindView(R.id.fab)
     FloatingActionButton mFab;
-    @Bind(R.id.navigation_view)
+    @BindView(R.id.navigation_view)
     NavigationView mNavigationView;
 
     private ImageView mPlayerImageView;

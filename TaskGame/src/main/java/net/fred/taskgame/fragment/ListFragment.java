@@ -79,7 +79,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 
 
@@ -87,9 +87,9 @@ public class ListFragment extends Fragment {
 
     private static final int REQUEST_CODE_CATEGORY_TASKS = 3;
 
-    @Bind(R.id.recycler_view)
+    @BindView(R.id.recycler_view)
     EmptyRecyclerView mRecyclerView;
-    @Bind(R.id.empty_view)
+    @BindView(R.id.empty_view)
     View mEmptyView;
 
     private FloatingActionButton mFab;
