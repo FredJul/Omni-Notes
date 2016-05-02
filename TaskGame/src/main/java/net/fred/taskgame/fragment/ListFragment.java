@@ -22,6 +22,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.support.annotation.StringRes;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
@@ -34,7 +35,6 @@ import android.support.v7.widget.SearchView;
 import android.support.v7.widget.SearchView.OnQueryTextListener;
 import android.support.v7.widget.helper.ItemTouchHelper;
 import android.text.TextUtils;
-import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -75,9 +75,7 @@ import org.parceler.Parcels;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -96,18 +94,10 @@ public class ListFragment extends Fragment {
 
     private TaskAdapter mAdapter;
 
-    private final List<Task> mModifiedTasks = new ArrayList<>();
+    private final List<Task> mUndoTasks = new ArrayList<>();
     private SearchView mSearchView;
     private MenuItem mSearchMenuItem;
     private ActionMode mActionMode;
-    private boolean mKeepActionMode = false;
-
-    private boolean mUndoFinishTask = false;
-    private boolean mUndoCategorize = false;
-    private Category mUndoCategorizeCategory = null;
-    private final SparseArray<Task> mUndoTasksList = new SparseArray<>();
-    // Used to remember removed categories from tasks
-    private final Map<Task, Category> mUndoCategoryMap = new HashMap<>();
 
     // Search variables
     private String mSearchQuery;
@@ -142,7 +132,6 @@ public class ListFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         if (savedInstanceState != null) {
             mSearchQuery = savedInstanceState.getString("mSearchQuery");
-            mKeepActionMode = false;
         }
         View layout = inflater.inflate(R.layout.fragment_list, container, false);
         ButterKnife.bind(this, layout);
@@ -183,17 +172,6 @@ public class ListFragment extends Fragment {
         // Init tasks list
         initTasksList(getActivity().getIntent());
     }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-
-        if (!mKeepActionMode) {
-            commitPending();
-            finishActionMode();
-        }
-    }
-
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
@@ -507,7 +485,7 @@ public class ListFragment extends Fragment {
                     restoreTasks(mAdapter.getSelectedItems());
                     break;
                 case R.id.menu_delete:
-                    deleteTasks(mAdapter.getSelectedItems());
+                    askToDeleteTasks(mAdapter.getSelectedItems());
                     break;
                 case R.id.menu_select_all:
                     selectAllTasks();
@@ -559,7 +537,7 @@ public class ListFragment extends Fragment {
                         for (int i = 0; i < positions.length; i++) {
                             positions[i] = i;
                         }
-                        deleteTasksExecute(positions);
+                        deleteTasks(positions);
                     }
                 }).show();
     }
@@ -605,21 +583,56 @@ public class ListFragment extends Fragment {
     }
 
     private void finishTasks(int[] positions) {
-        commitPending(); // to avoid potential crashes
-
         for (int position : positions) {
             Task task = mAdapter.getTasks().get(position);
-            // Saves tasks to be eventually restored at right position
-            mUndoTasksList.put(position + mUndoTasksList.size(), task);
-            mModifiedTasks.add(task);
-            // Removes note adapter
+
+            GoogleApiClient gameApiClient = getMainActivity().getApiClient();
+
+            if (TextUtils.isEmpty(task.questId)) {
+                DbHelper.finishTask(task);
+                if (gameApiClient != null && gameApiClient.isConnected()) {
+                    Games.Achievements.increment(gameApiClient, Constants.ACHIEVEMENT_FIRST_TASK_COMPLETED, 1);
+                    Games.Achievements.increment(gameApiClient, Constants.ACHIEVEMENT_REGULAR_USER, 1);
+                    Games.Achievements.increment(gameApiClient, Constants.ACHIEVEMENT_EFFICIENT_PEOPLE, 1);
+                }
+                // Saves tasks to be eventually restored at right position
+                mUndoTasks.add(task);
+            } else {
+                // we directly delete quests (to ot be able to restore them), but we still add the reward
+                PrefUtils.putLong(PrefUtils.PREF_CURRENT_POINTS, PrefUtils.getLong(PrefUtils.PREF_CURRENT_POINTS, 0) + task.pointReward);
+                if (gameApiClient != null && gameApiClient.isConnected()) {
+                    Games.Events.increment(gameApiClient, task.questEventId, 1);
+                    Games.Quests.claim(gameApiClient, task.questId, task.questMilestoneId);
+                    Games.Achievements.increment(gameApiClient, Constants.ACHIEVEMENT_FIRST_QUEST_COMPLETED, 1);
+                }
+
+                DbHelper.deleteTask(task);
+            }
+
             mAdapter.getTasks().remove(task);
         }
 
         finishActionMode();
+        displayUndoBar(R.string.task_finished);
+    }
 
+    private void restoreTasks(int[] positions) {
+        for (int position : positions) {
+            Task task = mAdapter.getTasks().get(position);
+            DbHelper.restoreTask(task);
+            mAdapter.getTasks().remove(task);
+
+            // Saves tasks to be eventually restored at right position
+            mUndoTasks.add(task);
+        }
+
+        finishActionMode();
+        displayUndoBar(R.string.task_restored);
+    }
+
+    private void displayUndoBar(@StringRes int messageId) {
         // Advice to user
-        Snackbar.make(getActivity().findViewById(R.id.coordinator_layout), R.string.task_finished, Snackbar.LENGTH_LONG)
+        Snackbar.make(getActivity().findViewById(R.id.coordinator_layout), messageId, Snackbar.LENGTH_LONG)
                 .setActionTextColor(ContextCompat.getColor(getActivity(), R.color.info))
                 .setAction(R.string.undo, new OnClickListener() {
                     @Override
@@ -627,52 +640,17 @@ public class ListFragment extends Fragment {
                         onUndo();
                     }
                 })
+                .setCallback(new Snackbar.Callback() {
+                    @Override
+                    public void onDismissed(Snackbar snackbar, int event) {
+                        if (event != DISMISS_EVENT_CONSECUTIVE) {
+                            mUndoTasks.clear();
+                        }
+                        super.onDismissed(snackbar, event);
+                    }
+                })
                 .show();
-        mUndoFinishTask = true;
     }
-
-    private void finishTaskExecute(Task task) {
-        GoogleApiClient gameApiClient = getMainActivity().getApiClient();
-
-        if (TextUtils.isEmpty(task.questId)) {
-            DbHelper.finishTask(task);
-            if (gameApiClient != null && gameApiClient.isConnected()) {
-                Games.Achievements.increment(gameApiClient, Constants.ACHIEVEMENT_FIRST_TASK_COMPLETED, 1);
-                Games.Achievements.increment(gameApiClient, Constants.ACHIEVEMENT_REGULAR_USER, 1);
-                Games.Achievements.increment(gameApiClient, Constants.ACHIEVEMENT_EFFICIENT_PEOPLE, 1);
-            }
-        } else {
-            // we directly delete quests (to ot be able to restore them), but we still add the reward
-            PrefUtils.putLong(PrefUtils.PREF_CURRENT_POINTS, PrefUtils.getLong(PrefUtils.PREF_CURRENT_POINTS, 0) + task.pointReward);
-            if (gameApiClient != null && gameApiClient.isConnected()) {
-                Games.Events.increment(gameApiClient, task.questEventId, 1);
-                Games.Quests.claim(gameApiClient, task.questId, task.questMilestoneId);
-                Games.Achievements.increment(gameApiClient, Constants.ACHIEVEMENT_FIRST_QUEST_COMPLETED, 1);
-            }
-
-            DbHelper.deleteTask(task);
-        }
-
-        mAdapter.getTasks().remove(task);
-    }
-
-    private void restoreTasks(int[] positions) {
-        for (int position : positions) {
-            Task task = mAdapter.getTasks().get(position);
-            restoreTaskExecute(task);
-        }
-
-        finishActionMode();
-
-        // Advice to user
-        UiUtils.showMessage(getActivity(), R.string.task_restored);
-    }
-
-    private void restoreTaskExecute(Task task) {
-        DbHelper.restoreTask(task);
-        mAdapter.getTasks().remove(task);
-    }
-
 
     /**
      * Selects all tasks in list
@@ -686,13 +664,13 @@ public class ListFragment extends Fragment {
     /**
      * Batch note permanent deletion
      */
-    private void deleteTasks(final int[] positions) {
+    private void askToDeleteTasks(final int[] positions) {
         // Confirm dialog creation
         new AlertDialog.Builder(getActivity())
                 .setMessage(R.string.delete_task_confirmation)
                 .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
-                        deleteTasksExecute(positions);
+                        deleteTasks(positions);
                     }
                 }).show();
     }
@@ -701,7 +679,7 @@ public class ListFragment extends Fragment {
     /**
      * Performs tasks permanent deletion after confirmation by the user
      */
-    private void deleteTasksExecute(int[] positions) {
+    private void deleteTasks(int[] positions) {
         ArrayList<Task> tasksToDelete = new ArrayList<>();
         for (int position : positions) {
             Task task = mAdapter.getTasks().get(position);
@@ -733,7 +711,6 @@ public class ListFragment extends Fragment {
                 })
                 .setPositiveButton(R.string.add_category, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
-                        mKeepActionMode = true;
                         Intent intent = new Intent(getActivity(), CategoryActivity.class);
                         intent.putExtra("noHome", true);
                         startActivityForResult(intent, REQUEST_CODE_CATEGORY_TASKS);
@@ -747,24 +724,14 @@ public class ListFragment extends Fragment {
     }
 
     private void categorizeTasks(int[] positions, Category category) {
-        commitPending(); // to avoid potential crashes
-
         for (int position : positions) {
             Task task = mAdapter.getTasks().get(position);
-            // If is restore it will be done immediately, otherwise the undo bar
-            // will be shown
-            if (category != null) {
-                categorizeTaskExecute(task, category);
-            } else {
-                // Saves categories associated to eventually undo
-                mUndoCategoryMap.put(task, task.getCategory());
-                // Saves tasks to be eventually restored at right position
-                mUndoTasksList.put(mAdapter.getTasks().indexOf(task) + mUndoTasksList.size(), task);
-                mModifiedTasks.add(task);
-            }
-            // Update adapter content if actual navigation is the category
-            // associated with actually cycled note
-            if (!NavigationUtils.isDisplayingCategory(category)) {
+            task.setCategory(category);
+            DbHelper.updateTask(task, false);
+
+            // Update adapter content
+            if (NavigationUtils.getNavigation() != NavigationUtils.TASKS && NavigationUtils.getNavigation() != NavigationUtils.FINISHED_TASKS
+                    && !NavigationUtils.isDisplayingCategory(category)) {
                 mAdapter.notifyItemRemoved(mAdapter.getTasks().indexOf(task));
                 mAdapter.getTasks().remove(task);
             } else {
@@ -779,74 +746,23 @@ public class ListFragment extends Fragment {
         if (category != null) {
             UiUtils.showMessage(getActivity(), getResources().getText(R.string.tasks_categorized_as) + " '" + category.name + "'");
         } else {
-            Snackbar.make(getActivity().findViewById(R.id.coordinator_layout), R.string.tasks_category_removed, Snackbar.LENGTH_LONG)
-                    .setActionTextColor(ContextCompat.getColor(getActivity(), R.color.info))
-                    .setAction(R.string.undo, new OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            onUndo();
-                        }
-                    })
-                    .show();
-            mUndoCategorize = true;
-            mUndoCategorizeCategory = null;
+            UiUtils.showMessage(getActivity(), R.string.tasks_category_removed);
         }
-    }
-
-    private void categorizeTaskExecute(Task task, Category category) {
-        task.setCategory(category);
-        DbHelper.updateTask(task, false);
     }
 
     private void onUndo() {
         // Cycles removed items to re-insert into adapter
-        for (Task task : mModifiedTasks) {
-            // Manages uncategorize or archive undo
-            if ((mUndoCategorize && !NavigationUtils.isDisplayingCategory(mUndoCategoryMap.get(task)))) {
-                if (mUndoCategorize) {
-                    task.setCategory(mUndoCategoryMap.get(task));
-                }
-
-                mAdapter.notifyItemChanged(mAdapter.getTasks().indexOf(task));
-            } else { // Manages finish undo
-                int position = mUndoTasksList.keyAt(mUndoTasksList.indexOfValue(task));
-                mAdapter.getTasks().add(position, task);
-                mAdapter.notifyItemInserted(position);
+        for (Task task : mUndoTasks) {
+            if (NavigationUtils.getNavigation() == NavigationUtils.FINISHED_TASKS) {
+                DbHelper.finishTask(task); // finish it again
+            } else {
+                DbHelper.restoreTask(task);
             }
         }
 
-        mUndoTasksList.clear();
-        mModifiedTasks.clear();
-
-        mUndoFinishTask = false;
-        mUndoCategorize = false;
-        mUndoTasksList.clear();
-        mUndoCategoryMap.clear();
-        mUndoCategorizeCategory = null;
+        mUndoTasks.clear();
 
         finishActionMode();
-    }
-
-    public void commitPending() {
-        if (mUndoFinishTask || mUndoCategorize) {
-
-            for (Task task : mModifiedTasks) {
-                if (mUndoFinishTask) {
-                    finishTaskExecute(task);
-                } else if (mUndoCategorize) {
-                    categorizeTaskExecute(task, mUndoCategorizeCategory);
-                }
-            }
-
-            mUndoFinishTask = false;
-            mUndoCategorize = false;
-            mUndoCategorizeCategory = null;
-
-            // Clears data structures
-            mModifiedTasks.clear();
-            mUndoTasksList.clear();
-            mUndoCategoryMap.clear();
-        }
     }
 
     /**

@@ -147,8 +147,6 @@ public class MainActivity extends BaseGameActivity implements FragmentManager.On
 
             @Override
             public void onDrawerOpened(View drawerView) {
-                // Commits all pending actions
-                commitPending();
                 // Finishes action mode
                 finishActionMode();
             }
@@ -377,7 +375,6 @@ public class MainActivity extends BaseGameActivity implements FragmentManager.On
                 startActivity(settingsIntent);
                 break;
             default: // tasks, finished tasks, categories
-                commitPending();
                 // Reset intent
                 getIntent().setAction(Intent.ACTION_MAIN);
 
@@ -481,13 +478,6 @@ public class MainActivity extends BaseGameActivity implements FragmentManager.On
 
     @Override
     public void onSignInFailed() {
-    }
-
-    public void commitPending() {
-        Fragment f = checkFragmentInstance(R.id.fragment_container, ListFragment.class);
-        if (f != null) {
-            ((ListFragment) f).commitPending();
-        }
     }
 
     /**
