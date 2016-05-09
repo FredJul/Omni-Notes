@@ -27,5 +27,11 @@
     <dimen name="navigation_drawer_icon_size">28dp</dimen>
     <dimen name="navigation_drawer_header_height">190dp</dimen>
     <dimen name="widget_height">56dp</dimen>
+    <dimen name="text_size_small">11sp</dimen>
+    <dimen name="text_size_normal">13sp</dimen>
+    <dimen name="text_size_big">16sp</dimen>
+    <dimen name="widget_text_size_small">10sp</dimen>
+    <dimen name="widget_text_size_normal">12sp</dimen>
+    <dimen name="widget_text_size_big">14sp</dimen>
 
 </resources>

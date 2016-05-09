@@ -1,19 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:card_view="http://schemas.android.com/apk/res-auto"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/card_view"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginEnd="2dp"
-    android:layout_marginStart="2dp"
-    android:clickable="true"
-    android:foreground="?android:attr/selectableItemBackground"
-    card_view:cardUseCompatPadding="true">
+    android:layout_marginStart="2dp">
 
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:orientation="horizontal"
         android:paddingStart="7dp"
         tools:ignore="RtlSymmetry">
 
@@ -35,7 +32,7 @@
             android:layout_marginTop="5dp"
             android:layout_toStartOf="@+id/quest_icon"
             android:singleLine="true"
-            android:textSize="@dimen/text_size_big"
+            android:textSize="@dimen/widget_text_size_big"
             android:textStyle="bold"
             tools:text="title" />
 
@@ -48,7 +45,7 @@
             android:layout_marginStart="5dp"
             android:layout_toStartOf="@+id/quest_icon"
             android:maxLines="2"
-            android:textSize="@dimen/text_size_normal"
+            android:textSize="@dimen/widget_text_size_normal"
             tools:text="content" />
 
         <TextView
@@ -67,8 +64,8 @@
             tools:text="50" />
     </RelativeLayout>
 
-    <View
+    <TextView
         android:id="@+id/category_marker"
         android:layout_width="7dp"
         android:layout_height="match_parent" />
-</android.support.v7.widget.CardView>
+</FrameLayout>

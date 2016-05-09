@@ -23,13 +23,14 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.text.Spanned;
+import android.text.TextUtils;
+import android.view.View;
 import android.widget.RemoteViews;
 import android.widget.RemoteViewsService.RemoteViewsFactory;
 
 import net.fred.taskgame.R;
 import net.fred.taskgame.model.Category;
 import net.fred.taskgame.model.Task;
-import net.fred.taskgame.model.Task_Table;
 import net.fred.taskgame.utils.Constants;
 import net.fred.taskgame.utils.DbHelper;
 import net.fred.taskgame.utils.PrefUtils;
@@ -74,9 +75,9 @@ public class ListRemoteViewsFactory implements RemoteViewsFactory {
     private void getTasks() {
         long categoryId = PrefUtils.getLong(PrefUtils.PREF_WIDGET_PREFIX + appWidgetId, -1);
         if (categoryId != -1) {
-            tasks = DbHelper.getTasks(Task_Table.categoryId.eq(categoryId));
+            tasks = DbHelper.getActiveTasksByCategory(categoryId);
         } else {
-            tasks = DbHelper.getTasks();
+            tasks = DbHelper.getActiveTasks();
         }
     }
 
@@ -85,8 +86,7 @@ public class ListRemoteViewsFactory implements RemoteViewsFactory {
     public void onDestroy() {
         mContentObserver.unregisterForContentChanges(mContext);
 
-        PrefUtils.remove(PrefUtils.PREF_WIDGET_PREFIX
-                + String.valueOf(appWidgetId));
+        PrefUtils.remove(PrefUtils.PREF_WIDGET_PREFIX + String.valueOf(appWidgetId));
     }
 
 
@@ -98,16 +98,37 @@ public class ListRemoteViewsFactory implements RemoteViewsFactory {
 
     @Override
     public RemoteViews getViewAt(int position) {
-        RemoteViews row = new RemoteViews(mContext.getPackageName(), R.layout.task_layout_widget);
+        RemoteViews row = new RemoteViews(mContext.getPackageName(), R.layout.widget_task_item);
 
         Task task = tasks.get(position);
 
         Spanned[] titleAndContent = TextHelper.parseTitleAndContent(task);
 
         row.setTextViewText(R.id.task_title, titleAndContent[0]);
-        row.setTextViewText(R.id.task_content, titleAndContent[1]);
+        if (titleAndContent[1].length() > 0) {
+            row.setTextViewText(R.id.task_content, titleAndContent[1]);
+            row.setViewVisibility(R.id.task_content, View.VISIBLE);
+        } else {
+            row.setViewVisibility(R.id.task_content, View.GONE);
+        }
+        row.setTextViewText(R.id.reward_points, String.valueOf(task.pointReward));
 
-        color(task, row);
+        // Init task and category marker colors
+        if (!TextUtils.isEmpty(task.questId)) { // If this is an official quest, let's make it quite visible
+            row.setViewVisibility(R.id.quest_icon, View.VISIBLE);
+
+            // Resetting transparent color to the view
+            row.setInt(R.id.category_marker, "setBackgroundColor", Color.TRANSPARENT);
+        } else {
+            row.setViewVisibility(R.id.quest_icon, View.GONE);
+
+            // If category is set the color will be applied on the appropriate target
+            if (task.getCategory() != null) {
+                row.setInt(R.id.category_marker, "setBackgroundColor", task.getCategory().color);
+            } else {
+                row.setInt(R.id.category_marker, "setBackgroundColor", Color.TRANSPARENT);
+            }
+        }
 
         // Next, set a fill-intent, which will be used to fill in the pending intent template
         // that is set on the collection view in StackWidgetProvider.
@@ -117,7 +138,7 @@ public class ListRemoteViewsFactory implements RemoteViewsFactory {
         fillInIntent.putExtras(extras);
         // Make it possible to distinguish the individual on-click
         // action of a given item
-        row.setOnClickFillInIntent(R.id.root, fillInIntent);
+        row.setOnClickFillInIntent(R.id.card_view, fillInIntent);
 
         return (row);
     }
@@ -144,17 +165,5 @@ public class ListRemoteViewsFactory implements RemoteViewsFactory {
 
     public static void updateConfiguration(int mAppWidgetId, long categoryId) {
         PrefUtils.putLong(PrefUtils.PREF_WIDGET_PREFIX + String.valueOf(mAppWidgetId), categoryId);
-    }
-
-    private void color(Task task, RemoteViews row) {
-        // Resetting transparent color to the view
-        row.setInt(R.id.category_marker, "setBackgroundColor", Color.TRANSPARENT);
-
-        // If tag is set the color will be applied on the appropriate target
-        if (task.getCategory() != null) {
-            row.setInt(R.id.category_marker, "setBackgroundColor", task.getCategory().color);
-        } else {
-            row.setInt(R.id.category_marker, "setBackgroundColor", Color.TRANSPARENT);
-        }
     }
 }

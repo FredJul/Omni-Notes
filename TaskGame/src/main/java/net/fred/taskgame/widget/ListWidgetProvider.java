@@ -41,12 +41,10 @@ public class ListWidgetProvider extends WidgetProvider {
             views = new RemoteViews(context.getPackageName(), R.layout.widget_layout);
             views.setOnClickPendingIntent(R.id.add, pendingIntentsMap.get(R.id.add));
             views.setOnClickPendingIntent(R.id.list, pendingIntentsMap.get(R.id.list));
-            views.setOnClickPendingIntent(R.id.camera, pendingIntentsMap.get(R.id.camera));
         } else {
             views = new RemoteViews(context.getPackageName(), R.layout.widget_layout_list);
             views.setOnClickPendingIntent(R.id.add, pendingIntentsMap.get(R.id.add));
             views.setOnClickPendingIntent(R.id.list, pendingIntentsMap.get(R.id.list));
-            views.setOnClickPendingIntent(R.id.camera, pendingIntentsMap.get(R.id.camera));
 
             // Set up the intent that starts the ListViewService, which will
             // provide the views for this collection.

@@ -71,7 +71,7 @@ public class DbHelper {
         } else if (navigation == NavigationUtils.FINISHED_TASKS) {
             return getFinishedTasks();
         } else {
-            return getTasksByCategory(navigation);
+            return getActiveTasksByCategory(navigation);
         }
     }
 
@@ -192,7 +192,7 @@ public class DbHelper {
      * @param categoryId Category integer identifier
      * @return List of tasks with requested category
      */
-    public static List<Task> getTasksByCategory(long categoryId) {
+    public static List<Task> getActiveTasksByCategory(long categoryId) {
         ArrayList<SQLCondition> conditionList = new ArrayList<>();
 
         conditionList.add(Task_Table.categoryId.eq(categoryId));

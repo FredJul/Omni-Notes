@@ -562,7 +562,7 @@ public class ListFragment extends Fragment {
         } else {
             // Check if is launched from a widget with categories to set tag
             if (getMainActivity().getWidgetCatId() != -1) {
-                onTasksLoaded(DbHelper.getTasksByCategory(getMainActivity().getWidgetCatId()));
+                onTasksLoaded(DbHelper.getActiveTasksByCategory(getMainActivity().getWidgetCatId()));
                 getMainActivity().getSupportActionBar().setTitle(DbHelper.getCategory(getMainActivity().getWidgetCatId()).name);
             } else { // Gets all tasks
                 onTasksLoaded(DbHelper.getTasksFromCurrentNavigation());

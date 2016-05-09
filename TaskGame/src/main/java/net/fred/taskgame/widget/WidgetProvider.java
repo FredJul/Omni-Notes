@@ -72,13 +72,6 @@ public abstract class WidgetProvider extends AppWidgetProvider {
         PendingIntent pendingIntentList = PendingIntent.getActivity(context, widgetId, intentList,
                 PendingIntent.FLAG_UPDATE_CURRENT);
 
-        // Create an Intent to launch DetailActivity to take a photo
-        Intent intentDetailPhoto = new Intent(context, MainActivity.class);
-        intentDetailPhoto.setAction(Constants.ACTION_TAKE_PHOTO);
-        intentDetailPhoto.putExtra(Constants.INTENT_WIDGET, widgetId);
-        PendingIntent pendingIntentDetailPhoto = PendingIntent.getActivity(context, widgetId, intentDetailPhoto,
-                PendingIntent.FLAG_UPDATE_CURRENT);
-
         // Check various dimensions aspect of widget to choose between layouts
         boolean isSmall;
         boolean isSingleLine;
@@ -92,7 +85,6 @@ public abstract class WidgetProvider extends AppWidgetProvider {
         SparseArray<PendingIntent> map = new SparseArray<>();
         map.put(R.id.list, pendingIntentList);
         map.put(R.id.add, pendingIntentDetail);
-        map.put(R.id.camera, pendingIntentDetailPhoto);
 
         RemoteViews views = getRemoteViews(context, widgetId, isSmall, isSingleLine, map);
 

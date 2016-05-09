@@ -19,7 +19,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
               android:layout_height="@dimen/widget_height"
-              android:background="@color/colorPrimary"
+    android:background="@color/colorPrimaryDark"
               android:elevation="4dp">
 
     <ImageView
@@ -30,7 +30,7 @@
         android:background="@drawable/icon_selector"
         android:gravity="center"
         android:padding="10dp"
-        android:src="@drawable/ic_file_document_white_48dp"/>
+        android:src="@drawable/ic_assignment_white_24dp" />
 
     <ImageView
         android:id="@+id/add"
@@ -40,15 +40,5 @@
         android:background="@drawable/icon_selector"
         android:gravity="center"
         android:padding="10dp"
-        android:src="@drawable/ic_add_circle_white_48dp"/>
-
-    <ImageView
-        android:id="@+id/camera"
-        android:layout_width="0dp"
-        android:layout_height="match_parent"
-        android:layout_weight="1"
-        android:background="@drawable/icon_selector"
-        android:gravity="center"
-        android:padding="10dp"
-        android:src="@drawable/ic_camera_alt_white_48dp"/>
+        android:src="@drawable/ic_add_circle_white_24dp" />
 </LinearLayout>

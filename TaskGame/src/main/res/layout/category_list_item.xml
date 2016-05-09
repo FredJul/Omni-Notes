@@ -40,16 +40,8 @@
             android:gravity="center_vertical"
             android:paddingLeft="@dimen/icon_text_margin"
             android:paddingRight="@dimen/horizontal_margin"
-            android:textAppearance="@style/Text.Big"
+            android:textSize="@dimen/text_size_big"
             android:textColor="@color/drawer_text"/>
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:paddingEnd="@dimen/horizontal_margin"
-            android:paddingRight="@dimen/horizontal_margin"
-            android:textAppearance="@style/Text.Small"
-            android:layout_gravity="center_vertical"/>
     </LinearLayout>
 
 </LinearLayout>

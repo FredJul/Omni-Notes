@@ -61,7 +61,7 @@ public class TimePickerFragment extends DialogFragment {
 
         // Create a new instance of TimePickerDialog and return it
         boolean is24HourMode = DateFormat.is24HourFormat(mActivity);
-        TimePickerDialog tpd = new TimePickerDialog(mActivity, R.style.Theme_AppCompat_Dialog_NoBackgroundOrDim, mListener, hour, minute, is24HourMode);
+        TimePickerDialog tpd = new TimePickerDialog(mActivity, R.style.AppTheme_NoBackgroundDialog, mListener, hour, minute, is24HourMode);
         tpd.setTitle("");
         return tpd;
     }

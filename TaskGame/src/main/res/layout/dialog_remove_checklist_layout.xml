@@ -24,21 +24,21 @@
 
     <CheckBox
         android:id="@+id/checklist_keep_checked"
-        style="@style/Text.Big"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="left"
+        android:layout_gravity="start"
         android:layout_marginTop="@dimen/horizontal_margin"
-        android:text="@string/checklist_keep_checked"/>
+        android:text="@string/checklist_keep_checked"
+        android:textSize="@dimen/text_size_big" />
 
     <CheckBox
         android:id="@+id/checklist_keep_checkmarks"
-        style="@style/Text.Big"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="left"
+        android:layout_gravity="start"
         android:layout_marginBottom="@dimen/horizontal_margin"
         android:layout_marginTop="@dimen/horizontal_margin"
-        android:text="@string/checklist_keep_symbols"/>
+        android:text="@string/checklist_keep_symbols"
+        android:textSize="@dimen/text_size_big" />
 
 </LinearLayout>
