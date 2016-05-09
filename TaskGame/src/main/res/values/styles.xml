@@ -25,7 +25,7 @@
         <item name="windowActionModeOverlay">true</item>
         <item name="actionModeBackground">@color/colorPrimaryDark</item>
         <item name="android:windowBackground">@color/gray_bg</item>
-        <item name="android:textColor">@color/text_color</item>
+        <item name="android:textColorPrimary">@color/text_color</item>
         <item name="android:textColorHint">@color/text_color_lighter</item>
     </style>
 
