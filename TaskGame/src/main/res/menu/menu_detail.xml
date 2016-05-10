@@ -31,20 +31,6 @@
         android:title="@string/share"
         app:showAsAction="always"/>
     <item
-        android:id="@+id/menu_checklist_on"
-        android:icon="@drawable/ic_list_white_24dp"
-        android:orderInCategory="500"
-        android:title="@string/checklist_on"
-        android:visible="false"
-        app:showAsAction="ifRoom"/>
-    <item
-        android:id="@+id/menu_checklist_off"
-        android:icon="@drawable/ic_subject_white_24dp"
-        android:orderInCategory="500"
-        android:title="@string/checklist_off"
-        android:visible="false"
-        app:showAsAction="ifRoom"/>
-    <item
         android:id="@+id/menu_finish_task"
         android:icon="@drawable/ic_assignment_turned_in_white_24dp"
         android:orderInCategory="900"

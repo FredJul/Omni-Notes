@@ -23,6 +23,7 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.MenuItemCompat;
@@ -46,6 +47,7 @@ import android.view.View.OnDragListener;
 import android.view.View.OnLongClickListener;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ScrollView;
@@ -79,6 +81,7 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 import it.feio.android.checklistview.ChecklistManager;
 import it.feio.android.checklistview.interfaces.CheckListChangedListener;
 import me.tatarka.rxloader.RxLoaderObserver;
@@ -92,28 +95,26 @@ public class DetailFragment extends Fragment implements OnReminderPickedListener
 
     private static final int CATEGORY_CHANGE = 1;
 
-    @BindView(R.id.reminder_date)
-    TextView mReminderDateTextView;
     @BindView(R.id.detail_title)
     EditText mTitleEditText;
     @BindView(R.id.category_marker)
     View mCategoryMarker;
     @BindView(R.id.detail_content)
     EditText mContentEditText;
-    @BindView(R.id.content_wrapper)
-    ScrollView mScrollView;
     @BindView(R.id.reward_layout)
     View mRewardLayout;
     @BindView(R.id.reward_points)
     TextView mRewardPoints;
-    @BindView(R.id.reminder_layout)
-    View mReminderLayout;
     @BindView(R.id.reward_spinner)
     Spinner mRewardSpinner;
+    @BindView(R.id.content_wrapper)
+    ScrollView mScrollView;
+    @BindView(R.id.switch_checkviews)
+    Button mSwitchCheckViewsButton;
+    @BindView(R.id.reminder_date)
+    Button mReminderDateButton;
     @BindView(R.id.creation_date)
     TextView mCreationDateTextView;
-    @BindView(R.id.last_modification_date)
-    TextView mLastModificationDateTextView;
 
     private Task mTask;
     private Task mOriginalTask;
@@ -123,6 +124,7 @@ public class DetailFragment extends Fragment implements OnReminderPickedListener
     private UiUtils.MessageType mExitMessageStyle = UiUtils.MessageType.TYPE_INFO;
     private int mContentLineCounter = 1;
     private View mToggleChecklistView;
+    private FloatingActionButton mFab;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -153,7 +155,7 @@ public class DetailFragment extends Fragment implements OnReminderPickedListener
         }
 
         if (mTask.alarmDate != 0) {
-            mReminderDateTextView.setText(getString(R.string.alarm_set_on, DateHelper.getDateTimeShort(getContext(), mTask.alarmDate)));
+            mReminderDateButton.setText(getString(R.string.alarm_set_on, DateHelper.getDateTimeShort(getContext(), mTask.alarmDate)));
         }
 
         if (TextUtils.isEmpty(mTask.questId)) {
@@ -163,6 +165,24 @@ public class DetailFragment extends Fragment implements OnReminderPickedListener
         }
 
         initViews();
+
+        mFab = (FloatingActionButton) getActivity().findViewById(R.id.fab);
+        mFab.hide(new FloatingActionButton.OnVisibilityChangedListener() {
+            @Override
+            public void onHidden(FloatingActionButton fab) {
+                super.onHidden(fab);
+
+                mFab.setImageResource(R.drawable.ic_done_white_24dp);
+                mFab.setOnClickListener(new OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        saveAndExit();
+                    }
+                });
+                mFab.setOnLongClickListener(null);
+                mFab.show();
+            }
+        });
 
         setHasOptionsMenu(true);
     }
@@ -298,7 +318,7 @@ public class DetailFragment extends Fragment implements OnReminderPickedListener
         }
 
         // Preparation for reminder icon
-        mReminderLayout.setOnClickListener(new OnClickListener() {
+        mReminderDateButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
                 int pickerType = PrefUtils.getBoolean("settings_simple_calendar", false) ? ReminderPickers.TYPE_AOSP : ReminderPickers.TYPE_GOOGLE;
@@ -306,7 +326,7 @@ public class DetailFragment extends Fragment implements OnReminderPickedListener
                 reminderPicker.pick(mTask.alarmDate);
             }
         });
-        mReminderLayout.setOnLongClickListener(new OnLongClickListener() {
+        mReminderDateButton.setOnLongClickListener(new OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
                 new AlertDialog.Builder(getActivity())
@@ -314,24 +334,25 @@ public class DetailFragment extends Fragment implements OnReminderPickedListener
                         .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int id) {
                                 mTask.alarmDate = 0;
-                                mReminderDateTextView.setText("");
+                                mReminderDateButton.setText("");
                             }
                         }).show();
                 return true;
             }
         });
 
-        // Footer dates of creation...
+        // Footer dates of creation
         String creation = DateHelper.getDateTimeShort(getActivity(), mTask.creationDate);
-        mCreationDateTextView.append(creation.length() > 0 ? getString(R.string.creation, creation) : "");
-        if (mCreationDateTextView.getText().length() == 0)
+        if (!TextUtils.isEmpty(creation)) {
+            String lastModification = DateHelper.getDateTimeShort(getActivity(), mTask.lastModificationDate);
+            if (TextUtils.isEmpty(lastModification)) {
+                mCreationDateTextView.append(getString(R.string.creation, creation));
+            } else {
+                mCreationDateTextView.append(getString(R.string.creation, creation) + "  —  " + getString(R.string.last_update, lastModification));
+            }
+        } else {
             mCreationDateTextView.setVisibility(View.GONE);
-
-        // ... and last modification
-        String lastModification = DateHelper.getDateTimeShort(getActivity(), mTask.lastModificationDate);
-        mLastModificationDateTextView.append(lastModification.length() > 0 ? getString(R.string.last_update, lastModification) : "");
-        if (mLastModificationDateTextView.getText().length() == 0)
-            mLastModificationDateTextView.setVisibility(View.GONE);
+        }
 
         if (TextUtils.isEmpty(mTask.questId)) {
             if (mTask.pointReward == Task.LOW_POINT_REWARD) {
@@ -418,8 +439,6 @@ public class DetailFragment extends Fragment implements OnReminderPickedListener
 
         boolean newNote = mTask.id == IdBasedModel.INVALID_ID;
 
-        menu.findItem(R.id.menu_checklist_on).setVisible(!mTask.isChecklist);
-        menu.findItem(R.id.menu_checklist_off).setVisible(mTask.isChecklist);
         // If note is isFinished only this options will be available from menu
         if (mTask.isFinished) {
             menu.findItem(R.id.menu_restore_task).setVisible(true);
@@ -430,7 +449,7 @@ public class DetailFragment extends Fragment implements OnReminderPickedListener
         }
     }
 
-    public boolean goHome() {
+    public void goHome() {
         FragmentActivity activity = getActivity();
         // The activity has managed a shared intent from third party app and
         // performs a normal onBackPressed instead of returning back to ListActivity
@@ -446,8 +465,6 @@ public class DetailFragment extends Fragment implements OnReminderPickedListener
             }
             activity.finish();
         }
-
-        return true;
     }
 
 
@@ -462,12 +479,6 @@ public class DetailFragment extends Fragment implements OnReminderPickedListener
                 break;
             case R.id.menu_share:
                 shareTask();
-                break;
-            case R.id.menu_checklist_on:
-                toggleChecklistAndKeepChecked();
-                break;
-            case R.id.menu_checklist_off:
-                toggleChecklistAndKeepChecked();
                 break;
             case R.id.menu_finish_task:
                 finishTask();
@@ -485,17 +496,16 @@ public class DetailFragment extends Fragment implements OnReminderPickedListener
         return super.onOptionsItemSelected(item);
     }
 
-    private void toggleChecklistAndKeepChecked() {
+    @OnClick(R.id.switch_checkviews)
+    public void toggleChecklistAndKeepChecked() {
 
-        // In case isChecklist is active a prompt will ask about many options
-        // to decide hot to convert back to simple text
+        // In case isChecklist is active a prompt will ask about many options to decide hot to convert back to simple text
         if (!mTask.isChecklist) {
             toggleChecklist();
             return;
         }
 
-        // If isChecklist is active but no items are checked the conversion in done automatically
-        // without prompting user
+        // If isChecklist is active but no items are checked the conversion is done automatically without prompting user
         if (mChecklistManager.getCheckedCount() == 0) {
             toggleChecklist(true, false);
             return;
@@ -567,7 +577,13 @@ public class DetailFragment extends Fragment implements OnReminderPickedListener
             mTask.isChecklist = !mTask.isChecklist;
         }
 
-        getActivity().supportInvalidateOptionsMenu();
+        if (!mTask.isChecklist) {
+            mSwitchCheckViewsButton.setText(R.string.checklist_on);
+            mSwitchCheckViewsButton.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_list_grey600_24dp, 0, 0, 0);
+        } else {
+            mSwitchCheckViewsButton.setText(R.string.checklist_off);
+            mSwitchCheckViewsButton.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_subject_grey600_24dp, 0, 0, 0);
+        }
     }
 
 
@@ -765,7 +781,7 @@ public class DetailFragment extends Fragment implements OnReminderPickedListener
     public void onReminderPicked(long reminder) {
         mTask.alarmDate = reminder;
         if (isAdded()) {
-            mReminderDateTextView.setText(getString(R.string.alarm_set_on, DateHelper.getDateTimeShort(getActivity(), reminder)));
+            mReminderDateButton.setText(getString(R.string.alarm_set_on, DateHelper.getDateTimeShort(getActivity(), reminder)));
         }
     }
 

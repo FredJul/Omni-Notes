@@ -30,8 +30,6 @@
         android:hint="@string/category_title"
         android:inputType="textCapSentences"
         android:textSize="@dimen/text_size_big"
-        android:textColorHint="@color/text_color_lighter"
-        android:textColor="@color/text_color"
         android:textCursorDrawable="@null"/>
 
     <EditText

@@ -153,6 +153,7 @@ public class ListFragment extends Fragment {
         super.onActivityCreated(savedInstanceState);
 
         mFab = (FloatingActionButton) getActivity().findViewById(R.id.fab);
+        mFab.setImageResource(R.drawable.ic_add_white_24dp);
         mFab.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {

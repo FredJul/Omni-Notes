@@ -503,10 +503,6 @@ public class MainActivity extends BaseGameActivity implements FragmentManager.On
         //Enable Up button only if there are entries in the back stack
         boolean canUp = getSupportFragmentManager().getBackStackEntryCount() > 0;
 
-        if (canUp) {
-            mFab.hide();
-        }
-
         mDrawerLayout.setDrawerLockMode(canUp ? DrawerLayout.LOCK_MODE_LOCKED_CLOSED : DrawerLayout.LOCK_MODE_UNLOCKED);
         // Use the drawerToggle to animate the icon
         ValueAnimator anim = ValueAnimator.ofFloat(canUp ? 0 : 1, canUp ? 1 : 0);

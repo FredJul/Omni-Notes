@@ -21,7 +21,6 @@
     <dimen name="activity_horizontal_margin">16dp</dimen>
     <dimen name="activity_vertical_margin">16dp</dimen>
     <dimen name="horizontal_margin">16dp</dimen>
-    <dimen name="padding_half">6dp</dimen>
     <dimen name="icon_text_margin">12dp</dimen>
     <dimen name="navigation_drawer_line_height">48dp</dimen>
     <dimen name="navigation_drawer_icon_size">28dp</dimen>
