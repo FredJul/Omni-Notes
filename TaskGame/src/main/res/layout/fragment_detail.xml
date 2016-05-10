@@ -140,9 +140,9 @@
                     android:hint="@string/content"
                     android:imeOptions="actionDone"
                     android:inputType="textCapSentences|textMultiLine"
-                    android:paddingEnd="12dp"
                     android:paddingStart="12dp"
-                    android:paddingTop="12dp"
+                    android:paddingEnd="12dp"
+                    android:paddingBottom="12dp"
                     android:textSize="@dimen/text_size_big" />
 
             </ScrollView>
