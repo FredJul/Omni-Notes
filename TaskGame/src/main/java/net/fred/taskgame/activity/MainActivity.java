@@ -610,14 +610,14 @@ public class MainActivity extends BaseGameActivity implements FragmentManager.On
 
     public void switchToList() {
         FragmentTransaction transaction = mFragmentManager.beginTransaction();
-        UiUtils.animateTransition(transaction, UiUtils.TRANSITION_HORIZONTAL);
+        UiUtils.animateTransition(transaction, UiUtils.TransitionType.TRANSITION_FADE_IN);
         ListFragment mListFragment = new ListFragment();
         transaction.replace(R.id.fragment_container, mListFragment, FRAGMENT_LIST_TAG).addToBackStack(FRAGMENT_DETAIL_TAG).commitAllowingStateLoss();
     }
 
     public void switchToDetail(Task task) {
         FragmentTransaction transaction = mFragmentManager.beginTransaction();
-        UiUtils.animateTransition(transaction, UiUtils.TRANSITION_HORIZONTAL);
+        UiUtils.animateTransition(transaction, UiUtils.TransitionType.TRANSITION_FADE_IN);
         DetailFragment mDetailFragment = new DetailFragment();
         Bundle b = new Bundle();
         b.putParcelable(Constants.INTENT_TASK, Parcels.wrap(task));

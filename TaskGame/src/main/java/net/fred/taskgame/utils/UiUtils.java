@@ -14,8 +14,7 @@ import net.fred.taskgame.R;
 
 public class UiUtils {
 
-    static public final int TRANSITION_VERTICAL = 0;
-    static public final int TRANSITION_HORIZONTAL = 1;
+    public enum TransitionType {TRANSITION_FADE_IN}
 
     public enum MessageType {TYPE_INFO, TYPE_WARN, TYPE_ERROR}
 
@@ -23,13 +22,11 @@ public class UiUtils {
         return (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp, MainApplication.getContext().getResources().getDisplayMetrics());
     }
 
-    static public void animateTransition(@NonNull FragmentTransaction transaction, int direction) {
-        if (direction == TRANSITION_HORIZONTAL) {
-            transaction.setCustomAnimations(R.anim.fade_in_support, R.anim.fade_out_support, R.anim.fade_in_support, R.anim.fade_out_support);
-        }
-        if (direction == TRANSITION_VERTICAL) {
-            transaction.setCustomAnimations(
-                    R.anim.anim_in, R.anim.anim_out, R.anim.anim_in_pop, R.anim.anim_out_pop);
+    static public void animateTransition(@NonNull FragmentTransaction transaction, TransitionType transitionType) {
+        switch (transitionType) {
+            case TRANSITION_FADE_IN:
+                transaction.setCustomAnimations(R.anim.fade_in, R.anim.fade_out, R.anim.fade_in, R.anim.fade_out);
+                break;
         }
     }
 
