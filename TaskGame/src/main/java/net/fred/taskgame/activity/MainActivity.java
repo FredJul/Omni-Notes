@@ -79,8 +79,8 @@ public class MainActivity extends BaseGameActivity implements FragmentManager.On
     private static final int REQUEST_CODE_CATEGORY = 2;
     private static final int REQUEST_CODE_QUESTS = 3;
 
-    public final String FRAGMENT_LIST_TAG = "fragment_list";
-    public final String FRAGMENT_DETAIL_TAG = "fragment_detail";
+    public final String FRAGMENT_LIST_TAG = "FRAGMENT_LIST_TAG";
+    public final String FRAGMENT_DETAIL_TAG = "FRAGMENT_DETAIL_TAG";
 
     private FragmentManager mFragmentManager;
 
