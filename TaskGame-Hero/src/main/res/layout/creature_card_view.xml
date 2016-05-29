@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <variable
+            name="card"
+            type="net.fred.taskgame.hero.model.Card" />
+    </data>
+
+    <FrameLayout
+        android:layout_width="150dp"
+        android:layout_height="212dp">
+
+        <ImageView
+            android:id="@+id/background"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scaleType="fitXY"
+            android:src="@drawable/card_background_character" />
+
+        <ImageView
+            android:id="@+id/icon"
+            android:layout_width="125dp"
+            android:layout_height="125dp"
+            android:scaleType="fitXY"
+            tools:src="@drawable/skeleton_archer"
+            android:src="@{card.iconResId}" />
+
+        <TextView
+            android:id="@+id/level"
+            android:layout_width="25dp"
+            android:layout_height="20dp"
+            android:layout_marginStart="120dp"
+            android:layout_marginTop="3dp"
+            android:gravity="center"
+            android:shadowColor="@android:color/black"
+            android:shadowRadius="7"
+            android:textColor="@color/card_text_color"
+            android:textSize="15dp"
+            tools:ignore="SpUsage"
+            tools:text="30"
+            android:text="@{String.valueOf(card.level)}" />
+
+        <TextView
+            android:id="@+id/name"
+            android:layout_width="120dp"
+            android:layout_height="31dp"
+            android:layout_marginStart="12dp"
+            android:layout_marginTop="92dp"
+            android:gravity="center|end"
+            android:shadowColor="@android:color/black"
+            android:shadowRadius="7"
+            android:textColor="@color/card_text_color"
+            android:textSize="12dp"
+            tools:ignore="SpUsage"
+            tools:text="Skeleton Archer"
+            android:text="@{card.name}" />
+
+        <TextView
+            android:id="@+id/desc"
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:layout_gravity="bottom"
+            android:layout_marginBottom="22dp"
+            android:layout_marginEnd="13dp"
+            android:layout_marginStart="13dp"
+            android:shadowColor="@android:color/black"
+            android:shadowRadius="7"
+            android:textColor="@color/card_text_color"
+            android:textSize="12dp"
+            tools:ignore="SpUsage"
+            tools:text="Desc with several lines on it"
+            android:text="@{card.desc}" />
+
+        <TextView
+            android:id="@+id/attack"
+            android:layout_width="23dp"
+            android:layout_height="20dp"
+            android:layout_gravity="bottom|end"
+            android:layout_marginBottom="3dp"
+            android:layout_marginEnd="18dp"
+            android:gravity="center"
+            android:shadowColor="@android:color/black"
+            android:shadowRadius="7"
+            android:textColor="@color/card_text_color"
+            android:textSize="12dp"
+            tools:ignore="SpUsage"
+            tools:text="30"
+            android:text="@{String.valueOf(card.attack)}" />
+
+        <TextView
+            android:id="@+id/defense"
+            android:layout_width="23dp"
+            android:layout_height="20dp"
+            android:layout_gravity="bottom|end"
+            android:layout_marginBottom="3dp"
+            android:gravity="center"
+            android:shadowColor="@android:color/black"
+            android:shadowRadius="7"
+            android:textColor="@color/card_text_color"
+            android:textSize="12dp"
+            tools:ignore="SpUsage"
+            tools:text="30"
+            android:text="@{String.valueOf(card.defense)}" />
+
+    </FrameLayout>
+</layout>
