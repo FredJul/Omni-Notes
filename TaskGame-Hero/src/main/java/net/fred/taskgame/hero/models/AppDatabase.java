@@ -1,4 +1,4 @@
-package net.fred.taskgame.hero.model;
+package net.fred.taskgame.hero.models;
 
 import com.raizlabs.android.dbflow.annotation.Database;
 

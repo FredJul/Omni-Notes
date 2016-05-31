@@ -1,20 +1,4 @@
-/*
- * Copyright (C) 2015 Federico Iosue (federico.iosue@gmail.com)
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */
-package net.fred.taskgame.hero.fragment;
+package net.fred.taskgame.hero.fragments;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -25,13 +9,16 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 
 import net.fred.taskgame.hero.R;
-import net.fred.taskgame.hero.activity.MainActivity;
+import net.fred.taskgame.hero.activities.MainActivity;
 import net.fred.taskgame.hero.logic.BattleManager;
-import net.fred.taskgame.hero.model.Card;
+import net.fred.taskgame.hero.models.Card;
+import net.fred.taskgame.hero.models.Level;
 import net.fred.taskgame.hero.utils.UiUtils;
-import net.fred.taskgame.hero.view.GameCardView;
+import net.fred.taskgame.hero.views.GameCardView;
 
 import org.parceler.Parcels;
+
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -41,6 +28,10 @@ import butterknife.OnClick;
 public class BattleFragment extends Fragment {
 
     public static final String STATE_BATTLE_MANAGER = "STATE_BATTLE_MANAGER";
+
+    public static final String ARG_PLAYER_CARDS = "ARG_PLAYER_CARDS";
+    public static final String ARG_LEVEL = "ARG_LEVEL";
+
     @BindView(R.id.player_card)
     GameCardView mPlayerCardView;
 
@@ -54,22 +45,31 @@ public class BattleFragment extends Fragment {
     LinearLayout mCardListLayout;
 
     private BattleManager mBattleManager = new BattleManager();
+    private Level mLevel;
+
+    public static BattleFragment newInstance(Level level, List<Card> playerCards) {
+        BattleFragment battleFragment = new BattleFragment();
+        Bundle args = new Bundle();
+        args.putParcelable(ARG_LEVEL, Parcels.wrap(level));
+        args.putParcelable(ARG_PLAYER_CARDS, Parcels.wrap(playerCards));
+        battleFragment.setArguments(args);
+
+        return battleFragment;
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View layout = inflater.inflate(R.layout.fragment_detail, container, false);
         ButterKnife.bind(this, layout);
 
+        mLevel = Parcels.unwrap(getArguments().getParcelable(ARG_LEVEL));
+
         if (savedInstanceState != null) {
             mBattleManager = Parcels.unwrap(savedInstanceState.getParcelable(STATE_BATTLE_MANAGER));
         } else {
-            mBattleManager.addEnemyCard(Card.getAllCardsMap().get(Card.CREATURE_ORC_ARCHER).clone());
-            mBattleManager.addEnemyCard(Card.getAllCardsMap().get(Card.CREATURE_SKELETON_ARCHER).clone());
-
-            mBattleManager.addPlayerCard(Card.getAllCardsMap().get(Card.CREATURE_SKELETON_ARCHER).clone());
-            mBattleManager.addPlayerCard(Card.getAllCardsMap().get(Card.CREATURE_ORC_ARCHER).clone());
-            mBattleManager.addPlayerCard(Card.getAllCardsMap().get(Card.SUPPORT_WEAPON_EROSION).clone());
-            mBattleManager.addPlayerCard(Card.getAllCardsMap().get(Card.SUPPORT_POWER_POTION).clone());
+            mBattleManager.addEnemyCards(mLevel.enemyCards);
+            List<Card> playerCards = Parcels.unwrap(getArguments().getParcelable(ARG_PLAYER_CARDS));
+            mBattleManager.addPlayerCards(playerCards);
         }
 
         updateUI();

@@ -1,4 +1,4 @@
-package net.fred.taskgame.hero.model;
+package net.fred.taskgame.hero.models;
 
 import android.databinding.BindingAdapter;
 import android.util.SparseArray;
@@ -106,44 +106,44 @@ public class Card extends BaseModel implements Cloneable {
     }
 
     public static void populate() {
-        Card cardToAdd = new Card();
-        cardToAdd.id = CREATURE_SKELETON_ARCHER;
-        cardToAdd.name = "Skeleton Archer";
-        cardToAdd.level = 2;
-        cardToAdd.attack = 2;
-        cardToAdd.defense = 5;
-        cardToAdd.desc = "Deads are not deads, and strangely know how to send arrows";
-        cardToAdd.iconResId = R.drawable.skeleton_archer;
-        sAllCardsMap.append(cardToAdd.id, cardToAdd);
+        Card card = new Card();
+        card.id = CREATURE_SKELETON_ARCHER;
+        card.name = "Skeleton Archer";
+        card.level = 2;
+        card.attack = 2;
+        card.defense = 5;
+        card.desc = "Deads are not deads, and strangely know how to send arrows";
+        card.iconResId = R.drawable.skeleton_archer;
+        sAllCardsMap.append(card.id, card);
 
-        cardToAdd = new Card();
-        cardToAdd.id = CREATURE_ORC_ARCHER;
-        cardToAdd.name = "Orc Archer";
-        cardToAdd.level = 3;
-        cardToAdd.attack = 2;
-        cardToAdd.defense = 6;
-        cardToAdd.desc = "You already dead!";
-        cardToAdd.iconResId = R.drawable.orc_archer;
-        sAllCardsMap.append(cardToAdd.id, cardToAdd);
+        card = new Card();
+        card.id = CREATURE_ORC_ARCHER;
+        card.name = "Orc Archer";
+        card.level = 3;
+        card.attack = 2;
+        card.defense = 6;
+        card.desc = "You already dead!";
+        card.iconResId = R.drawable.orc_archer;
+        sAllCardsMap.append(card.id, card);
 
-        cardToAdd = new Card();
-        cardToAdd.id = SUPPORT_POWER_POTION;
-        cardToAdd.type = Card.Type.SUPPORT;
-        cardToAdd.supportAction = Card.SupportAction.PLAYER_ATTACK_MULT;
-        cardToAdd.name = "Fake potion of invincibility";
-        cardToAdd.level = 3;
-        cardToAdd.desc = "Your creature feel invincible and run into the target with a loud war cry.\nAttack multiplied by 2\nDefense divided by 1.5";
-        cardToAdd.iconResId = R.drawable.red_potion;
-        sAllCardsMap.append(cardToAdd.id, cardToAdd);
+        card = new Card();
+        card.id = SUPPORT_POWER_POTION;
+        card.type = Card.Type.SUPPORT;
+        card.supportAction = Card.SupportAction.PLAYER_ATTACK_MULT;
+        card.name = "Fake potion of invincibility";
+        card.level = 3;
+        card.desc = "Your creature feel invincible and run into the target with a loud war cry.\nAttack multiplied by 2\nDefense divided by 1.5";
+        card.iconResId = R.drawable.red_potion;
+        sAllCardsMap.append(card.id, card);
 
-        cardToAdd = new Card();
-        cardToAdd.id = SUPPORT_WEAPON_EROSION;
-        cardToAdd.type = Card.Type.SUPPORT;
-        cardToAdd.supportAction = Card.SupportAction.ENEMY_ATTACK_DIV;
-        cardToAdd.name = "Weapon erosion";
-        cardToAdd.level = 4;
-        cardToAdd.desc = "Strangely your enemy weapon starts to run into pieces.\nEnemy attack divided by 2";
-        cardToAdd.iconResId = R.drawable.erode_weapon;
-        sAllCardsMap.append(cardToAdd.id, cardToAdd);
+        card = new Card();
+        card.id = SUPPORT_WEAPON_EROSION;
+        card.type = Card.Type.SUPPORT;
+        card.supportAction = Card.SupportAction.ENEMY_ATTACK_DIV;
+        card.name = "Weapon erosion";
+        card.level = 4;
+        card.desc = "Strangely your enemy weapon starts to run into pieces.\nEnemy attack divided by 2";
+        card.iconResId = R.drawable.erode_weapon;
+        sAllCardsMap.append(card.id, card);
     }
 }

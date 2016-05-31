@@ -1,4 +1,4 @@
-package net.fred.taskgame.hero.provider;
+package net.fred.taskgame.hero.providers;
 
 import android.content.ContentProvider;
 import android.content.ContentValues;

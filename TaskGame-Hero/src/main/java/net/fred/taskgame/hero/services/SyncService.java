@@ -1,4 +1,4 @@
-package net.fred.taskgame.hero.service;
+package net.fred.taskgame.hero.services;
 
 import android.accounts.Account;
 import android.accounts.AccountManager;
@@ -19,8 +19,8 @@ import com.google.android.gms.games.snapshot.Snapshots;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
-import net.fred.taskgame.hero.model.SyncData;
-import net.fred.taskgame.hero.provider.FakeProvider;
+import net.fred.taskgame.hero.models.SyncData;
+import net.fred.taskgame.hero.providers.FakeProvider;
 import net.fred.taskgame.hero.utils.Dog;
 import net.fred.taskgame.hero.utils.GameHelper;
 import net.fred.taskgame.hero.utils.PrefUtils;

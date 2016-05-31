@@ -6,7 +6,7 @@
 
         <variable
             name="card"
-            type="net.fred.taskgame.hero.model.Card" />
+            type="net.fred.taskgame.hero.models.Card" />
     </data>
 
     <FrameLayout

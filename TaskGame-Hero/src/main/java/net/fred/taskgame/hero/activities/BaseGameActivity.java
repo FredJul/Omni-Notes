@@ -1,4 +1,4 @@
-package net.fred.taskgame.hero.activity;
+package net.fred.taskgame.hero.activities;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;

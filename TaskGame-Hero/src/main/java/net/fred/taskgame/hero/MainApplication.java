@@ -23,7 +23,8 @@ import android.content.Context;
 import com.raizlabs.android.dbflow.config.FlowConfig;
 import com.raizlabs.android.dbflow.config.FlowManager;
 
-import net.fred.taskgame.hero.model.Card;
+import net.fred.taskgame.hero.models.Card;
+import net.fred.taskgame.hero.models.Level;
 
 public class MainApplication extends Application {
 
@@ -37,6 +38,7 @@ public class MainApplication extends Application {
 
         FlowManager.init(new FlowConfig.Builder(this).build());
         Card.populate();
+        Level.populate();
     }
 
     @Override

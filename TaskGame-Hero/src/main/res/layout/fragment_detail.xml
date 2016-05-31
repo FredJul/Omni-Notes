@@ -4,13 +4,13 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <net.fred.taskgame.hero.view.GameCardView
+    <net.fred.taskgame.hero.views.GameCardView
         android:id="@+id/player_card"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
 
 
-    <net.fred.taskgame.hero.view.GameCardView
+    <net.fred.taskgame.hero.views.GameCardView
         android:id="@+id/enemy_card"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

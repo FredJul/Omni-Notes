@@ -1,6 +1,6 @@
 package net.fred.taskgame.hero.logic;
 
-import net.fred.taskgame.hero.model.Card;
+import net.fred.taskgame.hero.models.Card;
 
 import org.parceler.Parcel;
 
@@ -41,12 +41,16 @@ public class BattleManager {
         return supportCards;
     }
 
-    public void addEnemyCard(Card card) {
-        mRemainingEnemyCards.add(card);
+    public void addEnemyCards(List<Card> cards) {
+        for (Card card : cards) {
+            mRemainingEnemyCards.add(card.clone()); // We need to clone them to not modify the original data
+        }
     }
 
-    public void addPlayerCard(Card card) {
-        mRemainingPlayerCards.add(card);
+    public void addPlayerCards(List<Card> cards) {
+        for (Card card : cards) {
+            mRemainingPlayerCards.add(card.clone()); // We need to clone them to not modify the original data
+        }
     }
 
     public Card getNextEnemyCreatureCard() {

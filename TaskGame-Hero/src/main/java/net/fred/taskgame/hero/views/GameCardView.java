@@ -1,4 +1,4 @@
-package net.fred.taskgame.hero.view;
+package net.fred.taskgame.hero.views;
 
 import android.content.Context;
 import android.databinding.DataBindingUtil;
@@ -10,7 +10,7 @@ import android.widget.FrameLayout;
 import net.fred.taskgame.hero.R;
 import net.fred.taskgame.hero.databinding.CreatureCardViewBinding;
 import net.fred.taskgame.hero.databinding.SupportCardViewBinding;
-import net.fred.taskgame.hero.model.Card;
+import net.fred.taskgame.hero.models.Card;
 
 public class GameCardView extends FrameLayout {
 
