@@ -27,11 +27,11 @@ import com.raizlabs.android.dbflow.structure.Model;
 import com.raizlabs.android.dbflow.structure.database.transaction.ProcessModelTransaction;
 
 import net.fred.taskgame.MainApplication;
-import net.fred.taskgame.model.AppDatabase;
-import net.fred.taskgame.model.Category;
-import net.fred.taskgame.model.Category_Table;
-import net.fred.taskgame.model.Task;
-import net.fred.taskgame.model.Task_Table;
+import net.fred.taskgame.models.AppDatabase;
+import net.fred.taskgame.models.Category;
+import net.fred.taskgame.models.Category_Table;
+import net.fred.taskgame.models.Task;
+import net.fred.taskgame.models.Task_Table;
 
 import java.util.ArrayList;
 import java.util.Calendar;

@@ -29,7 +29,7 @@ import com.fourmob.datetimepicker.date.DatePickerDialog;
 import com.sleepbot.datetimepicker.time.RadialPickerLayout;
 import com.sleepbot.datetimepicker.time.TimePickerDialog;
 
-import net.fred.taskgame.model.listeners.OnReminderPickedListener;
+import net.fred.taskgame.models.listeners.OnReminderPickedListener;
 import net.fred.taskgame.utils.Constants;
 
 import java.util.Calendar;

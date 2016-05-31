@@ -22,7 +22,7 @@ import android.view.View;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 
-import net.fred.taskgame.activity.MainActivity;
+import net.fred.taskgame.activities.MainActivity;
 
 public class KeyboardUtils {
 

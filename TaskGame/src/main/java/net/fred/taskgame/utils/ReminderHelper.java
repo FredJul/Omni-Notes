@@ -22,8 +22,8 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 
-import net.fred.taskgame.model.Task;
-import net.fred.taskgame.receiver.AlarmReceiver;
+import net.fred.taskgame.models.Task;
+import net.fred.taskgame.receivers.AlarmReceiver;
 
 import org.parceler.Parcels;
 

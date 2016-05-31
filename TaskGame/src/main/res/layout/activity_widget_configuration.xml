@@ -24,7 +24,7 @@
               android:paddingLeft="@dimen/activity_horizontal_margin"
               android:paddingRight="@dimen/activity_horizontal_margin"
               android:paddingTop="@dimen/activity_vertical_margin"
-    tools:context="net.fred.taskgame.widget.WidgetConfigurationActivity">
+    tools:context="net.fred.taskgame.widgets.WidgetConfigurationActivity">
 
     <RadioGroup
         android:id="@+id/widget_config_radiogroup"

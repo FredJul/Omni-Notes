@@ -17,7 +17,7 @@
 
 package net.fred.taskgame.utils;
 
-import net.fred.taskgame.model.Category;
+import net.fred.taskgame.models.Category;
 
 public class NavigationUtils {
 

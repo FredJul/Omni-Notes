@@ -21,7 +21,7 @@ import android.text.Html;
 import android.text.Spanned;
 import android.text.SpannedString;
 
-import net.fred.taskgame.model.Task;
+import net.fred.taskgame.models.Task;
 
 import java.util.Locale;
 
