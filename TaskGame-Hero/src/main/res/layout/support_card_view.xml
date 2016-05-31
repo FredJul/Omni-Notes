@@ -29,7 +29,7 @@
             tools:src="@drawable/red_potion"
             android:src="@{card.iconResId}" />
 
-        <TextView
+        <com.github.jivimberg.library.AutoResizeTextView
             android:id="@+id/level"
             android:layout_width="25dp"
             android:layout_height="20dp"
@@ -40,11 +40,12 @@
             android:shadowRadius="7"
             android:textColor="@color/card_text_color"
             android:textSize="15dp"
+            android:maxLines="1"
             tools:ignore="SpUsage"
             tools:text="30"
             android:text="@{String.valueOf(card.level)}" />
 
-        <TextView
+        <com.github.jivimberg.library.AutoResizeTextView
             android:id="@+id/name"
             android:layout_width="110dp"
             android:layout_height="20dp"
@@ -54,19 +55,18 @@
             android:shadowRadius="7"
             android:textColor="@color/card_text_color"
             android:textSize="12dp"
+            android:maxLines="2"
             tools:ignore="SpUsage"
             tools:text="Red potion"
             android:text="@{card.name}" />
 
-        <TextView
+        <com.github.jivimberg.library.AutoResizeTextView
             android:id="@+id/desc"
             android:layout_width="match_parent"
             android:layout_height="60dp"
             android:layout_marginTop="30dp"
             android:layout_marginEnd="13dp"
             android:layout_marginStart="13dp"
-            android:shadowColor="@android:color/black"
-            android:shadowRadius="7"
             android:textSize="12dp"
             tools:ignore="SpUsage"
             tools:text="Desc with several lines on it"
