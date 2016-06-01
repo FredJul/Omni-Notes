@@ -36,7 +36,7 @@ public class LevelSelectionFragment extends Fragment {
         LevelSelectionAdapter adapter = new LevelSelectionAdapter(Level.getAllLevelsList(), new RecyclerViewItemListener() {
             @Override
             public void onItemClicked(int position) {
-                getMainActivity().switchToLevel(Level.getAllLevelsList().get(position));
+                getMainActivity().startBattle(Level.getAllLevelsList().get(position));
             }
         });
         mRecyclerView.setAdapter(adapter);

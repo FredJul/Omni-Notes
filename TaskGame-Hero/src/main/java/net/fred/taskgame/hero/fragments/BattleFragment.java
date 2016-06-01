@@ -9,7 +9,6 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 
 import net.fred.taskgame.hero.R;
-import net.fred.taskgame.hero.activities.MainActivity;
 import net.fred.taskgame.hero.logic.BattleManager;
 import net.fred.taskgame.hero.models.Card;
 import net.fred.taskgame.hero.models.Level;
@@ -48,13 +47,13 @@ public class BattleFragment extends Fragment {
     private Level mLevel;
 
     public static BattleFragment newInstance(Level level, List<Card> playerCards) {
-        BattleFragment battleFragment = new BattleFragment();
+        BattleFragment fragment = new BattleFragment();
         Bundle args = new Bundle();
         args.putParcelable(ARG_LEVEL, Parcels.wrap(level));
         args.putParcelable(ARG_PLAYER_CARDS, Parcels.wrap(playerCards));
-        battleFragment.setArguments(args);
+        fragment.setArguments(args);
 
-        return battleFragment;
+        return fragment;
     }
 
     @Override
@@ -112,16 +111,17 @@ public class BattleFragment extends Fragment {
             mCardListLayout.addView(cardView);
         }
 
-        if (mBattleManager.getBattleStatus() == BattleManager.BattleStatus.DRAW) {
-            UiUtils.showMessage(getActivity(), "Draw!");
-        } else if (mBattleManager.getBattleStatus() == BattleManager.BattleStatus.ENEMY_WON) {
-            UiUtils.showMessage(getActivity(), "Enemy won!");
-        } else if (mBattleManager.getBattleStatus() == BattleManager.BattleStatus.PLAYER_WON) {
-            UiUtils.showMessage(getActivity(), "Player won!");
+        if (mBattleManager.getBattleStatus() != BattleManager.BattleStatus.NOT_FINISHED) {
+            if (mBattleManager.getBattleStatus() == BattleManager.BattleStatus.DRAW) {
+                UiUtils.showMessage(getActivity(), "Draw!");
+            } else if (mBattleManager.getBattleStatus() == BattleManager.BattleStatus.ENEMY_WON) {
+                UiUtils.showMessage(getActivity(), "Enemy won!");
+            } else if (mBattleManager.getBattleStatus() == BattleManager.BattleStatus.PLAYER_WON) {
+                UiUtils.showMessage(getActivity(), "Player won!");
+                mLevel.isCompleted = true;
+                mLevel.save();
+            }
+            getActivity().getSupportFragmentManager().popBackStack();
         }
-    }
-
-    private MainActivity getMainActivity() {
-        return (MainActivity) getActivity();
     }
 }

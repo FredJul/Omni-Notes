@@ -42,6 +42,8 @@ import java.util.Calendar;
 
 public class SnoozeActivity extends FragmentActivity implements OnReminderPickedListener, OnDateSetListener, OnTimeSetListener {
 
+    private static final int INTENT_ALARM_CODE = 12345;
+
     private Task mTask;
     private OnDateSetListener mOnDateSetListener;
     private OnTimeSetListener mOnTimeSetListener;
@@ -54,9 +56,7 @@ public class SnoozeActivity extends FragmentActivity implements OnReminderPicked
         mTask = Parcels.unwrap(getIntent().getParcelableExtra(Constants.INTENT_TASK));
 
         // If an alarm has been fired a notification must be generated
-        if (Constants.ACTION_DISMISS.equals(getIntent().getAction())) {
-            finish();
-        } else if (Constants.ACTION_SNOOZE.equals(getIntent().getAction())) {
+        if (Constants.ACTION_SNOOZE.equals(getIntent().getAction())) {
             String snoozeDelay = PrefUtils.getString("settings_notification_snooze_delay", "10");
             long newAlarm = Calendar.getInstance().getTimeInMillis() + Integer.parseInt(snoozeDelay) * 60 * 1000;
             setAlarm(mTask, newAlarm);
@@ -69,7 +69,7 @@ public class SnoozeActivity extends FragmentActivity implements OnReminderPicked
             mOnTimeSetListener = reminderPicker;
         } else {
             Intent intent = new Intent(this, MainActivity.class);
-            intent.putExtra(Constants.INTENT_KEY, mTask.id);
+            intent.putExtra(Constants.INTENT_TASK_ID, mTask.id);
             intent.setAction(Constants.ACTION_NOTIFICATION_CLICK);
             startActivity(intent);
         }
@@ -85,7 +85,7 @@ public class SnoozeActivity extends FragmentActivity implements OnReminderPicked
     private void setAlarm(Task task, long newAlarm) {
         Intent intent = new Intent(this, AlarmReceiver.class);
         intent.putExtra(Constants.INTENT_TASK, Parcels.wrap(task));
-        PendingIntent sender = PendingIntent.getBroadcast(this, Constants.INTENT_ALARM_CODE, intent,
+        PendingIntent sender = PendingIntent.getBroadcast(this, INTENT_ALARM_CODE, intent,
                 PendingIntent.FLAG_CANCEL_CURRENT);
         AlarmManager am = (AlarmManager) this.getSystemService(ALARM_SERVICE);
         am.set(AlarmManager.RTC_WAKEUP, newAlarm, sender);

@@ -126,6 +126,15 @@ public class DetailFragment extends Fragment implements OnReminderPickedListener
     private View mToggleChecklistView;
     private FloatingActionButton mFab;
 
+    public static DetailFragment newInstance(Task task) {
+        DetailFragment fragment = new DetailFragment();
+        Bundle args = new Bundle();
+        args.putParcelable(Constants.INTENT_TASK, Parcels.wrap(task));
+        fragment.setArguments(args);
+
+        return fragment;
+    }
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View layout = inflater.inflate(R.layout.fragment_detail, container, false);
@@ -211,9 +220,8 @@ public class DetailFragment extends Fragment implements OnReminderPickedListener
         Intent i = getActivity().getIntent();
 
         // Action called from home shortcut
-        if (Constants.ACTION_SHORTCUT.equals(i.getAction())
-                || Constants.ACTION_NOTIFICATION_CLICK.equals(i.getAction())) {
-            mOriginalTask = DbHelper.getTask(i.getLongExtra(Constants.INTENT_KEY, 0));
+        if (Constants.ACTION_NOTIFICATION_CLICK.equals(i.getAction())) {
+            mOriginalTask = DbHelper.getTask(i.getLongExtra(Constants.INTENT_TASK_ID, 0));
             // Checks if the note pointed from the shortcut has been deleted
             if (mOriginalTask == null) {
                 UiUtils.showMessage(getActivity(), R.string.shortcut_task_deleted);
@@ -225,8 +233,7 @@ public class DetailFragment extends Fragment implements OnReminderPickedListener
         }
 
         // Check if is launched from a widget
-        if (Constants.ACTION_WIDGET.equals(i.getAction())
-                || Constants.ACTION_TAKE_PHOTO.equals(i.getAction())) {
+        if (Constants.ACTION_WIDGET.equals(i.getAction())) {
 
             //  with tags to set tag
             if (i.hasExtra(Constants.INTENT_WIDGET)) {

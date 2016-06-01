@@ -1,8 +1,12 @@
 package net.fred.taskgame.hero.models;
 
+import android.util.SparseBooleanArray;
+
 import com.google.gson.annotations.Expose;
+import com.raizlabs.android.dbflow.annotation.Column;
 import com.raizlabs.android.dbflow.annotation.PrimaryKey;
 import com.raizlabs.android.dbflow.annotation.Table;
+import com.raizlabs.android.dbflow.sql.language.Select;
 import com.raizlabs.android.dbflow.structure.BaseModel;
 
 import org.parceler.Parcel;
@@ -14,52 +18,68 @@ import java.util.List;
 @Table(database = AppDatabase.class)
 public class Level extends BaseModel {
 
-    private transient static List<Level> sAllLevelsList = new ArrayList<>();
+    private final static List<Level> ALL_LEVELS_LIST = new ArrayList<>();
 
     @PrimaryKey
     @Expose
     public int levelNumber;
 
+    @Column
+    @Expose
+    public boolean isCompleted;
+
     public transient List<Card> enemyCards = new ArrayList<>();
 
     public static List<Level> getAllLevelsList() {
-        return sAllLevelsList;
+        return ALL_LEVELS_LIST;
     }
 
     public static void populate() {
+        ALL_LEVELS_LIST.clear();
+
+        SparseBooleanArray completedList = new SparseBooleanArray();
+        for (Level level : new Select().from(Level.class).queryList()) {
+            completedList.append(level.levelNumber, level.isCompleted);
+        }
+
         Level level = new Level();
         level.levelNumber = 1;
+        level.isCompleted = completedList.get(level.levelNumber);
         level.enemyCards.add(Card.getAllCardsMap().get(Card.CREATURE_SKELETON_ARCHER));
-        sAllLevelsList.add(level);
+        ALL_LEVELS_LIST.add(level);
 
         level = new Level();
         level.levelNumber = 2;
+        level.isCompleted = completedList.get(level.levelNumber);
         level.enemyCards.add(Card.getAllCardsMap().get(Card.CREATURE_ORC_ARCHER));
         level.enemyCards.add(Card.getAllCardsMap().get(Card.CREATURE_SKELETON_ARCHER));
-        sAllLevelsList.add(level);
+        ALL_LEVELS_LIST.add(level);
 
         level = new Level();
         level.levelNumber = 3;
+        level.isCompleted = completedList.get(level.levelNumber);
         level.enemyCards.add(Card.getAllCardsMap().get(Card.CREATURE_ORC_ARCHER));
         level.enemyCards.add(Card.getAllCardsMap().get(Card.CREATURE_SKELETON_ARCHER));
         level.enemyCards.add(Card.getAllCardsMap().get(Card.CREATURE_ORC_ARCHER));
-        sAllLevelsList.add(level);
+        ALL_LEVELS_LIST.add(level);
 
         level = new Level();
         level.levelNumber = 4;
+        level.isCompleted = completedList.get(level.levelNumber);
         level.enemyCards.add(Card.getAllCardsMap().get(Card.CREATURE_ORC_ARCHER));
         level.enemyCards.add(Card.getAllCardsMap().get(Card.CREATURE_SKELETON_ARCHER));
         level.enemyCards.add(Card.getAllCardsMap().get(Card.CREATURE_ORC_ARCHER));
         level.enemyCards.add(Card.getAllCardsMap().get(Card.CREATURE_SKELETON_ARCHER));
-        sAllLevelsList.add(level);
+        ALL_LEVELS_LIST.add(level);
 
         level = new Level();
         level.levelNumber = 5;
+        level.isCompleted = completedList.get(level.levelNumber);
         level.enemyCards.add(Card.getAllCardsMap().get(Card.CREATURE_ORC_ARCHER));
         level.enemyCards.add(Card.getAllCardsMap().get(Card.CREATURE_SKELETON_ARCHER));
         level.enemyCards.add(Card.getAllCardsMap().get(Card.CREATURE_ORC_ARCHER));
         level.enemyCards.add(Card.getAllCardsMap().get(Card.CREATURE_SKELETON_ARCHER));
         level.enemyCards.add(Card.getAllCardsMap().get(Card.CREATURE_ORC_ARCHER));
-        sAllLevelsList.add(level);
+        ALL_LEVELS_LIST.add(level);
     }
 }

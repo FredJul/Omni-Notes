@@ -79,9 +79,6 @@ public class MainActivity extends BaseGameActivity implements FragmentManager.On
     private static final int REQUEST_CODE_CATEGORY = 2;
     private static final int REQUEST_CODE_QUESTS = 3;
 
-    public final String FRAGMENT_LIST_TAG = "FRAGMENT_LIST_TAG";
-    public final String FRAGMENT_DETAIL_TAG = "FRAGMENT_DETAIL_TAG";
-
     private FragmentManager mFragmentManager;
 
     @BindView(R.id.toolbar)
@@ -165,9 +162,9 @@ public class MainActivity extends BaseGameActivity implements FragmentManager.On
 
         mFragmentManager = getSupportFragmentManager();
 
-        if (mFragmentManager.findFragmentByTag(FRAGMENT_LIST_TAG) == null) {
+        if (mFragmentManager.findFragmentByTag(ListFragment.class.getName()) == null) {
             FragmentTransaction fragmentTransaction = mFragmentManager.beginTransaction();
-            fragmentTransaction.add(R.id.fragment_container, new ListFragment(), FRAGMENT_LIST_TAG).commit();
+            fragmentTransaction.add(R.id.fragment_container, new ListFragment(), ListFragment.class.getName()).commit();
         }
 
         // Handling of Intent actions
@@ -557,7 +554,7 @@ public class MainActivity extends BaseGameActivity implements FragmentManager.On
      * Finishes multiselection mode started by ListFragment
      */
     public void finishActionMode() {
-        ListFragment fragment = (ListFragment) mFragmentManager.findFragmentByTag(FRAGMENT_LIST_TAG);
+        ListFragment fragment = (ListFragment) mFragmentManager.findFragmentByTag(ListFragment.class.getName());
         if (fragment != null) {
             fragment.finishActionMode();
         }
@@ -571,7 +568,7 @@ public class MainActivity extends BaseGameActivity implements FragmentManager.On
         if (receivedIntent(i)) {
             Task task = Parcels.unwrap(i.getParcelableExtra(Constants.INTENT_TASK));
             if (task == null) {
-                task = DbHelper.getTask(i.getLongExtra(Constants.INTENT_KEY, 0));
+                task = DbHelper.getTask(i.getLongExtra(Constants.INTENT_TASK_ID, 0));
             }
             // Checks if the same note is already opened to avoid to open again
             if (task != null && isTaskAlreadyOpened(task)) {
@@ -591,10 +588,8 @@ public class MainActivity extends BaseGameActivity implements FragmentManager.On
     }
 
     private boolean receivedIntent(Intent i) {
-        return Constants.ACTION_SHORTCUT.equals(i.getAction())
-                || Constants.ACTION_NOTIFICATION_CLICK.equals(i.getAction())
+        return Constants.ACTION_NOTIFICATION_CLICK.equals(i.getAction())
                 || Constants.ACTION_WIDGET.equals(i.getAction())
-                || Constants.ACTION_TAKE_PHOTO.equals(i.getAction())
                 || ((Intent.ACTION_SEND.equals(i.getAction())
                 || Intent.ACTION_SEND_MULTIPLE.equals(i.getAction())
                 || Constants.INTENT_GOOGLE_NOW.equals(i.getAction()))
@@ -604,28 +599,19 @@ public class MainActivity extends BaseGameActivity implements FragmentManager.On
 
 
     private boolean isTaskAlreadyOpened(Task task) {
-        DetailFragment detailFragment = (DetailFragment) mFragmentManager.findFragmentByTag(FRAGMENT_DETAIL_TAG);
+        DetailFragment detailFragment = (DetailFragment) mFragmentManager.findFragmentByTag(DetailFragment.class.getName());
         return detailFragment != null && detailFragment.getCurrentTask().id == task.id;
     }
 
     public void switchToList() {
         FragmentTransaction transaction = mFragmentManager.beginTransaction();
         UiUtils.animateTransition(transaction, UiUtils.TransitionType.TRANSITION_FADE_IN);
-        ListFragment mListFragment = new ListFragment();
-        transaction.replace(R.id.fragment_container, mListFragment, FRAGMENT_LIST_TAG).addToBackStack(FRAGMENT_DETAIL_TAG).commitAllowingStateLoss();
+        transaction.replace(R.id.fragment_container, new ListFragment(), ListFragment.class.getName()).addToBackStack(null).commitAllowingStateLoss();
     }
 
     public void switchToDetail(Task task) {
         FragmentTransaction transaction = mFragmentManager.beginTransaction();
         UiUtils.animateTransition(transaction, UiUtils.TransitionType.TRANSITION_FADE_IN);
-        DetailFragment mDetailFragment = new DetailFragment();
-        Bundle b = new Bundle();
-        b.putParcelable(Constants.INTENT_TASK, Parcels.wrap(task));
-        mDetailFragment.setArguments(b);
-        if (mFragmentManager.findFragmentByTag(FRAGMENT_DETAIL_TAG) == null) {
-            transaction.replace(R.id.fragment_container, mDetailFragment, FRAGMENT_DETAIL_TAG).addToBackStack(FRAGMENT_LIST_TAG).commitAllowingStateLoss();
-        } else {
-            transaction.replace(R.id.fragment_container, mDetailFragment, FRAGMENT_DETAIL_TAG).addToBackStack(FRAGMENT_DETAIL_TAG).commitAllowingStateLoss();
-        }
+        transaction.replace(R.id.fragment_container, DetailFragment.newInstance(task), DetailFragment.class.getName()).addToBackStack(null).commitAllowingStateLoss();
     }
 }

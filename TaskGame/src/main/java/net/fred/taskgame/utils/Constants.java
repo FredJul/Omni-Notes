@@ -20,20 +20,16 @@ public interface Constants {
 
     String TAG = "TaskGame";
 
-    String INTENT_KEY = "task_id";
+    String INTENT_TASK_ID = "task_id";
     String INTENT_TASK = "task";
-    int INTENT_ALARM_CODE = 12345;
     String INTENT_CATEGORY = "category";
     String INTENT_GOOGLE_NOW = "com.google.android.gm.action.AUTO_SEND";
     String INTENT_WIDGET = "widget_id";
 
     // Custom intent actions
-    String ACTION_DISMISS = "action_dismiss";
     String ACTION_SNOOZE = "action_snooze";
     String ACTION_POSTPONE = "action_postpone";
-    String ACTION_SHORTCUT = "action_shortcut";
     String ACTION_WIDGET = "action_widget";
-    String ACTION_TAKE_PHOTO = "action_widget_take_photo";
     String ACTION_WIDGET_SHOW_LIST = "action_widget_show_list";
     String ACTION_NOTIFICATION_CLICK = "action_notification_click";
 

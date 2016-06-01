@@ -69,6 +69,12 @@ public class LevelSelectionAdapter extends RecyclerView.Adapter<LevelSelectionAd
                 mItemListener.onItemClicked(position);
             }
         });
+
+        if (level.isCompleted) {
+            holder.mLevelNumber.setBackgroundResource(R.color.info);
+        } else {
+            holder.mLevelNumber.setBackgroundResource(R.color.warning);
+        }
     }
 
     @Override

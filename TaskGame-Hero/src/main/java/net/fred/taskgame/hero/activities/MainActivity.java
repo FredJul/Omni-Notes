@@ -9,6 +9,7 @@ import net.fred.taskgame.hero.fragments.BattleFragment;
 import net.fred.taskgame.hero.fragments.LevelSelectionFragment;
 import net.fred.taskgame.hero.models.Card;
 import net.fred.taskgame.hero.models.Level;
+import net.fred.taskgame.hero.utils.UiUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,7 +19,6 @@ import butterknife.ButterKnife;
 public class MainActivity extends BaseGameActivity {
 
     private FragmentManager mFragmentManager;
-    public final String FRAGMENT_TAG = "FRAGMENT_TAG";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,19 +31,20 @@ public class MainActivity extends BaseGameActivity {
 
         if (savedInstanceState == null) {
             FragmentTransaction fragmentTransaction = mFragmentManager.beginTransaction();
-            fragmentTransaction.add(R.id.fragment_container, new LevelSelectionFragment(), FRAGMENT_TAG).commit();
+            fragmentTransaction.add(R.id.fragment_container, new LevelSelectionFragment(), LevelSelectionFragment.class.getName()).commit();
         }
     }
 
-    public void switchToLevel(Level level) {
+    public void startBattle(Level level) {
         List<Card> playerCards = new ArrayList<>();
         playerCards.add(Card.getAllCardsMap().get(Card.CREATURE_SKELETON_ARCHER));
         playerCards.add(Card.getAllCardsMap().get(Card.CREATURE_ORC_ARCHER));
         playerCards.add(Card.getAllCardsMap().get(Card.SUPPORT_WEAPON_EROSION));
         playerCards.add(Card.getAllCardsMap().get(Card.SUPPORT_POWER_POTION));
 
-        FragmentTransaction fragmentTransaction = mFragmentManager.beginTransaction();
-        fragmentTransaction.replace(R.id.fragment_container, BattleFragment.newInstance(level, playerCards), FRAGMENT_TAG).commit();
+        FragmentTransaction transaction = mFragmentManager.beginTransaction();
+        UiUtils.animateTransition(transaction, UiUtils.TransitionType.TRANSITION_FADE_IN);
+        transaction.replace(R.id.fragment_container, BattleFragment.newInstance(level, playerCards), BattleFragment.class.getName()).addToBackStack(null).commitAllowingStateLoss();
     }
 
     @Override
