@@ -91,7 +91,7 @@
     <string name="quests">Quêtes</string>
     <string name="leaderboard">Classement</string>
     <string name="sign_out_confirmation">Voulez-vous vous déconnecter ?</string>
-    <string name="not_enough_points">Vous avez seulement %s feuilles… Désolé</string>
-    <string name="points_needed">%s feuilles vont être dépensées. Voulez-vous continuer?</string>
+    <string name="not_enough_points">Vous avez seulement %d feuilles… Désolé</string>
+    <string name="points_needed">%d feuilles vont être dépensées. Voulez-vous continuer?</string>
 
 </resources>

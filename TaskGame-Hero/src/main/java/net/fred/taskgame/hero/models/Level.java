@@ -34,6 +34,26 @@ public class Level extends BaseModel {
         return ALL_LEVELS_LIST;
     }
 
+    public static int getCorrespondingDeckSlots() {
+        int lastCompletedLevel = 0;
+        for (Level level : ALL_LEVELS_LIST) {
+            if (!level.isCompleted) {
+                break;
+            }
+            lastCompletedLevel++;
+        }
+
+        if (lastCompletedLevel < 1) {
+            return 2;
+        } else if (lastCompletedLevel < 2) {
+            return 3;
+        } else if (lastCompletedLevel < 4) {
+            return 6;
+        } else {
+            return 8;
+        }
+    }
+
     public static void populate() {
         ALL_LEVELS_LIST.clear();
 
@@ -51,7 +71,7 @@ public class Level extends BaseModel {
         level = new Level();
         level.levelNumber = 2;
         level.isCompleted = completedList.get(level.levelNumber);
-        level.enemyCards.add(Card.getAllCardsMap().get(Card.CREATURE_ORC_ARCHER));
+        level.enemyCards.add(Card.getAllCardsMap().get(Card.CREATURE_SKELETON_ARCHER));
         level.enemyCards.add(Card.getAllCardsMap().get(Card.CREATURE_SKELETON_ARCHER));
         ALL_LEVELS_LIST.add(level);
 
@@ -60,7 +80,6 @@ public class Level extends BaseModel {
         level.isCompleted = completedList.get(level.levelNumber);
         level.enemyCards.add(Card.getAllCardsMap().get(Card.CREATURE_ORC_ARCHER));
         level.enemyCards.add(Card.getAllCardsMap().get(Card.CREATURE_SKELETON_ARCHER));
-        level.enemyCards.add(Card.getAllCardsMap().get(Card.CREATURE_ORC_ARCHER));
         ALL_LEVELS_LIST.add(level);
 
         level = new Level();
@@ -69,7 +88,6 @@ public class Level extends BaseModel {
         level.enemyCards.add(Card.getAllCardsMap().get(Card.CREATURE_ORC_ARCHER));
         level.enemyCards.add(Card.getAllCardsMap().get(Card.CREATURE_SKELETON_ARCHER));
         level.enemyCards.add(Card.getAllCardsMap().get(Card.CREATURE_ORC_ARCHER));
-        level.enemyCards.add(Card.getAllCardsMap().get(Card.CREATURE_SKELETON_ARCHER));
         ALL_LEVELS_LIST.add(level);
 
         level = new Level();
@@ -79,7 +97,6 @@ public class Level extends BaseModel {
         level.enemyCards.add(Card.getAllCardsMap().get(Card.CREATURE_SKELETON_ARCHER));
         level.enemyCards.add(Card.getAllCardsMap().get(Card.CREATURE_ORC_ARCHER));
         level.enemyCards.add(Card.getAllCardsMap().get(Card.CREATURE_SKELETON_ARCHER));
-        level.enemyCards.add(Card.getAllCardsMap().get(Card.CREATURE_ORC_ARCHER));
         ALL_LEVELS_LIST.add(level);
     }
 }

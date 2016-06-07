@@ -48,6 +48,20 @@
             android:layout_height="match_parent"
             android:layout_marginTop="?attr/actionBarSize" />
 
+        <Button
+            android:id="@+id/buy_cards"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|start"
+            android:text="Buy cards" />
+
+        <Button
+            android:id="@+id/compose_deck"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|end"
+            android:text="Select cards" />
+
     </android.support.design.widget.CoordinatorLayout>
 
     <android.support.design.widget.NavigationView

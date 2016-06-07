@@ -27,6 +27,12 @@ public class RequestPointsActivity extends Activity {
                     .setMessage(getString(R.string.not_enough_points, currentPoints))
                     .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int id) {
+                            dialog.cancel();
+                        }
+                    })
+                    .setOnCancelListener(new DialogInterface.OnCancelListener() {
+                        @Override
+                        public void onCancel(DialogInterface dialog) {
                             setResult(Activity.RESULT_CANCELED);
                             finish();
                         }
@@ -45,6 +51,12 @@ public class RequestPointsActivity extends Activity {
                     })
                     .setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int id) {
+                            dialog.cancel();
+                        }
+                    })
+                    .setOnCancelListener(new DialogInterface.OnCancelListener() {
+                        @Override
+                        public void onCancel(DialogInterface dialog) {
                             setResult(Activity.RESULT_CANCELED);
                             finish();
                         }

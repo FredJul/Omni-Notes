@@ -29,7 +29,7 @@
             android:src="@{card.iconResId}" />
 
         <com.github.jivimberg.library.AutoResizeTextView
-            android:id="@+id/level"
+            android:id="@+id/needed_slots"
             android:layout_width="25dp"
             android:layout_height="20dp"
             android:layout_marginStart="120dp"
@@ -41,7 +41,7 @@
             android:textSize="15dp"
             tools:ignore="SpUsage"
             tools:text="30"
-            android:text="@{String.valueOf(card.level)}" />
+            android:text="@{String.valueOf(card.neededSlots)}" />
 
         <com.github.jivimberg.library.AutoResizeTextView
             android:id="@+id/name"

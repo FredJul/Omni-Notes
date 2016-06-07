@@ -6,15 +6,15 @@ import android.support.v4.app.FragmentTransaction;
 
 import net.fred.taskgame.hero.R;
 import net.fred.taskgame.hero.fragments.BattleFragment;
+import net.fred.taskgame.hero.fragments.BuyCardsFragment;
+import net.fred.taskgame.hero.fragments.ComposeDeckFragment;
 import net.fred.taskgame.hero.fragments.LevelSelectionFragment;
 import net.fred.taskgame.hero.models.Card;
 import net.fred.taskgame.hero.models.Level;
 import net.fred.taskgame.hero.utils.UiUtils;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 
 public class MainActivity extends BaseGameActivity {
 
@@ -36,15 +36,23 @@ public class MainActivity extends BaseGameActivity {
     }
 
     public void startBattle(Level level) {
-        List<Card> playerCards = new ArrayList<>();
-        playerCards.add(Card.getAllCardsMap().get(Card.CREATURE_SKELETON_ARCHER));
-        playerCards.add(Card.getAllCardsMap().get(Card.CREATURE_ORC_ARCHER));
-        playerCards.add(Card.getAllCardsMap().get(Card.SUPPORT_WEAPON_EROSION));
-        playerCards.add(Card.getAllCardsMap().get(Card.SUPPORT_POWER_POTION));
-
         FragmentTransaction transaction = mFragmentManager.beginTransaction();
         UiUtils.animateTransition(transaction, UiUtils.TransitionType.TRANSITION_FADE_IN);
-        transaction.replace(R.id.fragment_container, BattleFragment.newInstance(level, playerCards), BattleFragment.class.getName()).addToBackStack(null).commitAllowingStateLoss();
+        transaction.replace(R.id.fragment_container, BattleFragment.newInstance(level, Card.getDeckCardList()), BattleFragment.class.getName()).addToBackStack(null).commitAllowingStateLoss();
+    }
+
+    @OnClick(R.id.buy_cards)
+    public void onViewMyCardsButtonClicked() {
+        FragmentTransaction transaction = mFragmentManager.beginTransaction();
+        UiUtils.animateTransition(transaction, UiUtils.TransitionType.TRANSITION_FADE_IN);
+        transaction.replace(R.id.fragment_container, new BuyCardsFragment(), BuyCardsFragment.class.getName()).addToBackStack(null).commitAllowingStateLoss();
+    }
+
+    @OnClick(R.id.compose_deck)
+    public void onComposeDeckButtonClicked() {
+        FragmentTransaction transaction = mFragmentManager.beginTransaction();
+        UiUtils.animateTransition(transaction, UiUtils.TransitionType.TRANSITION_FADE_IN);
+        transaction.replace(R.id.fragment_container, new ComposeDeckFragment(), ComposeDeckFragment.class.getName()).addToBackStack(null).commitAllowingStateLoss();
     }
 
     @Override

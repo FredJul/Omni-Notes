@@ -8,14 +8,14 @@ import android.view.View;
 import android.widget.FrameLayout;
 
 import net.fred.taskgame.hero.R;
-import net.fred.taskgame.hero.databinding.CreatureCardViewBinding;
-import net.fred.taskgame.hero.databinding.SupportCardViewBinding;
+import net.fred.taskgame.hero.databinding.ViewCreatureCardBinding;
+import net.fred.taskgame.hero.databinding.ViewSupportCardBinding;
 import net.fred.taskgame.hero.models.Card;
 
 public class GameCardView extends FrameLayout {
 
-    private CreatureCardViewBinding mCreatureDataBinding;
-    private SupportCardViewBinding mSupportDataBinding;
+    private ViewCreatureCardBinding mCreatureDataBinding;
+    private ViewSupportCardBinding mSupportDataBinding;
 
     public GameCardView(Context context) {
         super(context);
@@ -35,8 +35,8 @@ public class GameCardView extends FrameLayout {
     private void inflateView() {
         LayoutInflater inflater = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         if (!isInEditMode()) {
-            mCreatureDataBinding = DataBindingUtil.inflate(inflater, R.layout.creature_card_view, this, true);
-            mSupportDataBinding = DataBindingUtil.inflate(inflater, R.layout.support_card_view, this, true);
+            mCreatureDataBinding = DataBindingUtil.inflate(inflater, R.layout.view_creature_card, this, true);
+            mSupportDataBinding = DataBindingUtil.inflate(inflater, R.layout.view_support_card, this, true);
             getChildAt(1).setVisibility(View.GONE);
         }
     }

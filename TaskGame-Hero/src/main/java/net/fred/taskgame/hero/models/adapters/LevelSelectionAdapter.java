@@ -54,7 +54,7 @@ public class LevelSelectionAdapter extends RecyclerView.Adapter<LevelSelectionAd
     @Override
     public LevelViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         final LayoutInflater inflater = LayoutInflater.from(parent.getContext());
-        final View v = inflater.inflate(R.layout.level_item, parent, false);
+        final View v = inflater.inflate(R.layout.item_level, parent, false);
         return new LevelViewHolder(v);
     }
 

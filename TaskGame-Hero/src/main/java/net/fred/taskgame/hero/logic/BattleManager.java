@@ -12,10 +12,10 @@ public class BattleManager {
 
     public enum BattleStatus {NOT_FINISHED, DRAW, ENEMY_WON, PLAYER_WON}
 
-    private List<Card> mRemainingEnemyCards = new ArrayList<>();
-    private List<Card> mUsedEnemyCards = new ArrayList<>();
-    private List<Card> mRemainingPlayerCards = new ArrayList<>();
-    private List<Card> mUsedPlayerCards = new ArrayList<>();
+    List<Card> mRemainingEnemyCards = new ArrayList<>();
+    List<Card> mUsedEnemyCards = new ArrayList<>();
+    List<Card> mRemainingPlayerCards = new ArrayList<>();
+    List<Card> mUsedPlayerCards = new ArrayList<>();
 
     public List<Card> getRemainingEnemyCards() {
         return mRemainingEnemyCards;
