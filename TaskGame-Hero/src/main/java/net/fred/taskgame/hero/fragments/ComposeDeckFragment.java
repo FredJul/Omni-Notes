@@ -1,7 +1,6 @@
 package net.fred.taskgame.hero.fragments;
 
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -21,7 +20,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 
 
-public class ComposeDeckFragment extends Fragment {
+public class ComposeDeckFragment extends BaseFragment {
 
     @BindView(R.id.deck_slots)
     TextView mDeckSlots;
@@ -75,5 +74,10 @@ public class ComposeDeckFragment extends Fragment {
             }
         }
         return usedSlots;
+    }
+
+    @Override
+    protected int getMainMusicResId() {
+        return R.raw.main_theme;
     }
 }

@@ -1,7 +1,6 @@
 package net.fred.taskgame.hero.fragments;
 
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,7 +23,7 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 
 
-public class BattleFragment extends Fragment {
+public class BattleFragment extends BaseFragment {
 
     public static final String STATE_BATTLE_MANAGER = "STATE_BATTLE_MANAGER";
 
@@ -80,6 +79,11 @@ public class BattleFragment extends Fragment {
     public void onSaveInstanceState(Bundle outState) {
         outState.putParcelable(STATE_BATTLE_MANAGER, Parcels.wrap(mBattleManager));
         super.onSaveInstanceState(outState);
+    }
+
+    @Override
+    protected int getMainMusicResId() {
+        return R.raw.battle_theme;
     }
 
     @OnClick(R.id.play_button)

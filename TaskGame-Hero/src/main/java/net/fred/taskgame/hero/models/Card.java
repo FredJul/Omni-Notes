@@ -27,8 +27,9 @@ public class Card extends BaseModel implements Cloneable {
 
     public enum SupportAction {PLAYER_ATTACK_MULT, PLAYER_DEFENSE_MULT, ENEMY_ATTACK_DIV}
 
-    public final static int CREATURE_ORC_ARCHER = 0;
+    public final static int CREATURE_TROLL = 0;
     public final static int CREATURE_SKELETON_ARCHER = 1;
+    public final static int CREATURE_TREE = 2;
 
     public final static int SUPPORT_POWER_POTION = 1000;
     public final static int SUPPORT_WEAPON_EROSION = 1001;
@@ -144,16 +145,16 @@ public class Card extends BaseModel implements Cloneable {
         }
 
         Card card = new Card();
-        card.id = CREATURE_ORC_ARCHER;
+        card.id = CREATURE_TROLL;
         card.isObtained = true; // The only card you get for free at the beginning
         card.isInDeck = inDeckList.get(card.id);
         card.price = 0;
-        card.name = "Orc Archer";
+        card.name = "Troll";
         card.neededSlots = 2;
         card.attack = 2;
         card.defense = 4;
-        card.desc = "You already dead!";
-        card.iconResId = R.drawable.orc_archer;
+        card.desc = "It's fascinated to see what we can do with some little piece of rocks";
+        card.iconResId = R.drawable.troll;
         ALL_CARDS_MAP.append(card.id, card);
 
         card = new Card();
@@ -165,8 +166,21 @@ public class Card extends BaseModel implements Cloneable {
         card.neededSlots = 1;
         card.attack = 1;
         card.defense = 4;
-        card.desc = "Deads are not deads, and strangely know how to send arrows";
+        card.desc = "Deads are not totally dead, and strangely know how to send arrows in your face";
         card.iconResId = R.drawable.skeleton_archer;
+        ALL_CARDS_MAP.append(card.id, card);
+
+        card = new Card();
+        card.id = CREATURE_TREE;
+        card.isObtained = obtainedList.get(card.id);
+        card.isInDeck = inDeckList.get(card.id);
+        card.price = 70;
+        card.name = "Enchanted Tree";
+        card.neededSlots = 2;
+        card.attack = 2;
+        card.defense = 5;
+        card.desc = "Nature is beautiful, except maybe when it tries to kill you";
+        card.iconResId = R.drawable.enchanted_tree;
         ALL_CARDS_MAP.append(card.id, card);
 
         card = new Card();

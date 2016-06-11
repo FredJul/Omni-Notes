@@ -1,6 +1,8 @@
 package net.fred.taskgame.hero.activities;
 
+import android.media.MediaPlayer;
 import android.os.Bundle;
+import android.support.annotation.RawRes;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 
@@ -14,11 +16,15 @@ import net.fred.taskgame.hero.models.Level;
 import net.fred.taskgame.hero.utils.UiUtils;
 
 import butterknife.ButterKnife;
-import butterknife.OnClick;
 
 public class MainActivity extends BaseGameActivity {
 
     private FragmentManager mFragmentManager;
+
+    private MediaPlayer mMediaPlayer;
+
+    @RawRes
+    private int mCurrentMusicResId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,21 +41,26 @@ public class MainActivity extends BaseGameActivity {
         }
     }
 
+    @Override
+    protected void onStop() {
+        super.onStop();
+
+        stopMusic();
+    }
+
     public void startBattle(Level level) {
         FragmentTransaction transaction = mFragmentManager.beginTransaction();
         UiUtils.animateTransition(transaction, UiUtils.TransitionType.TRANSITION_FADE_IN);
         transaction.replace(R.id.fragment_container, BattleFragment.newInstance(level, Card.getDeckCardList()), BattleFragment.class.getName()).addToBackStack(null).commitAllowingStateLoss();
     }
 
-    @OnClick(R.id.buy_cards)
-    public void onViewMyCardsButtonClicked() {
+    public void buyCards() {
         FragmentTransaction transaction = mFragmentManager.beginTransaction();
         UiUtils.animateTransition(transaction, UiUtils.TransitionType.TRANSITION_FADE_IN);
         transaction.replace(R.id.fragment_container, new BuyCardsFragment(), BuyCardsFragment.class.getName()).addToBackStack(null).commitAllowingStateLoss();
     }
 
-    @OnClick(R.id.compose_deck)
-    public void onComposeDeckButtonClicked() {
+    public void composeDeck() {
         FragmentTransaction transaction = mFragmentManager.beginTransaction();
         UiUtils.animateTransition(transaction, UiUtils.TransitionType.TRANSITION_FADE_IN);
         transaction.replace(R.id.fragment_container, new ComposeDeckFragment(), ComposeDeckFragment.class.getName()).addToBackStack(null).commitAllowingStateLoss();
@@ -63,5 +74,26 @@ public class MainActivity extends BaseGameActivity {
     @Override
     public void onSignInSucceeded() {
 
+    }
+
+    public void stopMusic() {
+        if (mMediaPlayer != null) {
+            mMediaPlayer.release();
+            mMediaPlayer = null;
+        }
+    }
+
+    public void playMusic(@RawRes int soundResId) {
+        if (soundResId == 0 || (mMediaPlayer != null && mMediaPlayer.isPlaying() && mCurrentMusicResId == soundResId)) {
+            return;
+        }
+
+        mCurrentMusicResId = soundResId;
+        stopMusic();
+
+        mMediaPlayer = MediaPlayer.create(this, soundResId);
+        mMediaPlayer.setLooping(true);
+
+        mMediaPlayer.start();
     }
 }

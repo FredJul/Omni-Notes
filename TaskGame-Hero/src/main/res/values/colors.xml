@@ -17,9 +17,9 @@
 <resources>
 
     <!-- Material -->
-    <color name="colorPrimary">#2aac7d</color>
-    <color name="colorPrimaryDark">#ff1d805c</color>
-    <color name="colorAccent">#ff218f67</color>
+    <color name="colorPrimary">#b18842</color>
+    <color name="colorPrimaryDark">#ac7c2a</color>
+    <color name="colorAccent">#935b2a</color>
 
     <color name="card_text_color">#DECD87</color>
 

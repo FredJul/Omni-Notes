@@ -1,5 +1,44 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.v7.widget.RecyclerView xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/recycler_view"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent" />
+    android:layout_height="match_parent">
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/recycler_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@+id/hero_portrait" />
+
+    <ImageView
+        android:id="@+id/hero_portrait"
+        android:layout_width="250dp"
+        android:layout_height="250dp"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentStart="true"
+        android:layout_gravity="bottom"
+        android:background="@drawable/hero_male"
+        android:scaleType="fitXY" />
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_alignTop="@+id/hero_portrait"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentEnd="true"
+        android:layout_toEndOf="@+id/hero_portrait"
+        android:gravity="center">
+
+        <Button
+            android:id="@+id/buy_cards"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Buy cards" />
+
+        <Button
+            android:id="@+id/compose_deck"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Select cards" />
+    </LinearLayout>
+</RelativeLayout>

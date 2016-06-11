@@ -1,7 +1,6 @@
 package net.fred.taskgame.hero.fragments;
 
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -10,16 +9,16 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import net.fred.taskgame.hero.R;
-import net.fred.taskgame.hero.activities.MainActivity;
 import net.fred.taskgame.hero.models.Level;
 import net.fred.taskgame.hero.models.adapters.LevelSelectionAdapter;
 import net.fred.taskgame.hero.models.adapters.RecyclerViewItemListener;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 
 
-public class LevelSelectionFragment extends Fragment {
+public class LevelSelectionFragment extends BaseFragment {
 
     @BindView(R.id.recycler_view)
     RecyclerView mRecyclerView;
@@ -44,7 +43,18 @@ public class LevelSelectionFragment extends Fragment {
         return layout;
     }
 
-    private MainActivity getMainActivity() {
-        return (MainActivity) getActivity();
+    @Override
+    protected int getMainMusicResId() {
+        return R.raw.main_theme;
+    }
+
+    @OnClick(R.id.buy_cards)
+    public void onBuyCardsButtonClicked() {
+        getMainActivity().buyCards();
+    }
+
+    @OnClick(R.id.compose_deck)
+    public void onComposeDeckButtonClicked() {
+        getMainActivity().composeDeck();
     }
 }
