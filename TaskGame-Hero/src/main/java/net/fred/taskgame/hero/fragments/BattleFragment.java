@@ -1,6 +1,7 @@
 package net.fred.taskgame.hero.fragments;
 
 import android.os.Bundle;
+import android.support.design.widget.BottomSheetBehavior;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -39,11 +40,15 @@ public class BattleFragment extends BaseFragment {
     @BindView(R.id.play_button)
     Button mPlayButton;
 
+    @BindView(R.id.card_list_scroll_view)
+    View mCardListScrollView;
+
     @BindView(R.id.card_list)
     LinearLayout mCardListLayout;
 
     private BattleManager mBattleManager = new BattleManager();
     private Level mLevel;
+    private BottomSheetBehavior mBottomSheetBehavior;
 
     public static BattleFragment newInstance(Level level, List<Card> playerCards) {
         BattleFragment fragment = new BattleFragment();
@@ -57,7 +62,7 @@ public class BattleFragment extends BaseFragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View layout = inflater.inflate(R.layout.fragment_detail, container, false);
+        View layout = inflater.inflate(R.layout.fragment_battle, container, false);
         ButterKnife.bind(this, layout);
 
         mLevel = Parcels.unwrap(getArguments().getParcelable(ARG_LEVEL));
@@ -69,6 +74,10 @@ public class BattleFragment extends BaseFragment {
             List<Card> playerCards = Parcels.unwrap(getArguments().getParcelable(ARG_PLAYER_CARDS));
             mBattleManager.addPlayerCards(playerCards);
         }
+
+        mBottomSheetBehavior = BottomSheetBehavior.from(mCardListScrollView);
+        mBottomSheetBehavior.setPeekHeight(300);
+        mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
 
         updateUI();
 
