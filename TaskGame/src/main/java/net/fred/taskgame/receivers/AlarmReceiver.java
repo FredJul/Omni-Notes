@@ -37,38 +37,38 @@ import org.parceler.Parcels;
 public class AlarmReceiver extends BroadcastReceiver {
 
     @Override
-    public void onReceive(Context mContext, Intent intent) {
+    public void onReceive(Context context, Intent intent) {
         try {
             Task task = Parcels.unwrap(intent.getExtras().getParcelable(Constants.INTENT_TASK));
-            createNotification(mContext, task);
+            createNotification(context, task);
         } catch (Exception e) {
-            Toast.makeText(mContext, e.getMessage(), Toast.LENGTH_LONG).show();
+            Toast.makeText(context, e.getMessage(), Toast.LENGTH_LONG).show();
         }
     }
 
-    private void createNotification(Context mContext, Task task) {
+    private void createNotification(Context context, Task task) {
         // Prepare text contents
         String title = task.title.length() > 0 ? task.title : task.content;
-        String alarmText = DateHelper.getDateTimeShort(mContext, task.alarmDate);
+        String alarmText = DateHelper.getDateTimeShort(context, task.alarmDate);
         String text = task.title.length() > 0 && task.content.length() > 0 ? task.content : alarmText;
 
-        Intent snoozeIntent = new Intent(mContext, SnoozeActivity.class);
+        Intent snoozeIntent = new Intent(context, SnoozeActivity.class);
         snoozeIntent.setAction(Constants.ACTION_SNOOZE);
         snoozeIntent.putExtra(Constants.INTENT_TASK, Parcels.wrap(task));
         snoozeIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        PendingIntent piSnooze = PendingIntent.getActivity(mContext, 0, snoozeIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+        PendingIntent piSnooze = PendingIntent.getActivity(context, 0, snoozeIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
-        Intent postponeIntent = new Intent(mContext, SnoozeActivity.class);
+        Intent postponeIntent = new Intent(context, SnoozeActivity.class);
         postponeIntent.setAction(Constants.ACTION_POSTPONE);
         postponeIntent.putExtra(Constants.INTENT_TASK, Parcels.wrap(task));
         snoozeIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        PendingIntent piPostpone = PendingIntent.getActivity(mContext, 0, postponeIntent,
+        PendingIntent piPostpone = PendingIntent.getActivity(context, 0, postponeIntent,
                 PendingIntent.FLAG_UPDATE_CURRENT);
 
-        String snoozeDelay = PrefUtils.getString("settings_notification_snooze_delay", "10");
+        long snoozeDelay = PrefUtils.getLong("settings_notification_snooze_delay", 10);
 
         // Next create the bundle and initialize it
-        Intent intent = new Intent(mContext, SnoozeActivity.class);
+        Intent intent = new Intent(context, SnoozeActivity.class);
         Bundle bundle = new Bundle();
         bundle.putParcelable(Constants.INTENT_TASK, Parcels.wrap(task));
         intent.putExtras(bundle);
@@ -79,19 +79,19 @@ public class AlarmReceiver extends BroadcastReceiver {
         intent.setAction(Constants.ACTION_NOTIFICATION_CLICK + Long.toString(System.currentTimeMillis()));
 
         // Creates the PendingIntent
-        PendingIntent notifyIntent = PendingIntent.getActivity(mContext, 0, intent,
+        PendingIntent notifyIntent = PendingIntent.getActivity(context, 0, intent,
                 PendingIntent.FLAG_UPDATE_CURRENT);
 
-        NotificationsHelper notificationsHelper = new NotificationsHelper(mContext);
-        notificationsHelper.createNotification(R.mipmap.ic_launcher, title, notifyIntent);
-        notificationsHelper.setLargeIcon(R.mipmap.ic_launcher).setMessage(text);
+        NotificationsHelper notificationsHelper = new NotificationsHelper(context)
+                .createNotification(R.drawable.ic_assignment_white_24dp, title, notifyIntent)
+                .setLargeIcon(R.mipmap.ic_launcher)
+                .setMessage(text);
 
         notificationsHelper.getBuilder().addAction(R.drawable.ic_snooze_reminder,
-                TextHelper.capitalize(mContext.getString(R.string.snooze)) +
-                        ": " + snoozeDelay, piSnooze)
+                TextHelper.capitalize(context.getString(R.string.snooze, snoozeDelay)), piSnooze)
                 .addAction(R.drawable.ic_reminder,
-                        TextHelper.capitalize(mContext.getString(R.string
-                                .add_reminder)), piPostpone);
+                        TextHelper.capitalize(context.getString(R.string
+                                .set_reminder)), piPostpone);
 
         // Ringtone options
         String ringtone = PrefUtils.getString("settings_notification_ringtone", null);

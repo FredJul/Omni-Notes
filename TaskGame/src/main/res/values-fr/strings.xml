@@ -42,7 +42,7 @@
     <string name="alarm_set_on">Rappel défini le %1s</string>
     <string name="discard_changes">Annuler les modifications</string>
     <string name="remove_reminder">Supprimer le rappel ?</string>
-    <string name="add_reminder">Ajouter un rappel</string>
+    <string name="set_reminder">Choisir rappel</string>
     <string name="categories">Catégories</string>
     <string name="add_category">Ajouter une catégorie</string>
     <string name="category_title">Titre</string>
@@ -65,7 +65,7 @@
     <string name="checklist_item_hint">Nouvel élément</string>
     <string name="checklist_keep_checked">Garder les éléments cochés</string>
     <string name="checklist_keep_symbols">Garder les coches</string>
-    <string name="snooze">Rappeler plus tard</string>
+    <string name="snooze">Dans %d mins</string>
     <string name="shortcut_task_deleted">Le raccourci pointe vers une tâche supprimée</string>
     <string name="delete_all_finished_tasks">Supprimer toutes les tâches finies</string>
     <string name="delete_finished_tasks_confirmation">Confirmer la suppression de toutes les tâches finies ?</string>
@@ -77,10 +77,10 @@
     <string name="drawer_open">volet ouvert</string>
     <string name="drawer_close">volet fermé</string>
     <string name="settings_enable_vibration">Vibration</string>
-    <string name="settings_checked_items_behavior">Checklists</string>
-    <string name="settings_checked_items_behavior_summary">What to do when an item is checked?</string>
-    <string name="settings_notification_ringtone">Ringtone</string>
-    <string name="settings_notification_snooze_delay">Second reminder delay</string>
+    <string name="settings_checked_items_behavior">Liste à cocher</string>
+    <string name="settings_checked_items_behavior_summary">Que faire quand un élément est coché ?</string>
+    <string name="settings_notification_ringtone">Sonnerie</string>
+    <string name="settings_notification_snooze_delay">Délais de rappel par défaut (en minutes)</string>
     <string name="open_link_dialog_title">Voulez-vous ouvrir ou modifier le lien?</string>
     <string name="open_link">Ouvrir</string>
     <string name="modify_link">Modifier</string>

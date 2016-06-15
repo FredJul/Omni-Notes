@@ -17,135 +17,79 @@
 
 package net.fred.taskgame.utils.date;
 
+import android.app.DatePickerDialog;
 import android.app.DatePickerDialog.OnDateSetListener;
+import android.app.TimePickerDialog;
 import android.app.TimePickerDialog.OnTimeSetListener;
-import android.os.Bundle;
-import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentActivity;
 import android.text.format.DateFormat;
 import android.widget.DatePicker;
-
-import com.fourmob.datetimepicker.date.DatePickerDialog;
-import com.sleepbot.datetimepicker.time.RadialPickerLayout;
-import com.sleepbot.datetimepicker.time.TimePickerDialog;
+import android.widget.TimePicker;
 
 import net.fred.taskgame.models.listeners.OnReminderPickedListener;
-import net.fred.taskgame.utils.Constants;
 
 import java.util.Calendar;
 
 public class ReminderPickers implements OnDateSetListener, OnTimeSetListener {
 
-    public static final int TYPE_GOOGLE = 0;
-    public static final int TYPE_AOSP = 1;
-
     private final FragmentActivity mActivity;
     private final OnReminderPickedListener mOnReminderPickedListener;
-    private final int pickerType;
 
-    private int reminderYear;
-    private int reminderMonth;
-    private int reminderDay;
+    private int mReminderYear;
+    private int mReminderMonth;
+    private int mReminderDay;
 
-    private boolean timePickerCalledAlready = false;
-    private long presetDateTime;
+    private long mPresetDateTime;
 
 
-    public ReminderPickers(FragmentActivity mActivity,
-                           OnReminderPickedListener mOnReminderPickedListener, int pickerType) {
-        this.mActivity = mActivity;
-        this.mOnReminderPickedListener = mOnReminderPickedListener;
-        this.pickerType = pickerType;
+    public ReminderPickers(FragmentActivity activity, OnReminderPickedListener onReminderPickedListener) {
+        mActivity = activity;
+        mOnReminderPickedListener = onReminderPickedListener;
     }
 
     public void pick(long presetDateTime) {
-        this.presetDateTime = DateHelper.getCalendar(presetDateTime).getTimeInMillis();
-        if (pickerType == TYPE_AOSP) {
-            timePickerCalledAlready = false;
-            // Timepicker will be automatically called after date is inserted by user
-            showDatePickerDialog(this.presetDateTime);
-        } else {
-            showDateTimeSelectors(this.presetDateTime);
-        }
+        mPresetDateTime = presetDateTime;
+        showDatePickerDialog(mPresetDateTime);
     }
 
-    /**
-     * Show date and time pickers
-     */
-    protected void showDateTimeSelectors(long reminder) {
+    private void showDatePickerDialog(long presetDateTime) {
+        // Use the current date as the default date in the picker
+        Calendar cal = DateHelper.getCalendar(presetDateTime);
+        int y = cal.get(Calendar.YEAR);
+        int m = cal.get(Calendar.MONTH);
+        int d = cal.get(Calendar.DAY_OF_MONTH);
 
-        // Sets actual time or previously saved in note
-        final Calendar now = DateHelper.getCalendar(reminder);
-        DatePickerDialog mCalendarDatePickerDialog = DatePickerDialog.newInstance(
-                new DatePickerDialog.OnDateSetListener() {
-
-                    @Override
-                    public void onDateSet(DatePickerDialog dialog, int year, int monthOfYear, int dayOfMonth) {
-                        reminderYear = year;
-                        reminderMonth = monthOfYear;
-                        reminderDay = dayOfMonth;
-                        TimePickerDialog mRadialTimePickerDialog = TimePickerDialog.newInstance(
-                                new TimePickerDialog.OnTimeSetListener() {
-
-                                    @Override
-                                    public void onTimeSet(RadialPickerLayout radialPickerLayout, int hourOfDay, int minute) {
-                                        // Setting alarm time in milliseconds
-                                        Calendar c = Calendar.getInstance();
-                                        c.set(reminderYear, reminderMonth, reminderDay, hourOfDay, minute);
-                                        if (mOnReminderPickedListener != null) {
-                                            mOnReminderPickedListener.onReminderPicked(c.getTimeInMillis());
-                                        }
-                                    }
-                                }, now.get(Calendar.HOUR_OF_DAY), now.get(Calendar.MINUTE), DateFormat.is24HourFormat(mActivity));
-                        mRadialTimePickerDialog.show(mActivity.getSupportFragmentManager(), Constants.TAG);
-                    }
-
-                }, now.get(Calendar.YEAR), now.get(Calendar.MONTH), now.get(Calendar.DAY_OF_MONTH));
-        mCalendarDatePickerDialog.show(mActivity.getSupportFragmentManager(), Constants.TAG);
+        DatePickerDialog picker = new DatePickerDialog(mActivity, android.R.style.Theme_Material_Light_Dialog_Alert, this, y, m, d);
+        picker.show();
     }
-
-
-    /**
-     * Shows fallback date and time pickers for smaller screens
-     */
-
-    public void showDatePickerDialog(long presetDateTime) {
-        Bundle b = new Bundle();
-        b.putLong(DatePickerDialogFragment.DEFAULT_DATE, presetDateTime);
-        DialogFragment picker = new DatePickerDialogFragment();
-        picker.setArguments(b);
-        picker.show(mActivity.getSupportFragmentManager(), Constants.TAG);
-    }
-
 
     private void showTimePickerDialog(long presetDateTime) {
-        TimePickerFragment newFragment = new TimePickerFragment();
-        Bundle bundle = new Bundle();
-        bundle.putLong(TimePickerFragment.DEFAULT_TIME, presetDateTime);
-        newFragment.setArguments(bundle);
-        newFragment.show(mActivity.getSupportFragmentManager(), Constants.TAG);
+        Calendar cal = DateHelper.getCalendar(presetDateTime);
+        int hour = cal.get(Calendar.HOUR_OF_DAY);
+        int minute = cal.get(Calendar.MINUTE);
+
+        // Create a new instance of TimePickerDialog and return it
+        boolean is24HourMode = DateFormat.is24HourFormat(mActivity);
+        TimePickerDialog picker = new TimePickerDialog(mActivity, android.R.style.Theme_Material_Light_Dialog_Alert, this, hour, minute, is24HourMode);
+        picker.show();
     }
 
-
     @Override
-    public void onTimeSet(android.widget.TimePicker view, int hourOfDay, int minute) {
+    public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
         // Setting alarm time in milliseconds
         Calendar c = Calendar.getInstance();
-        c.set(reminderYear, reminderMonth, reminderDay, hourOfDay, minute);
+        c.set(mReminderYear, mReminderMonth, mReminderDay, hourOfDay, minute);
         if (mOnReminderPickedListener != null) {
             mOnReminderPickedListener.onReminderPicked(c.getTimeInMillis());
         }
     }
 
-
     @Override
     public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
-        reminderYear = year;
-        reminderMonth = monthOfYear;
-        reminderDay = dayOfMonth;
-        if (!timePickerCalledAlready) {    // Used to avoid native bug that calls onPositiveButtonPressed in the onClose()
-            timePickerCalledAlready = true;
-            showTimePickerDialog(presetDateTime);
-        }
+        mReminderYear = year;
+        mReminderMonth = monthOfYear;
+        mReminderDay = dayOfMonth;
+
+        showTimePickerDialog(mPresetDateTime);
     }
 }

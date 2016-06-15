@@ -36,8 +36,7 @@ public class ReminderHelper {
         if (hasFutureReminder(task)) {
             Intent intent = new Intent(context, AlarmReceiver.class);
             intent.putExtra(Constants.INTENT_TASK, Parcels.wrap(task));
-            PendingIntent sender = PendingIntent.getBroadcast(context, (int) task.creationDate, intent,
-                    PendingIntent.FLAG_CANCEL_CURRENT);
+            PendingIntent sender = PendingIntent.getBroadcast(context, (int) task.creationDate, intent, PendingIntent.FLAG_CANCEL_CURRENT);
             AlarmManager am = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
             am.set(AlarmManager.RTC_WAKEUP, task.alarmDate, sender);
         }

@@ -157,7 +157,7 @@
         android:drawablePadding="5dp"
         android:drawableStart="@drawable/ic_alarm_grey600_24dp"
         android:gravity="center_vertical"
-        android:hint="@string/add_reminder"
+        android:hint="@string/set_reminder"
         android:textSize="@dimen/text_size_small" />
 
     <TextView

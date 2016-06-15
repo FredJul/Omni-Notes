@@ -70,6 +70,5 @@ dependencies {
     compile 'com.android.support:design:23.3.+'
     compile "com.google.android.gms:play-services-games:+"
     compile 'com.github.bumptech.glide:glide:+'
-    compile 'com.github.flavienlaurent.datetimepicker:library:+'
     compile 'com.larswerkman:HoloColorPicker:+'
 }

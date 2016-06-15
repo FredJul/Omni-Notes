@@ -114,7 +114,7 @@
             android:excludeFromRecents="true"
             android:launchMode="singleInstance"
             android:noHistory="true"
-            android:theme="@android:style/Theme.NoDisplay" />
+            android:theme="@android:style/Theme.Translucent.NoTitleBar" />
 
 
         <!-- Alarm broadcast receiver -->

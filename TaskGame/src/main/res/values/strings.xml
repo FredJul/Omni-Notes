@@ -42,7 +42,7 @@
     <string name="alarm_set_on">Reminder set for %1s</string>
     <string name="discard_changes">Discard changes</string>
     <string name="remove_reminder">Remove reminder?</string>
-    <string name="add_reminder">Add reminder</string>
+    <string name="set_reminder">Set reminder</string>
     <string name="categories">Categories</string>
     <string name="add_category">Add category</string>
     <string name="category_title">Title</string>
@@ -65,7 +65,7 @@
     <string name="checklist_item_hint">New item</string>
     <string name="checklist_keep_checked">Keep checked items</string>
     <string name="checklist_keep_symbols">Keep check marks</string>
-    <string name="snooze">Remind me later</string>
+    <string name="snooze">In %d mins</string>
     <string name="shortcut_task_deleted">Shortcut points to deleted task</string>
     <string name="delete_all_finished_tasks">Delete all finished tasks</string>
     <string name="delete_finished_tasks_confirmation">Confirm deleting all finished tasks?</string>
@@ -84,7 +84,7 @@
     <string name="settings_checked_items_behavior">Checklists</string>
     <string name="settings_checked_items_behavior_summary">What to do when an item is checked?</string>
     <string name="settings_notification_ringtone">Ringtone</string>
-    <string name="settings_notification_snooze_delay">Second reminder delay</string>
+    <string name="settings_notification_snooze_delay">Default reminder delay (in minutes)</string>
     <string name="minutes">minutes</string>
     <string name="drawer_open">drawer open</string>
     <string name="drawer_close">drawer closed</string>

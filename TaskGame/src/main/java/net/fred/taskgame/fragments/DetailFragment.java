@@ -88,8 +88,6 @@ import me.tatarka.rxloader.RxLoaderObserver;
 import rx.Observable;
 import rx.Subscriber;
 
-import static com.nineoldandroids.view.ViewPropertyAnimator.animate;
-
 
 public class DetailFragment extends Fragment implements OnReminderPickedListener, TextWatcher, CheckListChangedListener {
 
@@ -328,8 +326,7 @@ public class DetailFragment extends Fragment implements OnReminderPickedListener
         mReminderDateButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                int pickerType = PrefUtils.getBoolean("settings_simple_calendar", false) ? ReminderPickers.TYPE_AOSP : ReminderPickers.TYPE_GOOGLE;
-                ReminderPickers reminderPicker = new ReminderPickers(getActivity(), DetailFragment.this, pickerType);
+                ReminderPickers reminderPicker = new ReminderPickers(getActivity(), DetailFragment.this);
                 reminderPicker.pick(mTask.alarmDate);
             }
         });
@@ -580,7 +577,7 @@ public class DetailFragment extends Fragment implements OnReminderPickedListener
                 mContentEditText = (EditText) newView; // not beautiful, but fix a bug
             }
 //			fade(mToggleChecklistView, true);
-            animate(mToggleChecklistView).alpha(1).scaleXBy(0).scaleX(1).scaleYBy(0).scaleY(1);
+            mToggleChecklistView.animate().alpha(1).scaleXBy(0).scaleX(1).scaleYBy(0).scaleY(1);
             mTask.isChecklist = !mTask.isChecklist;
         }
 
