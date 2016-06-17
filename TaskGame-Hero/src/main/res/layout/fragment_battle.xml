@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/main_content"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -11,17 +12,23 @@
         android:layout_height="match_parent"
         android:orientation="vertical">
 
-        <net.fred.taskgame.hero.views.GameCardView
-            android:id="@+id/player_card"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
+
+        <ImageView
+            android:id="@+id/enemy_portrait"
+            android:layout_width="200dp"
+            android:layout_height="200dp"
+            android:layout_alignParentEnd="true"
+            tools:background="@drawable/hero_male"
+            android:scaleType="fitXY"
+            android:scaleX="-1" />
 
 
         <net.fred.taskgame.hero.views.GameCardView
             android:id="@+id/enemy_card"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentEnd="true" />
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="20dp" />
 
         <Button
             android:id="@+id/play_button"
@@ -30,6 +37,25 @@
             android:layout_alignParentBottom="true"
             android:layout_marginBottom="220dp"
             android:text="Play" />
+
+
+        <net.fred.taskgame.hero.views.GameCardView
+            android:id="@+id/player_card"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentEnd="true"
+            android:layout_marginEnd="20dp"
+            android:layout_marginBottom="120dp" />
+
+        <ImageView
+            android:id="@+id/hero_portrait"
+            android:layout_width="250dp"
+            android:layout_height="250dp"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentStart="true"
+            android:background="@drawable/hero_male"
+            android:scaleType="fitXY" />
 
     </RelativeLayout>
 

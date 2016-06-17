@@ -6,6 +6,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 
 import net.fred.taskgame.hero.R;
@@ -32,8 +33,8 @@ public class BattleFragment extends BaseFragment {
     public static final String ARG_PLAYER_CARDS = "ARG_PLAYER_CARDS";
     public static final String ARG_LEVEL = "ARG_LEVEL";
 
-    @BindView(R.id.player_card)
-    GameCardView mPlayerCardView;
+    @BindView(R.id.enemy_portrait)
+    ImageView mEnemyImageView;
 
     @BindView(R.id.enemy_card)
     GameCardView mEnemyCardView;
@@ -52,6 +53,9 @@ public class BattleFragment extends BaseFragment {
 
     @BindView(R.id.use_card_button)
     Button mUseCardButton;
+
+    @BindView(R.id.player_card)
+    GameCardView mPlayerCardView;
 
     private BattleManager mBattleManager = new BattleManager();
     private Level mLevel;
@@ -87,6 +91,8 @@ public class BattleFragment extends BaseFragment {
         mBottomSheetBehavior.setPeekHeight(300);
         mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
 
+        mEnemyImageView.setImageResource(mLevel.enemyIconResId);
+
         updateUI();
 
         return layout;
@@ -112,20 +118,62 @@ public class BattleFragment extends BaseFragment {
 
     @OnClick(R.id.use_card_button)
     public void onUseCardClicked() {
-        final Card playedCard = mCurrentlyAnimatedCard.getCard();
-        mCardListLayout.removeView(mCurrentlyAnimatedCard);
-        stopCardHighlighting(new Runnable() {
-            @Override
-            public void run() {
-                mBattleManager.play(playedCard);
-                updateUI();
-            }
-        });
+        stopCardHighlighting();
+
+        int cardPadding = mCurrentlyAnimatedCard.getPaddingTop();
+        mCurrentlyAnimatedCard.animate().scaleX(1).scaleY(1).translationX(0).translationY(0)
+                .x(mPlayerCardView.getX() - mCardListScrollView.getX() - cardPadding).y(mPlayerCardView.getY() - mCardListScrollView.getY() - cardPadding)
+                .withEndAction(new Runnable() {
+                    @Override
+                    public void run() {
+                        final float cardsXDiff = (mPlayerCardView.getX() - mEnemyCardView.getX() - mPlayerCardView.getWidth()) / 2;
+                        final float cardsYDiff = (mPlayerCardView.getY() - mEnemyCardView.getY() - mPlayerCardView.getHeight()) / 2;
+
+                        mCurrentlyAnimatedCard.animate()
+                                .x(mCurrentlyAnimatedCard.getX() - cardsXDiff).y(mCurrentlyAnimatedCard.getY() - cardsYDiff)
+                                .withEndAction(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        mCurrentlyAnimatedCard.animate()
+                                                .x(mCurrentlyAnimatedCard.getX() + cardsXDiff).y(mCurrentlyAnimatedCard.getY() + cardsYDiff)
+                                                .withEndAction(new Runnable() {
+                                                    @Override
+                                                    public void run() {
+                                                        mCardListLayout.removeView(mCurrentlyAnimatedCard);
+                                                        mBattleManager.play(mCurrentlyAnimatedCard.getCard());
+
+                                                        mCurrentlyAnimatedCard = null;
+                                                        updateUI();
+                                                        updateBottomSheetUI();
+                                                    }
+                                                });
+                                    }
+                                });
+
+                        mEnemyCardView.animate()
+                                .translationX(cardsXDiff).translationY(cardsYDiff)
+                                .withEndAction(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        mEnemyCardView.animate()
+                                                .translationX(0).translationY(0);
+                                    }
+                                });
+                    }
+                });
     }
 
     @OnClick(R.id.dark_layer)
     public void onDarkLayerClicked() {
-        stopCardHighlighting(null);
+        stopCardHighlighting();
+
+        mCurrentlyAnimatedCard.animate().scaleX(1).scaleY(1).translationX(0).translationY(0).withEndAction(new Runnable() {
+            @Override
+            public void run() {
+                updateBottomSheetUI();
+            }
+        });
+        mCurrentlyAnimatedCard = null;
     }
 
     private void highlightCard(GameCardView cardView) {
@@ -143,24 +191,13 @@ public class BattleFragment extends BaseFragment {
         mDarkLayer.animate().alpha(1).withEndAction(null);
     }
 
-    private void stopCardHighlighting(final Runnable animationEndAction) {
-        mCurrentlyAnimatedCard.animate().scaleX(1).scaleY(1).translationX(0).translationY(0).withEndAction(new Runnable() {
-            @Override
-            public void run() {
-                if (animationEndAction != null) {
-                    animationEndAction.run();
-                }
-
-                updateBottomSheetUI();
-            }
-        });
+    private void stopCardHighlighting() {
         mDarkLayer.animate().alpha(0).withEndAction(new Runnable() {
             @Override
             public void run() {
                 mDarkLayer.setVisibility(View.GONE);
             }
         });
-        mCurrentlyAnimatedCard = null;
     }
 
     private void updateUI() {

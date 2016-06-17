@@ -9,6 +9,8 @@ import com.raizlabs.android.dbflow.annotation.Table;
 import com.raizlabs.android.dbflow.sql.language.Select;
 import com.raizlabs.android.dbflow.structure.BaseModel;
 
+import net.fred.taskgame.hero.R;
+
 import org.parceler.Parcel;
 
 import java.util.ArrayList;
@@ -17,6 +19,8 @@ import java.util.List;
 @Parcel
 @Table(database = AppDatabase.class)
 public class Level extends BaseModel {
+
+    public final static int INVALID_ID = 0;
 
     private final static List<Level> ALL_LEVELS_LIST = new ArrayList<>();
 
@@ -27,6 +31,8 @@ public class Level extends BaseModel {
     @Column
     @Expose
     public boolean isCompleted;
+
+    public transient int enemyIconResId = INVALID_ID;
 
     public transient List<Card> enemyCards = new ArrayList<>();
 
@@ -64,12 +70,14 @@ public class Level extends BaseModel {
 
         Level level = new Level();
         level.levelNumber = 1;
+        level.enemyIconResId = R.drawable.hero_female;
         level.isCompleted = completedList.get(level.levelNumber);
         level.enemyCards.add(Card.getAllCardsMap().get(Card.CREATURE_SKELETON_ARCHER));
         ALL_LEVELS_LIST.add(level);
 
         level = new Level();
         level.levelNumber = 2;
+        level.enemyIconResId = R.drawable.hero_female;
         level.isCompleted = completedList.get(level.levelNumber);
         level.enemyCards.add(Card.getAllCardsMap().get(Card.CREATURE_SKELETON_ARCHER));
         level.enemyCards.add(Card.getAllCardsMap().get(Card.CREATURE_SKELETON_ARCHER));
@@ -77,6 +85,7 @@ public class Level extends BaseModel {
 
         level = new Level();
         level.levelNumber = 3;
+        level.enemyIconResId = R.drawable.hero_female;
         level.isCompleted = completedList.get(level.levelNumber);
         level.enemyCards.add(Card.getAllCardsMap().get(Card.CREATURE_TROLL));
         level.enemyCards.add(Card.getAllCardsMap().get(Card.CREATURE_SKELETON_ARCHER));
@@ -84,6 +93,7 @@ public class Level extends BaseModel {
 
         level = new Level();
         level.levelNumber = 4;
+        level.enemyIconResId = R.drawable.hero_female;
         level.isCompleted = completedList.get(level.levelNumber);
         level.enemyCards.add(Card.getAllCardsMap().get(Card.CREATURE_TROLL));
         level.enemyCards.add(Card.getAllCardsMap().get(Card.CREATURE_SKELETON_ARCHER));
@@ -92,6 +102,7 @@ public class Level extends BaseModel {
 
         level = new Level();
         level.levelNumber = 5;
+        level.enemyIconResId = R.drawable.hero_female;
         level.isCompleted = completedList.get(level.levelNumber);
         level.enemyCards.add(Card.getAllCardsMap().get(Card.CREATURE_TROLL));
         level.enemyCards.add(Card.getAllCardsMap().get(Card.CREATURE_SKELETON_ARCHER));
