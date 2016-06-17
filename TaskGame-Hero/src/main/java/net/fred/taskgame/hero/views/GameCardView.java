@@ -17,6 +17,8 @@ public class GameCardView extends FrameLayout {
     private ViewCreatureCardBinding mCreatureDataBinding;
     private ViewSupportCardBinding mSupportDataBinding;
 
+    private Card mCard;
+
     public GameCardView(Context context) {
         super(context);
         inflateView();
@@ -42,6 +44,7 @@ public class GameCardView extends FrameLayout {
     }
 
     public void setCard(Card card) {
+        mCard = card;
         if (card == null) {
             setVisibility(INVISIBLE);
         } else if (card.type == Card.Type.CREATURE) {
@@ -55,5 +58,9 @@ public class GameCardView extends FrameLayout {
             getChildAt(1).setVisibility(VISIBLE);
             mSupportDataBinding.setCard(card);
         }
+    }
+
+    public Card getCard() {
+        return mCard;
     }
 }

@@ -12,6 +12,7 @@ import net.fred.taskgame.hero.R;
 import net.fred.taskgame.hero.logic.BattleManager;
 import net.fred.taskgame.hero.models.Card;
 import net.fred.taskgame.hero.models.Level;
+import net.fred.taskgame.hero.utils.Dog;
 import net.fred.taskgame.hero.utils.UiUtils;
 import net.fred.taskgame.hero.views.GameCardView;
 
@@ -46,9 +47,16 @@ public class BattleFragment extends BaseFragment {
     @BindView(R.id.card_list)
     LinearLayout mCardListLayout;
 
+    @BindView(R.id.dark_layer)
+    View mDarkLayer;
+
+    @BindView(R.id.use_card_button)
+    Button mUseCardButton;
+
     private BattleManager mBattleManager = new BattleManager();
     private Level mLevel;
     private BottomSheetBehavior mBottomSheetBehavior;
+    private GameCardView mCurrentlyAnimatedCard;
 
     public static BattleFragment newInstance(Level level, List<Card> playerCards) {
         BattleFragment fragment = new BattleFragment();
@@ -102,6 +110,59 @@ public class BattleFragment extends BaseFragment {
         updateUI();
     }
 
+    @OnClick(R.id.use_card_button)
+    public void onUseCardClicked() {
+        final Card playedCard = mCurrentlyAnimatedCard.getCard();
+        mCardListLayout.removeView(mCurrentlyAnimatedCard);
+        stopCardHighlighting(new Runnable() {
+            @Override
+            public void run() {
+                mBattleManager.play(playedCard);
+                updateUI();
+            }
+        });
+    }
+
+    @OnClick(R.id.dark_layer)
+    public void onDarkLayerClicked() {
+        stopCardHighlighting(null);
+    }
+
+    private void highlightCard(GameCardView cardView) {
+        mBottomSheetBehavior.setHideable(true);
+        mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
+
+        mCurrentlyAnimatedCard = cardView;
+        cardView.animate()
+                .scaleX(1.7f)
+                .scaleY(1.7f)
+                .translationX(cardView.getWidth() / 2f - cardView.getX())
+                .translationY(-(mCardListLayout.getHeight() * 1.35f))
+                .withEndAction(null);
+        mDarkLayer.setVisibility(View.VISIBLE);
+        mDarkLayer.animate().alpha(1).withEndAction(null);
+    }
+
+    private void stopCardHighlighting(final Runnable animationEndAction) {
+        mCurrentlyAnimatedCard.animate().scaleX(1).scaleY(1).translationX(0).translationY(0).withEndAction(new Runnable() {
+            @Override
+            public void run() {
+                if (animationEndAction != null) {
+                    animationEndAction.run();
+                }
+
+                updateBottomSheetUI();
+            }
+        });
+        mDarkLayer.animate().alpha(0).withEndAction(new Runnable() {
+            @Override
+            public void run() {
+                mDarkLayer.setVisibility(View.GONE);
+            }
+        });
+        mCurrentlyAnimatedCard = null;
+    }
+
     private void updateUI() {
         boolean isPlayerCreatureStillAlive = mBattleManager.isPlayerCreatureStillAlive();
         mPlayButton.setVisibility(isPlayerCreatureStillAlive ? View.VISIBLE : View.GONE);
@@ -110,19 +171,21 @@ public class BattleFragment extends BaseFragment {
 
         mCardListLayout.removeAllViews();
         for (final Card card : isPlayerCreatureStillAlive ? mBattleManager.getRemainingPlayerSupportCards() : mBattleManager.getRemainingPlayerCharacterCards()) {
+            Dog.d("Card added to game: " + card.name);
+
             final GameCardView cardView = new GameCardView(getContext());
             cardView.setCard(card);
             cardView.setPadding(10, 10, 10, 10);
             cardView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    mCardListLayout.removeView(cardView);
-                    mBattleManager.play(card);
-                    updateUI();
+                    highlightCard(cardView);
                 }
             });
             mCardListLayout.addView(cardView);
         }
+
+        updateBottomSheetUI();
 
         if (mBattleManager.getBattleStatus() != BattleManager.BattleStatus.NOT_FINISHED) {
             if (mBattleManager.getBattleStatus() == BattleManager.BattleStatus.DRAW) {
@@ -135,6 +198,20 @@ public class BattleFragment extends BaseFragment {
                 mLevel.save();
             }
             getActivity().getSupportFragmentManager().popBackStack();
+        }
+    }
+
+    private void updateBottomSheetUI() {
+        if (mCardListLayout.getChildCount() > 0) {
+            if (mBottomSheetBehavior.isHideable()) {
+                mBottomSheetBehavior.setHideable(false);
+                mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+            }
+        } else {
+            if (!mBottomSheetBehavior.isHideable()) {
+                mBottomSheetBehavior.setHideable(true);
+                mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
+            }
         }
     }
 }
