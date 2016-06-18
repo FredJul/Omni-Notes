@@ -111,9 +111,7 @@ public class BattleFragment extends BaseFragment {
 
     @OnClick(R.id.play_button)
     public void onPlayClicked() {
-        mBattleManager.play();
-
-        updateUI();
+        animateBattle();
     }
 
     @OnClick(R.id.use_card_button)
@@ -126,39 +124,109 @@ public class BattleFragment extends BaseFragment {
                 .withEndAction(new Runnable() {
                     @Override
                     public void run() {
-                        final float cardsXDiff = (mPlayerCardView.getX() - mEnemyCardView.getX() - mPlayerCardView.getWidth()) / 2;
-                        final float cardsYDiff = (mPlayerCardView.getY() - mEnemyCardView.getY() - mPlayerCardView.getHeight()) / 2;
+                        final Card playedCard = mCurrentlyAnimatedCard.getCard();
+                        if (playedCard.type == Card.Type.CREATURE) {
+                            mPlayerCardView.setAlpha(1); // it has maybe been hidden if a creature died
+                            mPlayerCardView.setCard(mCurrentlyAnimatedCard.getCard());
+                            mCardListLayout.post(new Runnable() { // to avoid flickering
+                                @Override
+                                public void run() {
+                                    mCardListLayout.removeView(mCurrentlyAnimatedCard);
+                                    mCurrentlyAnimatedCard = null;
+                                    animateBattle(playedCard);
+                                }
+                            });
+                        } else {
+                            mCurrentlyAnimatedCard.animate().alpha(0).withEndAction(new Runnable() {
+                                @Override
+                                public void run() {
+                                    mCardListLayout.removeView(mCurrentlyAnimatedCard);
+                                    mCurrentlyAnimatedCard = null;
+                                    animateBattle(playedCard);
+                                }
+                            });
+                        }
+                    }
+                });
+    }
 
-                        mCurrentlyAnimatedCard.animate()
-                                .x(mCurrentlyAnimatedCard.getX() - cardsXDiff).y(mCurrentlyAnimatedCard.getY() - cardsYDiff)
+    private void animateBattle() {
+        animateBattle(null);
+    }
+
+    private void animateBattle(final Card card) {
+        mPlayButton.setVisibility(View.GONE);
+
+        final float cardsXDiff = (mPlayerCardView.getX() - mEnemyCardView.getX() - mPlayerCardView.getWidth()) / 2;
+        final float cardsYDiff = (mPlayerCardView.getY() - mEnemyCardView.getY() - mPlayerCardView.getHeight()) / 2;
+
+        mPlayerCardView.animate()
+                .translationX(-cardsXDiff).translationY(-cardsYDiff)
+                .withEndAction(new Runnable() {
+                    @Override
+                    public void run() {
+                        mPlayerCardView.animate()
+                                .translationX(0).translationY(0)
                                 .withEndAction(new Runnable() {
                                     @Override
                                     public void run() {
-                                        mCurrentlyAnimatedCard.animate()
-                                                .x(mCurrentlyAnimatedCard.getX() + cardsXDiff).y(mCurrentlyAnimatedCard.getY() + cardsYDiff)
-                                                .withEndAction(new Runnable() {
-                                                    @Override
-                                                    public void run() {
-                                                        mCardListLayout.removeView(mCurrentlyAnimatedCard);
-                                                        mBattleManager.play(mCurrentlyAnimatedCard.getCard());
+                                        if (card != null) {
+                                            mBattleManager.play(card);
+                                        } else {
+                                            mBattleManager.play();
+                                        }
 
-                                                        mCurrentlyAnimatedCard = null;
+                                        boolean needAnimation = false;
+                                        if (!mBattleManager.isEnemyCreatureStillAlive()) {
+                                            needAnimation = true;
+                                            mEnemyCardView.animate().alpha(0).withEndAction(new Runnable() {
+                                                @Override
+                                                public void run() {
+                                                    Card nextEnemyCard = mBattleManager.getNextEnemyCreatureCard();
+                                                    if (nextEnemyCard != null) {
+                                                        mEnemyCardView.setCard(nextEnemyCard);
+                                                        mEnemyCardView.animate().alpha(1).withEndAction(new Runnable() {
+                                                            @Override
+                                                            public void run() {
+                                                                updateUI();
+                                                                updateBottomSheetUI();
+                                                            }
+                                                        });
+                                                    } else {
                                                         updateUI();
                                                         updateBottomSheetUI();
                                                     }
-                                                });
-                                    }
-                                });
+                                                }
+                                            });
+                                        }
 
-                        mEnemyCardView.animate()
-                                .translationX(cardsXDiff).translationY(cardsYDiff)
-                                .withEndAction(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        mEnemyCardView.animate()
-                                                .translationX(0).translationY(0);
+                                        if (!mBattleManager.isPlayerCreatureStillAlive()) {
+                                            needAnimation = true;
+                                            mPlayerCardView.animate().alpha(0).withEndAction(new Runnable() {
+                                                @Override
+                                                public void run() {
+                                                    updateUI();
+                                                    updateBottomSheetUI();
+                                                }
+                                            });
+                                        }
+
+                                        if (!needAnimation) {
+                                            updateUI();
+                                            updateBottomSheetUI();
+                                        }
                                     }
                                 });
+                    }
+                });
+
+        mEnemyCardView.animate()
+                .translationX(cardsXDiff).translationY(cardsYDiff)
+                .withEndAction(new Runnable() {
+                    @Override
+                    public void run() {
+                        mEnemyCardView.animate()
+                                .translationX(0).translationY(0);
                     }
                 });
     }
@@ -185,10 +253,9 @@ public class BattleFragment extends BaseFragment {
                 .scaleX(1.7f)
                 .scaleY(1.7f)
                 .translationX(cardView.getWidth() / 2f - cardView.getX())
-                .translationY(-(mCardListLayout.getHeight() * 1.35f))
-                .withEndAction(null);
+                .translationY(-(mCardListLayout.getHeight() * 1.35f));
         mDarkLayer.setVisibility(View.VISIBLE);
-        mDarkLayer.animate().alpha(1).withEndAction(null);
+        mDarkLayer.animate().alpha(1);
     }
 
     private void stopCardHighlighting() {
@@ -206,20 +273,30 @@ public class BattleFragment extends BaseFragment {
         mPlayerCardView.setCard(mBattleManager.getLastUsedPlayerCreatureCard());
         mEnemyCardView.setCard(mBattleManager.getCurrentOrNextAliveEnemyCreatureCard());
 
-        mCardListLayout.removeAllViews();
-        for (final Card card : isPlayerCreatureStillAlive ? mBattleManager.getRemainingPlayerSupportCards() : mBattleManager.getRemainingPlayerCharacterCards()) {
-            Dog.d("Card added to game: " + card.name);
+        // Create or remove only rhe necessary number of views and reuse the existing ones
+        List<Card> newCards = isPlayerCreatureStillAlive ? mBattleManager.getRemainingPlayerSupportCards() : mBattleManager.getRemainingPlayerCharacterCards();
+        int diff = newCards.size() - mCardListLayout.getChildCount();
+        if (diff > 0) { // We need more cards
+            for (int i = 0; i < diff; i++) {
+                final GameCardView cardView = new GameCardView(getContext());
+                cardView.setPadding(10, 10, 10, 10);
+                cardView.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        highlightCard(cardView);
+                    }
+                });
+                mCardListLayout.addView(cardView);
+            }
+        } else if (diff < 0) { // We need to remove some cards
+            mCardListLayout.removeViews(newCards.size(), -diff);
+        }
 
-            final GameCardView cardView = new GameCardView(getContext());
-            cardView.setCard(card);
-            cardView.setPadding(10, 10, 10, 10);
-            cardView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    highlightCard(cardView);
-                }
-            });
-            mCardListLayout.addView(cardView);
+        // Set the new cards to the views
+        for (int i = 0; i < newCards.size(); i++) {
+            Card card = newCards.get(i);
+            Dog.d("Card added to game: " + card.name);
+            ((GameCardView) mCardListLayout.getChildAt(i)).setCard(card);
         }
 
         updateBottomSheetUI();
