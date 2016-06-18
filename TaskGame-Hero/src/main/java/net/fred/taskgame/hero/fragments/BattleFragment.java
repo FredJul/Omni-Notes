@@ -10,6 +10,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 
 import net.fred.taskgame.hero.R;
+import net.fred.taskgame.hero.activities.MainActivity;
 import net.fred.taskgame.hero.logic.BattleManager;
 import net.fred.taskgame.hero.models.Card;
 import net.fred.taskgame.hero.models.Level;
@@ -106,6 +107,10 @@ public class BattleFragment extends BaseFragment {
 
     @Override
     protected int getMainMusicResId() {
+        if (mLevel != null && mLevel.specialMusicResId != Level.INVALID_ID) {
+            return mLevel.specialMusicResId;
+        }
+
         return R.raw.battle_theme;
     }
 
@@ -137,6 +142,7 @@ public class BattleFragment extends BaseFragment {
                                 }
                             });
                         } else {
+                            getMainActivity().playSound(MainActivity.SOUND_USE_SUPPORT);
                             mCurrentlyAnimatedCard.animate().alpha(0).withEndAction(new Runnable() {
                                 @Override
                                 public void run() {
@@ -160,6 +166,7 @@ public class BattleFragment extends BaseFragment {
         final float cardsXDiff = (mPlayerCardView.getX() - mEnemyCardView.getX() - mPlayerCardView.getWidth()) / 2;
         final float cardsYDiff = (mPlayerCardView.getY() - mEnemyCardView.getY() - mPlayerCardView.getHeight()) / 2;
 
+        getMainActivity().playSound(MainActivity.SOUND_FIGHT);
         mPlayerCardView.animate()
                 .translationX(-cardsXDiff).translationY(-cardsYDiff)
                 .withEndAction(new Runnable() {
@@ -176,9 +183,10 @@ public class BattleFragment extends BaseFragment {
                                             mBattleManager.play();
                                         }
 
-                                        boolean needAnimation = false;
+                                        boolean hasAnimationInProgress = false;
                                         if (!mBattleManager.isEnemyCreatureStillAlive()) {
-                                            needAnimation = true;
+                                            getMainActivity().playSound(MainActivity.SOUND_DEATH);
+                                            hasAnimationInProgress = true;
                                             mEnemyCardView.animate().alpha(0).withEndAction(new Runnable() {
                                                 @Override
                                                 public void run() {
@@ -201,17 +209,22 @@ public class BattleFragment extends BaseFragment {
                                         }
 
                                         if (!mBattleManager.isPlayerCreatureStillAlive()) {
-                                            needAnimation = true;
-                                            mPlayerCardView.animate().alpha(0).withEndAction(new Runnable() {
-                                                @Override
-                                                public void run() {
-                                                    updateUI();
-                                                    updateBottomSheetUI();
-                                                }
-                                            });
+                                            getMainActivity().playSound(MainActivity.SOUND_DEATH);
+                                            if (hasAnimationInProgress) {
+                                                mPlayerCardView.animate().alpha(0); // If an animation already started, no need to update the UI at the end of this one
+                                            } else {
+                                                mPlayerCardView.animate().alpha(0).withEndAction(new Runnable() {
+                                                    @Override
+                                                    public void run() {
+                                                        updateUI();
+                                                        updateBottomSheetUI();
+                                                    }
+                                                });
+                                            }
+                                            hasAnimationInProgress = true;
                                         }
 
-                                        if (!needAnimation) {
+                                        if (!hasAnimationInProgress) {
                                             updateUI();
                                             updateBottomSheetUI();
                                         }
@@ -303,10 +316,13 @@ public class BattleFragment extends BaseFragment {
 
         if (mBattleManager.getBattleStatus() != BattleManager.BattleStatus.NOT_FINISHED) {
             if (mBattleManager.getBattleStatus() == BattleManager.BattleStatus.DRAW) {
+                getMainActivity().playSound(MainActivity.SOUND_DEFEAT);
                 UiUtils.showMessage(getActivity(), "Draw!");
             } else if (mBattleManager.getBattleStatus() == BattleManager.BattleStatus.ENEMY_WON) {
+                getMainActivity().playSound(MainActivity.SOUND_DEFEAT);
                 UiUtils.showMessage(getActivity(), "Enemy won!");
             } else if (mBattleManager.getBattleStatus() == BattleManager.BattleStatus.PLAYER_WON) {
+                getMainActivity().playSound(MainActivity.SOUND_VICTORY);
                 UiUtils.showMessage(getActivity(), "Player won!");
                 mLevel.isCompleted = true;
                 mLevel.save();

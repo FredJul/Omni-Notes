@@ -34,6 +34,8 @@ public class Level extends BaseModel {
 
     public transient int enemyIconResId = INVALID_ID;
 
+    public transient int specialMusicResId = INVALID_ID;
+
     public transient List<Card> enemyCards = new ArrayList<>();
 
     public static List<Level> getAllLevelsList() {
@@ -103,6 +105,7 @@ public class Level extends BaseModel {
         level = new Level();
         level.levelNumber = 5;
         level.enemyIconResId = R.drawable.hero_female;
+        level.specialMusicResId = R.raw.boss_theme;
         level.isCompleted = completedList.get(level.levelNumber);
         level.enemyCards.add(Card.getAllCardsMap().get(Card.CREATURE_TROLL));
         level.enemyCards.add(Card.getAllCardsMap().get(Card.CREATURE_SKELETON_ARCHER));

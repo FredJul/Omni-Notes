@@ -11,6 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import net.fred.taskgame.hero.R;
+import net.fred.taskgame.hero.activities.MainActivity;
 import net.fred.taskgame.hero.models.Card;
 import net.fred.taskgame.hero.models.adapters.BuyCardsAdapter;
 import net.fred.taskgame.hero.models.adapters.RecyclerViewItemListener;
@@ -63,6 +64,7 @@ public class BuyCardsFragment extends BaseFragment {
             for (int i = 0; i < mNonObtainedCardList.size(); i++) {
                 Card card = mNonObtainedCardList.get(i);
                 if (card.id == requestCode) { // requestCode is card id
+                    getMainActivity().playSound(MainActivity.SOUND_NEW_CARD);
                     card.isObtained = true;
                     card.save();
                     mNonObtainedCardList.remove(i);

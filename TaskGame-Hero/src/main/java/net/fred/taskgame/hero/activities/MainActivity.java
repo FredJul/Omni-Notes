@@ -1,6 +1,8 @@
 package net.fred.taskgame.hero.activities;
 
+import android.media.AudioAttributes;
 import android.media.MediaPlayer;
+import android.media.SoundPool;
 import android.os.Bundle;
 import android.support.annotation.RawRes;
 import android.support.v4.app.FragmentManager;
@@ -20,9 +22,20 @@ import butterknife.ButterKnife;
 
 public class MainActivity extends BaseGameActivity {
 
+    public static int SOUND_ENTER_BATTLE;
+    public static int SOUND_FIGHT;
+    public static int SOUND_USE_SUPPORT;
+    public static int SOUND_DEATH;
+    public static int SOUND_VICTORY;
+    public static int SOUND_DEFEAT;
+    public static int SOUND_CHANGE_CARD;
+    public static int SOUND_NEW_CARD;
+    public static int SOUND_IMPOSSIBLE_ACTION;
+
     private FragmentManager mFragmentManager;
 
     private MediaPlayer mMediaPlayer;
+    private SoundPool mSoundPool;
 
     @RawRes
     private int mCurrentMusicResId;
@@ -40,6 +53,21 @@ public class MainActivity extends BaseGameActivity {
             FragmentTransaction fragmentTransaction = mFragmentManager.beginTransaction();
             fragmentTransaction.add(R.id.fragment_container, new LevelSelectionFragment(), LevelSelectionFragment.class.getName()).commit();
         }
+
+        AudioAttributes attributes = new AudioAttributes.Builder()
+                .setUsage(AudioAttributes.USAGE_GAME)
+                .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
+                .build();
+        mSoundPool = new SoundPool.Builder().setAudioAttributes(attributes).build();
+        SOUND_ENTER_BATTLE = mSoundPool.load(this, R.raw.enter_battle, 1);
+        SOUND_FIGHT = mSoundPool.load(this, R.raw.fight, 1);
+        SOUND_USE_SUPPORT = mSoundPool.load(this, R.raw.use_support, 1);
+        SOUND_DEATH = mSoundPool.load(this, R.raw.death, 1);
+        SOUND_VICTORY = mSoundPool.load(this, R.raw.victory, 1);
+        SOUND_DEFEAT = mSoundPool.load(this, R.raw.defeat, 1);
+        SOUND_CHANGE_CARD = mSoundPool.load(this, R.raw.change_card, 1);
+        SOUND_NEW_CARD = mSoundPool.load(this, R.raw.new_card, 1);
+        SOUND_IMPOSSIBLE_ACTION = mSoundPool.load(this, R.raw.impossible_action, 1);
     }
 
     @Override
@@ -64,6 +92,7 @@ public class MainActivity extends BaseGameActivity {
     }
 
     public void startBattle(Level level) {
+        playSound(SOUND_ENTER_BATTLE);
         FragmentTransaction transaction = mFragmentManager.beginTransaction();
         UiUtils.animateTransition(transaction, UiUtils.TransitionType.TRANSITION_FADE_IN);
         transaction.replace(R.id.fragment_container, BattleFragment.newInstance(level, Card.getDeckCardList()), BattleFragment.class.getName()).addToBackStack(null).commitAllowingStateLoss();
@@ -110,5 +139,9 @@ public class MainActivity extends BaseGameActivity {
         mMediaPlayer.setLooping(true);
 
         mMediaPlayer.start();
+    }
+
+    public void playSound(int soundId) {
+        mSoundPool.play(soundId, 0.5f, 0.5f, 1, 0, 1f);
     }
 }

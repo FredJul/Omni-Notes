@@ -9,6 +9,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import net.fred.taskgame.hero.R;
+import net.fred.taskgame.hero.activities.MainActivity;
 import net.fred.taskgame.hero.models.Card;
 import net.fred.taskgame.hero.models.Level;
 import net.fred.taskgame.hero.models.adapters.ComposeDeckAdapter;
@@ -45,11 +46,14 @@ public class ComposeDeckFragment extends BaseFragment {
             public void onItemClicked(int position) {
                 Card card = mObtainedCardList.get(position);
                 if (card.isInDeck || (!card.isInDeck && getUsedSlots() + card.neededSlots <= Level.getCorrespondingDeckSlots())) {
+                    getMainActivity().playSound(MainActivity.SOUND_CHANGE_CARD);
                     card.isInDeck = !card.isInDeck;
                     card.save();
                     mAdapter.notifyItemChanged(position);
 
                     updateUI();
+                } else {
+                    getMainActivity().playSound(MainActivity.SOUND_IMPOSSIBLE_ACTION);
                 }
             }
         });
