@@ -30,15 +30,6 @@
             android:layout_marginStart="20dp"
             android:layout_marginTop="20dp" />
 
-        <Button
-            android:id="@+id/play_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
-            android:layout_marginBottom="220dp"
-            android:text="Play" />
-
-
         <net.fred.taskgame.hero.views.GameCardView
             android:id="@+id/player_card"
             android:layout_width="wrap_content"

@@ -58,7 +58,7 @@ public class MainActivity extends BaseGameActivity {
                 .setUsage(AudioAttributes.USAGE_GAME)
                 .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
                 .build();
-        mSoundPool = new SoundPool.Builder().setAudioAttributes(attributes).build();
+        mSoundPool = new SoundPool.Builder().setAudioAttributes(attributes).setMaxStreams(2).build();
         SOUND_ENTER_BATTLE = mSoundPool.load(this, R.raw.enter_battle, 1);
         SOUND_FIGHT = mSoundPool.load(this, R.raw.fight, 1);
         SOUND_USE_SUPPORT = mSoundPool.load(this, R.raw.use_support, 1);

@@ -40,9 +40,6 @@ public class BattleFragment extends BaseFragment {
     @BindView(R.id.enemy_card)
     GameCardView mEnemyCardView;
 
-    @BindView(R.id.play_button)
-    Button mPlayButton;
-
     @BindView(R.id.card_list_scroll_view)
     View mCardListScrollView;
 
@@ -90,7 +87,6 @@ public class BattleFragment extends BaseFragment {
 
         mBottomSheetBehavior = BottomSheetBehavior.from(mCardListScrollView);
         mBottomSheetBehavior.setPeekHeight(300);
-        mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
 
         mEnemyImageView.setImageResource(mLevel.enemyIconResId);
 
@@ -112,11 +108,6 @@ public class BattleFragment extends BaseFragment {
         }
 
         return R.raw.battle_theme;
-    }
-
-    @OnClick(R.id.play_button)
-    public void onPlayClicked() {
-        animateBattle();
     }
 
     @OnClick(R.id.use_card_button)
@@ -161,8 +152,6 @@ public class BattleFragment extends BaseFragment {
     }
 
     private void animateBattle(final Card card) {
-        mPlayButton.setVisibility(View.GONE);
-
         final float cardsXDiff = (mPlayerCardView.getX() - mEnemyCardView.getX() - mPlayerCardView.getWidth()) / 2;
         final float cardsYDiff = (mPlayerCardView.getY() - mEnemyCardView.getY() - mPlayerCardView.getHeight()) / 2;
 
@@ -197,12 +186,10 @@ public class BattleFragment extends BaseFragment {
                                                             @Override
                                                             public void run() {
                                                                 updateUI();
-                                                                updateBottomSheetUI();
                                                             }
                                                         });
                                                     } else {
                                                         updateUI();
-                                                        updateBottomSheetUI();
                                                     }
                                                 }
                                             });
@@ -217,7 +204,6 @@ public class BattleFragment extends BaseFragment {
                                                     @Override
                                                     public void run() {
                                                         updateUI();
-                                                        updateBottomSheetUI();
                                                     }
                                                 });
                                             }
@@ -226,7 +212,6 @@ public class BattleFragment extends BaseFragment {
 
                                         if (!hasAnimationInProgress) {
                                             updateUI();
-                                            updateBottomSheetUI();
                                         }
                                     }
                                 });
@@ -282,9 +267,13 @@ public class BattleFragment extends BaseFragment {
 
     private void updateUI() {
         boolean isPlayerCreatureStillAlive = mBattleManager.isPlayerCreatureStillAlive();
-        mPlayButton.setVisibility(isPlayerCreatureStillAlive ? View.VISIBLE : View.GONE);
         mPlayerCardView.setCard(mBattleManager.getLastUsedPlayerCreatureCard());
         mEnemyCardView.setCard(mBattleManager.getCurrentOrNextAliveEnemyCreatureCard());
+
+        // The "no support" button view needs to be removed before card population
+        if (mCardListLayout.getChildCount() > 0 && mCardListLayout.getChildAt(mCardListLayout.getChildCount() - 1) instanceof Button) {
+            mCardListLayout.removeViewAt(mCardListLayout.getChildCount() - 1);
+        }
 
         // Create or remove only rhe necessary number of views and reuse the existing ones
         List<Card> newCards = isPlayerCreatureStillAlive ? mBattleManager.getRemainingPlayerSupportCards() : mBattleManager.getRemainingPlayerCharacterCards();
@@ -312,6 +301,19 @@ public class BattleFragment extends BaseFragment {
             ((GameCardView) mCardListLayout.getChildAt(i)).setCard(card);
         }
 
+        // Add the "no support" button if necessary
+        if (isPlayerCreatureStillAlive && newCards.size() > 0) {
+            Button playWithoutSupportBtn = new Button(getContext());
+            playWithoutSupportBtn.setText("Don't use support magic");
+            playWithoutSupportBtn.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    animateBattle();
+                }
+            });
+            mCardListLayout.addView(playWithoutSupportBtn);
+        }
+
         updateBottomSheetUI();
 
         if (mBattleManager.getBattleStatus() != BattleManager.BattleStatus.NOT_FINISHED) {
@@ -328,6 +330,10 @@ public class BattleFragment extends BaseFragment {
                 mLevel.save();
             }
             getActivity().getSupportFragmentManager().popBackStack();
+
+        } else if (isPlayerCreatureStillAlive && newCards.size() <= 0) {
+            // The battle is not finished, but the user can only fight without using support, let's automatically start that
+            animateBattle();
         }
     }
 
