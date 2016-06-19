@@ -72,14 +72,14 @@ public class Level extends BaseModel {
 
         Level level = new Level();
         level.levelNumber = 1;
-        level.enemyIconResId = R.drawable.hero_female;
+        level.enemyIconResId = R.drawable.invoker_male;
         level.isCompleted = completedList.get(level.levelNumber);
         level.enemyCards.add(Card.getAllCardsMap().get(Card.CREATURE_SKELETON_ARCHER));
         ALL_LEVELS_LIST.add(level);
 
         level = new Level();
         level.levelNumber = 2;
-        level.enemyIconResId = R.drawable.hero_female;
+        level.enemyIconResId = R.drawable.invoker_male;
         level.isCompleted = completedList.get(level.levelNumber);
         level.enemyCards.add(Card.getAllCardsMap().get(Card.CREATURE_SKELETON_ARCHER));
         level.enemyCards.add(Card.getAllCardsMap().get(Card.CREATURE_SKELETON_ARCHER));
@@ -87,7 +87,7 @@ public class Level extends BaseModel {
 
         level = new Level();
         level.levelNumber = 3;
-        level.enemyIconResId = R.drawable.hero_female;
+        level.enemyIconResId = R.drawable.invoker_male;
         level.isCompleted = completedList.get(level.levelNumber);
         level.enemyCards.add(Card.getAllCardsMap().get(Card.CREATURE_TROLL));
         level.enemyCards.add(Card.getAllCardsMap().get(Card.CREATURE_SKELETON_ARCHER));
@@ -95,7 +95,7 @@ public class Level extends BaseModel {
 
         level = new Level();
         level.levelNumber = 4;
-        level.enemyIconResId = R.drawable.hero_female;
+        level.enemyIconResId = R.drawable.invoker_male;
         level.isCompleted = completedList.get(level.levelNumber);
         level.enemyCards.add(Card.getAllCardsMap().get(Card.CREATURE_TROLL));
         level.enemyCards.add(Card.getAllCardsMap().get(Card.CREATURE_SKELETON_ARCHER));
@@ -104,7 +104,7 @@ public class Level extends BaseModel {
 
         level = new Level();
         level.levelNumber = 5;
-        level.enemyIconResId = R.drawable.hero_female;
+        level.enemyIconResId = R.drawable.invoker_male;
         level.specialMusicResId = R.raw.boss_theme;
         level.isCompleted = completedList.get(level.levelNumber);
         level.enemyCards.add(Card.getAllCardsMap().get(Card.CREATURE_TROLL));

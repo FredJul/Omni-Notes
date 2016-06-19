@@ -18,7 +18,7 @@
             android:layout_width="200dp"
             android:layout_height="200dp"
             android:layout_alignParentEnd="true"
-            tools:background="@drawable/hero_male"
+            tools:background="@drawable/invoker_female"
             android:scaleType="fitXY"
             android:scaleX="-1" />
 
@@ -45,7 +45,7 @@
             android:layout_height="250dp"
             android:layout_alignParentBottom="true"
             android:layout_alignParentStart="true"
-            android:background="@drawable/hero_male"
+            android:background="@drawable/invoker_female"
             android:scaleType="fitXY" />
 
     </RelativeLayout>
