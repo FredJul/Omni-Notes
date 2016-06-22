@@ -114,14 +114,14 @@ public class BattleFragment extends BaseFragment {
     public void onUseCardClicked() {
         stopCardHighlighting();
 
-        int cardPadding = mCurrentlyAnimatedCard.getPaddingTop();
-        mCurrentlyAnimatedCard.animate().scaleX(1).scaleY(1).translationX(0).translationY(0)
-                .x(mPlayerCardView.getX() - mCardListScrollView.getX() - cardPadding).y(mPlayerCardView.getY() - mCardListScrollView.getY() - cardPadding)
-                .withEndAction(new Runnable() {
-                    @Override
-                    public void run() {
-                        final Card playedCard = mCurrentlyAnimatedCard.getCard();
-                        if (playedCard.type == Card.Type.CREATURE) {
+        final Card playedCard = mCurrentlyAnimatedCard.getCard();
+        if (playedCard.type == Card.Type.CREATURE) {
+            int cardPadding = mCurrentlyAnimatedCard.getPaddingTop();
+            mCurrentlyAnimatedCard.animate().scaleX(1).scaleY(1).translationX(0).translationY(0)
+                    .x(mPlayerCardView.getX() - mCardListScrollView.getX() - cardPadding).y(mPlayerCardView.getY() - mCardListScrollView.getY() - cardPadding)
+                    .withEndAction(new Runnable() {
+                        @Override
+                        public void run() {
                             mPlayerCardView.setAlpha(1); // it has maybe been hidden if a creature died
                             mPlayerCardView.setCard(mCurrentlyAnimatedCard.getCard());
                             mCardListLayout.post(new Runnable() { // to avoid flickering
@@ -132,7 +132,13 @@ public class BattleFragment extends BaseFragment {
                                     animateBattle(playedCard);
                                 }
                             });
-                        } else {
+                        }
+                    });
+        } else {
+            mCurrentlyAnimatedCard.animate().alpha(0)
+                    .withEndAction(new Runnable() {
+                        @Override
+                        public void run() {
                             getMainActivity().playSound(MainActivity.SOUND_USE_SUPPORT);
                             mCurrentlyAnimatedCard.animate().alpha(0).withEndAction(new Runnable() {
                                 @Override
@@ -143,8 +149,9 @@ public class BattleFragment extends BaseFragment {
                                 }
                             });
                         }
-                    }
-                });
+                    });
+
+        }
     }
 
     private void animateBattle() {
@@ -152,8 +159,10 @@ public class BattleFragment extends BaseFragment {
     }
 
     private void animateBattle(final Card card) {
-        final float cardsXDiff = (mPlayerCardView.getX() - mEnemyCardView.getX() - mPlayerCardView.getWidth()) / 2;
-        final float cardsYDiff = (mPlayerCardView.getY() - mEnemyCardView.getY() - mPlayerCardView.getHeight()) / 2;
+        float cardsXDiff = (mPlayerCardView.getX() - mEnemyCardView.getX() - mPlayerCardView.getWidth()) / 2;
+        cardsXDiff = cardsXDiff > 0 ? cardsXDiff + mPlayerCardView.getWidth() / 6 : cardsXDiff - mPlayerCardView.getWidth() / 6;
+        float cardsYDiff = (mPlayerCardView.getY() - mEnemyCardView.getY()) / 2;
+        cardsYDiff = cardsYDiff > 0 ? cardsYDiff - mPlayerCardView.getHeight() / 8 : cardsYDiff + mPlayerCardView.getHeight() / 8;
 
         getMainActivity().playSound(MainActivity.SOUND_FIGHT);
         mPlayerCardView.animate()
