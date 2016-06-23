@@ -13,14 +13,26 @@
         android:orientation="vertical">
 
 
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/silver_background">
+
+            <ImageView
+                android:id="@+id/enemy_portrait"
+                android:layout_width="200dp"
+                android:layout_height="200dp"
+                android:layout_gravity="end"
+                tools:src="@drawable/invoker_female"
+                android:scaleType="fitXY"
+                android:scaleX="-1" />
+        </FrameLayout>
+
         <ImageView
-            android:id="@+id/enemy_portrait"
-            android:layout_width="200dp"
-            android:layout_height="200dp"
-            android:layout_alignParentEnd="true"
-            tools:background="@drawable/invoker_female"
-            android:scaleType="fitXY"
-            android:scaleX="-1" />
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/table"
+            android:layout_centerInParent="true" />
 
 
         <net.fred.taskgame.hero.views.GameCardView
@@ -28,7 +40,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="20dp"
-            android:layout_marginTop="20dp" />
+            android:layout_marginTop="80dp" />
 
         <net.fred.taskgame.hero.views.GameCardView
             android:id="@+id/player_card"
@@ -45,7 +57,7 @@
             android:layout_height="250dp"
             android:layout_alignParentBottom="true"
             android:layout_alignParentStart="true"
-            android:background="@drawable/invoker_female"
+            android:src="@drawable/invoker_female"
             android:scaleType="fitXY" />
 
     </RelativeLayout>

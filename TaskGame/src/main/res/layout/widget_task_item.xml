@@ -31,7 +31,7 @@
             android:layout_marginStart="5dp"
             android:layout_marginTop="5dp"
             android:layout_toStartOf="@+id/quest_icon"
-            android:singleLine="true"
+            android:maxLines="1"
             android:textSize="@dimen/widget_text_size_big"
             android:textStyle="bold"
             tools:text="title" />

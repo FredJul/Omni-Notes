@@ -112,5 +112,16 @@ public class Level extends BaseModel {
         level.enemyCards.add(Card.getAllCardsMap().get(Card.CREATURE_TROLL));
         level.enemyCards.add(Card.getAllCardsMap().get(Card.CREATURE_SKELETON_ARCHER));
         ALL_LEVELS_LIST.add(level);
+
+        level = new Level();
+        level.levelNumber = 6;
+        level.enemyIconResId = R.drawable.invoker_male;
+        level.specialMusicResId = R.raw.boss_theme;
+        level.isCompleted = completedList.get(level.levelNumber);
+        level.enemyCards.add(Card.getAllCardsMap().get(Card.CREATURE_TROLL));
+        level.enemyCards.add(Card.getAllCardsMap().get(Card.CREATURE_SKELETON_ARCHER));
+        level.enemyCards.add(Card.getAllCardsMap().get(Card.CREATURE_TROLL));
+        level.enemyCards.add(Card.getAllCardsMap().get(Card.CREATURE_SKELETON_ARCHER));
+        ALL_LEVELS_LIST.add(level);
     }
 }

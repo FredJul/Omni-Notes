@@ -62,7 +62,7 @@ public class ComposeDeckAdapter extends RecyclerView.Adapter<ComposeDeckAdapter.
     }
 
     @Override
-    public void onBindViewHolder(final CardViewHolder holder, final int position) {
+    public void onBindViewHolder(final CardViewHolder holder, int position) {
         Card card = mCards.get(position);
 
         holder.mCard.setCard(card);
@@ -71,7 +71,7 @@ public class ComposeDeckAdapter extends RecyclerView.Adapter<ComposeDeckAdapter.
         holder.mCard.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mItemListener.onItemClicked(position);
+                mItemListener.onItemClicked(holder.getAdapterPosition());
             }
         });
     }

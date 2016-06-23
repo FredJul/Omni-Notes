@@ -4,7 +4,8 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
+import android.widget.Button;
+import android.widget.ImageView;
 
 import net.fred.taskgame.hero.R;
 import net.fred.taskgame.hero.models.Level;
@@ -22,7 +23,9 @@ public class LevelSelectionAdapter extends RecyclerView.Adapter<LevelSelectionAd
     public static class LevelViewHolder extends RecyclerView.ViewHolder {
 
         @BindView(R.id.level_number)
-        TextView mLevelNumber;
+        Button mLevelNumber;
+        @BindView(R.id.lock_icon)
+        ImageView mLockIcon;
 
         public LevelViewHolder(View v) {
             super(v);
@@ -59,21 +62,29 @@ public class LevelSelectionAdapter extends RecyclerView.Adapter<LevelSelectionAd
     }
 
     @Override
-    public void onBindViewHolder(final LevelViewHolder holder, final int position) {
+    public void onBindViewHolder(final LevelViewHolder holder, int position) {
         Level level = mLevels.get(position);
 
+        holder.mLockIcon.setVisibility(View.GONE);
         holder.mLevelNumber.setText(String.valueOf(level.levelNumber));
         holder.mLevelNumber.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mItemListener.onItemClicked(position);
+                mItemListener.onItemClicked(holder.getAdapterPosition());
             }
         });
 
         if (level.isCompleted) {
-            holder.mLevelNumber.setBackgroundResource(R.color.info);
+            holder.mLevelNumber.setSelected(true);
+            holder.mLevelNumber.setEnabled(true);
+        } else if (position == 0 || mLevels.get(position - 1).isCompleted) {
+            holder.mLevelNumber.setSelected(false);
+            holder.mLevelNumber.setEnabled(true);
         } else {
-            holder.mLevelNumber.setBackgroundResource(R.color.warning);
+            holder.mLevelNumber.setSelected(false);
+            holder.mLevelNumber.setEnabled(false);
+            holder.mLevelNumber.setText("");
+            holder.mLockIcon.setVisibility(View.VISIBLE);
         }
     }
 
