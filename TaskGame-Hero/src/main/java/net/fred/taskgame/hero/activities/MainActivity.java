@@ -36,6 +36,7 @@ public class MainActivity extends BaseGameActivity {
 
     private MediaPlayer mMediaPlayer;
     private SoundPool mSoundPool;
+    private int mCurrentSoundStreamId;
 
     @RawRes
     private int mCurrentMusicResId;
@@ -75,6 +76,7 @@ public class MainActivity extends BaseGameActivity {
         super.onStop();
 
         stopMusic();
+        stopSound();
     }
 
     @Override
@@ -142,6 +144,12 @@ public class MainActivity extends BaseGameActivity {
     }
 
     public void playSound(int soundId) {
-        mSoundPool.play(soundId, 0.5f, 0.5f, 1, 0, 1f);
+        mCurrentSoundStreamId = mSoundPool.play(soundId, 0.5f, 0.5f, 1, 0, 1f);
+    }
+
+    public void stopSound() {
+        if (mSoundPool != null && mCurrentSoundStreamId != 0) {
+            mSoundPool.stop(mCurrentSoundStreamId);
+        }
     }
 }

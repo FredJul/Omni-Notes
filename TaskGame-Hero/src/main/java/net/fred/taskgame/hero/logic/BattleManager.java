@@ -17,6 +17,8 @@ public class BattleManager {
     List<Card> mRemainingPlayerCards = new ArrayList<>();
     List<Card> mUsedPlayerCards = new ArrayList<>();
 
+    boolean mStunEnemy;
+
     public List<Card> getRemainingEnemyCards() {
         return mRemainingEnemyCards;
     }
@@ -117,8 +119,11 @@ public class BattleManager {
 
         enemy.defense -= player.attack;
         enemy.defense = enemy.defense < 0 ? 0 : enemy.defense;
-        player.defense -= enemy.attack;
-        player.defense = player.defense < 0 ? 0 : player.defense;
+        if (!mStunEnemy) {
+            player.defense -= enemy.attack;
+            player.defense = player.defense < 0 ? 0 : player.defense;
+        }
+        mStunEnemy = false;
     }
 
     public void play(Card card) {
@@ -126,7 +131,7 @@ public class BattleManager {
         mUsedPlayerCards.add(card);
 
         if (card.type == Card.Type.SUPPORT) {
-            executeSupportCard(card);
+            Card.getAllCardsMap().get(card.id).supportAction.executeSupportAction(this);
         }
 
         play();
@@ -168,18 +173,7 @@ public class BattleManager {
         }
     }
 
-    private void executeSupportCard(Card card) {
-        switch (card.supportAction) {
-            case PLAYER_ATTACK_MULT:
-                getLastUsedPlayerCreatureCard().attack *= 2;
-                getLastUsedPlayerCreatureCard().defense /= 1.3;
-                break;
-            case PLAYER_DEFENSE_MULT:
-                getLastUsedPlayerCreatureCard().defense *= 2;
-                break;
-            case ENEMY_ATTACK_DIV:
-                getCurrentOrNextAliveEnemyCreatureCard().attack /= 2;
-                break;
-        }
+    public void stunEnemy() {
+        mStunEnemy = true;
     }
 }

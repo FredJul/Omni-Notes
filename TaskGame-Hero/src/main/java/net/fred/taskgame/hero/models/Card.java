@@ -13,6 +13,7 @@ import com.raizlabs.android.dbflow.sql.language.Select;
 import com.raizlabs.android.dbflow.structure.BaseModel;
 
 import net.fred.taskgame.hero.R;
+import net.fred.taskgame.hero.logic.BattleManager;
 
 import org.parceler.Parcel;
 
@@ -23,9 +24,11 @@ import java.util.List;
 @Table(database = AppDatabase.class)
 public class Card extends BaseModel implements Cloneable {
 
-    public enum Type {CREATURE, SUPPORT}
+    public interface SupportAction {
+        void executeSupportAction(BattleManager manager);
+    }
 
-    public enum SupportAction {PLAYER_ATTACK_MULT, PLAYER_DEFENSE_MULT, ENEMY_ATTACK_DIV}
+    public enum Type {CREATURE, SUPPORT}
 
     public final static int CREATURE_TROLL = 0;
     public final static int CREATURE_SKELETON_ARCHER = 1;
@@ -33,6 +36,10 @@ public class Card extends BaseModel implements Cloneable {
 
     public final static int SUPPORT_POWER_POTION = 1000;
     public final static int SUPPORT_WEAPON_EROSION = 1001;
+    public final static int SUPPORT_FREEDOM = 1002;
+    public final static int SUPPORT_CONFUSION = 1003;
+    public final static int SUPPORT_SURPRISE = 1004;
+    public final static int SUPPORT_MEDICAL_ATTENTION = 1005;
 
     public final static int INVALID_ID = 0;
 
@@ -66,7 +73,7 @@ public class Card extends BaseModel implements Cloneable {
 
     public transient int price;
 
-    public transient SupportAction supportAction = SupportAction.PLAYER_ATTACK_MULT;
+    public transient SupportAction supportAction;
 
     public Card() {
     }
@@ -85,7 +92,6 @@ public class Card extends BaseModel implements Cloneable {
         card.price = price;
         card.isObtained = isObtained;
         card.isInDeck = isInDeck;
-        card.supportAction = supportAction;
         return card;
     }
 
@@ -146,67 +152,166 @@ public class Card extends BaseModel implements Cloneable {
 
         Card card = new Card();
         card.id = CREATURE_TROLL;
-        card.isObtained = true; // The only card you get for free at the beginning
-        card.isInDeck = inDeckList.get(card.id);
+        card.isObtained = true; // the only card you get for free at the beginning
+        card.isInDeck = inDeckList.size() == 0 ? true : inDeckList.get(card.id); // by default, add it
+        card.neededSlots = 2;
         card.price = 0;
         card.name = "Troll";
-        card.neededSlots = 2;
         card.attack = 2;
         card.defense = 4;
-        card.desc = "It's fascinated to see what we can do with some little piece of rocks";
         card.iconResId = R.drawable.troll;
+        card.desc = "It's fascinated to see what we can do with some little piece of rocks";
         ALL_CARDS_MAP.append(card.id, card);
 
         card = new Card();
         card.id = CREATURE_SKELETON_ARCHER;
         card.isObtained = obtainedList.get(card.id);
         card.isInDeck = inDeckList.get(card.id);
-        card.price = 50;
-        card.name = "Skeleton Archer";
         card.neededSlots = 1;
+        card.price = card.neededSlots * 50;
+        card.name = "Skeleton Archer";
         card.attack = 1;
         card.defense = 4;
-        card.desc = "Deads are not totally dead, and strangely know how to send arrows in your face";
         card.iconResId = R.drawable.skeleton_archer;
+        card.desc = "Deads are not totally dead, and they strangely know how to send arrows in your face";
         ALL_CARDS_MAP.append(card.id, card);
 
         card = new Card();
         card.id = CREATURE_TREE;
         card.isObtained = obtainedList.get(card.id);
         card.isInDeck = inDeckList.get(card.id);
-        card.price = 70;
-        card.name = "Enchanted Tree";
         card.neededSlots = 2;
+        card.price = card.neededSlots * 50;
+        card.name = "Enchanted Tree";
         card.attack = 2;
         card.defense = 5;
-        card.desc = "Nature is beautiful, except maybe when it tries to kill you";
         card.iconResId = R.drawable.enchanted_tree;
+        card.desc = "Nature is beautiful, except maybe when it tries to kill you";
         ALL_CARDS_MAP.append(card.id, card);
 
         card = new Card();
         card.id = SUPPORT_POWER_POTION;
         card.isObtained = obtainedList.get(card.id);
         card.isInDeck = inDeckList.get(card.id);
-        card.price = 150;
-        card.type = Card.Type.SUPPORT;
-        card.supportAction = Card.SupportAction.PLAYER_ATTACK_MULT;
-        card.name = "Fake potion of invincibility";
         card.neededSlots = 3;
-        card.desc = "Your creature feel invincible and run into the target with a loud war cry.\nAttack multiplied by 2\nDefense divided by 1.5";
+        card.price = card.neededSlots * 50;
+        card.type = Card.Type.SUPPORT;
+        card.name = "(Fake) Potion of invincibility";
         card.iconResId = R.drawable.red_potion;
+        card.desc = "It's only syrup, but placebo effect makes your creature feel invincible\n ● Multiply attack by 2\n ● Divide defense by 1.3";
+        card.supportAction = new SupportAction() {
+            @Override
+            public void executeSupportAction(BattleManager manager) {
+                Card player = manager.getLastUsedPlayerCreatureCard();
+                player.attack *= 2;
+                player.defense /= 1.3;
+            }
+        };
         ALL_CARDS_MAP.append(card.id, card);
 
         card = new Card();
         card.id = SUPPORT_WEAPON_EROSION;
         card.isObtained = obtainedList.get(card.id);
         card.isInDeck = inDeckList.get(card.id);
-        card.price = 200;
-        card.type = Card.Type.SUPPORT;
-        card.supportAction = Card.SupportAction.ENEMY_ATTACK_DIV;
-        card.name = "Weapon erosion";
         card.neededSlots = 4;
-        card.desc = "Strangely your enemy weapon starts to run into pieces.\nEnemy attack divided by 2";
+        card.price = card.neededSlots * 50;
+        card.type = Card.Type.SUPPORT;
+        card.name = "Weapon erosion";
         card.iconResId = R.drawable.erode_weapon;
+        card.desc = "Your enemy weapon starts to run into pieces. Serves him damned right!\n ● Reduce enemy attack by 4";
+        card.supportAction = new SupportAction() {
+            @Override
+            public void executeSupportAction(BattleManager manager) {
+                Card enemy = manager.getCurrentOrNextAliveEnemyCreatureCard();
+                enemy.attack -= 4;
+                if (enemy.attack < 0) {
+                    enemy.attack = 0;
+                }
+            }
+        };
+        ALL_CARDS_MAP.append(card.id, card);
+
+        card = new Card();
+        card.id = SUPPORT_FREEDOM;
+        card.isObtained = obtainedList.get(card.id);
+        card.isInDeck = inDeckList.get(card.id);
+        card.neededSlots = 6;
+        card.price = card.neededSlots * 50;
+        card.type = Card.Type.SUPPORT;
+        card.name = "Freedom";
+        card.iconResId = R.drawable.unshackled;
+        card.desc = "Free your creature from your control. It will charge the enemy with all his forces, and profit of the breach to run away.\n ● Multiply attack by 3\n ● Your creature run away after 1 round";
+        card.supportAction = new SupportAction() {
+            @Override
+            public void executeSupportAction(BattleManager manager) {
+                Card player = manager.getLastUsedPlayerCreatureCard();
+                player.defense = 0; //TODO: not true, but does the job for now
+                player.attack *= 3;
+            }
+        };
+        ALL_CARDS_MAP.append(card.id, card);
+
+        card = new Card();
+        card.id = SUPPORT_CONFUSION;
+        card.isObtained = obtainedList.get(card.id);
+        card.isInDeck = inDeckList.get(card.id);
+        card.neededSlots = 4;
+        card.price = card.neededSlots * 50;
+        card.type = Card.Type.SUPPORT;
+        card.name = "Confusion";
+        card.iconResId = R.drawable.confusion;
+        card.desc = "Words can be powerful: use them to cause chaos into enemy's mind\n ● Enemy turn is skipped";
+        card.supportAction = new SupportAction() {
+            @Override
+            public void executeSupportAction(BattleManager manager) {
+                manager.stunEnemy();
+            }
+        };
+        ALL_CARDS_MAP.append(card.id, card);
+
+        card = new Card();
+        card.id = SUPPORT_SURPRISE;
+        card.isObtained = obtainedList.get(card.id);
+        card.isInDeck = inDeckList.get(card.id);
+        card.neededSlots = 3;
+        card.price = card.neededSlots * 50;
+        card.type = Card.Type.SUPPORT;
+        card.name = "Surprise!";
+        card.iconResId = R.drawable.surprise;
+        card.desc = "Forget honor and attack the enemy from behind, it's more effective\n ● If you kill the enemy this turn, you'll not receive any damage";
+        card.supportAction = new SupportAction() {
+            @Override
+            public void executeSupportAction(BattleManager manager) {
+                Card player = manager.getLastUsedPlayerCreatureCard();
+                Card enemy = manager.getCurrentOrNextAliveEnemyCreatureCard();
+                if (enemy.defense <= player.attack) {
+                    player.defense += enemy.attack;
+                }
+            }
+        };
+        ALL_CARDS_MAP.append(card.id, card);
+
+        card = new Card();
+        card.id = SUPPORT_MEDICAL_ATTENTION;
+        card.isObtained = obtainedList.get(card.id);
+        card.isInDeck = inDeckList.get(card.id);
+        card.neededSlots = 3;
+        card.price = card.neededSlots * 50;
+        card.type = Card.Type.SUPPORT;
+        card.name = "Medical Attention";
+        card.iconResId = R.drawable.medical_attention;
+        card.desc = "Ok it's a summoned creature, but does that means you should be heartless?\n ● Regain defense by 2 if wounded";
+        card.supportAction = new SupportAction() {
+            @Override
+            public void executeSupportAction(BattleManager manager) {
+                Card player = manager.getLastUsedPlayerCreatureCard();
+                //TODO: does not take in account the previous defense increase
+                int defenseDiff = ALL_CARDS_MAP.get(player.id).defense - player.defense;
+                if (defenseDiff > 0) {
+                    player.defense += Math.min(2, defenseDiff);
+                }
+            }
+        };
         ALL_CARDS_MAP.append(card.id, card);
     }
 }

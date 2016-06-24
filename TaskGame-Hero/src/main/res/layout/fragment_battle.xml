@@ -84,10 +84,11 @@
     <HorizontalScrollView
         android:id="@+id/card_list_scroll_view"
         android:layout_width="match_parent"
-        android:layout_height="220dp"
-        android:background="@color/colorPrimary"
+        android:layout_height="wrap_content"
+        android:background="@drawable/silver_background"
         app:layout_behavior="android.support.design.widget.BottomSheetBehavior"
-        android:clipChildren="false">
+        android:clipChildren="false"
+        android:clipToPadding="false">
 
         <LinearLayout
             android:id="@+id/card_list"

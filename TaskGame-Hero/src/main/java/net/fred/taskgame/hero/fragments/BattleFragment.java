@@ -275,6 +275,10 @@ public class BattleFragment extends BaseFragment {
     }
 
     private void updateUI() {
+        if (getContext() == null) {
+            return; // we have been detached, we shouldn't do anything
+        }
+
         boolean isPlayerCreatureStillAlive = mBattleManager.isPlayerCreatureStillAlive();
         mPlayerCardView.setCard(mBattleManager.getLastUsedPlayerCreatureCard());
         mEnemyCardView.setCard(mBattleManager.getCurrentOrNextAliveEnemyCreatureCard());
