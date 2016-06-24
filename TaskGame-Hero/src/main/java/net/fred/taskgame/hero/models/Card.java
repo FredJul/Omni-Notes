@@ -153,7 +153,7 @@ public class Card extends BaseModel implements Cloneable {
         Card card = new Card();
         card.id = CREATURE_TROLL;
         card.isObtained = true; // the only card you get for free at the beginning
-        card.isInDeck = inDeckList.size() == 0 ? true : inDeckList.get(card.id); // by default, add it
+        card.isInDeck = inDeckList.size() == 0 || inDeckList.get(card.id); // by default, add it
         card.neededSlots = 2;
         card.price = 0;
         card.name = "Troll";
@@ -218,7 +218,7 @@ public class Card extends BaseModel implements Cloneable {
         card.type = Card.Type.SUPPORT;
         card.name = "Weapon erosion";
         card.iconResId = R.drawable.erode_weapon;
-        card.desc = "Your enemy weapon starts to run into pieces. Serves him damned right!\n ● Reduce enemy attack by 4";
+        card.desc = "Your enemy weapon starts to run into pieces. Serves him damned right!\n ● Lower enemy attack by 4";
         card.supportAction = new SupportAction() {
             @Override
             public void executeSupportAction(BattleManager manager) {
@@ -260,7 +260,7 @@ public class Card extends BaseModel implements Cloneable {
         card.type = Card.Type.SUPPORT;
         card.name = "Confusion";
         card.iconResId = R.drawable.confusion;
-        card.desc = "Words can be powerful: use them to cause chaos into enemy's mind\n ● Enemy turn is skipped";
+        card.desc = "Sentences like \"Hey look behind! An elephant!\" or \"Be careful, you hold your weapon in the wrong way round\" can be very effective to confuse an enemy\n ● Enemy turn is skipped";
         card.supportAction = new SupportAction() {
             @Override
             public void executeSupportAction(BattleManager manager) {

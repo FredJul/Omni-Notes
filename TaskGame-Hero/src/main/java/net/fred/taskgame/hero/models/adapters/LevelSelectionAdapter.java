@@ -75,13 +75,13 @@ public class LevelSelectionAdapter extends RecyclerView.Adapter<LevelSelectionAd
         });
 
         if (level.isCompleted) {
-            holder.mLevelNumber.setSelected(true);
+            holder.mLevelNumber.setSelected(false);
             holder.mLevelNumber.setEnabled(true);
         } else if (position == 0 || mLevels.get(position - 1).isCompleted) {
-            holder.mLevelNumber.setSelected(false);
+            holder.mLevelNumber.setSelected(true);
             holder.mLevelNumber.setEnabled(true);
         } else {
-            holder.mLevelNumber.setSelected(false);
+            holder.mLevelNumber.setSelected(true);
             holder.mLevelNumber.setEnabled(false);
             holder.mLevelNumber.setText("");
             holder.mLockIcon.setVisibility(View.VISIBLE);
