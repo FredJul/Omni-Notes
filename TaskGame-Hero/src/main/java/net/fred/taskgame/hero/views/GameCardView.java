@@ -19,6 +19,9 @@ import net.fred.taskgame.hero.databinding.ViewCreatureCardBinding;
 import net.fred.taskgame.hero.databinding.ViewSupportCardBinding;
 import net.fred.taskgame.hero.models.Card;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
@@ -94,7 +97,7 @@ public class GameCardView extends FrameLayout {
             }
         };
 
-        AnimatorSet animSet = null;
+        List<Animator> animators = new ArrayList<>();
 
         int previousAttack = Integer.valueOf(mAttackTextView.getText().toString());
         if (previousAttack > mCard.attack || previousAttack < mCard.attack) {
@@ -110,8 +113,9 @@ public class GameCardView extends FrameLayout {
             scaleYAnim.setRepeatCount(1);
             scaleYAnim.setRepeatMode(ObjectAnimator.REVERSE);
 
-            animSet = new AnimatorSet();
-            animSet.playTogether(colorAnim, scaleXAnim, scaleYAnim);
+            animators.add(colorAnim);
+            animators.add(scaleXAnim);
+            animators.add(scaleYAnim);
         }
 
         int previousDefense = Integer.valueOf(mDefenseTextView.getText().toString());
@@ -128,11 +132,13 @@ public class GameCardView extends FrameLayout {
             scaleYAnim.setRepeatCount(1);
             scaleYAnim.setRepeatMode(ObjectAnimator.REVERSE);
 
-            animSet = new AnimatorSet();
-            animSet.playTogether(colorAnim, scaleXAnim, scaleYAnim);
+            animators.add(colorAnim);
+            animators.add(scaleXAnim);
+            animators.add(scaleYAnim);
         }
 
-        if (animSet != null) {
+        if (!animators.isEmpty()) {
+            AnimatorSet animSet = new AnimatorSet();
             if (endAction != null) {
                 animSet.addListener(new Animator.AnimatorListener() {
                     @Override
@@ -153,6 +159,7 @@ public class GameCardView extends FrameLayout {
                     }
                 });
             }
+            animSet.playTogether(animators);
             animSet.start();
             return true;
         }
