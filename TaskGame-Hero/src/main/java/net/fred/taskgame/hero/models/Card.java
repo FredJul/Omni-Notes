@@ -5,7 +5,6 @@ import android.util.SparseArray;
 import android.util.SparseBooleanArray;
 import android.widget.ImageView;
 
-import com.google.gson.annotations.Expose;
 import com.raizlabs.android.dbflow.annotation.Column;
 import com.raizlabs.android.dbflow.annotation.PrimaryKey;
 import com.raizlabs.android.dbflow.annotation.Table;
@@ -46,15 +45,12 @@ public class Card extends BaseModel implements Cloneable {
     private final static SparseArray<Card> ALL_CARDS_MAP = new SparseArray<>();
 
     @PrimaryKey
-    @Expose
     public int id = INVALID_ID;
 
     @Column
-    @Expose
     public boolean isObtained;
 
     @Column
-    @Expose
     public boolean isInDeck;
 
     public transient Type type = Type.CREATURE;

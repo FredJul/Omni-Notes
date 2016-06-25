@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.support.annotation.RawRes;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 
 import net.fred.taskgame.hero.R;
@@ -20,7 +21,7 @@ import net.fred.taskgame.hero.utils.UiUtils;
 
 import butterknife.ButterKnife;
 
-public class MainActivity extends BaseGameActivity {
+public class MainActivity extends AppCompatActivity {
 
     public static int SOUND_ENTER_BATTLE;
     public static int SOUND_FIGHT;
@@ -110,16 +111,6 @@ public class MainActivity extends BaseGameActivity {
         FragmentTransaction transaction = mFragmentManager.beginTransaction();
         UiUtils.animateTransition(transaction, UiUtils.TransitionType.TRANSITION_FADE_IN);
         transaction.replace(R.id.fragment_container, new ComposeDeckFragment(), ComposeDeckFragment.class.getName()).addToBackStack(null).commitAllowingStateLoss();
-    }
-
-    @Override
-    public void onSignInFailed() {
-
-    }
-
-    @Override
-    public void onSignInSucceeded() {
-
     }
 
     public void stopMusic() {

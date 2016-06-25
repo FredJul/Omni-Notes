@@ -19,11 +19,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="net.fred.taskgame.hero">
 
-    <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-    <uses-permission android:name="android.permission.GET_ACCOUNTS" />
-    <uses-permission android:name="android.permission.WRITE_SYNC_SETTINGS" />
-
     <application
         android:name=".MainApplication"
         android:allowBackup="true"
@@ -47,31 +42,6 @@
             </intent-filter>
         </activity>
 
-        <provider
-            android:name=".providers.FakeProvider"
-            android:authorities="net.fred.taskgame.hero"
-            android:exported="false" />
-
-        <!-- This service implements our SyncAdapter. It needs to be exported, so that the system sync framework can access it. -->
-        <service
-            android:name=".services.SyncService"
-            android:exported="true">
-            <!-- This intent filter is required. It allows the system to launch our sync service as needed. -->
-            <intent-filter>
-                <action android:name="android.content.SyncAdapter" />
-            </intent-filter>
-            <!-- This points to a required XML file which describes our SyncAdapter. -->
-            <meta-data
-                android:name="android.content.SyncAdapter"
-                android:resource="@xml/syncadapter" />
-        </service>
-
-        <meta-data
-            android:name="com.google.android.gms.games.APP_ID"
-            android:value="@string/app_id" />
-        <meta-data
-            android:name="com.google.android.gms.version"
-            android:value="@integer/google_play_services_version" />
     </application>
 
 </manifest>

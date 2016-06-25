@@ -2,7 +2,6 @@ package net.fred.taskgame.hero.models;
 
 import android.util.SparseBooleanArray;
 
-import com.google.gson.annotations.Expose;
 import com.raizlabs.android.dbflow.annotation.Column;
 import com.raizlabs.android.dbflow.annotation.PrimaryKey;
 import com.raizlabs.android.dbflow.annotation.Table;
@@ -25,11 +24,9 @@ public class Level extends BaseModel {
     private final static List<Level> ALL_LEVELS_LIST = new ArrayList<>();
 
     @PrimaryKey
-    @Expose
     public int levelNumber;
 
     @Column
-    @Expose
     public boolean isCompleted;
 
     public transient int enemyIconResId = INVALID_ID;
