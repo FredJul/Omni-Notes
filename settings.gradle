@@ -1,3 +1,2 @@
-include ':libs:checklistview'
 include ':TaskGame'
 include ':TaskGame-Hero'

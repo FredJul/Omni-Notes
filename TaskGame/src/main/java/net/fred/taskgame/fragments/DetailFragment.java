@@ -66,6 +66,7 @@ import net.fred.taskgame.models.adapters.CategoryAdapter;
 import net.fred.taskgame.models.listeners.OnReminderPickedListener;
 import net.fred.taskgame.utils.Constants;
 import net.fred.taskgame.utils.DbHelper;
+import net.fred.taskgame.utils.Dog;
 import net.fred.taskgame.utils.KeyboardUtils;
 import net.fred.taskgame.utils.LoaderUtils;
 import net.fred.taskgame.utils.PrefUtils;
@@ -82,8 +83,9 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-import it.feio.android.checklistview.ChecklistManager;
+import it.feio.android.checklistview.exceptions.ViewNotSupportedException;
 import it.feio.android.checklistview.interfaces.CheckListChangedListener;
+import it.feio.android.checklistview.models.ChecklistManager;
 import me.tatarka.rxloader.RxLoaderObserver;
 import rx.Observable;
 import rx.Subscriber;
@@ -549,25 +551,25 @@ public class DetailFragment extends Fragment implements OnReminderPickedListener
 
     private void toggleChecklist(final boolean keepChecked, final boolean showChecks) {
         // Get instance and set options to convert EditText to CheckListView
-        mChecklistManager = ChecklistManager.getInstance(getActivity());
-        mChecklistManager.setMoveCheckedOnBottom(Integer.valueOf(PrefUtils.getString("settings_checked_items_behavior",
-                String.valueOf(it.feio.android.checklistview.Settings.CHECKED_HOLD))));
-        mChecklistManager.setShowChecks(true);
-        mChecklistManager.setNewEntryHint(getString(R.string.checklist_item_hint));
+        mChecklistManager = ChecklistManager.getInstance(getActivity())
+                .moveCheckedOnBottom(Integer.valueOf(PrefUtils.getString("settings_checked_items_behavior",
+                        String.valueOf(it.feio.android.checklistview.Settings.CHECKED_HOLD))))
+                .showCheckMarks(showChecks)
+                .keepChecked(keepChecked)
+                .newEntryHint(getString(R.string.checklist_item_hint))
+                .dragVibrationEnabled(true);
 
         // Links parsing options
         mChecklistManager.addTextChangedListener(this);
         mChecklistManager.setCheckListChangedListener(this);
 
-        // Options for converting back to simple text
-        mChecklistManager.setKeepChecked(keepChecked);
-        mChecklistManager.setShowChecks(showChecks);
-
-        // Vibration
-        mChecklistManager.setDragVibrationEnabled(true);
-
         // Switches the views
-        View newView = mChecklistManager.convert(mToggleChecklistView);
+        View newView = null;
+        try {
+            newView = mChecklistManager.convert(mToggleChecklistView);
+        } catch (ViewNotSupportedException e) {
+            Dog.e("Error switching checklist view", e);
+        }
 
         // Switches the views
         if (newView != null) {
@@ -764,8 +766,8 @@ public class DetailFragment extends Fragment implements OnReminderPickedListener
             content = mContentEditText.getText().toString();
         } else {
             if (mChecklistManager != null) {
-                mChecklistManager.setKeepChecked(true);
-                mChecklistManager.setShowChecks(true);
+                mChecklistManager.keepChecked(true)
+                        .showCheckMarks(true);
                 content = mChecklistManager.getText();
             }
         }
@@ -795,8 +797,7 @@ public class DetailFragment extends Fragment implements OnReminderPickedListener
     }
 
     @Override
-    public void beforeTextChanged(CharSequence s, int start, int count,
-                                  int after) {
+    public void beforeTextChanged(CharSequence s, int start, int count, int after) {
     }
 
     @Override
