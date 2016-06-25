@@ -116,9 +116,10 @@ public class BattleFragment extends BaseFragment {
 
         final Card playedCard = mCurrentlyAnimatedCard.getCard();
         if (playedCard.type == Card.Type.CREATURE) {
-            int cardPadding = mCurrentlyAnimatedCard.getPaddingTop();
+            int cardPaddingStart = mCurrentlyAnimatedCard.getPaddingStart() - mCardListScrollView.getScrollX();
+            int cardPaddingTop = mCurrentlyAnimatedCard.getPaddingTop() + mCardListScrollView.getPaddingTop();
             mCurrentlyAnimatedCard.animate().scaleX(1).scaleY(1).translationX(0).translationY(0)
-                    .x(mPlayerCardView.getX() - mCardListScrollView.getX() - cardPadding).y(mPlayerCardView.getY() - mCardListScrollView.getY() - cardPadding)
+                    .x(mPlayerCardView.getX() - mCardListScrollView.getX() - cardPaddingStart).y(mPlayerCardView.getY() - mCardListScrollView.getY() - cardPaddingTop)
                     .withEndAction(new Runnable() {
                         @Override
                         public void run() {
@@ -129,7 +130,8 @@ public class BattleFragment extends BaseFragment {
                                 public void run() {
                                     mCardListLayout.removeView(mCurrentlyAnimatedCard);
                                     mCurrentlyAnimatedCard = null;
-                                    animateBattle(playedCard);
+                                    mBattleManager.play(playedCard);
+                                    animateNextStep();
                                 }
                             });
                         }
@@ -145,7 +147,8 @@ public class BattleFragment extends BaseFragment {
                                 public void run() {
                                     mCardListLayout.removeView(mCurrentlyAnimatedCard);
                                     mCurrentlyAnimatedCard = null;
-                                    animateBattle(playedCard);
+                                    mBattleManager.play(playedCard);
+                                    animateNextStep();
                                 }
                             });
                         }
@@ -154,88 +157,156 @@ public class BattleFragment extends BaseFragment {
         }
     }
 
-    private void animateBattle() {
-        animateBattle(null);
-    }
-
-    private void animateBattle(final Card card) {
-        float cardsXDiff = (mPlayerCardView.getX() - mEnemyCardView.getX() - mPlayerCardView.getWidth()) / 2;
-        cardsXDiff = cardsXDiff > 0 ? cardsXDiff + mPlayerCardView.getWidth() / 6 : cardsXDiff - mPlayerCardView.getWidth() / 6;
-        float cardsYDiff = (mPlayerCardView.getY() - mEnemyCardView.getY()) / 2;
-        cardsYDiff = cardsYDiff > 0 ? cardsYDiff - mPlayerCardView.getHeight() / 8 : cardsYDiff + mPlayerCardView.getHeight() / 8;
-
-        getMainActivity().playSound(MainActivity.SOUND_FIGHT);
-        mPlayerCardView.animate()
-                .translationX(-cardsXDiff).translationY(-cardsYDiff)
-                .withEndAction(new Runnable() {
+    private void animateNextStep() {
+        BattleManager.BattleStep step = mBattleManager.getNextStep();
+        switch (step) {
+            case APPLY_PLAYER_SUPPORT: {
+                boolean animationInProgress = mEnemyCardView.animateValueChange(new Runnable() {
                     @Override
                     public void run() {
-                        mPlayerCardView.animate()
-                                .translationX(0).translationY(0)
-                                .withEndAction(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        if (card != null) {
-                                            mBattleManager.play(card);
-                                        } else {
-                                            mBattleManager.play();
-                                        }
+                        animateNextStep();
+                    }
+                });
 
-                                        boolean hasAnimationInProgress = false;
-                                        if (!mBattleManager.isEnemyCreatureStillAlive()) {
-                                            getMainActivity().playSound(MainActivity.SOUND_DEATH);
-                                            hasAnimationInProgress = true;
-                                            mEnemyCardView.animate().alpha(0).withEndAction(new Runnable() {
-                                                @Override
-                                                public void run() {
-                                                    Card nextEnemyCard = mBattleManager.getNextEnemyCreatureCard();
-                                                    if (nextEnemyCard != null) {
-                                                        mEnemyCardView.setCard(nextEnemyCard);
-                                                        mEnemyCardView.animate().alpha(1).withEndAction(new Runnable() {
-                                                            @Override
-                                                            public void run() {
-                                                                updateUI();
-                                                            }
-                                                        });
-                                                    } else {
-                                                        updateUI();
-                                                    }
-                                                }
-                                            });
-                                        }
+                if (animationInProgress) {
+                    mPlayerCardView.animateValueChange(null);
+                } else {
+                    mPlayerCardView.animateValueChange(new Runnable() {
+                        @Override
+                        public void run() {
+                            animateNextStep();
+                        }
+                    });
+                }
+                break;
+            }
+            case APPLY_ENEMY_SUPPORT: {
+                //TODO: display and animate enemy support card
 
-                                        if (!mBattleManager.isPlayerCreatureStillAlive()) {
-                                            getMainActivity().playSound(MainActivity.SOUND_DEATH);
-                                            if (hasAnimationInProgress) {
-                                                mPlayerCardView.animate().alpha(0); // If an animation already started, no need to update the UI at the end of this one
-                                            } else {
-                                                mPlayerCardView.animate().alpha(0).withEndAction(new Runnable() {
-                                                    @Override
-                                                    public void run() {
-                                                        updateUI();
-                                                    }
-                                                });
+                boolean animationInProgress = mEnemyCardView.animateValueChange(new Runnable() {
+                    @Override
+                    public void run() {
+                        animateNextStep();
+                    }
+                });
+
+                if (animationInProgress) {
+                    mPlayerCardView.animateValueChange(null);
+                } else {
+                    mPlayerCardView.animateValueChange(new Runnable() {
+                        @Override
+                        public void run() {
+                            animateNextStep();
+                        }
+                    });
+                }
+                break;
+            }
+            case FIGHT: {
+                float cardsXDiff = (mPlayerCardView.getX() - mEnemyCardView.getX() - mPlayerCardView.getWidth()) / 2;
+                cardsXDiff = cardsXDiff > 0 ? cardsXDiff + mPlayerCardView.getWidth() / 6 : cardsXDiff - mPlayerCardView.getWidth() / 6;
+                float cardsYDiff = (mPlayerCardView.getY() - mEnemyCardView.getY()) / 2;
+                cardsYDiff = cardsYDiff > 0 ? cardsYDiff - mPlayerCardView.getHeight() / 8 : cardsYDiff + mPlayerCardView.getHeight() / 8;
+
+                getMainActivity().playSound(MainActivity.SOUND_FIGHT);
+                mPlayerCardView.animate()
+                        .translationX(-cardsXDiff).translationY(-cardsYDiff)
+                        .withEndAction(new Runnable() {
+                            @Override
+                            public void run() {
+                                mPlayerCardView.animate()
+                                        .translationX(0).translationY(0)
+                                        .withEndAction(new Runnable() {
+                                            @Override
+                                            public void run() {
+                                                animateNextStep();
                                             }
-                                            hasAnimationInProgress = true;
-                                        }
+                                        });
+                            }
+                        });
 
-                                        if (!hasAnimationInProgress) {
-                                            updateUI();
-                                        }
-                                    }
-                                });
-                    }
-                });
-
-        mEnemyCardView.animate()
-                .translationX(cardsXDiff).translationY(cardsYDiff)
-                .withEndAction(new Runnable() {
+                mEnemyCardView.animate()
+                        .translationX(cardsXDiff).translationY(cardsYDiff)
+                        .withEndAction(new Runnable() {
+                            @Override
+                            public void run() {
+                                mEnemyCardView.animate()
+                                        .translationX(0).translationY(0);
+                            }
+                        });
+                break;
+            }
+            case APPLY_DAMAGES: {
+                mEnemyCardView.animateValueChange(null);
+                mPlayerCardView.animateValueChange(null);
+                animateNextStep();
+                break;
+            }
+            case PLAYER_DEATH: {
+                getMainActivity().playSound(MainActivity.SOUND_DEATH);
+                mPlayerCardView.animate().alpha(0).withEndAction(new Runnable() {
                     @Override
                     public void run() {
-                        mEnemyCardView.animate()
-                                .translationX(0).translationY(0);
+                        animateNextStep();
                     }
                 });
+                break;
+            }
+            case ENEMY_DEATH: {
+                getMainActivity().playSound(MainActivity.SOUND_DEATH);
+                mEnemyCardView.animate().alpha(0).withEndAction(new Runnable() {
+                    @Override
+                    public void run() {
+                        Card nextEnemyCard = mBattleManager.getNextEnemyCreatureCard();
+                        if (nextEnemyCard != null) {
+                            mEnemyCardView.setCard(nextEnemyCard);
+                            mEnemyCardView.animate().alpha(1).withEndAction(new Runnable() {
+                                @Override
+                                public void run() {
+                                    animateNextStep();
+                                }
+                            });
+                        } else {
+                            animateNextStep();
+                        }
+                    }
+                });
+                break;
+            }
+            case END_TURN: {
+                boolean isPlayerCreatureStillAlive = mBattleManager.isPlayerCreatureStillAlive();
+                if (isPlayerCreatureStillAlive) {
+                    List<Card> newCards = isPlayerCreatureStillAlive ? mBattleManager.getRemainingPlayerSupportCards() : mBattleManager.getRemainingPlayerCharacterCards();
+                    if (newCards.size() <= 0) {
+                        // The battle is not finished, but the user can only fight without using support, let's automatically start that
+                        mBattleManager.play();
+                        animateNextStep();
+                    }
+                }
+                updateUI();
+                break;
+            }
+            case PLAYER_WON: {
+                getMainActivity().playSound(MainActivity.SOUND_VICTORY);
+                UiUtils.showMessage(getActivity(), "Player won!");
+                mLevel.isCompleted = true;
+                mLevel.save();
+                getActivity().getSupportFragmentManager().popBackStack();
+                break;
+            }
+            case ENEMY_WON: {
+                getMainActivity().playSound(MainActivity.SOUND_DEFEAT);
+                UiUtils.showMessage(getActivity(), "Enemy won!");
+                getActivity().getSupportFragmentManager().popBackStack();
+                break;
+            }
+            case DRAW: {
+                getMainActivity().playSound(MainActivity.SOUND_DEFEAT);
+                UiUtils.showMessage(getActivity(), "Draw!");
+                getActivity().getSupportFragmentManager().popBackStack();
+                break;
+            }
+        }
     }
 
     @OnClick(R.id.dark_layer)
@@ -259,7 +330,7 @@ public class BattleFragment extends BaseFragment {
         cardView.animate()
                 .scaleX(1.7f)
                 .scaleY(1.7f)
-                .translationX(cardView.getWidth() / 2f - cardView.getX())
+                .translationX(cardView.getWidth() / 2f - cardView.getX() + mCardListScrollView.getScrollX())
                 .translationY(-(mCardListLayout.getHeight() * 1.35f));
         mDarkLayer.setVisibility(View.VISIBLE);
         mDarkLayer.animate().alpha(1);
@@ -321,33 +392,16 @@ public class BattleFragment extends BaseFragment {
             playWithoutSupportBtn.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    animateBattle();
+                    mBottomSheetBehavior.setHideable(true);
+                    mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
+                    mBattleManager.play();
+                    animateNextStep();
                 }
             });
             mCardListLayout.addView(playWithoutSupportBtn);
         }
 
         updateBottomSheetUI();
-
-        if (mBattleManager.getBattleStatus() != BattleManager.BattleStatus.NOT_FINISHED) {
-            if (mBattleManager.getBattleStatus() == BattleManager.BattleStatus.DRAW) {
-                getMainActivity().playSound(MainActivity.SOUND_DEFEAT);
-                UiUtils.showMessage(getActivity(), "Draw!");
-            } else if (mBattleManager.getBattleStatus() == BattleManager.BattleStatus.ENEMY_WON) {
-                getMainActivity().playSound(MainActivity.SOUND_DEFEAT);
-                UiUtils.showMessage(getActivity(), "Enemy won!");
-            } else if (mBattleManager.getBattleStatus() == BattleManager.BattleStatus.PLAYER_WON) {
-                getMainActivity().playSound(MainActivity.SOUND_VICTORY);
-                UiUtils.showMessage(getActivity(), "Player won!");
-                mLevel.isCompleted = true;
-                mLevel.save();
-            }
-            getActivity().getSupportFragmentManager().popBackStack();
-
-        } else if (isPlayerCreatureStillAlive && newCards.size() <= 0) {
-            // The battle is not finished, but the user can only fight without using support, let's automatically start that
-            animateBattle();
-        }
     }
 
     private void updateBottomSheetUI() {

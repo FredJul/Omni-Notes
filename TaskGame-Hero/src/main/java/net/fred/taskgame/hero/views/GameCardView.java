@@ -1,16 +1,26 @@
 package net.fred.taskgame.hero.views;
 
+import android.animation.Animator;
+import android.animation.AnimatorSet;
+import android.animation.ArgbEvaluator;
+import android.animation.ObjectAnimator;
 import android.content.Context;
 import android.databinding.DataBindingUtil;
+import android.graphics.Color;
 import android.util.AttributeSet;
+import android.util.Property;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.FrameLayout;
+import android.widget.TextView;
 
 import net.fred.taskgame.hero.R;
 import net.fred.taskgame.hero.databinding.ViewCreatureCardBinding;
 import net.fred.taskgame.hero.databinding.ViewSupportCardBinding;
 import net.fred.taskgame.hero.models.Card;
+
+import butterknife.BindView;
+import butterknife.ButterKnife;
 
 public class GameCardView extends FrameLayout {
 
@@ -18,6 +28,11 @@ public class GameCardView extends FrameLayout {
     private ViewSupportCardBinding mSupportDataBinding;
 
     private Card mCard;
+
+    @BindView(R.id.attack)
+    TextView mAttackTextView;
+    @BindView(R.id.defense)
+    TextView mDefenseTextView;
 
     public GameCardView(Context context) {
         super(context);
@@ -41,6 +56,8 @@ public class GameCardView extends FrameLayout {
             mSupportDataBinding = DataBindingUtil.inflate(inflater, R.layout.view_support_card, this, true);
             getChildAt(1).setVisibility(View.GONE);
         }
+
+        ButterKnife.bind(this, mCreatureDataBinding.getRoot());
     }
 
     public void setCard(Card card) {
@@ -62,5 +79,83 @@ public class GameCardView extends FrameLayout {
 
     public Card getCard() {
         return mCard;
+    }
+
+    public boolean animateValueChange(final Runnable endAction) {
+        final Property<TextView, Integer> property = new Property<TextView, Integer>(int.class, "textColor") {
+            @Override
+            public Integer get(TextView object) {
+                return object.getCurrentTextColor();
+            }
+
+            @Override
+            public void set(TextView object, Integer value) {
+                object.setTextColor(value);
+            }
+        };
+
+        AnimatorSet animSet = null;
+
+        int previousAttack = Integer.valueOf(mAttackTextView.getText().toString());
+        if (previousAttack > mCard.attack || previousAttack < mCard.attack) {
+            mAttackTextView.setText(String.valueOf(mCard.attack));
+            ObjectAnimator colorAnim = ObjectAnimator.ofInt(mAttackTextView, property, previousAttack > mCard.attack ? Color.RED : Color.GREEN);
+            colorAnim.setEvaluator(new ArgbEvaluator());
+            colorAnim.setRepeatCount(1);
+            colorAnim.setRepeatMode(ObjectAnimator.REVERSE);
+            ObjectAnimator scaleXAnim = ObjectAnimator.ofFloat(mAttackTextView, "scaleX", 1.5f);
+            scaleXAnim.setRepeatCount(1);
+            scaleXAnim.setRepeatMode(ObjectAnimator.REVERSE);
+            ObjectAnimator scaleYAnim = ObjectAnimator.ofFloat(mAttackTextView, "scaleY", 1.5f);
+            scaleYAnim.setRepeatCount(1);
+            scaleYAnim.setRepeatMode(ObjectAnimator.REVERSE);
+
+            animSet = new AnimatorSet();
+            animSet.playTogether(colorAnim, scaleXAnim, scaleYAnim);
+        }
+
+        int previousDefense = Integer.valueOf(mDefenseTextView.getText().toString());
+        if (previousDefense > mCard.defense || previousDefense < mCard.defense) {
+            mDefenseTextView.setText(String.valueOf(mCard.defense));
+            ObjectAnimator colorAnim = ObjectAnimator.ofInt(mDefenseTextView, property, previousDefense > mCard.defense ? Color.RED : Color.GREEN);
+            colorAnim.setEvaluator(new ArgbEvaluator());
+            colorAnim.setRepeatCount(1);
+            colorAnim.setRepeatMode(ObjectAnimator.REVERSE);
+            ObjectAnimator scaleXAnim = ObjectAnimator.ofFloat(mDefenseTextView, "scaleX", 1.5f);
+            scaleXAnim.setRepeatCount(1);
+            scaleXAnim.setRepeatMode(ObjectAnimator.REVERSE);
+            ObjectAnimator scaleYAnim = ObjectAnimator.ofFloat(mDefenseTextView, "scaleY", 1.5f);
+            scaleYAnim.setRepeatCount(1);
+            scaleYAnim.setRepeatMode(ObjectAnimator.REVERSE);
+
+            animSet = new AnimatorSet();
+            animSet.playTogether(colorAnim, scaleXAnim, scaleYAnim);
+        }
+
+        if (animSet != null) {
+            if (endAction != null) {
+                animSet.addListener(new Animator.AnimatorListener() {
+                    @Override
+                    public void onAnimationStart(Animator animator) {
+                    }
+
+                    @Override
+                    public void onAnimationEnd(Animator animator) {
+                        endAction.run();
+                    }
+
+                    @Override
+                    public void onAnimationCancel(Animator animator) {
+                    }
+
+                    @Override
+                    public void onAnimationRepeat(Animator animator) {
+                    }
+                });
+            }
+            animSet.start();
+            return true;
+        }
+        return false;
     }
 }

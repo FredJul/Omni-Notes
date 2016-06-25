@@ -1,6 +1,7 @@
 package net.fred.taskgame.hero.logic;
 
 import net.fred.taskgame.hero.models.Card;
+import net.fred.taskgame.hero.utils.Dog;
 
 import org.parceler.Parcel;
 
@@ -10,14 +11,15 @@ import java.util.List;
 @Parcel
 public class BattleManager {
 
-    public enum BattleStatus {NOT_FINISHED, DRAW, ENEMY_WON, PLAYER_WON}
+    public enum BattleStep {APPLY_PLAYER_SUPPORT, APPLY_ENEMY_SUPPORT, FIGHT, APPLY_DAMAGES, PLAYER_DEATH, ENEMY_DEATH, END_TURN, PLAYER_WON, ENEMY_WON, DRAW}
 
     List<Card> mRemainingEnemyCards = new ArrayList<>();
     List<Card> mUsedEnemyCards = new ArrayList<>();
     List<Card> mRemainingPlayerCards = new ArrayList<>();
     List<Card> mUsedPlayerCards = new ArrayList<>();
+    List<BattleStep> mSteps = new ArrayList<>();
 
-    boolean mStunEnemy;
+    boolean mStunPlayer, mStunEnemy;
 
     public List<Card> getRemainingEnemyCards() {
         return mRemainingEnemyCards;
@@ -76,6 +78,14 @@ public class BattleManager {
         return null;
     }
 
+    public Card getLastUsedEnemyCreatureCard(boolean fromEnemyPointOfView) {
+        if (fromEnemyPointOfView) {
+            return getLastUsedPlayerCreatureCard();
+        } else {
+            return getLastUsedEnemyCreatureCard();
+        }
+    }
+
     public Card getLastUsedPlayerCreatureCard() {
         for (int i = mUsedPlayerCards.size() - 1; i >= 0; i--) {
             Card card = mUsedPlayerCards.get(i);
@@ -85,6 +95,14 @@ public class BattleManager {
         }
 
         return null;
+    }
+
+    public Card getLastUsedPlayerCreatureCard(boolean fromEnemyPointOfView) {
+        if (fromEnemyPointOfView) {
+            return getLastUsedEnemyCreatureCard();
+        } else {
+            return getLastUsedPlayerCreatureCard();
+        }
     }
 
     public Card getCurrentOrNextAliveEnemyCreatureCard() {
@@ -106,24 +124,18 @@ public class BattleManager {
     }
 
     public void play() {
-        Card enemy;
         if (!isEnemyCreatureStillAlive()) {
-            enemy = getNextEnemyCreatureCard();
+            Card enemy = getNextEnemyCreatureCard();
             mUsedEnemyCards.add(enemy);
             mRemainingEnemyCards.remove(enemy);
         } else {
-            enemy = getLastUsedEnemyCreatureCard();
+            if (mRemainingEnemyCards.size() > 0 && mRemainingEnemyCards.get(0).type == Card.Type.SUPPORT) {
+                mSteps.add(BattleStep.APPLY_ENEMY_SUPPORT);
+            }
         }
 
-        Card player = getLastUsedPlayerCreatureCard();
-
-        enemy.defense -= player.attack;
-        enemy.defense = enemy.defense < 0 ? 0 : enemy.defense;
-        if (!mStunEnemy) {
-            player.defense -= enemy.attack;
-            player.defense = player.defense < 0 ? 0 : player.defense;
-        }
-        mStunEnemy = false;
+        mSteps.add(BattleStep.FIGHT);
+        mSteps.add(BattleStep.APPLY_DAMAGES);
     }
 
     public void play(Card card) {
@@ -131,49 +143,94 @@ public class BattleManager {
         mUsedPlayerCards.add(card);
 
         if (card.type == Card.Type.SUPPORT) {
-            Card.getAllCardsMap().get(card.id).supportAction.executeSupportAction(this);
+            mSteps.add(BattleStep.APPLY_PLAYER_SUPPORT);
         }
 
         play();
     }
 
-    public BattleStatus getBattleStatus() {
-        int enemyLife = 0;
-        for (Card card : mUsedEnemyCards) {
-            if (card.type == Card.Type.CREATURE) {
-                enemyLife += card.defense;
+    public BattleStep getNextStep() {
+        BattleStep step = mSteps.remove(0);
+        switch (step) {
+            case APPLY_PLAYER_SUPPORT: {
+                Card.getAllCardsMap().get(mUsedPlayerCards.get(mUsedPlayerCards.size() - 1).id).supportAction.executeSupportAction(this, false);
+                break;
             }
-        }
-        for (Card card : mRemainingEnemyCards) {
-            if (card.type == Card.Type.CREATURE) {
-                enemyLife += card.defense;
+            case APPLY_ENEMY_SUPPORT: {
+                Card.getAllCardsMap().get(mUsedEnemyCards.get(mUsedEnemyCards.size() - 1).id).supportAction.executeSupportAction(this, true);
+                break;
+            }
+            case APPLY_DAMAGES: {
+                Card enemy = getLastUsedEnemyCreatureCard();
+                Card player = getLastUsedPlayerCreatureCard();
+
+                // Change the defense points
+                if (!mStunPlayer) {
+                    enemy.defense -= player.attack;
+                    enemy.defense = enemy.defense < 0 ? 0 : enemy.defense;
+                }
+                if (!mStunEnemy) {
+                    player.defense -= enemy.attack;
+                    player.defense = player.defense < 0 ? 0 : player.defense;
+                }
+                mStunPlayer = false;
+                mStunEnemy = false;
+
+                // Death computation
+                if (enemy.defense <= 0) {
+                    mSteps.add(BattleStep.ENEMY_DEATH);
+                }
+                if (player.defense <= 0) {
+                    mSteps.add(BattleStep.PLAYER_DEATH);
+                }
+
+                // End of battle
+                int enemyRemainingLife = 0;
+                for (Card card : mUsedEnemyCards) {
+                    if (card.type == Card.Type.CREATURE) {
+                        enemyRemainingLife += card.defense;
+                    }
+                }
+                for (Card card : mRemainingEnemyCards) {
+                    if (card.type == Card.Type.CREATURE) {
+                        enemyRemainingLife += card.defense;
+                    }
+                }
+
+                int playerRemainingLife = 0;
+                for (Card card : mUsedPlayerCards) {
+                    if (card.type == Card.Type.CREATURE) {
+                        playerRemainingLife += card.defense;
+                    }
+                }
+                for (Card card : mRemainingPlayerCards) {
+                    if (card.type == Card.Type.CREATURE) {
+                        playerRemainingLife += card.defense;
+                    }
+                }
+
+                if (enemyRemainingLife <= 0 && playerRemainingLife <= 0) {
+                    mSteps.add(BattleStep.DRAW);
+                } else if (enemyRemainingLife <= 0 && playerRemainingLife > 0) {
+                    mSteps.add(BattleStep.PLAYER_WON);
+                } else if (enemyRemainingLife > 0 && playerRemainingLife <= 0) {
+                    mSteps.add(BattleStep.ENEMY_WON);
+                } else {
+                    mSteps.add(BattleStep.END_TURN);
+                }
+                break;
             }
         }
 
-        int playerLife = 0;
-        for (Card card : mUsedPlayerCards) {
-            if (card.type == Card.Type.CREATURE) {
-                playerLife += card.defense;
-            }
-        }
-        for (Card card : mRemainingPlayerCards) {
-            if (card.type == Card.Type.CREATURE) {
-                playerLife += card.defense;
-            }
-        }
-
-        if (enemyLife <= 0 && playerLife <= 0) {
-            return BattleStatus.DRAW;
-        } else if (enemyLife <= 0 && playerLife > 0) {
-            return BattleStatus.PLAYER_WON;
-        } else if (enemyLife > 0 && playerLife <= 0) {
-            return BattleStatus.ENEMY_WON;
-        } else {
-            return BattleStatus.NOT_FINISHED;
-        }
+        Dog.i(step.name());
+        return step;
     }
 
-    public void stunEnemy() {
-        mStunEnemy = true;
+    public void stunEnemy(boolean fromEnemyPointOfView) {
+        if (fromEnemyPointOfView) {
+            mStunPlayer = true;
+        } else {
+            mStunEnemy = true;
+        }
     }
 }

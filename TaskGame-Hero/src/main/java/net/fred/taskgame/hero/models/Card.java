@@ -25,7 +25,7 @@ import java.util.List;
 public class Card extends BaseModel implements Cloneable {
 
     public interface SupportAction {
-        void executeSupportAction(BattleManager manager);
+        void executeSupportAction(BattleManager manager, boolean fromEnemyPointOfView);
     }
 
     public enum Type {CREATURE, SUPPORT}
@@ -201,8 +201,8 @@ public class Card extends BaseModel implements Cloneable {
         card.desc = "It's only syrup, but placebo effect makes your creature feel invincible\n ● Multiply attack by 2\n ● Divide defense by 1.3";
         card.supportAction = new SupportAction() {
             @Override
-            public void executeSupportAction(BattleManager manager) {
-                Card player = manager.getLastUsedPlayerCreatureCard();
+            public void executeSupportAction(BattleManager manager, boolean fromEnemyPointOfView) {
+                Card player = manager.getLastUsedPlayerCreatureCard(fromEnemyPointOfView);
                 player.attack *= 2;
                 player.defense /= 1.3;
             }
@@ -221,8 +221,8 @@ public class Card extends BaseModel implements Cloneable {
         card.desc = "Your enemy weapon starts to run into pieces. Serves him damned right!\n ● Lower enemy attack by 4";
         card.supportAction = new SupportAction() {
             @Override
-            public void executeSupportAction(BattleManager manager) {
-                Card enemy = manager.getCurrentOrNextAliveEnemyCreatureCard();
+            public void executeSupportAction(BattleManager manager, boolean fromEnemyPointOfView) {
+                Card enemy = manager.getLastUsedEnemyCreatureCard(fromEnemyPointOfView);
                 enemy.attack -= 4;
                 if (enemy.attack < 0) {
                     enemy.attack = 0;
@@ -243,8 +243,8 @@ public class Card extends BaseModel implements Cloneable {
         card.desc = "Free your creature from your control. It will charge the enemy with all his forces, and profit of the breach to run away.\n ● Multiply attack by 3\n ● Your creature run away after 1 round";
         card.supportAction = new SupportAction() {
             @Override
-            public void executeSupportAction(BattleManager manager) {
-                Card player = manager.getLastUsedPlayerCreatureCard();
+            public void executeSupportAction(BattleManager manager, boolean fromEnemyPointOfView) {
+                Card player = manager.getLastUsedPlayerCreatureCard(fromEnemyPointOfView);
                 player.defense = 0; //TODO: not true, but does the job for now
                 player.attack *= 3;
             }
@@ -263,8 +263,8 @@ public class Card extends BaseModel implements Cloneable {
         card.desc = "Sentences like \"Hey look behind! An elephant!\" or \"Be careful, you hold your weapon in the wrong way round\" can be very effective to confuse an enemy\n ● Enemy turn is skipped";
         card.supportAction = new SupportAction() {
             @Override
-            public void executeSupportAction(BattleManager manager) {
-                manager.stunEnemy();
+            public void executeSupportAction(BattleManager manager, boolean fromEnemyPointOfView) {
+                manager.stunEnemy(fromEnemyPointOfView);
             }
         };
         ALL_CARDS_MAP.append(card.id, card);
@@ -281,9 +281,9 @@ public class Card extends BaseModel implements Cloneable {
         card.desc = "Forget honor and attack the enemy from behind, it's more effective\n ● If you kill the enemy this turn, you'll not receive any damage";
         card.supportAction = new SupportAction() {
             @Override
-            public void executeSupportAction(BattleManager manager) {
-                Card player = manager.getLastUsedPlayerCreatureCard();
-                Card enemy = manager.getCurrentOrNextAliveEnemyCreatureCard();
+            public void executeSupportAction(BattleManager manager, boolean fromEnemyPointOfView) {
+                Card player = manager.getLastUsedPlayerCreatureCard(fromEnemyPointOfView);
+                Card enemy = manager.getLastUsedEnemyCreatureCard(fromEnemyPointOfView);
                 if (enemy.defense <= player.attack) {
                     player.defense += enemy.attack;
                 }
@@ -303,8 +303,8 @@ public class Card extends BaseModel implements Cloneable {
         card.desc = "Ok it's a summoned creature, but does that means you should be heartless?\n ● Regain defense by 2 if wounded";
         card.supportAction = new SupportAction() {
             @Override
-            public void executeSupportAction(BattleManager manager) {
-                Card player = manager.getLastUsedPlayerCreatureCard();
+            public void executeSupportAction(BattleManager manager, boolean fromEnemyPointOfView) {
+                Card player = manager.getLastUsedPlayerCreatureCard(fromEnemyPointOfView);
                 //TODO: does not take in account the previous defense increase
                 int defenseDiff = ALL_CARDS_MAP.get(player.id).defense - player.defense;
                 if (defenseDiff > 0) {
