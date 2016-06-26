@@ -4,6 +4,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 
 import net.fred.taskgame.hero.R;
 import net.fred.taskgame.hero.models.Card;
@@ -24,8 +25,8 @@ public class ComposeDeckAdapter extends RecyclerView.Adapter<ComposeDeckAdapter.
         @BindView(R.id.card)
         GameCardView mCard;
 
-        @BindView(R.id.deck_indicator)
-        View mDeckIndicator;
+        @BindView(R.id.add)
+        ImageButton mAddButton;
 
         public CardViewHolder(View v) {
             super(v);
@@ -66,9 +67,16 @@ public class ComposeDeckAdapter extends RecyclerView.Adapter<ComposeDeckAdapter.
         Card card = mCards.get(position);
 
         holder.mCard.setCard(card);
-        holder.mDeckIndicator.setVisibility(card.isInDeck ? View.VISIBLE : View.GONE);
+        holder.mAddButton.setVisibility(!card.isInDeck ? View.VISIBLE : View.GONE);
 
         holder.mCard.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mItemListener.onItemClicked(holder.getAdapterPosition());
+            }
+        });
+
+        holder.mAddButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 mItemListener.onItemClicked(holder.getAdapterPosition());

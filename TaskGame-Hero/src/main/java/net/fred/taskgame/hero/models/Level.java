@@ -48,15 +48,14 @@ public class Level extends BaseModel {
             lastCompletedLevel++;
         }
 
-        if (lastCompletedLevel < 1) {
-            return 2;
-        } else if (lastCompletedLevel < 2) {
-            return 3;
-        } else if (lastCompletedLevel < 4) {
-            return 6;
-        } else {
-            return 8;
-        }
+        return getCorrespondingDeckSlots(lastCompletedLevel);
+    }
+
+
+    public static int getCorrespondingDeckSlots(int lastCompletedLevelNumber) {
+        // Increase quickly, but then slow down
+        // See graph on: http://fooplot.com/plot/lpum8k6yac
+        return (int) Math.pow(Math.log10(Math.pow(lastCompletedLevelNumber + 3, 3)), 2);
     }
 
     public static void populate() {
@@ -68,14 +67,14 @@ public class Level extends BaseModel {
         }
 
         Level level = new Level();
-        level.levelNumber = 1;
+        level.levelNumber = 1; // slots=3
         level.enemyIconResId = R.drawable.invoker_male;
         level.isCompleted = completedList.get(level.levelNumber);
         level.enemyCards.add(Card.getAllCardsMap().get(Card.CREATURE_SKELETON_ARCHER));
         ALL_LEVELS_LIST.add(level);
 
         level = new Level();
-        level.levelNumber = 2;
+        level.levelNumber = 2; // slots=4
         level.enemyIconResId = R.drawable.invoker_male;
         level.isCompleted = completedList.get(level.levelNumber);
         level.enemyCards.add(Card.getAllCardsMap().get(Card.CREATURE_SKELETON_ARCHER));
@@ -83,24 +82,24 @@ public class Level extends BaseModel {
         ALL_LEVELS_LIST.add(level);
 
         level = new Level();
-        level.levelNumber = 3;
-        level.enemyIconResId = R.drawable.invoker_male;
-        level.isCompleted = completedList.get(level.levelNumber);
-        level.enemyCards.add(Card.getAllCardsMap().get(Card.CREATURE_TROLL));
-        level.enemyCards.add(Card.getAllCardsMap().get(Card.CREATURE_SKELETON_ARCHER));
-        ALL_LEVELS_LIST.add(level);
-
-        level = new Level();
-        level.levelNumber = 4;
+        level.levelNumber = 3; // slots=5
         level.enemyIconResId = R.drawable.invoker_male;
         level.isCompleted = completedList.get(level.levelNumber);
         level.enemyCards.add(Card.getAllCardsMap().get(Card.CREATURE_TROLL));
         level.enemyCards.add(Card.getAllCardsMap().get(Card.CREATURE_SKELETON_ARCHER));
+        ALL_LEVELS_LIST.add(level);
+
+        level = new Level();
+        level.levelNumber = 4; // slots=6
+        level.enemyIconResId = R.drawable.invoker_male;
+        level.isCompleted = completedList.get(level.levelNumber);
+        level.enemyCards.add(Card.getAllCardsMap().get(Card.CREATURE_TROLL));
+        level.enemyCards.add(Card.getAllCardsMap().get(Card.CREATURE_SKELETON_ARCHER));
         level.enemyCards.add(Card.getAllCardsMap().get(Card.CREATURE_TROLL));
         ALL_LEVELS_LIST.add(level);
 
         level = new Level();
-        level.levelNumber = 5;
+        level.levelNumber = 5; // slots=7
         level.enemyIconResId = R.drawable.invoker_male;
         level.specialMusicResId = R.raw.boss_theme;
         level.isCompleted = completedList.get(level.levelNumber);
@@ -111,7 +110,7 @@ public class Level extends BaseModel {
         ALL_LEVELS_LIST.add(level);
 
         level = new Level();
-        level.levelNumber = 6;
+        level.levelNumber = 6; // slots=8
         level.enemyIconResId = R.drawable.invoker_male;
         level.specialMusicResId = R.raw.boss_theme;
         level.isCompleted = completedList.get(level.levelNumber);

@@ -2,6 +2,8 @@ package net.fred.taskgame.hero.fragments;
 
 import android.os.Bundle;
 import android.support.design.widget.BottomSheetBehavior;
+import android.support.v4.app.DialogFragment;
+import android.support.v4.app.FragmentTransaction;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,7 +17,6 @@ import net.fred.taskgame.hero.logic.BattleManager;
 import net.fred.taskgame.hero.models.Card;
 import net.fred.taskgame.hero.models.Level;
 import net.fred.taskgame.hero.utils.Dog;
-import net.fred.taskgame.hero.utils.UiUtils;
 import net.fred.taskgame.hero.views.GameCardView;
 
 import org.parceler.Parcels;
@@ -288,25 +289,37 @@ public class BattleFragment extends BaseFragment {
             }
             case PLAYER_WON: {
                 getMainActivity().playSound(MainActivity.SOUND_VICTORY);
-                UiUtils.showMessage(getActivity(), "Player won!");
+
+                DialogFragment dialog = EndBattleDialogFragment.newInstance(mLevel.levelNumber, mLevel.isCompleted, EndBattleDialogFragment.EndType.PLAYER_WON);
+                FragmentTransaction transaction = getFragmentManager().beginTransaction().addToBackStack(null);
+                dialog.show(transaction, EndBattleDialogFragment.class.getName());
+
                 mLevel.isCompleted = true;
                 mLevel.save();
-                getActivity().getSupportFragmentManager().popBackStack();
                 break;
             }
             case ENEMY_WON: {
                 getMainActivity().playSound(MainActivity.SOUND_DEFEAT);
-                UiUtils.showMessage(getActivity(), "Enemy won!");
-                getActivity().getSupportFragmentManager().popBackStack();
+
+                DialogFragment dialog = EndBattleDialogFragment.newInstance(mLevel.levelNumber, mLevel.isCompleted, EndBattleDialogFragment.EndType.ENEMY_WON);
+                FragmentTransaction transaction = getFragmentManager().beginTransaction().addToBackStack(null);
+                dialog.show(transaction, EndBattleDialogFragment.class.getName());
                 break;
             }
             case DRAW: {
                 getMainActivity().playSound(MainActivity.SOUND_DEFEAT);
-                UiUtils.showMessage(getActivity(), "Draw!");
-                getActivity().getSupportFragmentManager().popBackStack();
+
+                DialogFragment dialog = EndBattleDialogFragment.newInstance(mLevel.levelNumber, mLevel.isCompleted, EndBattleDialogFragment.EndType.DRAW);
+                FragmentTransaction transaction = getFragmentManager().beginTransaction().addToBackStack(null);
+                dialog.show(transaction, EndBattleDialogFragment.class.getName());
                 break;
             }
         }
+    }
+
+    @OnClick(R.id.back)
+    public void onBackButtonClicked() {
+        getFragmentManager().popBackStack();
     }
 
     @OnClick(R.id.dark_layer)

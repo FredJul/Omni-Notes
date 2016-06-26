@@ -53,14 +53,14 @@ public class GameCardView extends FrameLayout {
     }
 
     private void inflateView() {
-        LayoutInflater inflater = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         if (!isInEditMode()) {
+            LayoutInflater inflater = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             mCreatureDataBinding = DataBindingUtil.inflate(inflater, R.layout.view_creature_card, this, true);
             mSupportDataBinding = DataBindingUtil.inflate(inflater, R.layout.view_support_card, this, true);
             getChildAt(1).setVisibility(View.GONE);
-        }
 
-        ButterKnife.bind(this, mCreatureDataBinding.getRoot());
+            ButterKnife.bind(this, mCreatureDataBinding.getRoot());
+        }
     }
 
     public void setCard(Card card) {

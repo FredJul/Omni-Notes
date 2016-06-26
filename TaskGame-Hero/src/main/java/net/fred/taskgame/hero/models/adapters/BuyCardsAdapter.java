@@ -4,6 +4,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.TextView;
 
 import net.fred.taskgame.hero.R;
@@ -24,6 +25,9 @@ public class BuyCardsAdapter extends RecyclerView.Adapter<BuyCardsAdapter.CardVi
 
         @BindView(R.id.card)
         GameCardView mCard;
+
+        @BindView(R.id.buy)
+        ImageButton mBuyButton;
 
         @BindView(R.id.price)
         TextView mPrice;
@@ -69,7 +73,7 @@ public class BuyCardsAdapter extends RecyclerView.Adapter<BuyCardsAdapter.CardVi
         holder.mCard.setCard(card);
         holder.mPrice.setText(String.valueOf(card.price));
 
-        holder.mPrice.setOnClickListener(new View.OnClickListener() {
+        holder.mBuyButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 mItemListener.onItemClicked(holder.getAdapterPosition());

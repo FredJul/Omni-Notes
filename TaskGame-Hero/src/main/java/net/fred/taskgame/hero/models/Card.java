@@ -113,11 +113,16 @@ public class Card extends BaseModel implements Cloneable {
     }
 
     public static List<Card> getNonObtainedCardList() {
+        return getNonObtainedCardList(Level.getCorrespondingDeckSlots());
+    }
+
+    public static List<Card> getNonObtainedCardList(int totalDeckSlots) {
         SparseArray<Card> allCards = Card.getAllCardsMap();
         ArrayList<Card> nonObtainedList = new ArrayList<>();
         for (int i = 0; i < allCards.size(); i++) {
             Card card = allCards.valueAt(i);
-            if (!card.isObtained) {
+            // Do not display all card immediately
+            if (!card.isObtained && card.neededSlots < 2.5f * totalDeckSlots) {
                 nonObtainedList.add(card);
             }
         }

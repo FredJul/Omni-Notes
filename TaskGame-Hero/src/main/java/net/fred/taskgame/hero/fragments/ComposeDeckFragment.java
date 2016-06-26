@@ -19,6 +19,7 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 
 
 public class ComposeDeckFragment extends BaseFragment {
@@ -37,7 +38,7 @@ public class ComposeDeckFragment extends BaseFragment {
         View layout = inflater.inflate(R.layout.fragment_compose_deck, container, false);
         ButterKnife.bind(this, layout);
 
-        LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
+        LinearLayoutManager layoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false);
         mRecyclerView.setLayoutManager(layoutManager);
 
         mObtainedCardList = Card.getObtainedCardList();
@@ -83,5 +84,10 @@ public class ComposeDeckFragment extends BaseFragment {
     @Override
     protected int getMainMusicResId() {
         return R.raw.main_theme;
+    }
+
+    @OnClick(R.id.back)
+    public void onBackButtonClicked() {
+        getFragmentManager().popBackStack();
     }
 }

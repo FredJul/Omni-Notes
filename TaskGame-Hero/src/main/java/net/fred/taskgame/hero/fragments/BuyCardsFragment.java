@@ -21,6 +21,7 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 
 
 public class BuyCardsFragment extends BaseFragment {
@@ -36,7 +37,7 @@ public class BuyCardsFragment extends BaseFragment {
         View layout = inflater.inflate(R.layout.fragment_buy_cards, container, false);
         ButterKnife.bind(this, layout);
 
-        LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
+        LinearLayoutManager layoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false);
         mRecyclerView.setLayoutManager(layoutManager);
 
         mNonObtainedCardList = Card.getNonObtainedCardList();
@@ -80,5 +81,10 @@ public class BuyCardsFragment extends BaseFragment {
     @Override
     protected int getMainMusicResId() {
         return R.raw.main_theme;
+    }
+
+    @OnClick(R.id.back)
+    public void onBackButtonClicked() {
+        getFragmentManager().popBackStack();
     }
 }

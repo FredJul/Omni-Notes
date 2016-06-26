@@ -22,8 +22,19 @@
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
-        <item name="android:windowBackground">@drawable/activity_background</item>
+        <item name="android:windowBackground">@color/colorPrimary</item>
         <item name="android:buttonStyle">@style/Button</item>
+    </style>
+
+    <style name="AppTheme.Dialog">
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowBackground">@color/translucent_dark_background</item>
+        <item name="android:windowAnimationStyle">@style/FadeWindowAnimation</item>
+    </style>
+
+    <style name="FadeWindowAnimation" parent="@android:style/Animation.Activity">
+        <item name="android:windowEnterAnimation">@anim/fade_in</item>
+        <item name="android:windowExitAnimation">@anim/fade_out</item>
     </style>
 
     <style name="Button" parent="Widget.AppCompat.Button">

@@ -17,15 +17,11 @@
 <resources>
 
     <!-- Material -->
-    <color name="colorPrimary">#b18842</color>
-    <color name="colorPrimaryDark">#ac7c2a</color>
-    <color name="colorAccent">#935b2a</color>
+    <color name="colorPrimary">#EDDFCB</color>
+    <color name="colorPrimaryDark">#D9BA8F</color>
+    <color name="colorAccent">#C99E61</color>
 
     <color name="card_text_color">#DECD87</color>
-
-    <!-- toasts -->
-    <color name="info">@color/colorPrimary</color>
-    <color name="warning">#ffffb32d</color>
-    <color name="error">#ffe54230</color>
+    <color name="translucent_dark_background">#DD000000</color>
 
 </resources>
