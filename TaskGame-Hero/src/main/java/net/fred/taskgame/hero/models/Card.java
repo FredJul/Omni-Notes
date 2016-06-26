@@ -152,6 +152,8 @@ public class Card extends BaseModel implements Cloneable {
             inDeckList.append(card.id, card.isInDeck);
         }
 
+        /****** CREATURE CARDS *******/
+
         Card card = new Card();
         card.id = CREATURE_TROLL;
         card.isObtained = true; // the only card you get for free at the beginning
@@ -163,6 +165,7 @@ public class Card extends BaseModel implements Cloneable {
         card.defense = 4;
         card.iconResId = R.drawable.troll;
         card.desc = "It's fascinated to see what we can do with some little piece of rocks";
+        checkCreatureCard(card);
         ALL_CARDS_MAP.append(card.id, card);
 
         card = new Card();
@@ -173,9 +176,10 @@ public class Card extends BaseModel implements Cloneable {
         card.price = card.neededSlots * 50;
         card.name = "Skeleton Archer";
         card.attack = 1;
-        card.defense = 4;
+        card.defense = 3;
         card.iconResId = R.drawable.skeleton_archer;
         card.desc = "Deads are not totally dead, and they strangely know how to send arrows in your face";
+        checkCreatureCard(card);
         ALL_CARDS_MAP.append(card.id, card);
 
         card = new Card();
@@ -189,6 +193,7 @@ public class Card extends BaseModel implements Cloneable {
         card.defense = 5;
         card.iconResId = R.drawable.enchanted_tree;
         card.desc = "Nature is beautiful, except maybe when it tries to kill you";
+        checkCreatureCard(card);
         ALL_CARDS_MAP.append(card.id, card);
 
         card = new Card();
@@ -202,7 +207,10 @@ public class Card extends BaseModel implements Cloneable {
         card.defense = 4;
         card.iconResId = R.drawable.ghost;
         card.desc = "It is real enough to be able to punch you in the face";
+        checkCreatureCard(card);
         ALL_CARDS_MAP.append(card.id, card);
+
+        /****** SUPPORT CARDS *******/
 
         card = new Card();
         card.id = SUPPORT_POWER_POTION;
@@ -328,5 +336,13 @@ public class Card extends BaseModel implements Cloneable {
             }
         };
         ALL_CARDS_MAP.append(card.id, card);
+    }
+
+    private static void checkCreatureCard(Card card) {
+        int acceptableSum = card.neededSlots * 3;
+        float margin = acceptableSum / 100f * 35f;
+        if (card.attack + card.defense > acceptableSum + margin || card.attack + card.defense < acceptableSum - margin) {
+            throw new IllegalStateException();
+        }
     }
 }

@@ -324,6 +324,10 @@ public class BattleFragment extends BaseFragment {
 
     @OnClick(R.id.dark_layer)
     public void onDarkLayerClicked() {
+        if (mCurrentlyAnimatedCard == null) {
+            return; // We already clicked on it once and are in the middle of the animation
+        }
+
         stopCardHighlighting();
 
         mCurrentlyAnimatedCard.animate().scaleX(1).scaleY(1).translationX(0).translationY(0).withEndAction(new Runnable() {
@@ -336,6 +340,10 @@ public class BattleFragment extends BaseFragment {
     }
 
     private void highlightCard(GameCardView cardView) {
+        if (mCurrentlyAnimatedCard != null) {
+            return; // We already clicked on it once and are in the middle of the animation
+        }
+
         mBottomSheetBehavior.setHideable(true);
         mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
 
