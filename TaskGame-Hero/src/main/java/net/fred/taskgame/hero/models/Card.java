@@ -32,6 +32,7 @@ public class Card extends BaseModel implements Cloneable {
     public final static int CREATURE_TROLL = 0;
     public final static int CREATURE_SKELETON_ARCHER = 1;
     public final static int CREATURE_TREE = 2;
+    public final static int CREATURE_GHOST = 3;
 
     public final static int SUPPORT_POWER_POTION = 1000;
     public final static int SUPPORT_WEAPON_EROSION = 1001;
@@ -122,7 +123,7 @@ public class Card extends BaseModel implements Cloneable {
         for (int i = 0; i < allCards.size(); i++) {
             Card card = allCards.valueAt(i);
             // Do not display all card immediately
-            if (!card.isObtained && card.neededSlots < 2.5f * totalDeckSlots) {
+            if (!card.isObtained && card.neededSlots <= totalDeckSlots / 2) {
                 nonObtainedList.add(card);
             }
         }
@@ -188,6 +189,19 @@ public class Card extends BaseModel implements Cloneable {
         card.defense = 5;
         card.iconResId = R.drawable.enchanted_tree;
         card.desc = "Nature is beautiful, except maybe when it tries to kill you";
+        ALL_CARDS_MAP.append(card.id, card);
+
+        card = new Card();
+        card.id = CREATURE_GHOST;
+        card.isObtained = obtainedList.get(card.id);
+        card.isInDeck = inDeckList.get(card.id);
+        card.neededSlots = 3;
+        card.price = card.neededSlots * 50;
+        card.name = "Ghost";
+        card.attack = 3;
+        card.defense = 4;
+        card.iconResId = R.drawable.ghost;
+        card.desc = "It is real enough to be able to punch you in the face";
         ALL_CARDS_MAP.append(card.id, card);
 
         card = new Card();
@@ -301,7 +315,7 @@ public class Card extends BaseModel implements Cloneable {
         card.type = Card.Type.SUPPORT;
         card.name = "Medical Attention";
         card.iconResId = R.drawable.medical_attention;
-        card.desc = "Ok it's a summoned creature, but does that means you should be heartless?\n ● Regain defense by 2 if wounded";
+        card.desc = "Ok it's a summoned creature, but does that means you should be heartless?\n ● Regain defense by 3 if wounded";
         card.supportAction = new SupportAction() {
             @Override
             public void executeSupportAction(BattleManager manager, boolean fromEnemyPointOfView) {
@@ -309,7 +323,7 @@ public class Card extends BaseModel implements Cloneable {
                 //TODO: does not take in account the previous defense increase
                 int defenseDiff = ALL_CARDS_MAP.get(player.id).defense - player.defense;
                 if (defenseDiff > 0) {
-                    player.defense += Math.min(2, defenseDiff);
+                    player.defense += Math.min(3, defenseDiff);
                 }
             }
         };
