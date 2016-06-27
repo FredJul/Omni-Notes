@@ -71,7 +71,7 @@ public class BuyCardsAdapter extends RecyclerView.Adapter<BuyCardsAdapter.CardVi
         Card card = mCards.get(position);
 
         holder.mCard.setCard(card);
-        holder.mPrice.setText(String.valueOf(card.price));
+        holder.mPrice.setText(card.price == 0 ? "Free" : String.valueOf(card.price));
 
         holder.mBuyButton.setOnClickListener(new View.OnClickListener() {
             @Override

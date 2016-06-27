@@ -5,7 +5,6 @@ import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,6 +15,7 @@ import net.fred.taskgame.hero.adapters.BuyCardsAdapter;
 import net.fred.taskgame.hero.adapters.RecyclerViewItemListener;
 import net.fred.taskgame.hero.models.Card;
 import net.fred.taskgame.hero.utils.TaskGameUtils;
+import net.fred.taskgame.hero.views.EmptyRecyclerView;
 
 import java.util.List;
 
@@ -27,7 +27,9 @@ import butterknife.OnClick;
 public class BuyCardsFragment extends BaseFragment {
 
     @BindView(R.id.recycler_view)
-    RecyclerView mRecyclerView;
+    EmptyRecyclerView mRecyclerView;
+    @BindView(R.id.empty_view)
+    View mEmptyView;
 
     private List<Card> mNonObtainedCardList;
     private BuyCardsAdapter mAdapter;
@@ -39,6 +41,7 @@ public class BuyCardsFragment extends BaseFragment {
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false);
         mRecyclerView.setLayoutManager(layoutManager);
+        mRecyclerView.setEmptyView(mEmptyView);
 
         mNonObtainedCardList = Card.getNonObtainedCardList();
         mAdapter = new BuyCardsAdapter(mNonObtainedCardList, new RecyclerViewItemListener() {

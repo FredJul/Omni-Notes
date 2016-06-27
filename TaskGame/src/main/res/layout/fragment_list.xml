@@ -25,25 +25,15 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
-    <LinearLayout
+    <TextView
         android:id="@+id/empty_view"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:gravity="center">
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:drawablePadding="10dp"
-            android:drawableTop="@drawable/no_task_icon"
-            android:text="@string/no_items_in_list"
-            android:textColor="@color/list_note_dates"
-            android:textSize="20sp" />
-    </LinearLayout>
-
-    <ImageView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:scaleType="centerCrop" />
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:drawablePadding="10dp"
+        android:drawableTop="@drawable/no_task_icon"
+        android:text="@string/no_items_in_list"
+        android:textColor="@color/list_note_dates"
+        android:textSize="20sp" />
 
 </FrameLayout>

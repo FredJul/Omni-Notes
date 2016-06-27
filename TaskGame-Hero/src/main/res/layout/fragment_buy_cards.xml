@@ -10,9 +10,18 @@
         android:layout_margin="10dp"
         android:background="@drawable/button_back" />
 
-    <android.support.v7.widget.RecyclerView
+    <net.fred.taskgame.hero.views.EmptyRecyclerView
         android:id="@+id/recycler_view"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_vertical" />
+
+    <TextView
+        android:id="@+id/empty_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:padding="50dp"
+        android:text="No new available cards for now.\n\nPlease come back later after you passed some new levels!"
+        android:textSize="20sp" />
 </FrameLayout>

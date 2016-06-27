@@ -173,7 +173,7 @@ public class Card extends BaseModel implements Cloneable {
         card.isObtained = obtainedList.get(card.id);
         card.isInDeck = inDeckList.get(card.id);
         card.neededSlots = 1;
-        card.price = card.neededSlots * 50;
+        card.price = 0; // First one is free
         card.name = "Skeleton Archer";
         card.attack = 1;
         card.defense = 3;
