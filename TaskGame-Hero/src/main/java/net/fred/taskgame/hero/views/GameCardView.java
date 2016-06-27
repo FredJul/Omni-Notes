@@ -60,6 +60,7 @@ public class GameCardView extends FrameLayout {
     private void inflateView(Context context, AttributeSet attrs, int defStyle) {
         TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.GameCardView, defStyle, 0);
         boolean useLargeLayout = a.getBoolean(R.styleable.GameCardView_useLargeLayout, false);
+        a.recycle();
 
         if (!isInEditMode()) {
             LayoutInflater inflater = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
