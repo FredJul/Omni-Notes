@@ -1,4 +1,4 @@
-package net.fred.taskgame.hero.models.adapters;
+package net.fred.taskgame.hero.adapters;
 
 public interface RecyclerViewItemListener {
 

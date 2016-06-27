@@ -26,7 +26,7 @@ import android.text.format.DateFormat;
 import android.widget.DatePicker;
 import android.widget.TimePicker;
 
-import net.fred.taskgame.models.listeners.OnReminderPickedListener;
+import net.fred.taskgame.listeners.OnReminderPickedListener;
 
 import java.util.Calendar;
 

@@ -1,4 +1,4 @@
-package net.fred.taskgame.hero.models.adapters;
+package net.fred.taskgame.hero.adapters;
 
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;

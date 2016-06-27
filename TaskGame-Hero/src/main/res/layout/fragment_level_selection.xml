@@ -42,13 +42,13 @@
             android:id="@+id/buy_cards"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Buy cards" />
+            android:text="Get new cards" />
 
         <Button
             android:id="@+id/compose_deck"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
-            android:text="Select cards" />
+            android:text="Compose deck" />
     </LinearLayout>
 </RelativeLayout>

@@ -9,9 +9,9 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import net.fred.taskgame.hero.R;
+import net.fred.taskgame.hero.adapters.LevelSelectionAdapter;
+import net.fred.taskgame.hero.adapters.RecyclerViewItemListener;
 import net.fred.taskgame.hero.models.Level;
-import net.fred.taskgame.hero.models.adapters.LevelSelectionAdapter;
-import net.fred.taskgame.hero.models.adapters.RecyclerViewItemListener;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;

@@ -29,8 +29,8 @@ import android.widget.RadioGroup.OnCheckedChangeListener;
 import android.widget.Spinner;
 
 import net.fred.taskgame.R;
+import net.fred.taskgame.adapters.CategoryAdapter;
 import net.fred.taskgame.models.Category;
-import net.fred.taskgame.models.adapters.CategoryAdapter;
 import net.fred.taskgame.utils.DbHelper;
 
 import java.util.List;

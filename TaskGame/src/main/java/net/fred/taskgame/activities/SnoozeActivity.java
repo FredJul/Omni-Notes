@@ -25,8 +25,8 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 
+import net.fred.taskgame.listeners.OnReminderPickedListener;
 import net.fred.taskgame.models.Task;
-import net.fred.taskgame.models.listeners.OnReminderPickedListener;
 import net.fred.taskgame.receivers.AlarmReceiver;
 import net.fred.taskgame.utils.Constants;
 import net.fred.taskgame.utils.PrefUtils;

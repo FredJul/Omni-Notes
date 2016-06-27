@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
@@ -9,7 +10,8 @@
     <net.fred.taskgame.hero.views.GameCardView
         android:id="@+id/card"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        app:useLargeLayout="true" />
 
     <LinearLayout
         android:layout_width="wrap_content"
@@ -22,8 +24,8 @@
             android:id="@+id/buy"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="@drawable/button_buy"
-            android:layout_gravity="center_vertical" />
+            android:layout_gravity="center_vertical"
+            android:background="@drawable/button_buy" />
 
         <TextView
             android:id="@+id/price"

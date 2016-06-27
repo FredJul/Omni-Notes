@@ -1,4 +1,4 @@
-package net.fred.taskgame.models.adapters;
+package net.fred.taskgame.adapters;
 
 import android.support.v7.widget.RecyclerView;
 import android.util.SparseBooleanArray;

@@ -318,7 +318,7 @@ public class Card extends BaseModel implements Cloneable {
         card.id = SUPPORT_MEDICAL_ATTENTION;
         card.isObtained = obtainedList.get(card.id);
         card.isInDeck = inDeckList.get(card.id);
-        card.neededSlots = 3;
+        card.neededSlots = 2;
         card.price = card.neededSlots * 50;
         card.type = Card.Type.SUPPORT;
         card.name = "Medical Attention";

@@ -10,10 +10,10 @@ import android.widget.TextView;
 
 import net.fred.taskgame.hero.R;
 import net.fred.taskgame.hero.activities.MainActivity;
+import net.fred.taskgame.hero.adapters.ComposeDeckAdapter;
+import net.fred.taskgame.hero.adapters.RecyclerViewItemListener;
 import net.fred.taskgame.hero.models.Card;
 import net.fred.taskgame.hero.models.Level;
-import net.fred.taskgame.hero.models.adapters.ComposeDeckAdapter;
-import net.fred.taskgame.hero.models.adapters.RecyclerViewItemListener;
 
 import java.util.List;
 

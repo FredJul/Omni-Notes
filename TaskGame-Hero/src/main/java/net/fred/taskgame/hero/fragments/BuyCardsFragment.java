@@ -12,9 +12,9 @@ import android.view.ViewGroup;
 
 import net.fred.taskgame.hero.R;
 import net.fred.taskgame.hero.activities.MainActivity;
+import net.fred.taskgame.hero.adapters.BuyCardsAdapter;
+import net.fred.taskgame.hero.adapters.RecyclerViewItemListener;
 import net.fred.taskgame.hero.models.Card;
-import net.fred.taskgame.hero.models.adapters.BuyCardsAdapter;
-import net.fred.taskgame.hero.models.adapters.RecyclerViewItemListener;
 import net.fred.taskgame.hero.utils.TaskGameUtils;
 
 import java.util.List;

@@ -27,7 +27,7 @@ import android.view.View;
 import com.tbruyelle.rxpermissions.RxPermissions;
 
 import net.fred.taskgame.R;
-import net.fred.taskgame.models.listeners.OnPermissionRequestedListener;
+import net.fred.taskgame.listeners.OnPermissionRequestedListener;
 
 import rx.functions.Action1;
 

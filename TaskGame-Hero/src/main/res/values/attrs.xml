@@ -1,0 +1,5 @@
+<resources>
+    <declare-styleable name="GameCardView">
+        <attr name="useLargeLayout" format="boolean" />
+    </declare-styleable>
+</resources>

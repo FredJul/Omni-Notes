@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <variable
+            name="card"
+            type="net.fred.taskgame.hero.models.Card" />
+    </data>
+
+    <FrameLayout
+        android:layout_width="255dp"
+        android:layout_height="360dp">
+
+        <ImageView
+            android:id="@+id/background"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scaleType="fitXY"
+            android:src="@drawable/card_background_character" />
+
+        <ImageView
+            android:id="@+id/icon"
+            android:layout_width="212dp"
+            android:layout_height="212dp"
+            android:scaleType="fitXY"
+            tools:src="@drawable/skeleton_archer"
+            android:src="@{card.iconResId}" />
+
+        <com.github.jivimberg.library.AutoResizeTextView
+            android:id="@+id/needed_slots"
+            android:layout_width="42dp"
+            android:layout_height="34dp"
+            android:layout_marginStart="204dp"
+            android:layout_marginTop="5dp"
+            android:gravity="center"
+            android:shadowColor="@android:color/black"
+            android:shadowRadius="7"
+            android:textColor="@color/card_text_color"
+            android:textSize="25dp"
+            tools:ignore="SpUsage"
+            tools:text="30"
+            android:text="@{String.valueOf(card.neededSlots)}" />
+
+        <com.github.jivimberg.library.AutoResizeTextView
+            android:id="@+id/name"
+            android:layout_width="204dp"
+            android:layout_height="52dp"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="156dp"
+            android:gravity="center|end"
+            android:shadowColor="@android:color/black"
+            android:shadowRadius="7"
+            android:textColor="@color/card_text_color"
+            android:textSize="20dp"
+            tools:ignore="SpUsage"
+            tools:text="Skeleton Archer"
+            android:text="@{card.name}" />
+
+        <com.github.jivimberg.library.AutoResizeTextView
+            android:id="@+id/desc"
+            android:layout_width="match_parent"
+            android:layout_height="102dp"
+            android:layout_gravity="bottom"
+            android:layout_marginBottom="37dp"
+            android:layout_marginEnd="22dp"
+            android:layout_marginStart="22dp"
+            android:shadowColor="@android:color/black"
+            android:shadowRadius="7"
+            android:textColor="@color/card_text_color"
+            android:textSize="20dp"
+            tools:ignore="SpUsage"
+            tools:text="Desc with several lines on it"
+            android:text="@{card.desc}" />
+
+        <com.github.jivimberg.library.AutoResizeTextView
+            android:id="@+id/attack"
+            android:layout_width="39dp"
+            android:layout_height="34dp"
+            android:layout_gravity="bottom|end"
+            android:layout_marginBottom="5dp"
+            android:layout_marginEnd="30dp"
+            android:gravity="center"
+            android:shadowColor="@android:color/black"
+            android:shadowRadius="7"
+            android:textColor="@color/card_text_color"
+            android:textSize="20dp"
+            tools:ignore="SpUsage"
+            tools:text="30"
+            android:text="@{String.valueOf(card.attack)}" />
+
+        <com.github.jivimberg.library.AutoResizeTextView
+            android:id="@+id/defense"
+            android:layout_width="39dp"
+            android:layout_height="34dp"
+            android:layout_gravity="bottom|end"
+            android:layout_marginBottom="5dp"
+            android:gravity="center"
+            android:shadowColor="@android:color/black"
+            android:shadowRadius="7"
+            android:textColor="@color/card_text_color"
+            android:textSize="20dp"
+            tools:ignore="SpUsage"
+            tools:text="30"
+            android:text="@{String.valueOf(card.defense)}" />
+
+    </FrameLayout>
+</layout>

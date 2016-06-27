@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package net.fred.taskgame.models.adapters;
+package net.fred.taskgame.adapters;
 
 import android.app.Activity;
 import android.content.Context;

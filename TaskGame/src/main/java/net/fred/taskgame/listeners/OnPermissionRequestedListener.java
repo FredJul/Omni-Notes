@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package net.fred.taskgame.models.listeners;
+package net.fred.taskgame.listeners;
 
 public interface OnPermissionRequestedListener {
 

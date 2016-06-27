@@ -55,12 +55,12 @@ import com.raizlabs.android.dbflow.structure.database.transaction.ProcessModelTr
 import net.fred.taskgame.R;
 import net.fred.taskgame.activities.CategoryActivity;
 import net.fred.taskgame.activities.MainActivity;
+import net.fred.taskgame.adapters.CategoryAdapter;
+import net.fred.taskgame.adapters.TaskAdapter;
 import net.fred.taskgame.models.AppDatabase;
 import net.fred.taskgame.models.Category;
 import net.fred.taskgame.models.IdBasedModel;
 import net.fred.taskgame.models.Task;
-import net.fred.taskgame.models.adapters.CategoryAdapter;
-import net.fred.taskgame.models.adapters.TaskAdapter;
 import net.fred.taskgame.utils.Constants;
 import net.fred.taskgame.utils.DbHelper;
 import net.fred.taskgame.utils.NavigationUtils;

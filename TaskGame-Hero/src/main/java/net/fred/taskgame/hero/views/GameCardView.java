@@ -5,6 +5,7 @@ import android.animation.AnimatorSet;
 import android.animation.ArgbEvaluator;
 import android.animation.ObjectAnimator;
 import android.content.Context;
+import android.content.res.TypedArray;
 import android.databinding.DataBindingUtil;
 import android.graphics.Color;
 import android.util.AttributeSet;
@@ -16,7 +17,9 @@ import android.widget.TextView;
 
 import net.fred.taskgame.hero.R;
 import net.fred.taskgame.hero.databinding.ViewCreatureCardBinding;
+import net.fred.taskgame.hero.databinding.ViewCreatureCardLargeBinding;
 import net.fred.taskgame.hero.databinding.ViewSupportCardBinding;
+import net.fred.taskgame.hero.databinding.ViewSupportCardLargeBinding;
 import net.fred.taskgame.hero.models.Card;
 
 import java.util.ArrayList;
@@ -29,6 +32,8 @@ public class GameCardView extends FrameLayout {
 
     private ViewCreatureCardBinding mCreatureDataBinding;
     private ViewSupportCardBinding mSupportDataBinding;
+    private ViewCreatureCardLargeBinding mCreatureLargeDataBinding;
+    private ViewSupportCardLargeBinding mSupportLargeDataBinding;
 
     private Card mCard;
 
@@ -39,27 +44,37 @@ public class GameCardView extends FrameLayout {
 
     public GameCardView(Context context) {
         super(context);
-        inflateView();
+        inflateView(context, null, 0);
     }
 
     public GameCardView(Context context, AttributeSet attrs) {
         super(context, attrs);
-        inflateView();
+        inflateView(context, attrs, 0);
     }
 
     public GameCardView(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
-        inflateView();
+        inflateView(context, attrs, defStyle);
     }
 
-    private void inflateView() {
+    private void inflateView(Context context, AttributeSet attrs, int defStyle) {
+        TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.GameCardView, defStyle, 0);
+        boolean useLargeLayout = a.getBoolean(R.styleable.GameCardView_useLargeLayout, false);
+
         if (!isInEditMode()) {
             LayoutInflater inflater = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            mCreatureDataBinding = DataBindingUtil.inflate(inflater, R.layout.view_creature_card, this, true);
-            mSupportDataBinding = DataBindingUtil.inflate(inflater, R.layout.view_support_card, this, true);
-            getChildAt(1).setVisibility(View.GONE);
+            if (!useLargeLayout) {
+                mCreatureDataBinding = DataBindingUtil.inflate(inflater, R.layout.view_creature_card, this, true);
+                mSupportDataBinding = DataBindingUtil.inflate(inflater, R.layout.view_support_card, this, true);
 
-            ButterKnife.bind(this, mCreatureDataBinding.getRoot());
+                ButterKnife.bind(this, mCreatureDataBinding.getRoot());
+            } else {
+                mCreatureLargeDataBinding = DataBindingUtil.inflate(inflater, R.layout.view_creature_card_large, this, true);
+                mSupportLargeDataBinding = DataBindingUtil.inflate(inflater, R.layout.view_support_card_large, this, true);
+
+                ButterKnife.bind(this, mCreatureLargeDataBinding.getRoot());
+            }
+            getChildAt(1).setVisibility(View.GONE);
         }
     }
 
@@ -71,12 +86,20 @@ public class GameCardView extends FrameLayout {
             setVisibility(VISIBLE);
             getChildAt(0).setVisibility(VISIBLE);
             getChildAt(1).setVisibility(GONE);
-            mCreatureDataBinding.setCard(card);
+            if (mCreatureDataBinding != null) {
+                mCreatureDataBinding.setCard(card);
+            } else {
+                mCreatureLargeDataBinding.setCard(card);
+            }
         } else {
             setVisibility(VISIBLE);
             getChildAt(0).setVisibility(GONE);
             getChildAt(1).setVisibility(VISIBLE);
-            mSupportDataBinding.setCard(card);
+            if (mSupportDataBinding != null) {
+                mSupportDataBinding.setCard(card);
+            } else {
+                mSupportLargeDataBinding.setCard(card);
+            }
         }
     }
 
