@@ -3,6 +3,7 @@ package net.fred.taskgame.activities;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 
 import net.fred.taskgame.R;
@@ -24,10 +25,15 @@ public class RequestPointsActivity extends Activity {
             new AlertDialog.Builder(this)
                     .setTitle(R.string.app_name)
                     .setIcon(R.mipmap.ic_launcher)
-                    .setMessage(getString(R.string.not_enough_points, currentPoints))
-                    .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                    .setMessage(currentPoints <= 0 ? getString(R.string.no_points) : getString(R.string.not_enough_points, currentPoints))
+                    .setNegativeButton(android.R.string.ok, new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int id) {
                             dialog.cancel();
+                        }
+                    })
+                    .setPositiveButton(R.string.earn_leaves, new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                            startActivity(new Intent(RequestPointsActivity.this, MainActivity.class));
                         }
                     })
                     .setOnCancelListener(new DialogInterface.OnCancelListener() {

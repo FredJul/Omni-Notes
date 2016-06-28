@@ -77,7 +77,9 @@
     <string name="modify_link">Modify</string>
     <string name="app_not_found">You did not installed any application which can handle this kind of link</string>
     <string name="difficulty">Difficulty:</string>
-    <string name="not_enough_points">You only have %d leaves… Sorry</string>
+    <string name="no_points">Sorry, you don\'t have any leaf… Do you want to earn some?</string>
+    <string name="not_enough_points">Sorry, you only have %d leaves… Do you want to earn some?</string>
+    <string name="earn_leaves">Earn leaves</string>
     <string name="points_needed">%d leaves will be spent. Do you want to continue?</string>
     <string name="settings">Settings</string>
     <string name="settings_enable_vibration">Vibration</string>
