@@ -26,14 +26,15 @@ public class RequestPointsActivity extends Activity {
                     .setTitle(R.string.app_name)
                     .setIcon(R.mipmap.ic_launcher)
                     .setMessage(currentPoints <= 0 ? getString(R.string.no_points) : getString(R.string.not_enough_points, currentPoints))
-                    .setNegativeButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                    .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int id) {
                             dialog.cancel();
                         }
                     })
-                    .setPositiveButton(R.string.earn_leaves, new DialogInterface.OnClickListener() {
+                    .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int id) {
                             startActivity(new Intent(RequestPointsActivity.this, MainActivity.class));
+                            dialog.cancel();
                         }
                     })
                     .setOnCancelListener(new DialogInterface.OnCancelListener() {

@@ -91,9 +91,8 @@
     <string name="quests">Quêtes</string>
     <string name="leaderboard">Classement</string>
     <string name="sign_out_confirmation">Voulez-vous vous déconnecter ?</string>
-    <string name="no_points">Désolé, vous n\'avez aucune feuille… Voulez-vous en gagner ?</string>
-    <string name="not_enough_points">Désolé, vous avez seulement %d feuilles… Voulez-vous en gagner ?</string>
-    <string name="earn_leaves">Gagner feuilles</string>
+    <string name="no_points">Désolé, vous n\'avez aucune feuille et devriez essayer d\'effectuer des tâches avant. Voulez-vous ouvrir TaskGame ?</string>
+    <string name="not_enough_points">Désolé, vous avez seulement %d feuilles et devriez essayer d\'effectuer des tâches avant. Voulez-vous ouvrir TaskGame ?</string>
     <string name="points_needed">%d feuilles vont être dépensées. Voulez-vous continuer?</string>
 
 </resources>
