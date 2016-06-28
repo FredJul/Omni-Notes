@@ -31,12 +31,11 @@
         android:scaleType="fitXY" />
 
     <LinearLayout
-        android:layout_width="wrap_content"
+        android:layout_width="120dp"
         android:layout_height="200dp"
         android:layout_alignParentBottom="true"
         android:layout_alignParentEnd="true"
         android:layout_marginEnd="10dp"
-        android:layout_toEndOf="@+id/hero_portrait"
         android:gravity="center"
         android:orientation="vertical">
 

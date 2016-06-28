@@ -17,6 +17,7 @@ import net.fred.taskgame.hero.logic.BattleManager;
 import net.fred.taskgame.hero.models.Card;
 import net.fred.taskgame.hero.models.Level;
 import net.fred.taskgame.hero.utils.Dog;
+import net.fred.taskgame.hero.utils.UiUtils;
 import net.fred.taskgame.hero.views.GameCardView;
 
 import org.parceler.Parcels;
@@ -87,7 +88,7 @@ public class BattleFragment extends BaseFragment {
         }
 
         mBottomSheetBehavior = BottomSheetBehavior.from(mCardListScrollView);
-        mBottomSheetBehavior.setPeekHeight(300);
+        mBottomSheetBehavior.setPeekHeight(UiUtils.dpToPixel(100));
 
         mEnemyImageView.setImageResource(mLevel.enemyIconResId);
 
@@ -351,8 +352,8 @@ public class BattleFragment extends BaseFragment {
         cardView.animate()
                 .scaleX(1.7f)
                 .scaleY(1.7f)
-                .translationX(cardView.getWidth() / 2f - cardView.getX() + mCardListScrollView.getScrollX())
-                .translationY(-(mCardListLayout.getHeight() * 1.35f));
+                .translationX((getView().getWidth() / 2f) - (cardView.getWidth() / 2f) - cardView.getX() + mCardListScrollView.getScrollX())
+                .translationY(-(mCardListLayout.getHeight() * 1.8f));
         mDarkLayer.setVisibility(View.VISIBLE);
         mDarkLayer.animate().alpha(1);
     }

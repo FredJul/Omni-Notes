@@ -48,10 +48,14 @@ public class BuyCardsFragment extends BaseFragment {
             @Override
             public void onItemClicked(int position) {
                 Card card = mNonObtainedCardList.get(position);
+                if (card.price == 0) {
+                    buyCard(position, card);
+                } else {
                 try {
                     startActivityForResult(TaskGameUtils.getRequestPointsActivityIntent(getContext(), card.price), card.id);
                 } catch (ActivityNotFoundException e) {
                     // TaskGame application is not installed
+                }
                 }
             }
         });
@@ -68,17 +72,21 @@ public class BuyCardsFragment extends BaseFragment {
             for (int i = 0; i < mNonObtainedCardList.size(); i++) {
                 Card card = mNonObtainedCardList.get(i);
                 if (card.id == requestCode) { // requestCode is card id
-                    getMainActivity().playSound(MainActivity.SOUND_NEW_CARD);
-                    card.isObtained = true;
-                    card.save();
-                    mNonObtainedCardList.remove(i);
-                    mAdapter.notifyItemRemoved(i);
+                    buyCard(i, card);
                     break;
                 }
             }
         }
 
         super.onActivityResult(requestCode, resultCode, data);
+    }
+
+    private void buyCard(int position, Card card) {
+        getMainActivity().playSound(MainActivity.SOUND_NEW_CARD);
+        card.isObtained = true;
+        card.save();
+        mNonObtainedCardList.remove(position);
+        mAdapter.notifyItemRemoved(position);
     }
 
     @Override

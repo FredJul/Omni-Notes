@@ -1,8 +1,13 @@
 package net.fred.taskgame.hero.activities;
 
+import android.app.AlertDialog;
+import android.content.ActivityNotFoundException;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.media.AudioAttributes;
 import android.media.MediaPlayer;
 import android.media.SoundPool;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.RawRes;
 import android.support.v4.app.FragmentManager;
@@ -17,6 +22,7 @@ import net.fred.taskgame.hero.fragments.ComposeDeckFragment;
 import net.fred.taskgame.hero.fragments.LevelSelectionFragment;
 import net.fred.taskgame.hero.models.Card;
 import net.fred.taskgame.hero.models.Level;
+import net.fred.taskgame.hero.utils.TaskGameUtils;
 import net.fred.taskgame.hero.utils.UiUtils;
 
 import butterknife.ButterKnife;
@@ -70,6 +76,31 @@ public class MainActivity extends AppCompatActivity {
         SOUND_CHANGE_CARD = mSoundPool.load(this, R.raw.change_card, 1);
         SOUND_NEW_CARD = mSoundPool.load(this, R.raw.new_card, 1);
         SOUND_IMPOSSIBLE_ACTION = mSoundPool.load(this, R.raw.impossible_action, 1);
+
+        if (!TaskGameUtils.isAppInstalled(this)) {
+            new AlertDialog.Builder(this)
+                    .setTitle("TaskGame application needed")
+                    .setMessage("This game is totally free and use TaskGame points to progress. Without this application installed, you cannot play to it. Do you want to install it now?")
+                    .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                            final String appPackageName = "net.fred.taskgame";
+                            try {
+                                startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=" + appPackageName)));
+                            } catch (ActivityNotFoundException anfe) {
+                                startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=" + appPackageName)));
+                            }
+                        }
+                    }).setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int id) {
+                    dialog.cancel();
+                }
+            }).setOnCancelListener(new DialogInterface.OnCancelListener() {
+                @Override
+                public void onCancel(DialogInterface dialogInterface) {
+                    finish();
+                }
+            }).show();
+        }
     }
 
     @Override
