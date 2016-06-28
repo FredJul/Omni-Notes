@@ -29,7 +29,7 @@
             tools:src="@drawable/red_potion"
             android:src="@{card.iconResId}" />
 
-        <com.github.jivimberg.library.AutoResizeTextView
+        <com.lb.auto_fit_textview.AutoResizeTextView
             android:id="@+id/needed_slots"
             android:layout_width="42dp"
             android:layout_height="34dp"
@@ -45,7 +45,7 @@
             tools:text="30"
             android:text="@{String.valueOf(card.neededSlots)}" />
 
-        <com.github.jivimberg.library.AutoResizeTextView
+        <com.lb.auto_fit_textview.AutoResizeTextView
             android:id="@+id/name"
             android:layout_width="187dp"
             android:layout_height="34dp"
@@ -60,7 +60,7 @@
             tools:text="Red potion"
             android:text="@{card.name}" />
 
-        <com.github.jivimberg.library.AutoResizeTextView
+        <com.lb.auto_fit_textview.AutoResizeTextView
             android:id="@+id/desc"
             android:layout_width="match_parent"
             android:layout_height="102dp"

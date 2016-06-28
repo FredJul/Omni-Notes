@@ -28,7 +28,7 @@
             tools:src="@drawable/skeleton_archer"
             android:src="@{card.iconResId}" />
 
-        <com.github.jivimberg.library.AutoResizeTextView
+        <com.lb.auto_fit_textview.AutoResizeTextView
             android:id="@+id/needed_slots"
             android:layout_width="42dp"
             android:layout_height="34dp"
@@ -43,7 +43,7 @@
             tools:text="30"
             android:text="@{String.valueOf(card.neededSlots)}" />
 
-        <com.github.jivimberg.library.AutoResizeTextView
+        <com.lb.auto_fit_textview.AutoResizeTextView
             android:id="@+id/name"
             android:layout_width="204dp"
             android:layout_height="52dp"
@@ -58,7 +58,7 @@
             tools:text="Skeleton Archer"
             android:text="@{card.name}" />
 
-        <com.github.jivimberg.library.AutoResizeTextView
+        <com.lb.auto_fit_textview.AutoResizeTextView
             android:id="@+id/desc"
             android:layout_width="match_parent"
             android:layout_height="102dp"
@@ -74,7 +74,7 @@
             tools:text="Desc with several lines on it"
             android:text="@{card.desc}" />
 
-        <com.github.jivimberg.library.AutoResizeTextView
+        <com.lb.auto_fit_textview.AutoResizeTextView
             android:id="@+id/attack"
             android:layout_width="39dp"
             android:layout_height="34dp"
@@ -90,7 +90,7 @@
             tools:text="30"
             android:text="@{String.valueOf(card.attack)}" />
 
-        <com.github.jivimberg.library.AutoResizeTextView
+        <com.lb.auto_fit_textview.AutoResizeTextView
             android:id="@+id/defense"
             android:layout_width="39dp"
             android:layout_height="34dp"

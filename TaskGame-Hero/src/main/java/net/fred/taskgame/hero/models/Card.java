@@ -213,10 +213,33 @@ public class Card extends BaseModel implements Cloneable {
         /****** SUPPORT CARDS *******/
 
         card = new Card();
+        card.id = SUPPORT_MEDICAL_ATTENTION;
+        card.isObtained = obtainedList.get(card.id);
+        card.isInDeck = inDeckList.get(card.id);
+        card.neededSlots = 2;
+        card.price = card.neededSlots * 50;
+        card.type = Card.Type.SUPPORT;
+        card.name = "Medical Attention";
+        card.iconResId = R.drawable.medical_attention;
+        card.desc = "Ok it's a summoned creature, but does that means you should be heartless?\n ● Regain defense by 3 if wounded";
+        card.supportAction = new SupportAction() {
+            @Override
+            public void executeSupportAction(BattleManager manager, boolean fromEnemyPointOfView) {
+                Card player = manager.getLastUsedPlayerCreatureCard(fromEnemyPointOfView);
+                //TODO: does not take in account the previous defense increase
+                int defenseDiff = ALL_CARDS_MAP.get(player.id).defense - player.defense;
+                if (defenseDiff > 0) {
+                    player.defense += Math.min(3, defenseDiff);
+                }
+            }
+        };
+        ALL_CARDS_MAP.append(card.id, card);
+
+        card = new Card();
         card.id = SUPPORT_POWER_POTION;
         card.isObtained = obtainedList.get(card.id);
         card.isInDeck = inDeckList.get(card.id);
-        card.neededSlots = 3;
+        card.neededSlots = 4;
         card.price = card.neededSlots * 50;
         card.type = Card.Type.SUPPORT;
         card.name = "(Fake) Potion of invincibility";
@@ -236,7 +259,7 @@ public class Card extends BaseModel implements Cloneable {
         card.id = SUPPORT_WEAPON_EROSION;
         card.isObtained = obtainedList.get(card.id);
         card.isInDeck = inDeckList.get(card.id);
-        card.neededSlots = 4;
+        card.neededSlots = 3;
         card.price = card.neededSlots * 50;
         card.type = Card.Type.SUPPORT;
         card.name = "Weapon erosion";
@@ -283,7 +306,7 @@ public class Card extends BaseModel implements Cloneable {
         card.type = Card.Type.SUPPORT;
         card.name = "Confusion";
         card.iconResId = R.drawable.confusion;
-        card.desc = "Sentences like \"Hey look behind! An elephant!\" or \"Be careful, you hold your weapon in the wrong way round\" can be very effective to confuse an enemy\n ● Enemy turn is skipped";
+        card.desc = "We say that the pen is mightier than the sword, but there is something even more efficient: a sneaky confusing lie\n ● Enemy is confused and skip this turn";
         card.supportAction = new SupportAction() {
             @Override
             public void executeSupportAction(BattleManager manager, boolean fromEnemyPointOfView) {
@@ -296,7 +319,7 @@ public class Card extends BaseModel implements Cloneable {
         card.id = SUPPORT_SURPRISE;
         card.isObtained = obtainedList.get(card.id);
         card.isInDeck = inDeckList.get(card.id);
-        card.neededSlots = 3;
+        card.neededSlots = 4;
         card.price = card.neededSlots * 50;
         card.type = Card.Type.SUPPORT;
         card.name = "Surprise!";
@@ -309,29 +332,6 @@ public class Card extends BaseModel implements Cloneable {
                 Card enemy = manager.getLastUsedEnemyCreatureCard(fromEnemyPointOfView);
                 if (enemy.defense <= player.attack) {
                     player.defense += enemy.attack;
-                }
-            }
-        };
-        ALL_CARDS_MAP.append(card.id, card);
-
-        card = new Card();
-        card.id = SUPPORT_MEDICAL_ATTENTION;
-        card.isObtained = obtainedList.get(card.id);
-        card.isInDeck = inDeckList.get(card.id);
-        card.neededSlots = 2;
-        card.price = card.neededSlots * 50;
-        card.type = Card.Type.SUPPORT;
-        card.name = "Medical Attention";
-        card.iconResId = R.drawable.medical_attention;
-        card.desc = "Ok it's a summoned creature, but does that means you should be heartless?\n ● Regain defense by 3 if wounded";
-        card.supportAction = new SupportAction() {
-            @Override
-            public void executeSupportAction(BattleManager manager, boolean fromEnemyPointOfView) {
-                Card player = manager.getLastUsedPlayerCreatureCard(fromEnemyPointOfView);
-                //TODO: does not take in account the previous defense increase
-                int defenseDiff = ALL_CARDS_MAP.get(player.id).defense - player.defense;
-                if (defenseDiff > 0) {
-                    player.defense += Math.min(3, defenseDiff);
                 }
             }
         };

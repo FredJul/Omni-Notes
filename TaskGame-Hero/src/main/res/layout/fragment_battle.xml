@@ -35,13 +35,6 @@
             android:layout_marginTop="-5dp"
             android:background="@drawable/enemy_separator" />
 
-        <net.fred.taskgame.hero.views.GameCardView
-            android:id="@+id/enemy_card"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="10dp"
-            android:layout_marginTop="90dp" />
-
         <ImageView
             android:id="@+id/hero_portrait"
             android:layout_width="250dp"
@@ -50,6 +43,13 @@
             android:layout_alignParentStart="true"
             android:scaleType="fitXY"
             android:src="@drawable/invoker_female" />
+
+        <net.fred.taskgame.hero.views.GameCardView
+            android:id="@+id/enemy_card"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            android:layout_marginTop="90dp" />
 
         <net.fred.taskgame.hero.views.GameCardView
             android:id="@+id/player_card"

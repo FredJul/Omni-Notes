@@ -14,10 +14,11 @@
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/recycler_view"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:layout_above="@+id/hero_portrait"
         android:layout_below="@+id/logo"
+        android:layout_centerHorizontal="true"
         android:layout_marginEnd="10dp"
         android:layout_marginStart="10dp" />
 

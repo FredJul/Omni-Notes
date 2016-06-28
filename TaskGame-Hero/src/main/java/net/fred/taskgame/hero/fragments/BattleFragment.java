@@ -206,9 +206,9 @@ public class BattleFragment extends BaseFragment {
             }
             case FIGHT: {
                 float cardsXDiff = (mPlayerCardView.getX() - mEnemyCardView.getX() - mPlayerCardView.getWidth()) / 2;
-                cardsXDiff = cardsXDiff > 0 ? cardsXDiff + mPlayerCardView.getWidth() / 6 : cardsXDiff - mPlayerCardView.getWidth() / 6;
+                cardsXDiff = cardsXDiff + mPlayerCardView.getWidth() / 6; // add a small superposition
                 float cardsYDiff = (mPlayerCardView.getY() - mEnemyCardView.getY()) / 2;
-                cardsYDiff = cardsYDiff > 0 ? cardsYDiff - mPlayerCardView.getHeight() / 8 : cardsYDiff + mPlayerCardView.getHeight() / 8;
+                cardsYDiff = cardsYDiff - mPlayerCardView.getHeight() / 8; // add a small superposition
 
                 getMainActivity().playSound(MainActivity.SOUND_FIGHT);
                 mPlayerCardView.animate()
