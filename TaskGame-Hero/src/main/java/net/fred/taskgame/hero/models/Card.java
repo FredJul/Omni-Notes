@@ -213,7 +213,7 @@ public class Card extends BaseModel implements Cloneable {
         card.type = Card.Type.SUPPORT;
         card.name = "Medical Attention";
         card.iconResId = R.drawable.medical_attention;
-        card.desc = "Ok it's a summoned creature, but does that means you should be heartless?\n ● Regain defense by 3 if wounded";
+        card.desc = "Ok it's a summoned creature, but does that means you should be heartless?\n ● Regain defense by 4 if wounded";
         card.supportAction = new SupportAction() {
             @Override
             public void executeSupportAction(BattleManager manager, boolean fromEnemyPointOfView) {
@@ -221,7 +221,7 @@ public class Card extends BaseModel implements Cloneable {
                 //TODO: does not take in account the previous defense increase
                 int defenseDiff = ALL_CARDS_MAP.get(player.id).defense - player.defense;
                 if (defenseDiff > 0) {
-                    player.defense += Math.min(3, defenseDiff);
+                    player.defense += Math.min(4, defenseDiff);
                 }
             }
         };
