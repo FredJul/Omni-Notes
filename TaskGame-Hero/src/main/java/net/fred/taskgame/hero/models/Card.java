@@ -55,21 +55,13 @@ public class Card extends BaseModel implements Cloneable {
     public boolean isInDeck;
 
     public transient Type type = Type.CREATURE;
-
     public transient String name = "";
-
     public transient String desc = "";
-
     public transient int neededSlots;
-
     public transient int attack;
-
     public transient int defense;
-
     public transient int iconResId = INVALID_ID;
-
     public transient int price;
-
     public transient SupportAction supportAction;
 
     public Card() {

@@ -20,6 +20,7 @@ import net.fred.taskgame.hero.fragments.BattleFragment;
 import net.fred.taskgame.hero.fragments.BuyCardsFragment;
 import net.fred.taskgame.hero.fragments.ComposeDeckFragment;
 import net.fred.taskgame.hero.fragments.LevelSelectionFragment;
+import net.fred.taskgame.hero.fragments.StoryFragment;
 import net.fred.taskgame.hero.models.Card;
 import net.fred.taskgame.hero.models.Level;
 import net.fred.taskgame.hero.utils.TaskGameUtils;
@@ -126,10 +127,14 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void startBattle(Level level) {
-        playSound(SOUND_ENTER_BATTLE);
         FragmentTransaction transaction = mFragmentManager.beginTransaction();
         UiUtils.animateTransition(transaction, UiUtils.TransitionType.TRANSITION_FADE_IN);
-        transaction.replace(R.id.fragment_container, BattleFragment.newInstance(level, Card.getDeckCardList()), BattleFragment.class.getName()).addToBackStack(null).commitAllowingStateLoss();
+        if (level.startStory != null) {
+            transaction.replace(R.id.fragment_container, StoryFragment.newInstance(level, false), StoryFragment.class.getName()).addToBackStack(null).commitAllowingStateLoss();
+        } else {
+            playSound(SOUND_ENTER_BATTLE);
+            transaction.replace(R.id.fragment_container, BattleFragment.newInstance(level, Card.getDeckCardList()), BattleFragment.class.getName()).addToBackStack(null).commitAllowingStateLoss();
+        }
     }
 
     public void buyCards() {

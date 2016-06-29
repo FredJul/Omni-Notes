@@ -3,6 +3,7 @@ package net.fred.taskgame.hero.fragments;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
+import android.support.v4.app.FragmentTransaction;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,6 +12,9 @@ import android.widget.TextView;
 import net.fred.taskgame.hero.R;
 import net.fred.taskgame.hero.models.Card;
 import net.fred.taskgame.hero.models.Level;
+import net.fred.taskgame.hero.utils.UiUtils;
+
+import org.parceler.Parcels;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -20,7 +24,7 @@ public class EndBattleDialogFragment extends ImmersiveDialogFragment {
 
     public enum EndType {PLAYER_WON, ENEMY_WON, DRAW}
 
-    private static final String ARG_LEVEL_NUMBER = "ARG_LEVEL_NUMBER";
+    public static final String ARG_LEVEL = "ARG_LEVEL";
     private static final String ARG_WAS_ALREADY_COMPLETED_ONCE = "ARG_WAS_ALREADY_COMPLETED_ONCE";
     private static final String ARG_END_TYPE = "ARG_END_TYPE";
 
@@ -33,15 +37,15 @@ public class EndBattleDialogFragment extends ImmersiveDialogFragment {
     @BindView(R.id.content)
     TextView mContent;
 
-    private int mLevelNumber;
+    private Level mLevel;
     private boolean mWasAlreadyCompletedOnce;
     private EndType mEndType;
 
-    static EndBattleDialogFragment newInstance(int levelNumber, boolean wasAlreadyCompletedOnce, EndType endType) {
+    static EndBattleDialogFragment newInstance(Level level, boolean wasAlreadyCompletedOnce, EndType endType) {
         EndBattleDialogFragment f = new EndBattleDialogFragment();
 
         Bundle args = new Bundle();
-        args.putInt(ARG_LEVEL_NUMBER, levelNumber);
+        args.putParcelable(ARG_LEVEL, Parcels.wrap(level));
         args.putBoolean(ARG_WAS_ALREADY_COMPLETED_ONCE, wasAlreadyCompletedOnce);
         args.putSerializable(ARG_END_TYPE, endType);
         f.setArguments(args);
@@ -52,7 +56,7 @@ public class EndBattleDialogFragment extends ImmersiveDialogFragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mLevelNumber = getArguments().getInt(ARG_LEVEL_NUMBER);
+        mLevel = Parcels.unwrap(getArguments().getParcelable(ARG_LEVEL));
         mWasAlreadyCompletedOnce = getArguments().getBoolean(ARG_WAS_ALREADY_COMPLETED_ONCE);
         mEndType = (EndType) getArguments().getSerializable(ARG_END_TYPE);
 
@@ -70,8 +74,8 @@ public class EndBattleDialogFragment extends ImmersiveDialogFragment {
 
                 String content = "Who is the boss now?\n\n";
                 if (!mWasAlreadyCompletedOnce) {
-                    int previousSlots = Level.getCorrespondingDeckSlots(mLevelNumber - 1);
-                    int newSlots = Level.getCorrespondingDeckSlots(mLevelNumber);
+                    int previousSlots = Level.getCorrespondingDeckSlots(mLevel.levelNumber - 1);
+                    int newSlots = Level.getCorrespondingDeckSlots(mLevel.levelNumber);
 
                     int previousAvailableCreatures = Card.getNonObtainedCardList(previousSlots).size();
                     int newAvailableCreatures = Card.getNonObtainedCardList(newSlots).size();
@@ -110,6 +114,12 @@ public class EndBattleDialogFragment extends ImmersiveDialogFragment {
         super.onCancel(dialog);
         getFragmentManager().popBackStack();
         getFragmentManager().popBackStack();
+
+        if (mLevel.endStory != null) {
+            FragmentTransaction transaction = getFragmentManager().beginTransaction();
+            UiUtils.animateTransition(transaction, UiUtils.TransitionType.TRANSITION_FADE_IN);
+            transaction.replace(R.id.fragment_container, StoryFragment.newInstance(mLevel, true), StoryFragment.class.getName()).addToBackStack(null).commitAllowingStateLoss();
+        }
     }
 
     @OnClick(R.id.ok)

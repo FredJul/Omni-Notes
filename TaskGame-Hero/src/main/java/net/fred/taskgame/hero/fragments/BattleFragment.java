@@ -31,10 +31,10 @@ import butterknife.OnClick;
 
 public class BattleFragment extends BaseFragment {
 
-    public static final String STATE_BATTLE_MANAGER = "STATE_BATTLE_MANAGER";
-
     public static final String ARG_PLAYER_CARDS = "ARG_PLAYER_CARDS";
     public static final String ARG_LEVEL = "ARG_LEVEL";
+
+    private static final String STATE_BATTLE_MANAGER = "STATE_BATTLE_MANAGER";
 
     @BindView(R.id.enemy_portrait)
     ImageView mEnemyImageView;
@@ -105,8 +105,8 @@ public class BattleFragment extends BaseFragment {
 
     @Override
     protected int getMainMusicResId() {
-        if (mLevel != null && mLevel.specialMusicResId != Level.INVALID_ID) {
-            return mLevel.specialMusicResId;
+        if (mLevel != null && mLevel.battleMusicResId != Level.INVALID_ID) {
+            return mLevel.battleMusicResId;
         }
 
         return R.raw.battle_theme;
@@ -291,7 +291,7 @@ public class BattleFragment extends BaseFragment {
             case PLAYER_WON: {
                 getMainActivity().playSound(MainActivity.SOUND_VICTORY);
 
-                DialogFragment dialog = EndBattleDialogFragment.newInstance(mLevel.levelNumber, mLevel.isCompleted, EndBattleDialogFragment.EndType.PLAYER_WON);
+                DialogFragment dialog = EndBattleDialogFragment.newInstance(mLevel, mLevel.isCompleted, EndBattleDialogFragment.EndType.PLAYER_WON);
                 FragmentTransaction transaction = getFragmentManager().beginTransaction().addToBackStack(null);
                 dialog.show(transaction, EndBattleDialogFragment.class.getName());
 
@@ -302,7 +302,7 @@ public class BattleFragment extends BaseFragment {
             case ENEMY_WON: {
                 getMainActivity().playSound(MainActivity.SOUND_DEFEAT);
 
-                DialogFragment dialog = EndBattleDialogFragment.newInstance(mLevel.levelNumber, mLevel.isCompleted, EndBattleDialogFragment.EndType.ENEMY_WON);
+                DialogFragment dialog = EndBattleDialogFragment.newInstance(mLevel, mLevel.isCompleted, EndBattleDialogFragment.EndType.ENEMY_WON);
                 FragmentTransaction transaction = getFragmentManager().beginTransaction().addToBackStack(null);
                 dialog.show(transaction, EndBattleDialogFragment.class.getName());
                 break;
@@ -310,7 +310,7 @@ public class BattleFragment extends BaseFragment {
             case DRAW: {
                 getMainActivity().playSound(MainActivity.SOUND_DEFEAT);
 
-                DialogFragment dialog = EndBattleDialogFragment.newInstance(mLevel.levelNumber, mLevel.isCompleted, EndBattleDialogFragment.EndType.DRAW);
+                DialogFragment dialog = EndBattleDialogFragment.newInstance(mLevel, mLevel.isCompleted, EndBattleDialogFragment.EndType.DRAW);
                 FragmentTransaction transaction = getFragmentManager().beginTransaction().addToBackStack(null);
                 dialog.show(transaction, EndBattleDialogFragment.class.getName());
                 break;

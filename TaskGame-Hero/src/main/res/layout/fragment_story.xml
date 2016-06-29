@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/root_view"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:animateLayoutChanges="true"
+    android:orientation="vertical">
+
+    <Button
+        android:id="@+id/skip_button"
+        android:layout_width="70dp"
+        android:layout_height="50dp"
+        android:layout_alignParentEnd="true"
+        android:layout_margin="10dp"
+        android:text="Skip"
+        android:textSize="13dp"
+        tools:ignore="SpUsage" />
+
+    <ImageView
+        android:id="@+id/right_char"
+        android:layout_width="200dp"
+        android:layout_height="200dp"
+        android:layout_alignParentEnd="true"
+        android:layout_marginTop="60dp"
+        android:scaleType="fitXY"
+        android:scaleX="-1"
+        tools:src="@drawable/invoker_male" />
+
+    <com.lb.auto_fit_textview.AutoResizeTextView
+        android:id="@+id/right_char_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="70dp"
+        android:layout_marginStart="15dp"
+        android:layout_marginTop="290dp"
+        android:background="@drawable/box"
+        android:textColor="@color/card_text_color"
+        tools:text="Story line bla bla bla bla bla bla" />
+
+    <ImageView
+        android:id="@+id/right_char_separator"
+        android:layout_width="200dp"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_below="@id/right_char"
+        android:layout_marginTop="-5dp"
+        android:background="@drawable/enemy_separator" />
+
+    <ImageView
+        android:id="@+id/left_char"
+        android:layout_width="250dp"
+        android:layout_height="250dp"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentStart="true"
+        android:scaleType="fitXY"
+        tools:src="@drawable/invoker_female" />
+
+    <com.lb.auto_fit_textview.AutoResizeTextView
+        android:id="@+id/left_char_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_marginBottom="280dp"
+        android:layout_marginEnd="15dp"
+        android:layout_marginStart="70dp"
+        android:layout_alignParentBottom="true"
+        android:background="@drawable/box"
+        android:textColor="@color/card_text_color"
+        tools:text="Story line bla bla bla bla bla bla" />
+
+</RelativeLayout>
+
