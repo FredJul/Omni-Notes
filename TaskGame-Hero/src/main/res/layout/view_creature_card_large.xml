@@ -74,6 +74,21 @@
             tools:text="Desc with several lines on it"
             android:text="@{card.desc}" />
 
+        <TextView
+            android:id="@+id/speciality"
+            android:layout_width="170dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom"
+            android:layout_marginStart="18dp"
+            android:layout_marginBottom="16dp"
+            android:shadowColor="@android:color/black"
+            android:shadowRadius="7"
+            android:text='@{card.useMagic ? "Use magic" : card.useWeapon ? "Use weapon" : ""}'
+            android:textColor="@color/card_text_color"
+            android:textSize="12dp"
+            tools:ignore="SpUsage"
+            tools:text="Use magic" />
+
         <com.lb.auto_fit_textview.AutoResizeTextView
             android:id="@+id/attack"
             android:layout_width="39dp"

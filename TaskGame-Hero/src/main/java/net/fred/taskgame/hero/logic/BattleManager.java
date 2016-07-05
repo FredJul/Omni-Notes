@@ -166,11 +166,11 @@ public class BattleManager {
 
                 // Change the defense points
                 if (!mStunPlayer) {
-                    enemy.defense -= player.attack;
+                    Card.getAllCardsMap().get(enemy.id).fightAction.applyDamageFromOpponent(enemy, player);
                     enemy.defense = enemy.defense < 0 ? 0 : enemy.defense;
                 }
                 if (!mStunEnemy) {
-                    player.defense -= enemy.attack;
+                    Card.getAllCardsMap().get(player.id).fightAction.applyDamageFromOpponent(player, enemy);
                     player.defense = player.defense < 0 ? 0 : player.defense;
                 }
                 mStunPlayer = false;

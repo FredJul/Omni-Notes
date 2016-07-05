@@ -25,8 +25,8 @@
             android:layout_width="125dp"
             android:layout_height="125dp"
             android:scaleType="fitXY"
-            tools:src="@drawable/skeleton_archer"
-            android:src="@{card.iconResId}" />
+            android:src="@{card.iconResId}"
+            tools:src="@drawable/skeleton_archer" />
 
         <com.lb.auto_fit_textview.AutoResizeTextView
             android:id="@+id/needed_slots"
@@ -37,11 +37,11 @@
             android:gravity="center"
             android:shadowColor="@android:color/black"
             android:shadowRadius="7"
+            android:text="@{String.valueOf(card.neededSlots)}"
             android:textColor="@color/card_text_color"
             android:textSize="15dp"
             tools:ignore="SpUsage"
-            tools:text="30"
-            android:text="@{String.valueOf(card.neededSlots)}" />
+            tools:text="30" />
 
         <com.lb.auto_fit_textview.AutoResizeTextView
             android:id="@+id/name"
@@ -52,11 +52,11 @@
             android:gravity="center|end"
             android:shadowColor="@android:color/black"
             android:shadowRadius="7"
+            android:text="@{card.name}"
             android:textColor="@color/card_text_color"
             android:textSize="12dp"
             tools:ignore="SpUsage"
-            tools:text="Skeleton Archer"
-            android:text="@{card.name}" />
+            tools:text="Skeleton Archer" />
 
         <com.lb.auto_fit_textview.AutoResizeTextView
             android:id="@+id/desc"
@@ -68,11 +68,26 @@
             android:layout_marginStart="13dp"
             android:shadowColor="@android:color/black"
             android:shadowRadius="7"
+            android:text="@{card.desc}"
             android:textColor="@color/card_text_color"
             android:textSize="12dp"
             tools:ignore="SpUsage"
-            tools:text="Desc with several lines on it"
-            android:text="@{card.desc}" />
+            tools:text="Desc with several lines on it" />
+
+        <TextView
+            android:id="@+id/speciality"
+            android:layout_width="100dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom"
+            android:layout_marginStart="11dp"
+            android:layout_marginBottom="9dp"
+            android:shadowColor="@android:color/black"
+            android:shadowRadius="7"
+            android:text='@{card.useMagic ? "Use magic" : card.useWeapon ? "Use weapon" : ""}'
+            android:textColor="@color/card_text_color"
+            android:textSize="7dp"
+            tools:ignore="SpUsage"
+            tools:text="Use magic" />
 
         <com.lb.auto_fit_textview.AutoResizeTextView
             android:id="@+id/attack"
@@ -84,11 +99,11 @@
             android:gravity="center"
             android:shadowColor="@android:color/black"
             android:shadowRadius="7"
+            android:text="@{String.valueOf(card.attack)}"
             android:textColor="@color/card_text_color"
             android:textSize="12dp"
             tools:ignore="SpUsage"
-            tools:text="30"
-            android:text="@{String.valueOf(card.attack)}" />
+            tools:text="30" />
 
         <com.lb.auto_fit_textview.AutoResizeTextView
             android:id="@+id/defense"
@@ -99,11 +114,11 @@
             android:gravity="center"
             android:shadowColor="@android:color/black"
             android:shadowRadius="7"
+            android:text="@{String.valueOf(card.defense)}"
             android:textColor="@color/card_text_color"
             android:textSize="12dp"
             tools:ignore="SpUsage"
-            tools:text="30"
-            android:text="@{String.valueOf(card.defense)}" />
+            tools:text="30" />
 
     </FrameLayout>
 </layout>

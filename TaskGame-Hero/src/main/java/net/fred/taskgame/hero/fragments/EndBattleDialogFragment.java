@@ -115,7 +115,7 @@ public class EndBattleDialogFragment extends ImmersiveDialogFragment {
         getFragmentManager().popBackStack();
         getFragmentManager().popBackStack();
 
-        if (mLevel.endStory != null) {
+        if (mEndType == EndType.PLAYER_WON && mLevel.endStory != null) {
             FragmentTransaction transaction = getFragmentManager().beginTransaction();
             UiUtils.animateTransition(transaction, UiUtils.TransitionType.TRANSITION_FADE_IN);
             transaction.replace(R.id.fragment_container, StoryFragment.newInstance(mLevel, true), StoryFragment.class.getName()).addToBackStack(null).commitAllowingStateLoss();
