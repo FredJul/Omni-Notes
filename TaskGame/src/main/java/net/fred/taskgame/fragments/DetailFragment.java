@@ -21,11 +21,13 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.view.MenuItemCompat;
 import android.text.Editable;
 import android.text.Layout;
@@ -171,6 +173,12 @@ public class DetailFragment extends Fragment implements OnReminderPickedListener
             getMainActivity().getSupportActionBar().setTitle(R.string.task);
         } else {
             getMainActivity().getSupportActionBar().setTitle(R.string.quest);
+        }
+
+        if (mTask.isFinished) {
+            getMainActivity().getSupportActionBar().setBackgroundDrawable(new ColorDrawable(ContextCompat.getColor(getContext(), R.color.finished_tasks_actionbar_color)));
+        } else {
+            getMainActivity().getSupportActionBar().setBackgroundDrawable(null);
         }
 
         initViews();

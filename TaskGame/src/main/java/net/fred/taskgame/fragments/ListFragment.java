@@ -21,6 +21,7 @@ import android.app.SearchManager;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.support.annotation.StringRes;
 import android.support.design.widget.FloatingActionButton;
@@ -553,6 +554,8 @@ public class ListFragment extends Fragment {
             MenuItemCompat.collapseActionView(mSearchMenuItem); // collapsing the menu will trigger a new call to initTasksList
         }
 
+        getMainActivity().getSupportActionBar().setBackgroundDrawable(null);
+
         // Searching
         if (mSearchQuery != null || Intent.ACTION_SEARCH.equals(intent.getAction())) {
             // Get the intent, verify the action and get the query
@@ -572,6 +575,7 @@ public class ListFragment extends Fragment {
                     getMainActivity().getSupportActionBar().setTitle(R.string.drawer_tasks_item);
                 } else if (currentNavigation == NavigationUtils.FINISHED_TASKS) {
                     getMainActivity().getSupportActionBar().setTitle(R.string.drawer_finished_tasks_item);
+                    getMainActivity().getSupportActionBar().setBackgroundDrawable(new ColorDrawable(ContextCompat.getColor(getContext(), R.color.finished_tasks_actionbar_color)));
                 } else {
                     getMainActivity().getSupportActionBar().setTitle(DbHelper.getCategory(currentNavigation).name);
                 }
