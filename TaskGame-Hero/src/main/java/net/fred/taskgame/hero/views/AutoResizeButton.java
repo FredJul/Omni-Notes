@@ -57,7 +57,7 @@ public class AutoResizeButton extends Button {
     @Override
     public void setLineSpacing(float add, float mult) {
         super.setLineSpacing(add, mult);
-        mResizer.setLineSpacing(add, mult);
+        mResizer.resizeText();
     }
 
     /**

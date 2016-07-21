@@ -29,12 +29,6 @@ public class AutoResizer {
     // Lower bounds for text size
     private float mMinTextSize = MIN_TEXT_SIZE;
 
-    // Text view line spacing multiplier
-    private float mSpacingMult = 1.0f;
-
-    // Text view additional line spacing
-    private float mSpacingAdd = 0.0f;
-
     public AutoResizer(TextView textView) {
         mTextView = textView;
     }
@@ -62,6 +56,7 @@ public class AutoResizer {
 
         // Get the text view's paint object
         TextPaint textPaint = mTextView.getPaint();
+        float originalPaintTextSize = textPaint.getTextSize();
 
         // Bisection method: fast & precise
         float lower = mMinTextSize;
@@ -72,7 +67,13 @@ public class AutoResizer {
 
         while (loopCounter < BISECTION_LOOP_WATCH_DOG && upper - lower > 1) {
             targetTextSize = (lower + upper) / 2;
-            textHeight = getTextHeight(newText, textPaint, widthLimit, targetTextSize);
+
+            // Update the text paint object
+            textPaint.setTextSize(targetTextSize);
+            // Measure using a static layout
+            StaticLayout layout = new StaticLayout(newText, textPaint, widthLimit, Alignment.ALIGN_NORMAL, mTextView.getLineSpacingMultiplier(), mTextView.getLineSpacingExtra(), true);
+            textHeight = layout.getHeight();
+
             if (textHeight > heightLimit) {
                 upper = targetTextSize;
             } else {
@@ -81,20 +82,13 @@ public class AutoResizer {
             loopCounter++;
         }
 
+        textPaint.setTextSize(originalPaintTextSize); // need to restore the initial one to avoid graphical issues
+
         targetTextSize = lower;
 
         // Some devices try to auto adjust line spacing, so force default line spacing
         // and invalidate the layout as a side effect
         mTextView.setTextSize(TypedValue.COMPLEX_UNIT_PX, targetTextSize);
-    }
-
-    /**
-     * Override the set line spacing to update our internal reference values
-     */
-    public void setLineSpacing(float add, float mult) {
-        mSpacingMult = mult;
-        mSpacingAdd = add;
-        resizeText();
     }
 
     /**
@@ -133,19 +127,6 @@ public class AutoResizer {
      */
     public float getMinTextSize() {
         return mMinTextSize;
-    }
-
-    // Set the text size of the text paint object and use a static layout to render text off screen before measuring
-    private int getTextHeight(CharSequence source, TextPaint originalPaint, int width, float textSize) {
-        // modified: make a copy of the original TextPaint object for measuring
-        // (apparently the object gets modified while measuring, see also the
-        // docs for TextView.getPaint() (which states to access it read-only)
-        TextPaint paint = new TextPaint(originalPaint);
-        // Update the text paint object
-        paint.setTextSize(textSize);
-        // Measure using a static layout
-        StaticLayout layout = new StaticLayout(source, paint, width, Alignment.ALIGN_NORMAL, mSpacingMult, mSpacingAdd, true);
-        return layout.getHeight();
     }
 
 }

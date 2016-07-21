@@ -56,7 +56,7 @@ public class AutoResizeTextView extends TextView {
     @Override
     public void setLineSpacing(float add, float mult) {
         super.setLineSpacing(add, mult);
-        mResizer.setLineSpacing(add, mult);
+        mResizer.resizeText();
     }
 
     /**
