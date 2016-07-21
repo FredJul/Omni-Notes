@@ -195,26 +195,61 @@ public class Card extends BaseModel implements Cloneable {
             inDeckList.append(card.id, card.isInDeck);
         }
 
-        /****** CREATURE CARDS *******/
+
+        /****************************/
+        /****** CREATURE CARDS ******/
+        /****************************/
 
         Card card = new Card();
-        card.id = CREATURE_TROLL;
-        card.isObtained = true; // the only card you get for free at the beginning
-        card.isInDeck = inDeckList.size() == 0 || inDeckList.get(card.id); // by default, add it
-        card.neededSlots = 2;
+        card.id = CREATURE_SYLPH;
+        card.isObtained = true;
+        card.isInDeck = inDeckList.get(card.id);
+        card.neededSlots = 1;
         card.price = 0;
-        card.name = "Troll";
+        card.name = "Sylphid";
         card.attack = 2;
-        card.defense = 4;
+        card.defense = 1;
         card.useWeapon = false;
+        card.useMagic = true;
+        card.iconResId = R.drawable.sylph;
+        card.desc = "Looks kind and peaceful, but her basic wind magic can surprise you";
+        checkCreatureCard(card);
+        ALL_CARDS_MAP.append(card.id, card);
+
+        card = new Card();
+        card.id = CREATURE_MERMAN;
+        card.isObtained = obtainedList.get(card.id);
+        card.isInDeck = inDeckList.get(card.id);
+        card.neededSlots = 1;
+        card.price = 0; // First one is free
+        card.name = "Merman";
+        card.attack = 1;
+        card.defense = 2;
+        card.useWeapon = false;
+        card.useMagic = true;
+        card.iconResId = R.drawable.merman;
+        card.desc = "Not the strongest one, but can use basic water magic";
+        checkCreatureCard(card);
+        ALL_CARDS_MAP.append(card.id, card);
+
+        card = new Card();
+        card.id = CREATURE_SKELETON;
+        card.isObtained = obtainedList.get(card.id);
+        card.isInDeck = inDeckList.get(card.id);
+        card.neededSlots = 1;
+        card.price = card.neededSlots * 50;
+        card.name = "Skeleton Archer";
+        card.attack = 2;
+        card.defense = 2;
+        card.useWeapon = true;
         card.useMagic = false;
-        card.iconResId = R.drawable.troll;
-        card.desc = "It's fascinated to see what we can do with some little piece of rocks\n ● Receive x1.5 damage against magic";
+        card.iconResId = R.drawable.skeleton;
+        card.desc = "Deads are not totally dead, and they strangely know how to send arrows in your face\n ● Resistant against magic: received damage reduced by 1";
         card.fightAction = new FightAction() {
             @Override
             public void applyDamageFromOpponent(Card current, Card opponent) {
                 if (opponent.useMagic) {
-                    current.defense -= opponent.attack * 1.5;
+                    current.defense -= opponent.attack >= 1 ? opponent.attack - 1 : opponent.attack;
                 } else {
                     current.defense -= opponent.attack;
                 }
@@ -224,18 +259,28 @@ public class Card extends BaseModel implements Cloneable {
         ALL_CARDS_MAP.append(card.id, card);
 
         card = new Card();
-        card.id = CREATURE_SKELETON;
-        card.isObtained = obtainedList.get(card.id);
-        card.isInDeck = inDeckList.get(card.id);
-        card.neededSlots = 1;
-        card.price = 0; // First one is free
-        card.name = "Skeleton Archer";
-        card.attack = 1;
-        card.defense = 3;
-        card.useWeapon = true;
+        card.id = CREATURE_TROLL;
+        card.isObtained = true; // the only card you get for free at the beginning
+        card.isInDeck = inDeckList.size() == 0 || inDeckList.get(card.id); // by default, add it
+        card.neededSlots = 2;
+        card.price = card.neededSlots * 50;
+        card.name = "Troll";
+        card.attack = 2;
+        card.defense = 4;
+        card.useWeapon = false;
         card.useMagic = false;
-        card.iconResId = R.drawable.skeleton;
-        card.desc = "Deads are not totally dead, and they strangely know how to send arrows in your face";
+        card.iconResId = R.drawable.troll;
+        card.desc = "It's fascinated to see what we can do with some little piece of rocks\n ● Weak against magic: received damage increased by 1";
+        card.fightAction = new FightAction() {
+            @Override
+            public void applyDamageFromOpponent(Card current, Card opponent) {
+                if (opponent.useMagic) {
+                    current.defense -= opponent.attack + 1;
+                } else {
+                    current.defense -= opponent.attack;
+                }
+            }
+        };
         checkCreatureCard(card);
         ALL_CARDS_MAP.append(card.id, card);
 
@@ -251,12 +296,12 @@ public class Card extends BaseModel implements Cloneable {
         card.useWeapon = false;
         card.useMagic = false;
         card.iconResId = R.drawable.enchanted_tree;
-        card.desc = "Nature is beautiful, except maybe when it tries to kill you\n ● Receive x1.5 damage against weapons";
+        card.desc = "Nature is beautiful, except maybe when it tries to kill you\n ● Weak against weapons: received damage increased by 1";
         card.fightAction = new FightAction() {
             @Override
             public void applyDamageFromOpponent(Card current, Card opponent) {
                 if (opponent.useWeapon) {
-                    current.defense -= opponent.attack * 1.5;
+                    current.defense -= opponent.attack + 1;
                 } else {
                     current.defense -= opponent.attack;
                 }
@@ -266,22 +311,74 @@ public class Card extends BaseModel implements Cloneable {
         ALL_CARDS_MAP.append(card.id, card);
 
         card = new Card();
-        card.id = CREATURE_SPECTRE;
+        card.id = CREATURE_GRUNT;
         card.isObtained = obtainedList.get(card.id);
         card.isInDeck = inDeckList.get(card.id);
         card.neededSlots = 3;
         card.price = card.neededSlots * 50;
-        card.name = "Spectre";
+        card.name = "Grunt";
         card.attack = 3;
         card.defense = 4;
         card.useWeapon = false;
-        card.useMagic = true;
-        card.iconResId = R.drawable.spectre;
-        card.desc = "It's always better to have that kind of creature on your side than on the opposite one";
+        card.useMagic = false;
+        card.iconResId = R.drawable.grunt;
+        card.desc = "Half human, half beast. Killing someone is a natural law for them and they don't perceive that as a problem.";
         checkCreatureCard(card);
         ALL_CARDS_MAP.append(card.id, card);
 
+        card = new Card();
+        card.id = CREATURE_LICH;
+        card.isObtained = obtainedList.get(card.id);
+        card.isInDeck = inDeckList.get(card.id);
+        card.neededSlots = 3;
+        card.price = card.neededSlots * 50;
+        card.name = "Lich";
+        card.attack = 5;
+        card.defense = 3;
+        card.useWeapon = false;
+        card.useMagic = true;
+        card.iconResId = R.drawable.lich;
+        card.desc = "Ancient mage who found a way to not be affected by the time anymore";
+        checkCreatureCard(card);
+        ALL_CARDS_MAP.append(card.id, card);
+
+        card = new Card();
+        card.id = CREATURE_EMPTY_ARMOR;
+        card.isObtained = obtainedList.get(card.id);
+        card.isInDeck = inDeckList.get(card.id);
+        card.neededSlots = 3;
+        card.price = card.neededSlots * 50;
+        card.name = "Empty armor";
+        card.attack = 5;
+        card.defense = 4;
+        card.useWeapon = true;
+        card.useMagic = false;
+        card.iconResId = R.drawable.empty_armor;
+        card.desc = "Looks empty and harmless, but don't turn your back on it or you may regret it";
+        checkCreatureCard(card);
+        ALL_CARDS_MAP.append(card.id, card);
+
+        card = new Card();
+        card.id = CREATURE_SPECTRE;
+        card.isObtained = obtainedList.get(card.id);
+        card.isInDeck = inDeckList.get(card.id);
+        card.neededSlots = 3;
+        card.price = card.neededSlots * 50 + 50;
+        card.name = "Spectre";
+        card.attack = 4;
+        card.defense = 6;
+        card.useWeapon = false;
+        card.useMagic = true;
+        card.iconResId = R.drawable.spectre;
+        card.desc = "The opponent never like when his nightmare is becoming reality";
+        checkCreatureCard(card);
+        ALL_CARDS_MAP.append(card.id, card);
+
+
+        /****************************/
         /****** SUPPORT CARDS *******/
+        /****************************/
+
 
         card = new Card();
         card.id = SUPPORT_MEDICAL_ATTENTION;
