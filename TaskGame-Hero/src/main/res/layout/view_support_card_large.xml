@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
@@ -26,51 +27,48 @@
             android:layout_height="212dp"
             android:layout_gravity="bottom"
             android:scaleType="fitXY"
-            tools:src="@drawable/red_potion"
-            android:src="@{card.iconResId}" />
+            android:src="@{card.iconResId}"
+            tools:src="@drawable/red_potion" />
 
-        <com.lb.auto_fit_textview.AutoResizeTextView
+        <net.fred.taskgame.hero.views.AutoResizeTextView
             android:id="@+id/needed_slots"
             android:layout_width="42dp"
             android:layout_height="34dp"
             android:layout_marginStart="204dp"
             android:layout_marginTop="5dp"
             android:gravity="center"
+            android:maxLines="1"
             android:shadowColor="@android:color/black"
             android:shadowRadius="7"
+            android:text="@{String.valueOf(card.neededSlots)}"
             android:textColor="@color/card_text_color"
-            android:textSize="25dp"
-            android:maxLines="1"
-            tools:ignore="SpUsage"
-            tools:text="30"
-            android:text="@{String.valueOf(card.neededSlots)}" />
+            app:maxTextSize="25dp"
+            tools:text="30" />
 
-        <com.lb.auto_fit_textview.AutoResizeTextView
+        <net.fred.taskgame.hero.views.AutoResizeTextView
             android:id="@+id/name"
             android:layout_width="187dp"
             android:layout_height="34dp"
             android:layout_marginStart="20dp"
             android:layout_marginTop="15dp"
+            android:maxLines="2"
             android:shadowColor="@android:color/black"
             android:shadowRadius="7"
+            android:text="@{card.name}"
             android:textColor="@color/card_text_color"
-            android:textSize="20dp"
-            android:maxLines="2"
-            tools:ignore="SpUsage"
-            tools:text="Red potion"
-            android:text="@{card.name}" />
+            app:maxTextSize="20dp"
+            tools:text="Red potion" />
 
-        <com.lb.auto_fit_textview.AutoResizeTextView
+        <net.fred.taskgame.hero.views.AutoResizeTextView
             android:id="@+id/desc"
             android:layout_width="match_parent"
             android:layout_height="102dp"
-            android:layout_marginTop="51dp"
             android:layout_marginEnd="22dp"
             android:layout_marginStart="22dp"
-            android:textSize="20dp"
-            tools:ignore="SpUsage"
-            tools:text="Desc with several lines on it"
-            android:text="@{card.desc}" />
+            android:layout_marginTop="51dp"
+            android:text="@{card.desc}"
+            app:maxTextSize="20dp"
+            tools:text="Desc with several lines on it" />
 
     </FrameLayout>
 </layout>

@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
@@ -25,10 +26,10 @@
             android:layout_width="212dp"
             android:layout_height="212dp"
             android:scaleType="fitXY"
-            tools:src="@drawable/skeleton_archer"
-            android:src="@{card.iconResId}" />
+            android:src="@{card.iconResId}"
+            tools:src="@drawable/skeleton" />
 
-        <com.lb.auto_fit_textview.AutoResizeTextView
+        <net.fred.taskgame.hero.views.AutoResizeTextView
             android:id="@+id/needed_slots"
             android:layout_width="42dp"
             android:layout_height="34dp"
@@ -37,13 +38,12 @@
             android:gravity="center"
             android:shadowColor="@android:color/black"
             android:shadowRadius="7"
+            android:text="@{String.valueOf(card.neededSlots)}"
             android:textColor="@color/card_text_color"
-            android:textSize="25dp"
-            tools:ignore="SpUsage"
-            tools:text="30"
-            android:text="@{String.valueOf(card.neededSlots)}" />
+            app:maxTextSize="25dp"
+            tools:text="30" />
 
-        <com.lb.auto_fit_textview.AutoResizeTextView
+        <net.fred.taskgame.hero.views.AutoResizeTextView
             android:id="@+id/name"
             android:layout_width="204dp"
             android:layout_height="52dp"
@@ -52,13 +52,12 @@
             android:gravity="center|end"
             android:shadowColor="@android:color/black"
             android:shadowRadius="7"
+            android:text="@{card.name}"
             android:textColor="@color/card_text_color"
-            android:textSize="20dp"
-            tools:ignore="SpUsage"
-            tools:text="Skeleton Archer"
-            android:text="@{card.name}" />
+            app:maxTextSize="20dp"
+            tools:text="Skeleton Archer" />
 
-        <com.lb.auto_fit_textview.AutoResizeTextView
+        <net.fred.taskgame.hero.views.AutoResizeTextView
             android:id="@+id/desc"
             android:layout_width="match_parent"
             android:layout_height="102dp"
@@ -68,28 +67,26 @@
             android:layout_marginStart="22dp"
             android:shadowColor="@android:color/black"
             android:shadowRadius="7"
+            android:text="@{card.desc}"
             android:textColor="@color/card_text_color"
-            android:textSize="20dp"
-            tools:ignore="SpUsage"
-            tools:text="Desc with several lines on it"
-            android:text="@{card.desc}" />
+            app:maxTextSize="20dp"
+            tools:text="Desc with several lines on it" />
 
         <TextView
             android:id="@+id/speciality"
             android:layout_width="170dp"
             android:layout_height="wrap_content"
             android:layout_gravity="bottom"
-            android:layout_marginStart="18dp"
             android:layout_marginBottom="16dp"
+            android:layout_marginStart="18dp"
             android:shadowColor="@android:color/black"
             android:shadowRadius="7"
             android:text='@{card.useMagic ? "Use magic" : card.useWeapon ? "Use weapon" : ""}'
             android:textColor="@color/card_text_color"
-            android:textSize="12dp"
-            tools:ignore="SpUsage"
+            app:maxTextSize="20dp"
             tools:text="Use magic" />
 
-        <com.lb.auto_fit_textview.AutoResizeTextView
+        <net.fred.taskgame.hero.views.AutoResizeTextView
             android:id="@+id/attack"
             android:layout_width="39dp"
             android:layout_height="34dp"
@@ -99,13 +96,12 @@
             android:gravity="center"
             android:shadowColor="@android:color/black"
             android:shadowRadius="7"
+            android:text="@{String.valueOf(card.attack)}"
             android:textColor="@color/card_text_color"
-            android:textSize="20dp"
-            tools:ignore="SpUsage"
-            tools:text="30"
-            android:text="@{String.valueOf(card.attack)}" />
+            app:maxTextSize="20dp"
+            tools:text="30" />
 
-        <com.lb.auto_fit_textview.AutoResizeTextView
+        <net.fred.taskgame.hero.views.AutoResizeTextView
             android:id="@+id/defense"
             android:layout_width="39dp"
             android:layout_height="34dp"
@@ -114,11 +110,10 @@
             android:gravity="center"
             android:shadowColor="@android:color/black"
             android:shadowRadius="7"
+            android:text="@{String.valueOf(card.defense)}"
             android:textColor="@color/card_text_color"
-            android:textSize="20dp"
-            tools:ignore="SpUsage"
-            tools:text="30"
-            android:text="@{String.valueOf(card.defense)}" />
+            app:maxTextSize="20dp"
+            tools:text="30" />
 
     </FrameLayout>
 </layout>

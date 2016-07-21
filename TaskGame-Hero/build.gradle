@@ -66,5 +66,4 @@ dependencies {
     compile 'com.android.support:recyclerview-v7:+'
     compile 'com.android.support:cardview-v7:+'
     compile 'com.android.support:design:+'
-    compile 'com.github.AndroidDeveloperLB:AutoFitTextView:+'
 }

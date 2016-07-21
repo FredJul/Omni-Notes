@@ -2,4 +2,9 @@
     <declare-styleable name="GameCardView">
         <attr name="useLargeLayout" format="boolean" />
     </declare-styleable>
+
+    <declare-styleable name="AutoResizeTextView">
+        <attr name="maxTextSize" format="dimension" />
+        <attr name="minTextSize" format="dimension" />
+    </declare-styleable>
 </resources>
