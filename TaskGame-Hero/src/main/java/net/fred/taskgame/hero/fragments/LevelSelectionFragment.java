@@ -1,6 +1,7 @@
 package net.fred.taskgame.hero.fragments;
 
 import android.os.Bundle;
+import android.support.annotation.RawRes;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -44,7 +45,9 @@ public class LevelSelectionFragment extends BaseFragment {
     }
 
     @Override
-    protected int getMainMusicResId() {
+    protected
+    @RawRes
+    int getMainMusicResId() {
         return R.raw.main_theme;
     }
 

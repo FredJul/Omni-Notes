@@ -1,6 +1,7 @@
 package net.fred.taskgame.hero.fragments;
 
 import android.os.Bundle;
+import android.support.annotation.RawRes;
 import android.support.design.widget.BottomSheetBehavior;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentTransaction;
@@ -90,7 +91,7 @@ public class BattleFragment extends BaseFragment {
         mBottomSheetBehavior = BottomSheetBehavior.from(mCardListScrollView);
         mBottomSheetBehavior.setPeekHeight(UiUtils.dpToPixel(100));
 
-        mEnemyImageView.setImageResource(mLevel.enemyIconResId);
+        mEnemyImageView.setImageResource(mLevel.getEnemyIcon(getContext()));
 
         updateUI();
 
@@ -104,7 +105,9 @@ public class BattleFragment extends BaseFragment {
     }
 
     @Override
-    protected int getMainMusicResId() {
+    protected
+    @RawRes
+    int getMainMusicResId() {
         if (mLevel != null && mLevel.battleMusicResId != Level.INVALID_ID) {
             return mLevel.battleMusicResId;
         }

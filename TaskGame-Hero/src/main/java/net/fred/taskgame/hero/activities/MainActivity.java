@@ -13,6 +13,7 @@ import android.support.annotation.RawRes;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
+import android.text.TextUtils;
 import android.view.View;
 
 import net.fred.taskgame.hero.R;
@@ -129,7 +130,7 @@ public class MainActivity extends AppCompatActivity {
     public void startBattle(Level level) {
         FragmentTransaction transaction = mFragmentManager.beginTransaction();
         UiUtils.animateTransition(transaction, UiUtils.TransitionType.TRANSITION_FADE_IN);
-        if (level.startStory != null) {
+        if (!TextUtils.isEmpty(level.getStartStory(this))) {
             transaction.replace(R.id.fragment_container, StoryFragment.newInstance(level, false), StoryFragment.class.getName()).addToBackStack(null).commitAllowingStateLoss();
         } else {
             playSound(SOUND_ENTER_BATTLE);
@@ -154,9 +155,10 @@ public class MainActivity extends AppCompatActivity {
             mMediaPlayer.release();
             mMediaPlayer = null;
         }
+        mCurrentMusicResId = 0;
     }
 
-    public void playMusic(@RawRes int soundResId) {
+    public void playMusic(final @RawRes int soundResId) {
         if (soundResId == 0 || (mMediaPlayer != null && mMediaPlayer.isPlaying() && mCurrentMusicResId == soundResId)) {
             return;
         }
@@ -165,7 +167,13 @@ public class MainActivity extends AppCompatActivity {
         stopMusic();
 
         mMediaPlayer = MediaPlayer.create(this, soundResId);
-        mMediaPlayer.setLooping(true);
+        mMediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+            @Override
+            public void onCompletion(MediaPlayer mediaPlayer) {
+                // setLooping(true) is buggy on my Nexus5X, does not really understand why... hence this workaround
+                playMusic(soundResId);
+            }
+        });
 
         mMediaPlayer.start();
     }

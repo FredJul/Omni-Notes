@@ -1,7 +1,7 @@
 package net.fred.taskgame.hero.models;
 
 import android.databinding.BindingAdapter;
-import android.util.SparseArray;
+import android.support.annotation.DrawableRes;
 import android.util.SparseBooleanArray;
 import android.widget.ImageView;
 
@@ -17,6 +17,7 @@ import net.fred.taskgame.hero.logic.BattleManager;
 import org.parceler.Parcel;
 
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 
 @Parcel
@@ -45,8 +46,8 @@ public class Card extends BaseModel implements Cloneable {
     public final static int CREATURE_SYLPH = 30;
     public final static int CREATURE_SYLPH_2 = 31;
     public final static int CREATURE_SYLPH_3 = 32;
-    public final static int CREATURE_LIZARD = 40;
-    public final static int CREATURE_LIZARD_2 = 41;
+    public final static int CREATURE_SNAKE = 40;
+    public final static int CREATURE_SNAKE_2 = 41;
     public final static int CREATURE_ZOMBIE = 50;
     public final static int CREATURE_ZOMBIE_2 = 51;
     public final static int CREATURE_MERMAN = 60;
@@ -78,10 +79,11 @@ public class Card extends BaseModel implements Cloneable {
     public final static int SUPPORT_CONFUSION = 10004;
     public final static int SUPPORT_SURPRISE = 10005;
     public final static int SUPPORT_MEDICAL_ATTENTION = 10006;
+    public final static int SUPPORT_SWITCH_POTION = 10007;
 
     public final static int INVALID_ID = 0;
 
-    private final static SparseArray<Card> ALL_CARDS_MAP = new SparseArray<>();
+    private final static LinkedHashMap<Integer, Card> ALL_CARDS_MAP = new LinkedHashMap<>();
 
     @PrimaryKey
     public int id = INVALID_ID;
@@ -100,6 +102,7 @@ public class Card extends BaseModel implements Cloneable {
     public transient int defense;
     public transient boolean useWeapon;
     public transient boolean useMagic;
+    @DrawableRes
     public transient int iconResId = INVALID_ID;
     public transient int price;
     public transient FightAction fightAction;
@@ -140,15 +143,13 @@ public class Card extends BaseModel implements Cloneable {
         view.setImageResource(res);
     }
 
-    public static SparseArray<Card> getAllCardsMap() {
+    public static LinkedHashMap<Integer, Card> getAllCardsMap() {
         return ALL_CARDS_MAP;
     }
 
     public static List<Card> getObtainedCardList() {
-        SparseArray<Card> allCards = Card.getAllCardsMap();
         ArrayList<Card> obtainedList = new ArrayList<>();
-        for (int i = 0; i < allCards.size(); i++) {
-            Card card = allCards.valueAt(i);
+        for (Card card : Card.getAllCardsMap().values()) {
             if (card.isObtained) {
                 obtainedList.add(card);
             }
@@ -161,10 +162,8 @@ public class Card extends BaseModel implements Cloneable {
     }
 
     public static List<Card> getNonObtainedCardList(int totalDeckSlots) {
-        SparseArray<Card> allCards = Card.getAllCardsMap();
         ArrayList<Card> nonObtainedList = new ArrayList<>();
-        for (int i = 0; i < allCards.size(); i++) {
-            Card card = allCards.valueAt(i);
+        for (Card card : Card.getAllCardsMap().values()) {
             // Do not display all card immediately
             if (!card.isObtained && card.neededSlots <= totalDeckSlots / 2) {
                 nonObtainedList.add(card);
@@ -174,10 +173,8 @@ public class Card extends BaseModel implements Cloneable {
     }
 
     public static List<Card> getDeckCardList() {
-        SparseArray<Card> allCards = Card.getAllCardsMap();
         ArrayList<Card> deckCardList = new ArrayList<>();
-        for (int i = 0; i < allCards.size(); i++) {
-            Card card = allCards.valueAt(i);
+        for (Card card : Card.getAllCardsMap().values()) {
             if (card.isInDeck) {
                 deckCardList.add(card);
             }
@@ -200,103 +197,22 @@ public class Card extends BaseModel implements Cloneable {
         /****** CREATURE CARDS ******/
         /****************************/
 
-        Card card = new Card();
-        card.id = CREATURE_SYLPH;
-        card.isObtained = true;
-        card.isInDeck = inDeckList.get(card.id);
-        card.neededSlots = 1;
-        card.price = 0;
-        card.name = "Sylphid";
-        card.attack = 2;
-        card.defense = 1;
-        card.useWeapon = false;
-        card.useMagic = true;
-        card.iconResId = R.drawable.sylph;
-        card.desc = "Looks kind and peaceful, but her basic wind magic can surprise you";
-        checkCreatureCard(card);
-        ALL_CARDS_MAP.append(card.id, card);
-
-        card = new Card();
-        card.id = CREATURE_MERMAN;
-        card.isObtained = obtainedList.get(card.id);
-        card.isInDeck = inDeckList.get(card.id);
-        card.neededSlots = 1;
+        Card card = generateDefaultCreatureCard(CREATURE_MERMAN, 1, obtainedList, inDeckList);
         card.price = 0; // First one is free
         card.name = "Merman";
+        card.attack = 2;
+        card.defense = 1;
+        card.iconResId = R.drawable.merman;
+        card.desc = "Mermans are famous for their courage, even if it's not always enough to save their lives";
+        checkCreatureCard(card);
+
+        card = generateDefaultCreatureCard(CREATURE_SYLPH, 1, obtainedList, inDeckList);
+        card.name = "Sylph";
         card.attack = 1;
         card.defense = 2;
-        card.useWeapon = false;
         card.useMagic = true;
-        card.iconResId = R.drawable.merman;
-        card.desc = "Not the strongest one, but can use basic water magic";
-        checkCreatureCard(card);
-        ALL_CARDS_MAP.append(card.id, card);
-
-        card = new Card();
-        card.id = CREATURE_SKELETON;
-        card.isObtained = obtainedList.get(card.id);
-        card.isInDeck = inDeckList.get(card.id);
-        card.neededSlots = 1;
-        card.price = card.neededSlots * 50;
-        card.name = "Skeleton Archer";
-        card.attack = 2;
-        card.defense = 2;
-        card.useWeapon = true;
-        card.useMagic = false;
-        card.iconResId = R.drawable.skeleton;
-        card.desc = "Deads are not totally dead, and they strangely know how to send arrows in your face\n ● Resistant against magic: received damage reduced by 1";
-        card.fightAction = new FightAction() {
-            @Override
-            public void applyDamageFromOpponent(Card current, Card opponent) {
-                if (opponent.useMagic) {
-                    current.defense -= opponent.attack >= 1 ? opponent.attack - 1 : opponent.attack;
-                } else {
-                    current.defense -= opponent.attack;
-                }
-            }
-        };
-        checkCreatureCard(card);
-        ALL_CARDS_MAP.append(card.id, card);
-
-        card = new Card();
-        card.id = CREATURE_TROLL;
-        card.isObtained = true; // the only card you get for free at the beginning
-        card.isInDeck = inDeckList.size() == 0 || inDeckList.get(card.id); // by default, add it
-        card.neededSlots = 2;
-        card.price = card.neededSlots * 50;
-        card.name = "Troll";
-        card.attack = 2;
-        card.defense = 4;
-        card.useWeapon = false;
-        card.useMagic = false;
-        card.iconResId = R.drawable.troll;
-        card.desc = "It's fascinated to see what we can do with some little piece of rocks\n ● Weak against magic: received damage increased by 1";
-        card.fightAction = new FightAction() {
-            @Override
-            public void applyDamageFromOpponent(Card current, Card opponent) {
-                if (opponent.useMagic) {
-                    current.defense -= opponent.attack + 1;
-                } else {
-                    current.defense -= opponent.attack;
-                }
-            }
-        };
-        checkCreatureCard(card);
-        ALL_CARDS_MAP.append(card.id, card);
-
-        card = new Card();
-        card.id = CREATURE_ENCHANTED_TREE;
-        card.isObtained = obtainedList.get(card.id);
-        card.isInDeck = inDeckList.get(card.id);
-        card.neededSlots = 2;
-        card.price = card.neededSlots * 50;
-        card.name = "Enchanted Tree";
-        card.attack = 2;
-        card.defense = 5;
-        card.useWeapon = false;
-        card.useMagic = false;
-        card.iconResId = R.drawable.enchanted_tree;
-        card.desc = "Nature is beautiful, except maybe when it tries to kill you\n ● Weak against weapons: received damage increased by 1";
+        card.iconResId = R.drawable.sylph;
+        card.desc = "Looks kind and peaceful, but her basic wind magic can surprise you\n ● Weak against weapons: +1 received damage";
         card.fightAction = new FightAction() {
             @Override
             public void applyDamageFromOpponent(Card current, Card opponent) {
@@ -308,85 +224,181 @@ public class Card extends BaseModel implements Cloneable {
             }
         };
         checkCreatureCard(card);
-        ALL_CARDS_MAP.append(card.id, card);
 
-        card = new Card();
-        card.id = CREATURE_GRUNT;
-        card.isObtained = obtainedList.get(card.id);
-        card.isInDeck = inDeckList.get(card.id);
-        card.neededSlots = 3;
-        card.price = card.neededSlots * 50;
-        card.name = "Grunt";
-        card.attack = 3;
+        card = generateDefaultCreatureCard(CREATURE_TROLL, 2, obtainedList, inDeckList);
+        card.isObtained = true; // the only card you get for free at the beginning
+        card.isInDeck = inDeckList.size() == 0 || inDeckList.get(card.id); // by default, add it
+        card.name = "Baby Troll";
+        card.attack = 2;
         card.defense = 4;
-        card.useWeapon = false;
-        card.useMagic = false;
+        card.iconResId = R.drawable.troll;
+        card.desc = "Troll babies always try to eat everything and doesn't really care if it's human or not\n ● Weak against magic: +1 received damage";
+        card.fightAction = new FightAction() {
+            @Override
+            public void applyDamageFromOpponent(Card current, Card opponent) {
+                if (opponent.useMagic) {
+                    current.defense -= opponent.attack + 1;
+                } else {
+                    current.defense -= opponent.attack;
+                }
+            }
+        };
+        checkCreatureCard(card);
+
+        card = generateDefaultCreatureCard(CREATURE_SKELETON, 2, obtainedList, inDeckList);
+        card.name = "Skeleton Archer";
+        card.attack = 3;
+        card.defense = 3;
+        card.useWeapon = true;
+        card.iconResId = R.drawable.skeleton;
+        card.desc = "Deads are not totally dead, and they strangely know how to send arrows in your face\n ● Resistant to magic: -1 received damage";
+        card.fightAction = new FightAction() {
+            @Override
+            public void applyDamageFromOpponent(Card current, Card opponent) {
+                if (opponent.useMagic) {
+                    current.defense -= opponent.attack >= 1 ? opponent.attack - 1 : opponent.attack;
+                } else {
+                    current.defense -= opponent.attack;
+                }
+            }
+        };
+        checkCreatureCard(card);
+
+        card = generateDefaultCreatureCard(CREATURE_SYLPH_2, 3, obtainedList, inDeckList);
+        card.name = "Charming Sylph";
+        card.attack = 6;
+        card.defense = 3;
+        card.useMagic = true;
+        card.iconResId = R.drawable.sylph_2;
+        card.desc = "Will you dare hit a beautiful lady?\n ● Weak against weapons: +1 received damage";
+        card.fightAction = new FightAction() {
+            @Override
+            public void applyDamageFromOpponent(Card current, Card opponent) {
+                if (opponent.useWeapon) {
+                    current.defense -= opponent.attack + 1;
+                } else {
+                    current.defense -= opponent.attack;
+                }
+            }
+        };
+        checkCreatureCard(card);
+
+        card = generateDefaultCreatureCard(CREATURE_GRUNT, 3, obtainedList, inDeckList);
+        card.name = "Grunt";
+        card.attack = 4;
+        card.defense = 4;
         card.iconResId = R.drawable.grunt;
         card.desc = "Half human, half beast. Killing someone is a natural law for them and they don't perceive that as a problem.";
         checkCreatureCard(card);
-        ALL_CARDS_MAP.append(card.id, card);
 
-        card = new Card();
-        card.id = CREATURE_LICH;
-        card.isObtained = obtainedList.get(card.id);
-        card.isInDeck = inDeckList.get(card.id);
-        card.neededSlots = 3;
-        card.price = card.neededSlots * 50;
+        card = generateDefaultCreatureCard(CREATURE_ENCHANTED_TREE, 3, obtainedList, inDeckList);
+        card.name = "Enchanted Tree";
+        card.attack = 3;
+        card.defense = 6;
+        card.iconResId = R.drawable.enchanted_tree;
+        card.desc = "Nature is beautiful, except maybe when it tries to kill you\n ● Weak against weapons: +2 received damage";
+        card.fightAction = new FightAction() {
+            @Override
+            public void applyDamageFromOpponent(Card current, Card opponent) {
+                if (opponent.useWeapon) {
+                    current.defense -= opponent.attack + 2;
+                } else {
+                    current.defense -= opponent.attack;
+                }
+            }
+        };
+        checkCreatureCard(card);
+
+        card = generateDefaultCreatureCard(CREATURE_LICH, 4, obtainedList, inDeckList);
         card.name = "Lich";
-        card.attack = 5;
-        card.defense = 3;
-        card.useWeapon = false;
+        card.attack = 7;
+        card.defense = 5;
         card.useMagic = true;
         card.iconResId = R.drawable.lich;
         card.desc = "Ancient mage who found a way to not be affected by the time anymore";
         checkCreatureCard(card);
-        ALL_CARDS_MAP.append(card.id, card);
 
-        card = new Card();
-        card.id = CREATURE_EMPTY_ARMOR;
-        card.isObtained = obtainedList.get(card.id);
-        card.isInDeck = inDeckList.get(card.id);
-        card.neededSlots = 3;
-        card.price = card.neededSlots * 50;
+        card = generateDefaultCreatureCard(CREATURE_EMPTY_ARMOR, 4, obtainedList, inDeckList);
         card.name = "Empty armor";
         card.attack = 5;
-        card.defense = 4;
+        card.defense = 7;
         card.useWeapon = true;
-        card.useMagic = false;
         card.iconResId = R.drawable.empty_armor;
         card.desc = "Looks empty and harmless, but don't turn your back on it or you may regret it";
         checkCreatureCard(card);
-        ALL_CARDS_MAP.append(card.id, card);
 
-        card = new Card();
-        card.id = CREATURE_SPECTRE;
-        card.isObtained = obtainedList.get(card.id);
-        card.isInDeck = inDeckList.get(card.id);
-        card.neededSlots = 3;
-        card.price = card.neededSlots * 50 + 50;
+        card = generateDefaultCreatureCard(CREATURE_SPECTRE, 5, obtainedList, inDeckList);
         card.name = "Spectre";
-        card.attack = 4;
-        card.defense = 6;
-        card.useWeapon = false;
+        card.attack = 7;
+        card.defense = 9;
         card.useMagic = true;
         card.iconResId = R.drawable.spectre;
-        card.desc = "The opponent never like when his nightmare is becoming reality";
+        card.desc = "It's never good when nightmare creatures are becoming reality and attack you";
         checkCreatureCard(card);
-        ALL_CARDS_MAP.append(card.id, card);
+
+        card = generateDefaultCreatureCard(CREATURE_ZOMBIE, 6, obtainedList, inDeckList);
+        card.name = "Zombie";
+        card.attack = 6;
+        card.defense = 10;
+        card.iconResId = R.drawable.zombie;
+        card.desc = "Why dead people cannot live like everyone else?";
+        checkCreatureCard(card);
+
+        card = generateDefaultCreatureCard(CREATURE_SNAKE, 6, obtainedList, inDeckList);
+        card.name = "M. Python";
+        card.attack = 8;
+        card.defense = 10;
+        card.useWeapon = true;
+        card.iconResId = R.drawable.snake;
+        card.desc = "They are fast and, like Brian, always look at the bright side of life\n ● Weak against magic: +3 received damage";
+        card.fightAction = new FightAction() {
+            @Override
+            public void applyDamageFromOpponent(Card current, Card opponent) {
+                if (opponent.useMagic) {
+                    current.defense -= opponent.attack + 3;
+                } else {
+                    current.defense -= opponent.attack;
+                }
+            }
+        };
+        checkCreatureCard(card);
+
+        card = generateDefaultCreatureCard(CREATURE_TROLL_2, 7, obtainedList, inDeckList);
+        card.name = "Slinger Troll";
+        card.attack = 5;
+        card.defense = 15;
+        card.useWeapon = true;
+        card.iconResId = R.drawable.troll_2;
+        card.desc = "Always play 'Rock' in rock-paper-scissor game\n ● Resistant to weapon: -2 received damage\n ● Weak against magic: +3 received damage";
+        card.fightAction = new FightAction() {
+            @Override
+            public void applyDamageFromOpponent(Card current, Card opponent) {
+                if (opponent.useMagic) {
+                    current.defense -= opponent.attack + 3;
+                } else if (opponent.useWeapon) {
+                    current.defense -= opponent.attack - 2 > 0 ? opponent.attack - 2 : 0;
+                } else {
+                    current.defense -= opponent.attack;
+                }
+            }
+        };
+        checkCreatureCard(card);
+
+        card = generateDefaultCreatureCard(CREATURE_GRUNT_2, 7, obtainedList, inDeckList);
+        card.name = "Crossbowman Grunt";
+        card.attack = 11;
+        card.defense = 10;
+        card.useWeapon = true;
+        card.iconResId = R.drawable.grunt_2;
+        card.desc = "Born with less muscles than others, he compensates with a good manipulation of a crossbow";
+        checkCreatureCard(card);
 
 
         /****************************/
         /****** SUPPORT CARDS *******/
         /****************************/
 
-
-        card = new Card();
-        card.id = SUPPORT_MEDICAL_ATTENTION;
-        card.isObtained = obtainedList.get(card.id);
-        card.isInDeck = inDeckList.get(card.id);
-        card.neededSlots = 2;
-        card.price = card.neededSlots * 50;
-        card.type = Card.Type.SUPPORT;
+        card = generateDefaultSupportCard(SUPPORT_MEDICAL_ATTENTION, 2, obtainedList, inDeckList);
         card.name = "Medical Attention";
         card.iconResId = R.drawable.medical_attention;
         card.desc = "Ok it's a summoned creature, but does that means you should be heartless?\n ● Regain defense by 4 if wounded";
@@ -401,15 +413,39 @@ public class Card extends BaseModel implements Cloneable {
                 }
             }
         };
-        ALL_CARDS_MAP.append(card.id, card);
 
-        card = new Card();
-        card.id = SUPPORT_POWER_POTION;
-        card.isObtained = obtainedList.get(card.id);
-        card.isInDeck = inDeckList.get(card.id);
-        card.neededSlots = 4;
-        card.price = card.neededSlots * 50;
-        card.type = Card.Type.SUPPORT;
+        card = generateDefaultSupportCard(SUPPORT_ADD_WEAPON, 3, obtainedList, inDeckList);
+        card.name = "Battle axe";
+        card.iconResId = R.drawable.axe;
+        card.desc = "The best way to gain respect from your enemy is by putting an axe in his face\n ● Increase attack by 6 if the creature doesn't already use any weapon or magic";
+        card.supportAction = new SupportAction() {
+            @Override
+            public void executeSupportAction(BattleManager manager, boolean fromEnemyPointOfView) {
+                Card player = manager.getLastUsedPlayerCreatureCard(fromEnemyPointOfView);
+                if (!player.useWeapon && !player.useMagic) {
+                    player.attack += 6;
+                }
+            }
+        };
+
+        card = generateDefaultSupportCard(SUPPORT_WEAPON_EROSION, 3, obtainedList, inDeckList);
+        card.name = "Weapon erosion";
+        card.iconResId = R.drawable.erode_weapon;
+        card.desc = "Your enemy weapon starts to run into pieces. Serves him damned right!\n ● Lower enemy attack by 5 if he uses a weapon";
+        card.supportAction = new SupportAction() {
+            @Override
+            public void executeSupportAction(BattleManager manager, boolean fromEnemyPointOfView) {
+                Card enemy = manager.getLastUsedEnemyCreatureCard(fromEnemyPointOfView);
+                if (enemy.useWeapon) {
+                    enemy.attack -= 5;
+                    if (enemy.attack < 0) {
+                        enemy.attack = 0;
+                    }
+                }
+            }
+        };
+
+        card = generateDefaultSupportCard(SUPPORT_POWER_POTION, 4, obtainedList, inDeckList);
         card.name = "(Fake) Potion of invincibility";
         card.iconResId = R.drawable.red_potion;
         card.desc = "It's only syrup, but placebo effect makes your creature feel invincible\n ● Multiply attack by 2\n ● Divide defense by 1.3";
@@ -421,98 +457,8 @@ public class Card extends BaseModel implements Cloneable {
                 player.defense /= 1.3;
             }
         };
-        ALL_CARDS_MAP.append(card.id, card);
 
-        card = new Card();
-        card.id = SUPPORT_ADD_WEAPON;
-        card.isObtained = obtainedList.get(card.id);
-        card.isInDeck = inDeckList.get(card.id);
-        card.neededSlots = 3;
-        card.price = card.neededSlots * 50;
-        card.type = Card.Type.SUPPORT;
-        card.name = "Battle axe";
-        card.iconResId = R.drawable.axe;
-        card.desc = "The best way to gain respect from your enemy is by putting an axe in his face\n ● Increase attack by 4 if the creature doesn't already use a weapon";
-        card.supportAction = new SupportAction() {
-            @Override
-            public void executeSupportAction(BattleManager manager, boolean fromEnemyPointOfView) {
-                Card player = manager.getLastUsedPlayerCreatureCard(fromEnemyPointOfView);
-                if (!player.useWeapon) {
-                    player.attack += 4;
-                }
-            }
-        };
-        ALL_CARDS_MAP.append(card.id, card);
-
-        card = new Card();
-        card.id = SUPPORT_WEAPON_EROSION;
-        card.isObtained = obtainedList.get(card.id);
-        card.isInDeck = inDeckList.get(card.id);
-        card.neededSlots = 3;
-        card.price = card.neededSlots * 50;
-        card.type = Card.Type.SUPPORT;
-        card.name = "Weapon erosion";
-        card.iconResId = R.drawable.erode_weapon;
-        card.desc = "Your enemy weapon starts to run into pieces. Serves him damned right!\n ● Lower enemy attack by 4 if he uses a weapon";
-        card.supportAction = new SupportAction() {
-            @Override
-            public void executeSupportAction(BattleManager manager, boolean fromEnemyPointOfView) {
-                Card enemy = manager.getLastUsedEnemyCreatureCard(fromEnemyPointOfView);
-                if (enemy.useWeapon) {
-                    enemy.attack -= 4;
-                    if (enemy.attack < 0) {
-                        enemy.attack = 0;
-                    }
-                }
-            }
-        };
-        ALL_CARDS_MAP.append(card.id, card);
-
-        card = new Card();
-        card.id = SUPPORT_FREEDOM;
-        card.isObtained = obtainedList.get(card.id);
-        card.isInDeck = inDeckList.get(card.id);
-        card.neededSlots = 6;
-        card.price = card.neededSlots * 50;
-        card.type = Card.Type.SUPPORT;
-        card.name = "Freedom";
-        card.iconResId = R.drawable.unshackled;
-        card.desc = "Free your creature from your control. It will charge the enemy with all his forces, and profit of the breach to run away.\n ● Multiply attack by 3\n ● Your creature run away after 1 round";
-        card.supportAction = new SupportAction() {
-            @Override
-            public void executeSupportAction(BattleManager manager, boolean fromEnemyPointOfView) {
-                Card player = manager.getLastUsedPlayerCreatureCard(fromEnemyPointOfView);
-                player.defense = 0; //TODO: not true, but does the job for now
-                player.attack *= 3;
-            }
-        };
-        ALL_CARDS_MAP.append(card.id, card);
-
-        card = new Card();
-        card.id = SUPPORT_CONFUSION;
-        card.isObtained = obtainedList.get(card.id);
-        card.isInDeck = inDeckList.get(card.id);
-        card.neededSlots = 4;
-        card.price = card.neededSlots * 50;
-        card.type = Card.Type.SUPPORT;
-        card.name = "Confusion";
-        card.iconResId = R.drawable.confusion;
-        card.desc = "We say that the pen is mightier than the sword, but there is something even more efficient: a sneaky confusing lie\n ● Enemy is confused and skip this turn";
-        card.supportAction = new SupportAction() {
-            @Override
-            public void executeSupportAction(BattleManager manager, boolean fromEnemyPointOfView) {
-                manager.stunEnemy(fromEnemyPointOfView);
-            }
-        };
-        ALL_CARDS_MAP.append(card.id, card);
-
-        card = new Card();
-        card.id = SUPPORT_SURPRISE;
-        card.isObtained = obtainedList.get(card.id);
-        card.isInDeck = inDeckList.get(card.id);
-        card.neededSlots = 4;
-        card.price = card.neededSlots * 50;
-        card.type = Card.Type.SUPPORT;
+        card = generateDefaultSupportCard(SUPPORT_SURPRISE, 4, obtainedList, inDeckList);
         card.name = "Surprise!";
         card.iconResId = R.drawable.surprise;
         card.desc = "Forget honor and attack the enemy from behind, it's more effective\n ● If you kill the enemy this turn, you'll not receive any damage";
@@ -526,12 +472,81 @@ public class Card extends BaseModel implements Cloneable {
                 }
             }
         };
-        ALL_CARDS_MAP.append(card.id, card);
+
+        card = generateDefaultSupportCard(SUPPORT_CONFUSION, 5, obtainedList, inDeckList);
+        card.name = "Confusion";
+        card.iconResId = R.drawable.confusion;
+        card.desc = "We say that the pen is mightier than the sword, but there is something even more efficient: a sneaky confusing lie\n ● Enemy is confused and skip this turn";
+        card.supportAction = new SupportAction() {
+            @Override
+            public void executeSupportAction(BattleManager manager, boolean fromEnemyPointOfView) {
+                manager.stunEnemy(fromEnemyPointOfView);
+            }
+        };
+
+        card = generateDefaultSupportCard(SUPPORT_FREEDOM, 6, obtainedList, inDeckList);
+        card.name = "Freedom";
+        card.iconResId = R.drawable.unshackled;
+        card.desc = "Free your creature from your control. It will charge the enemy with all his forces, and profit of the breach to run away.\n ● Multiply attack by 3\n ● Your creature run away after 1 round";
+        card.supportAction = new SupportAction() {
+            @Override
+            public void executeSupportAction(BattleManager manager, boolean fromEnemyPointOfView) {
+                Card player = manager.getLastUsedPlayerCreatureCard(fromEnemyPointOfView);
+                player.defense = 0; //TODO: not true, but does the job for now
+                player.attack *= 3;
+            }
+        };
+
+        card = generateDefaultSupportCard(SUPPORT_SWITCH_POTION, 7, obtainedList, inDeckList);
+        card.name = "Switch potion";
+        card.iconResId = R.drawable.purple_potion;
+        card.desc = "Your creature switch it's attack/defense level with his opponent's ones. How does the potion work? Well, it's secret.";
+        card.supportAction = new SupportAction() {
+            @Override
+            public void executeSupportAction(BattleManager manager, boolean fromEnemyPointOfView) {
+                Card player = manager.getLastUsedPlayerCreatureCard(fromEnemyPointOfView);
+                Card enemy = manager.getLastUsedEnemyCreatureCard(fromEnemyPointOfView);
+
+                int playerAttack = player.attack;
+                int playerDefense = player.defense;
+                player.attack = enemy.attack;
+                player.defense = enemy.defense;
+                enemy.attack = playerAttack;
+                enemy.defense = playerDefense;
+            }
+        };
+    }
+
+    private static Card generateDefaultCreatureCard(int id, int neededSlots, SparseBooleanArray obtainedList, SparseBooleanArray inDeckList) {
+        Card card = new Card();
+        card.id = id;
+        card.isObtained = obtainedList.get(card.id);
+        card.isInDeck = inDeckList.get(card.id);
+        card.neededSlots = neededSlots;
+        card.price = card.neededSlots * 50;
+
+        ALL_CARDS_MAP.put(card.id, card);
+
+        return card;
+    }
+
+    private static Card generateDefaultSupportCard(int id, int neededSlots, SparseBooleanArray obtainedList, SparseBooleanArray inDeckList) {
+        Card card = new Card();
+        card.id = id;
+        card.type = Type.SUPPORT;
+        card.isObtained = obtainedList.get(card.id);
+        card.isInDeck = inDeckList.get(card.id);
+        card.neededSlots = neededSlots;
+        card.price = card.neededSlots * 50;
+
+        ALL_CARDS_MAP.put(card.id, card);
+
+        return card;
     }
 
     private static void checkCreatureCard(Card card) {
         int acceptableSum = card.neededSlots * 3;
-        float margin = acceptableSum / 100f * 35f;
+        float margin = acceptableSum / 100f * 25f;
         if (card.attack + card.defense > acceptableSum + margin || card.attack + card.defense < acceptableSum - margin) {
             throw new IllegalStateException();
         }

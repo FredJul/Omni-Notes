@@ -1,6 +1,7 @@
 package net.fred.taskgame.hero.fragments;
 
 import android.os.Bundle;
+import android.support.annotation.RawRes;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -82,7 +83,9 @@ public class ComposeDeckFragment extends BaseFragment {
     }
 
     @Override
-    protected int getMainMusicResId() {
+    protected
+    @RawRes
+    int getMainMusicResId() {
         return R.raw.main_theme;
     }
 

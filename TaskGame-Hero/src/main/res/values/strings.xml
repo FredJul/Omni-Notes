@@ -1,5 +1,38 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <resources>
-    <string name="drawer_tasks_item">To-do tasks</string>
+    <string-array name="level_stories">
+        <!-- One levels is always composed of 3 items: enemy name, start story and end story
+             Format is always "speaker_name@LeftOrRight:sentence" and a "\n" is needed to separate sentences
+             Item can be empty -->
+
+        <!-- Level 1 to 10 -->
+        <item>school_friend</item>
+        <item>school_friend@R:So, finally you\'ll get graduated tomorrow!\n
+            school_friend@R:Are you stressed by the final examination?\n
+            hero@L:Well, not really.\n
+            hero@L:I don\'t expect the examination to be that hard. This invoker school is not famous for his difficulties.\n
+            school_friend@R:Sure, that\'s why I selected that one!\n
+            school_friend@R:But still, what about a small training fight?\n
+            hero@L:I don\'t really need to, you know?\n
+            school_friend@R:Oh come on! I\'ll start gently with a small invocation creature.\n
+            school_friend@R:And I\'m really curious to see what kind of creatures you have obtained now.\n
+            hero@L:If you insist…
+        </item>
+        <item>school_friend@R:Well, I knew you would have defeated that one easily.\n
+            hero@L:Is that all you can do?\n
+            school_friend@R:Don\'t worry, the next one will be stronger!\n
+            school_friend@R:If I were you I would get some new cards at the school library.\n
+            school_friend@R:I heard that the owner is getting too old to fight and trade his cards in exchange of some well-executed tasks.\n
+            school_friend@R:Then looks at needed mana slots of cards in the top-right corner and compose the best deck you can!
+        </item>
+
+        <item>school_friend</item>
+        <item>school_friend@R:So, ready to fight?\n
+            hero@L:Do you really think I need to be ready to defeat you?\n
+        </item>
+        <item />
+
+    </string-array>
+
 </resources>

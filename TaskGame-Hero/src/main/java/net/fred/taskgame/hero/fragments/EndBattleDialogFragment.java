@@ -4,6 +4,7 @@ import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentTransaction;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -115,7 +116,7 @@ public class EndBattleDialogFragment extends ImmersiveDialogFragment {
         getFragmentManager().popBackStack();
         getFragmentManager().popBackStack();
 
-        if (mEndType == EndType.PLAYER_WON && mLevel.endStory != null) {
+        if (mEndType == EndType.PLAYER_WON && !TextUtils.isEmpty(mLevel.getEndStory(getContext()))) {
             FragmentTransaction transaction = getFragmentManager().beginTransaction();
             UiUtils.animateTransition(transaction, UiUtils.TransitionType.TRANSITION_FADE_IN);
             transaction.replace(R.id.fragment_container, StoryFragment.newInstance(mLevel, true), StoryFragment.class.getName()).addToBackStack(null).commitAllowingStateLoss();

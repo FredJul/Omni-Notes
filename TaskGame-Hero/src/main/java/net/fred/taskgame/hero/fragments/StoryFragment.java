@@ -1,6 +1,7 @@
 package net.fred.taskgame.hero.fragments;
 
 import android.os.Bundle;
+import android.support.annotation.RawRes;
 import android.support.v4.app.FragmentTransaction;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -68,9 +69,9 @@ public class StoryFragment extends BaseFragment {
             mSentences = savedInstanceState.getStringArrayList(STATE_SENTENCES);
         } else {
             if (!mIsEndStory) {
-                mSentences = new ArrayList<>(Arrays.asList(mLevel.startStory.split("\n")));
+                mSentences = new ArrayList<>(Arrays.asList(mLevel.getStartStory(getContext()).split("\n")));
             } else {
-                mSentences = new ArrayList<>(Arrays.asList(mLevel.endStory.split("\n")));
+                mSentences = new ArrayList<>(Arrays.asList(mLevel.getEndStory(getContext()).split("\n")));
             }
         }
 
@@ -82,7 +83,7 @@ public class StoryFragment extends BaseFragment {
     private void updateUI() {
         String sentence = mSentences.get(0);
         String[] split = sentence.split(":");
-        int charResId = Level.STORY_CHARS_DRAWABLE_MAP.get(split[0].substring(0, split[0].length() - 2));
+        int charResId = Level.STORY_CHARS_DRAWABLE_MAP.get(split[0].substring(0, split[0].length() - 2).trim());
         boolean isLeft = "L".equals(split[0].substring(split[0].length() - 1));
         if (isLeft) {
             mLeftCharImageView.setImageResource(charResId);
@@ -108,7 +109,9 @@ public class StoryFragment extends BaseFragment {
     }
 
     @Override
-    protected int getMainMusicResId() {
+    protected
+    @RawRes
+    int getMainMusicResId() {
         if (mLevel != null && !mIsEndStory && mLevel.startStoryMusicResId != Level.INVALID_ID) {
             return mLevel.startStoryMusicResId;
         } else if (mLevel != null && mIsEndStory && mLevel.endStoryMusicResId != Level.INVALID_ID) {

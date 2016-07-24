@@ -6,6 +6,7 @@ import android.text.Layout.Alignment;
 import android.text.StaticLayout;
 import android.text.TextPaint;
 import android.util.AttributeSet;
+import android.util.DisplayMetrics;
 import android.util.TypedValue;
 import android.widget.TextView;
 
@@ -13,30 +14,27 @@ import net.fred.taskgame.hero.R;
 
 public class AutoResizer {
 
-    // Minimum text size for this text view
-    public static final float MIN_TEXT_SIZE = 25;
-
-    // Minimum text size for this text view
-    public static final float MAX_TEXT_SIZE = 128;
-
+    private static final int MIN_TEXT_SIZE_IN_DP = 9;
+    private static final int MAX_TEXT_SIZE_IN_DP = 50;
     private static final int BISECTION_LOOP_WATCH_DOG = 30;
 
     private final TextView mTextView;
 
-    // Temporary upper bounds on the starting text size
-    private float mMaxTextSize = MAX_TEXT_SIZE;
-
-    // Lower bounds for text size
-    private float mMinTextSize = MIN_TEXT_SIZE;
+    private float mMinTextSize;
+    private float mMaxTextSize;
 
     public AutoResizer(TextView textView) {
         mTextView = textView;
+
+        DisplayMetrics metrics = textView.getContext().getResources().getDisplayMetrics();
+        mMinTextSize = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, MIN_TEXT_SIZE_IN_DP, metrics);
+        mMaxTextSize = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, MAX_TEXT_SIZE_IN_DP, metrics);
     }
 
     public void initAttrs(Context context, AttributeSet attrs) {
         TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.AutoResizeTextView);
-        mMaxTextSize = a.getDimension(R.styleable.AutoResizeTextView_maxTextSize, MAX_TEXT_SIZE);
-        mMinTextSize = a.getDimension(R.styleable.AutoResizeTextView_minTextSize, MIN_TEXT_SIZE);
+        mMinTextSize = a.getDimension(R.styleable.AutoResizeTextView_minTextSize, mMinTextSize);
+        mMaxTextSize = a.getDimension(R.styleable.AutoResizeTextView_maxTextSize, mMaxTextSize);
         a.recycle();
     }
 

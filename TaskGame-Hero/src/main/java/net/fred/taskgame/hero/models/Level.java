@@ -1,5 +1,8 @@
 package net.fred.taskgame.hero.models;
 
+import android.content.Context;
+import android.support.annotation.DrawableRes;
+import android.support.annotation.RawRes;
 import android.util.SparseBooleanArray;
 
 import com.raizlabs.android.dbflow.annotation.Column;
@@ -36,15 +39,29 @@ public class Level extends BaseModel {
     @Column
     public boolean isCompleted;
 
-    public transient int enemyIconResId = INVALID_ID;
     public transient List<Card> enemyCards = new ArrayList<>();
 
+    @RawRes
     public transient int battleMusicResId = INVALID_ID;
 
-    public transient String startStory;
+    @RawRes
     public transient int startStoryMusicResId = INVALID_ID;
-    public transient String endStory;
+    @RawRes
     public transient int endStoryMusicResId = INVALID_ID;
+
+    public
+    @DrawableRes
+    int getEnemyIcon(Context context) {
+        return STORY_CHARS_DRAWABLE_MAP.get(context.getResources().getStringArray(R.array.level_stories)[levelNumber * 3 - 3]);
+    }
+
+    public String getStartStory(Context context) {
+        return context.getResources().getStringArray(R.array.level_stories)[levelNumber * 3 - 2];
+    }
+
+    public String getEndStory(Context context) {
+        return context.getResources().getStringArray(R.array.level_stories)[levelNumber * 3 - 1];
+    }
 
     public static List<Level> getAllLevelsList() {
         return ALL_LEVELS_LIST;
@@ -77,59 +94,42 @@ public class Level extends BaseModel {
             completedList.append(level.levelNumber, level.isCompleted);
         }
 
-        Level level = new Level();
-        level.levelNumber = 1; // slots=3
-        level.enemyIconResId = R.drawable.invoker_male;
-        level.isCompleted = completedList.get(level.levelNumber);
-        level.enemyCards.add(Card.getAllCardsMap().get(Card.CREATURE_SKELETON));
-        level.startStory = "school_friend@R:So, finally you'll get graduated tomorrow! Are you stressed by the final examination?\nhero@L:Well, not really. This school is not the best invoker school of the country and I don't expect the examination to be hard.";
-        level.endStory = "school_friend@R:As always, my invocation is not as powerful as yours.\nhero@L:Don't worry, I didn't really expected much from you. But you still have time to learn.";
-        ALL_LEVELS_LIST.add(level);
+        int levelNumber = 1;
 
-        level = new Level();
-        level.levelNumber = 2; // slots=4
-        level.enemyIconResId = R.drawable.invoker_male;
-        level.isCompleted = completedList.get(level.levelNumber);
-        level.enemyCards.add(Card.getAllCardsMap().get(Card.CREATURE_SKELETON));
-        level.enemyCards.add(Card.getAllCardsMap().get(Card.CREATURE_SKELETON));
-        ALL_LEVELS_LIST.add(level);
+        /**************** Level 1 to 10 *****************
+         Available slots == levelNumber + 1
+         ************************************************/
+        Level level = generateLevel(levelNumber++, completedList);
+        level.addEnemyCard(Card.CREATURE_SYLPH);
 
-        level = new Level();
-        level.levelNumber = 3; // slots=5
-        level.enemyIconResId = R.drawable.invoker_male;
-        level.isCompleted = completedList.get(level.levelNumber);
-        level.enemyCards.add(Card.getAllCardsMap().get(Card.CREATURE_TROLL));
-        level.enemyCards.add(Card.getAllCardsMap().get(Card.CREATURE_SKELETON));
-        ALL_LEVELS_LIST.add(level);
+        level = generateLevel(levelNumber++, completedList);
+        level.addEnemyCard(Card.CREATURE_SKELETON);
 
-        level = new Level();
-        level.levelNumber = 4; // slots=6
-        level.enemyIconResId = R.drawable.invoker_male;
-        level.isCompleted = completedList.get(level.levelNumber);
-        level.enemyCards.add(Card.getAllCardsMap().get(Card.CREATURE_TROLL));
-        level.enemyCards.add(Card.getAllCardsMap().get(Card.CREATURE_SKELETON));
-        level.enemyCards.add(Card.getAllCardsMap().get(Card.CREATURE_TROLL));
-        ALL_LEVELS_LIST.add(level);
+        level = generateLevel(levelNumber++, completedList);
+        level.addEnemyCard(Card.CREATURE_SYLPH).addEnemyCard(Card.CREATURE_SKELETON);
 
-        level = new Level();
-        level.levelNumber = 5; // slots=7
-        level.enemyIconResId = R.drawable.invoker_male;
+        level = generateLevel(levelNumber++, completedList);
+        level.addEnemyCard(Card.CREATURE_SKELETON).addEnemyCard(Card.CREATURE_MERMAN).addEnemyCard(Card.CREATURE_SYLPH);
+
+        level = generateLevel(levelNumber++, completedList);
+        level.addEnemyCard(Card.CREATURE_SKELETON).addEnemyCard(Card.CREATURE_TROLL).addEnemyCard(Card.CREATURE_SYLPH);
+
+        level = generateLevel(levelNumber++, completedList);
         level.battleMusicResId = R.raw.boss_theme;
-        level.isCompleted = completedList.get(level.levelNumber);
-        level.enemyCards.add(Card.getAllCardsMap().get(Card.CREATURE_TROLL));
-        level.enemyCards.add(Card.getAllCardsMap().get(Card.CREATURE_SKELETON));
-        level.enemyCards.add(Card.getAllCardsMap().get(Card.CREATURE_ENCHANTED_TREE));
-        ALL_LEVELS_LIST.add(level);
-
-        level = new Level();
-        level.levelNumber = 6; // slots=8
-        level.enemyIconResId = R.drawable.invoker_male;
-        level.battleMusicResId = R.raw.boss_theme;
-        level.isCompleted = completedList.get(level.levelNumber);
-        level.enemyCards.add(Card.getAllCardsMap().get(Card.CREATURE_SKELETON));
-        level.enemyCards.add(Card.getAllCardsMap().get(Card.CREATURE_ENCHANTED_TREE));
-        level.enemyCards.add(Card.getAllCardsMap().get(Card.CREATURE_TROLL));
-        level.enemyCards.add(Card.getAllCardsMap().get(Card.CREATURE_ENCHANTED_TREE));
-        ALL_LEVELS_LIST.add(level);
+        level.addEnemyCard(Card.CREATURE_ENCHANTED_TREE).addEnemyCard(Card.CREATURE_LICH);
     }
+
+    private static Level generateLevel(int levelNumber, SparseBooleanArray completedList) {
+        Level level = new Level();
+        level.levelNumber = levelNumber;
+        level.isCompleted = completedList.get(level.levelNumber);
+        ALL_LEVELS_LIST.add(level);
+        return level;
+    }
+
+    private Level addEnemyCard(int cardId) {
+        enemyCards.add(Card.getAllCardsMap().get(cardId));
+        return this;
+    }
+
 }

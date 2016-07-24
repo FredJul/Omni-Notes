@@ -28,7 +28,7 @@
         android:scaleX="-1"
         tools:src="@drawable/invoker_male" />
 
-    <net.fred.taskgame.hero.views.AutoResizeTextView
+    <TextView
         android:id="@+id/right_char_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -57,7 +57,7 @@
         android:scaleType="fitXY"
         tools:src="@drawable/invoker_female" />
 
-    <net.fred.taskgame.hero.views.AutoResizeTextView
+    <TextView
         android:id="@+id/left_char_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
