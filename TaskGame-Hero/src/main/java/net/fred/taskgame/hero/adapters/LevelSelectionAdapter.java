@@ -1,6 +1,7 @@
 package net.fred.taskgame.hero.adapters;
 
 import android.support.v7.widget.RecyclerView;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -9,6 +10,7 @@ import android.widget.ImageView;
 
 import net.fred.taskgame.hero.R;
 import net.fred.taskgame.hero.models.Level;
+import net.fred.taskgame.hero.utils.UiUtils;
 
 import java.util.List;
 
@@ -19,6 +21,8 @@ public class LevelSelectionAdapter extends RecyclerView.Adapter<LevelSelectionAd
 
     private final List<Level> mLevels;
     private final RecyclerViewItemListener mItemListener;
+    private static final int LEVEL_NUMBER_PADDING = -UiUtils.dpToPixel(5);
+    private static final int BOSS_ICON_PADDING = -UiUtils.dpToPixel(17);
 
     public static class LevelViewHolder extends RecyclerView.ViewHolder {
 
@@ -66,7 +70,15 @@ public class LevelSelectionAdapter extends RecyclerView.Adapter<LevelSelectionAd
         Level level = mLevels.get(position);
 
         holder.mLockIcon.setVisibility(View.GONE);
-        holder.mLevelNumber.setText(String.valueOf(level.isBossLevel ? "☠" : level.levelNumber));
+        if (level.isBossLevel) {
+            holder.mLevelNumber.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 45);
+            holder.mLevelNumber.setPadding(0, BOSS_ICON_PADDING, 0, 0);
+            holder.mLevelNumber.setText("⚔");
+        } else {
+            holder.mLevelNumber.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 20);
+            holder.mLevelNumber.setPadding(0, LEVEL_NUMBER_PADDING, 0, 0);
+            holder.mLevelNumber.setText(String.valueOf(level.levelNumber));
+        }
         holder.mLevelNumber.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
