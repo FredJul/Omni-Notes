@@ -32,6 +32,8 @@ public class StoryFragment extends BaseFragment {
 
     private static final String STATE_SENTENCES = "STATE_SENTENCES";
 
+    @BindView(R.id.root_view)
+    ViewGroup mRootView;
     @BindView(R.id.right_char)
     ImageView mRightCharImageView;
     @BindView(R.id.right_char_text)
@@ -86,19 +88,25 @@ public class StoryFragment extends BaseFragment {
         int charResId = Level.STORY_CHARS_DRAWABLE_MAP.get(split[0].substring(0, split[0].length() - 2).trim());
         boolean isLeft = "L".equals(split[0].substring(split[0].length() - 1));
         if (isLeft) {
+            mRightCharImageView.animate().alpha(0);
+            mRightCharTextView.animate().alpha(0);
+            mRightCharSeparatorView.animate().alpha(0);
+
             mLeftCharImageView.setImageResource(charResId);
+            mLeftCharImageView.animate().alpha(1);
             mLeftCharTextView.setText(split[1]);
-            mLeftCharTextView.setVisibility(View.VISIBLE);
-            mRightCharImageView.setImageResource(0);
-            mRightCharTextView.setVisibility(View.GONE);
-            mRightCharSeparatorView.setVisibility(View.GONE);
+            mLeftCharTextView.setAlpha(0);
+            mLeftCharTextView.animate().alpha(1);
         } else {
-            mLeftCharImageView.setImageResource(0);
-            mLeftCharTextView.setVisibility(View.GONE);
+            mLeftCharImageView.animate().alpha(0);
+            mLeftCharTextView.animate().alpha(0);
+
             mRightCharImageView.setImageResource(charResId);
+            mRightCharImageView.animate().alpha(1);
+            mRightCharSeparatorView.animate().alpha(1);
             mRightCharTextView.setText(split[1]);
-            mRightCharTextView.setVisibility(View.VISIBLE);
-            mRightCharSeparatorView.setVisibility(View.VISIBLE);
+            mRightCharTextView.setAlpha(0);
+            mRightCharTextView.animate().alpha(1);
         }
     }
 

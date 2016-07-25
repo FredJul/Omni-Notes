@@ -4,9 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/root_view"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:animateLayoutChanges="true"
-    android:orientation="vertical">
+    android:layout_height="match_parent">
 
     <Button
         android:id="@+id/skip_button"
@@ -35,8 +33,10 @@
         android:layout_marginEnd="70dp"
         android:layout_marginStart="15dp"
         android:layout_marginTop="290dp"
+        android:alpha="0"
         android:background="@drawable/box"
         android:textColor="@color/card_text_color"
+        tools:alpha="1"
         tools:text="Story line bla bla bla bla bla bla" />
 
     <ImageView
@@ -46,7 +46,9 @@
         android:layout_alignParentEnd="true"
         android:layout_below="@id/right_char"
         android:layout_marginTop="-5dp"
-        android:background="@drawable/enemy_separator" />
+        android:alpha="0"
+        android:background="@drawable/enemy_separator"
+        tools:alpha="1" />
 
     <ImageView
         android:id="@+id/left_char"
@@ -61,13 +63,15 @@
         android:id="@+id/left_char_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
         android:layout_alignParentEnd="true"
         android:layout_marginBottom="280dp"
         android:layout_marginEnd="15dp"
         android:layout_marginStart="70dp"
-        android:layout_alignParentBottom="true"
+        android:alpha="0"
         android:background="@drawable/box"
         android:textColor="@color/card_text_color"
+        tools:alpha="1"
         tools:text="Story line bla bla bla bla bla bla" />
 
 </RelativeLayout>
