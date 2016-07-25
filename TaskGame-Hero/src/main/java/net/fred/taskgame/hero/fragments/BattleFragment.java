@@ -36,6 +36,8 @@ public class BattleFragment extends BaseFragment {
     public static final String ARG_LEVEL = "ARG_LEVEL";
 
     private static final String STATE_BATTLE_MANAGER = "STATE_BATTLE_MANAGER";
+    private static final int MAX_NO_SUPPORT_CARD_BTN_WIDTH = UiUtils.dpToPixel(190);
+    private static final int NO_SUPPORT_CARD_BTN_MARGIN = UiUtils.dpToPixel(10);
 
     @BindView(R.id.enemy_portrait)
     ImageView mEnemyImageView;
@@ -450,7 +452,8 @@ public class BattleFragment extends BaseFragment {
         // Add the "no support" button if necessary
         if (isPlayerCreatureStillAlive && newCards.size() > 0) {
             Button playWithoutSupportBtn = new Button(getContext());
-            playWithoutSupportBtn.setText("Don't use support magic");
+            playWithoutSupportBtn.setText("Don't use support card");
+            playWithoutSupportBtn.setMaxWidth(MAX_NO_SUPPORT_CARD_BTN_WIDTH);
             playWithoutSupportBtn.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -460,7 +463,9 @@ public class BattleFragment extends BaseFragment {
                     animateNextStep();
                 }
             });
-            mCardListLayout.addView(playWithoutSupportBtn);
+            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+            params.setMargins(NO_SUPPORT_CARD_BTN_MARGIN, NO_SUPPORT_CARD_BTN_MARGIN, NO_SUPPORT_CARD_BTN_MARGIN, NO_SUPPORT_CARD_BTN_MARGIN);
+            mCardListLayout.addView(playWithoutSupportBtn, params);
         }
 
         updateBottomSheetUI();
