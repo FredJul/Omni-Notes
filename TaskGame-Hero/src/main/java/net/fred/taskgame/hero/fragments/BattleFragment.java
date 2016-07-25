@@ -197,6 +197,7 @@ public class BattleFragment extends BaseFragment {
                 mEnemySupportCardView.animate().alpha(1).scaleX(1.2f).scaleY(1.2f).setDuration(500).withEndAction(new Runnable() {
                     @Override
                     public void run() {
+                        getMainActivity().playSound(MainActivity.SOUND_USE_SUPPORT);
                         mEnemySupportCardView.animate().alpha(0).scaleX(1).scaleY(1).withEndAction(new Runnable() {
                             @Override
                             public void run() {
@@ -234,7 +235,26 @@ public class BattleFragment extends BaseFragment {
                 float cardsYDiff = (mPlayerCardView.getY() - mEnemyCardView.getY()) / 2;
                 cardsYDiff = cardsYDiff - mPlayerCardView.getHeight() / 8; // add a small superposition
 
-                getMainActivity().playSound(MainActivity.SOUND_FIGHT);
+                if (mPlayerCardView.getCard().useMagic) {
+                    getMainActivity().playSound(MainActivity.SOUND_FIGHT_MAGIC);
+                } else if (mPlayerCardView.getCard().useWeapon) {
+                    getMainActivity().playSound(MainActivity.SOUND_FIGHT_WEAPON);
+                } else {
+                    getMainActivity().playSound(MainActivity.SOUND_FIGHT);
+                }
+                mEnemyCardView.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (mEnemyCardView.getCard().useMagic) {
+                            getMainActivity().playSound(MainActivity.SOUND_FIGHT_MAGIC);
+                        } else if (mEnemyCardView.getCard().useWeapon) {
+                            getMainActivity().playSound(MainActivity.SOUND_FIGHT_WEAPON);
+                        } else {
+                            getMainActivity().playSound(MainActivity.SOUND_FIGHT);
+                        }
+                    }
+                }, 100);
+
                 mPlayerCardView.animate()
                         .translationX(-cardsXDiff).translationY(-cardsYDiff)
                         .withEndAction(new Runnable() {

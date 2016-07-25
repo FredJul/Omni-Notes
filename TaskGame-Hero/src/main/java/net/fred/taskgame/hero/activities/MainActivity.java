@@ -33,6 +33,8 @@ public class MainActivity extends AppCompatActivity {
 
     public static int SOUND_ENTER_BATTLE;
     public static int SOUND_FIGHT;
+    public static int SOUND_FIGHT_WEAPON;
+    public static int SOUND_FIGHT_MAGIC;
     public static int SOUND_USE_SUPPORT;
     public static int SOUND_DEATH;
     public static int SOUND_VICTORY;
@@ -71,6 +73,8 @@ public class MainActivity extends AppCompatActivity {
         mSoundPool = new SoundPool.Builder().setAudioAttributes(attributes).setMaxStreams(2).build();
         SOUND_ENTER_BATTLE = mSoundPool.load(this, R.raw.enter_battle, 1);
         SOUND_FIGHT = mSoundPool.load(this, R.raw.fight, 1);
+        SOUND_FIGHT_WEAPON = mSoundPool.load(this, R.raw.fight_weapon, 1);
+        SOUND_FIGHT_MAGIC = mSoundPool.load(this, R.raw.fight_magic, 1);
         SOUND_USE_SUPPORT = mSoundPool.load(this, R.raw.use_support, 1);
         SOUND_DEATH = mSoundPool.load(this, R.raw.death, 1);
         SOUND_VICTORY = mSoundPool.load(this, R.raw.victory, 1);
