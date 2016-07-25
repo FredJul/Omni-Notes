@@ -66,7 +66,7 @@ public class LevelSelectionAdapter extends RecyclerView.Adapter<LevelSelectionAd
         Level level = mLevels.get(position);
 
         holder.mLockIcon.setVisibility(View.GONE);
-        holder.mLevelNumber.setText(String.valueOf(level.levelNumber));
+        holder.mLevelNumber.setText(String.valueOf(level.isBossLevel ? "☠" : level.levelNumber));
         holder.mLevelNumber.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

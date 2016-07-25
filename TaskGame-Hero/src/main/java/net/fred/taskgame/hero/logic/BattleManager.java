@@ -57,9 +57,30 @@ public class BattleManager {
         }
     }
 
+    public Card getNextPlayerCreatureCard() {
+        for (Card card : mRemainingPlayerCards) {
+            if (card.type == Card.Type.CREATURE) {
+                return card;
+            }
+        }
+
+        return null;
+    }
+
     public Card getNextEnemyCreatureCard() {
         for (Card card : mRemainingEnemyCards) {
             if (card.type == Card.Type.CREATURE) {
+                return card;
+            }
+        }
+
+        return null;
+    }
+
+    public Card getLastUsedEnemySupportCard() {
+        for (int i = mUsedEnemyCards.size() - 1; i >= 0; i--) {
+            Card card = mUsedEnemyCards.get(i);
+            if (card.type == Card.Type.SUPPORT) {
                 return card;
             }
         }
@@ -130,6 +151,8 @@ public class BattleManager {
             mRemainingEnemyCards.remove(enemy);
         } else {
             if (mRemainingEnemyCards.size() > 0 && mRemainingEnemyCards.get(0).type == Card.Type.SUPPORT) {
+                mUsedEnemyCards.add(mRemainingEnemyCards.get(0));
+                mRemainingEnemyCards.remove(0);
                 mSteps.add(BattleStep.APPLY_ENEMY_SUPPORT);
             }
         }

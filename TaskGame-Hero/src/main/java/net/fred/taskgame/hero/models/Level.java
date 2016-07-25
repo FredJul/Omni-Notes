@@ -29,6 +29,7 @@ public class Level extends BaseModel {
         {
             put("hero", R.drawable.invoker_female);
             put("school_friend", R.drawable.invoker_male);
+            put("school_master", R.drawable.high_invoker_male);
         }
     };
     private final static List<Level> ALL_LEVELS_LIST = new ArrayList<>();
@@ -38,6 +39,8 @@ public class Level extends BaseModel {
 
     @Column
     public boolean isCompleted;
+
+    public transient boolean isBossLevel;
 
     public transient List<Card> enemyCards = new ArrayList<>();
 
@@ -106,16 +109,20 @@ public class Level extends BaseModel {
         level.addEnemyCard(Card.CREATURE_SKELETON);
 
         level = generateLevel(levelNumber++, completedList);
-        level.addEnemyCard(Card.CREATURE_SYLPH).addEnemyCard(Card.CREATURE_SKELETON);
+        level.addEnemyCard(Card.CREATURE_SKELETON).addEnemyCard(Card.SUPPORT_MEDICAL_ATTENTION).addEnemyCard(Card.SUPPORT_POWER_POTION);
 
         level = generateLevel(levelNumber++, completedList);
-        level.addEnemyCard(Card.CREATURE_SKELETON).addEnemyCard(Card.CREATURE_MERMAN).addEnemyCard(Card.CREATURE_SYLPH);
+        level.isBossLevel = true;
+        level.battleMusicResId = R.raw.boss_theme;
+        level.addEnemyCard(Card.CREATURE_MERMAN).addEnemyCard(Card.CREATURE_SYLPH).addEnemyCard(Card.CREATURE_SKELETON);
 
         level = generateLevel(levelNumber++, completedList);
         level.addEnemyCard(Card.CREATURE_SKELETON).addEnemyCard(Card.CREATURE_TROLL).addEnemyCard(Card.CREATURE_SYLPH);
 
         level = generateLevel(levelNumber++, completedList);
-        level.battleMusicResId = R.raw.boss_theme;
+        level.addEnemyCard(Card.CREATURE_ENCHANTED_TREE).addEnemyCard(Card.CREATURE_LICH);
+
+        level = generateLevel(levelNumber++, completedList);
         level.addEnemyCard(Card.CREATURE_ENCHANTED_TREE).addEnemyCard(Card.CREATURE_LICH);
     }
 

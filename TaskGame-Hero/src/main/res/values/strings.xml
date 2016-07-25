@@ -11,27 +11,45 @@
         <item>school_friend@R:So, finally you\'ll get graduated tomorrow!\n
             school_friend@R:Are you stressed by the final examination?\n
             hero@L:Well, not really.\n
-            hero@L:I don\'t expect the examination to be that hard. This invoker school is not famous for his difficulties.\n
+            hero@L:I don\'t expect the examination to be that hard. This invoker school is not famous for its difficulty.\n
             school_friend@R:Sure, that\'s why I selected that one!\n
             school_friend@R:But still, what about a small training fight?\n
             hero@L:I don\'t really need to, you know?\n
-            school_friend@R:Oh come on! I\'ll start gently with a small invocation creature.\n
-            school_friend@R:And I\'m really curious to see what kind of creatures you have obtained now.\n
-            hero@L:If you insist…
-        </item>
+            school_friend@R:Oh, come on! I\'ll start gently with a small card.\n
+            school_friend@R:And I\'m really curious to see what kind of creatures you can invoke now.\n
+            hero@L:If you insist…</item>
         <item>school_friend@R:Well, I knew you would have defeated that one easily.\n
             hero@L:Is that all you can do?\n
             school_friend@R:Don\'t worry, the next one will be stronger!\n
             school_friend@R:If I were you I would get some new cards at the school library.\n
-            school_friend@R:I heard that the owner is getting too old to fight and trade his cards in exchange of some well-executed tasks.\n
-            school_friend@R:Then looks at needed mana slots of cards in the top-right corner and compose the best deck you can!
-        </item>
+            school_friend@R:I heard that the owner was once a great invoker but now he is starting to get too old for that and
+            trade his invoker cards in exchange of some well-executed tasks.\n
+            school_friend@R:Then look at needed mana slots in the top-right corner of the cards and compose the best deck you can!</item>
 
         <item>school_friend</item>
         <item>school_friend@R:So, ready to fight?\n
-            hero@L:Do you really think I need to be ready to defeat you?\n
-        </item>
-        <item />
+            hero@L:I don\'t need to be ready to defeat you.</item>
+        <item>school_friend@R:Again, it seems to be so easy for you that it\'s almost frustrating…\n
+            school_friend@R:But it\'s not finished yet, I still have something to try.\n
+            school_friend@R:I have some support card to use after my creatures to reinforce them, so you would better prepare yourself.</item>
+
+        <item>school_friend</item>
+        <item>school_friend@R:Now I\'ll go full power! Prepare yourself!\n
+            hero@L:How long will that last? I\'m not in the mood of playing.</item>
+        <item>school_friend@R:Well, I admit there is no use to continue, I guess you\'re ready for the examination.\n
+            school_friend@R:More you level up and more you\'ll be able to easily invoke several powerful creatures, I have to admit I\'m curious to see see how far you\'ll end up in the army.\n
+            school_friend@R:By the way, do you already knows what you\'ll do after your diploma?\n
+            hero@L:Do I really have the choice?\n
+            school_friend@R:It\'s true that the Arya Kingdom is recruiting almost everyone for his army, but there is several possibilities for an invoker inside the army.\n
+            school_friend@R:Some decide to help with construction and some prefer to fight.\n
+            hero@L:In all cases women are not allowed to fight, they can only support the army. So the choice is quite limited.</item>
+
+        <item>school_master</item>
+        <item>school_master@R:Here is the final examination day!\n
+            school_master@R:How do you feel?\n
+            hero@L:Ready to pass it.\n
+            school_master@R:Great. You just have to win that battle and you\'ll be an official Arya Kingdom invoker!</item>
+        <item>school_master@R:Great! That wasn\'t hard, right? I\'m happy to say you\'re now a real invoker!</item>
 
     </string-array>
 

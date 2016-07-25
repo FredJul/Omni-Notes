@@ -43,6 +43,9 @@ public class BattleFragment extends BaseFragment {
     @BindView(R.id.enemy_card)
     GameCardView mEnemyCardView;
 
+    @BindView(R.id.enemy_support_card)
+    GameCardView mEnemySupportCardView;
+
     @BindView(R.id.card_list_scroll_view)
     View mCardListScrollView;
 
@@ -186,25 +189,41 @@ public class BattleFragment extends BaseFragment {
                 break;
             }
             case APPLY_ENEMY_SUPPORT: {
-                //TODO: display and animate enemy support card
-
-                boolean animationInProgress = mEnemyCardView.animateValueChange(new Runnable() {
+                mEnemySupportCardView.setCard(mBattleManager.getLastUsedEnemySupportCard());
+                mEnemySupportCardView.setAlpha(0);
+                mEnemySupportCardView.setVisibility(View.VISIBLE);
+                mEnemySupportCardView.animate().alpha(1).scaleX(1.2f).scaleY(1.2f).setDuration(500).withEndAction(new Runnable() {
                     @Override
                     public void run() {
-                        animateNextStep();
+                        mEnemySupportCardView.animate().alpha(0).scaleX(1).scaleY(1).withEndAction(new Runnable() {
+                            @Override
+                            public void run() {
+                                mEnemySupportCardView.setCard(null);
+                                mEnemySupportCardView.setVisibility(View.GONE);
+
+                                boolean animationInProgress = mEnemyCardView.animateValueChange(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        animateNextStep();
+                                    }
+                                });
+
+                                if (animationInProgress) {
+                                    mPlayerCardView.animateValueChange(null);
+                                } else {
+                                    if (!mPlayerCardView.animateValueChange(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            animateNextStep();
+                                        }
+                                    })) {
+                                        animateNextStep(); // If no animation at all, we do it immediately
+                                    }
+                                }
+                            }
+                        });
                     }
                 });
-
-                if (animationInProgress) {
-                    mPlayerCardView.animateValueChange(null);
-                } else {
-                    mPlayerCardView.animateValueChange(new Runnable() {
-                        @Override
-                        public void run() {
-                            animateNextStep();
-                        }
-                    });
-                }
                 break;
             }
             case FIGHT: {
@@ -286,20 +305,27 @@ public class BattleFragment extends BaseFragment {
                         // The battle is not finished, but the user can only fight without using support, let's automatically start that
                         mBattleManager.play();
                         animateNextStep();
+                    } else {
+                        updateUI();
                     }
+                } else {
+                    updateUI();
                 }
-                updateUI();
                 break;
             }
             case PLAYER_WON: {
-                getMainActivity().playSound(MainActivity.SOUND_VICTORY);
+                if (mBattleManager.getLastUsedPlayerCreatureCard().defense <= 0) {
+                    mPlayerCardView.setCard(mBattleManager.getNextPlayerCreatureCard());
+                    mPlayerCardView.animate().alpha(1).withEndAction(new Runnable() {
+                        @Override
+                        public void run() {
+                            displayVictory();
+                        }
+                    });
+                } else {
+                    displayVictory();
+                }
 
-                DialogFragment dialog = EndBattleDialogFragment.newInstance(mLevel, mLevel.isCompleted, EndBattleDialogFragment.EndType.PLAYER_WON);
-                FragmentTransaction transaction = getFragmentManager().beginTransaction().addToBackStack(null);
-                dialog.show(transaction, EndBattleDialogFragment.class.getName());
-
-                mLevel.isCompleted = true;
-                mLevel.save();
                 break;
             }
             case ENEMY_WON: {
@@ -319,6 +345,17 @@ public class BattleFragment extends BaseFragment {
                 break;
             }
         }
+    }
+
+    private void displayVictory() {
+        getMainActivity().playSound(MainActivity.SOUND_VICTORY);
+
+        DialogFragment dialog = EndBattleDialogFragment.newInstance(mLevel, mLevel.isCompleted, EndBattleDialogFragment.EndType.PLAYER_WON);
+        FragmentTransaction transaction = getFragmentManager().beginTransaction().addToBackStack(null);
+        dialog.show(transaction, EndBattleDialogFragment.class.getName());
+
+        mLevel.isCompleted = true;
+        mLevel.save();
     }
 
     @OnClick(R.id.back)

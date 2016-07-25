@@ -455,6 +455,9 @@ public class Card extends BaseModel implements Cloneable {
                 Card player = manager.getLastUsedPlayerCreatureCard(fromEnemyPointOfView);
                 player.attack *= 2;
                 player.defense /= 1.3;
+                if (player.defense <= 0) {
+                    player.defense = 1;
+                }
             }
         };
 

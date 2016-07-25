@@ -118,7 +118,7 @@ public class StoryFragment extends BaseFragment {
             return mLevel.endStoryMusicResId;
         }
 
-        return R.raw.battle_theme;
+        return R.raw.story_normal;
     }
 
     @OnClick(R.id.skip_button)

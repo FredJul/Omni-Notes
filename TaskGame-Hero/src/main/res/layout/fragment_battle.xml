@@ -52,6 +52,14 @@
             android:layout_marginTop="90dp" />
 
         <net.fred.taskgame.hero.views.GameCardView
+            android:id="@+id/enemy_support_card"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            android:layout_marginTop="90dp"
+            android:visibility="gone" />
+
+        <net.fred.taskgame.hero.views.GameCardView
             android:id="@+id/player_card"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
