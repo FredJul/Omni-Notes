@@ -29,6 +29,8 @@ import net.fred.taskgame.utils.EqualityChecker;
 
 import org.parceler.Parcel;
 
+import java.util.Calendar;
+
 @Parcel
 @Table(database = AppDatabase.class)
 public class Task extends IdBasedModel {
@@ -115,6 +117,13 @@ public class Task extends IdBasedModel {
     public void setCategory(Category category) {
         categoryId = category != null ? category.id : INVALID_ID;
         mCategory = category;
+    }
+
+    public boolean hasAlarmInFuture() {
+        if (alarmDate > Calendar.getInstance().getTimeInMillis()) {
+            return true;
+        }
+        return false;
     }
 
     public boolean equals(Object o) {

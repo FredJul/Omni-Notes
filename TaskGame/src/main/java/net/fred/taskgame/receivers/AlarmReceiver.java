@@ -21,12 +21,12 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.widget.Toast;
 
 import net.fred.taskgame.R;
 import net.fred.taskgame.activities.SnoozeActivity;
 import net.fred.taskgame.models.Task;
 import net.fred.taskgame.utils.Constants;
+import net.fred.taskgame.utils.Dog;
 import net.fred.taskgame.utils.NotificationsHelper;
 import net.fred.taskgame.utils.PrefUtils;
 import net.fred.taskgame.utils.TextHelper;
@@ -42,7 +42,7 @@ public class AlarmReceiver extends BroadcastReceiver {
             Task task = Parcels.unwrap(intent.getExtras().getParcelable(Constants.INTENT_TASK));
             createNotification(context, task);
         } catch (Exception e) {
-            Toast.makeText(context, e.getMessage(), Toast.LENGTH_LONG).show();
+            Dog.e("Error while creating reminder notification", e);
         }
     }
 
@@ -65,7 +65,7 @@ public class AlarmReceiver extends BroadcastReceiver {
         PendingIntent piPostpone = PendingIntent.getActivity(context, 0, postponeIntent,
                 PendingIntent.FLAG_UPDATE_CURRENT);
 
-        long snoozeDelay = PrefUtils.getLong("settings_notification_snooze_delay", 10);
+        String snoozeDelay = PrefUtils.getString("settings_notification_snooze_delay", "10");
 
         // Next create the bundle and initialize it
         Intent intent = new Intent(context, SnoozeActivity.class);
@@ -88,7 +88,7 @@ public class AlarmReceiver extends BroadcastReceiver {
                 .setMessage(text);
 
         notificationsHelper.getBuilder().addAction(R.drawable.ic_snooze_reminder,
-                TextHelper.capitalize(context.getString(R.string.snooze, snoozeDelay)), piSnooze)
+                TextHelper.capitalize(context.getString(R.string.snooze, Long.valueOf(snoozeDelay))), piSnooze)
                 .addAction(R.drawable.ic_reminder,
                         TextHelper.capitalize(context.getString(R.string
                                 .set_reminder)), piPostpone);

@@ -21,36 +21,29 @@ import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
 
 import net.fred.taskgame.models.Task;
 import net.fred.taskgame.receivers.AlarmReceiver;
 
 import org.parceler.Parcels;
 
-import java.util.Calendar;
-
 
 public class ReminderHelper {
 
     public static void addReminder(Context context, Task task) {
-        if (hasFutureReminder(task)) {
+        if (task.hasAlarmInFuture()) {
             Intent intent = new Intent(context, AlarmReceiver.class);
             intent.putExtra(Constants.INTENT_TASK, Parcels.wrap(task));
             PendingIntent sender = PendingIntent.getBroadcast(context, (int) task.creationDate, intent, PendingIntent.FLAG_CANCEL_CURRENT);
             AlarmManager am = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
-            am.set(AlarmManager.RTC_WAKEUP, task.alarmDate, sender);
+            if (Build.VERSION.SDK_INT >= 23) {
+                am.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, task.alarmDate, sender);
+            } else {
+                am.setExact(AlarmManager.RTC_WAKEUP, task.alarmDate, sender);
+            }
         }
     }
-
-
-    private static boolean hasFutureReminder(Task task) {
-        boolean hasFutureReminder = false;
-        if (task.alarmDate > Calendar.getInstance().getTimeInMillis()) {
-            hasFutureReminder = true;
-        }
-        return hasFutureReminder;
-    }
-
 
     public static void removeReminder(Context context, Task task) {
         if (task.alarmDate != 0) {

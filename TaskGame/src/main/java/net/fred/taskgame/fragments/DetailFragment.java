@@ -337,7 +337,7 @@ public class DetailFragment extends Fragment implements OnReminderPickedListener
             @Override
             public void onClick(View v) {
                 ReminderPickers reminderPicker = new ReminderPickers(getActivity(), DetailFragment.this);
-                reminderPicker.pick(mTask.alarmDate);
+                reminderPicker.pick(mTask.hasAlarmInFuture() ? mTask.alarmDate : Calendar.getInstance().getTimeInMillis());
             }
         });
         mReminderDateButton.setOnLongClickListener(new OnLongClickListener() {
@@ -727,8 +727,7 @@ public class DetailFragment extends Fragment implements OnReminderPickedListener
                 DbHelper.updateTask(mTask, lastModificationUpdatedNeeded());
 
                 // Set reminder if is not passed yet
-                long now = Calendar.getInstance().getTimeInMillis();
-                if (mTask.alarmDate >= now) {
+                if (mTask.hasAlarmInFuture()) {
                     ReminderHelper.addReminder(MainApplication.getContext(), mTask);
                 }
 
