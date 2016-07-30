@@ -1,8 +1,12 @@
 package net.fred.taskgame.hero.fragments;
 
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.RawRes;
 import android.support.v4.app.FragmentTransaction;
+import android.text.SpannableString;
+import android.text.Spanned;
+import android.text.style.ForegroundColorSpan;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -46,6 +50,7 @@ public class StoryFragment extends BaseFragment {
     View mRightCharSeparatorView;
 
     private Level mLevel;
+    private boolean mIsInTextAnimation;
     private boolean mIsEndStory;
     private ArrayList<String> mSentences;
 
@@ -94,7 +99,7 @@ public class StoryFragment extends BaseFragment {
 
             mLeftCharImageView.setImageResource(charResId);
             mLeftCharImageView.animate().alpha(1);
-            mLeftCharTextView.setText(split[1]);
+            displayTextCharPerChar(mLeftCharTextView, split[1]);
             mLeftCharTextView.setAlpha(0);
             mLeftCharTextView.animate().alpha(1);
         } else {
@@ -104,10 +109,34 @@ public class StoryFragment extends BaseFragment {
             mRightCharImageView.setImageResource(charResId);
             mRightCharImageView.animate().alpha(1);
             mRightCharSeparatorView.animate().alpha(1);
-            mRightCharTextView.setText(split[1]);
+            displayTextCharPerChar(mRightCharTextView, split[1]);
             mRightCharTextView.setAlpha(0);
             mRightCharTextView.animate().alpha(1);
         }
+    }
+
+    private void displayTextCharPerChar(final TextView textView, final String text) {
+        mIsInTextAnimation = true;
+
+        final int length = text.length();
+        textView.setTag(1);
+        Runnable displayOneChar = new Runnable() {
+            @Override
+            public void run() {
+                Integer at = (Integer) textView.getTag();
+                SpannableString textViewString = new SpannableString(text);
+                textViewString.setSpan(new ForegroundColorSpan(Color.TRANSPARENT), at, length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                textView.setText(textViewString);
+
+                if (at < text.length()) {
+                    textView.setTag(at + 1);
+                    textView.postDelayed(this, 20);
+                } else {
+                    mIsInTextAnimation = false;
+                }
+            }
+        };
+        textView.postDelayed(displayOneChar, 50);
     }
 
     @Override
@@ -136,6 +165,10 @@ public class StoryFragment extends BaseFragment {
 
     @OnClick(R.id.root_view)
     public void onRootViewClicked() {
+        if (mIsInTextAnimation) {
+            return;
+        }
+
         if (mSentences.size() > 1) {
             mSentences.remove(0);
             updateUI();

@@ -168,6 +168,10 @@ public class BattleFragment extends BaseFragment {
     }
 
     private void animateNextStep() {
+        if (getMainActivity() == null) {
+            return;  // Do nothing if not correctly attached
+        }
+
         BattleManager.BattleStep step = mBattleManager.getNextStep();
         switch (step) {
             case APPLY_PLAYER_SUPPORT: {
