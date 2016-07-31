@@ -24,23 +24,27 @@
             school_friend@R:If I were you I would get some new cards at the school library.\n
             school_friend@R:I heard that the owner was once a great invoker but now he is starting to get too old for that and
             trade his invoker cards in exchange of some well-executed tasks.\n
-            school_friend@R:Then look at needed mana slots in the top-right corner of the cards and compose the best deck you can!</item>
+            school_friend@R:That\'s a easy way to become a better invoker, but be careful: you can\'t take too many card in your
+            deck unless you become more experienced and gain more free slots.</item>
 
         <item>school_friend</item>
         <item>school_friend@R:So, ready to fight?\n
             hero@L:I don\'t need to be ready to defeat you.</item>
         <item>school_friend@R:Again, it seems to be so easy for you that it\'s almost frustrating…\n
             school_friend@R:But it\'s not finished yet, I still have something to try.\n
-            school_friend@R:I have some support card to use after my creatures to reinforce them, so you would better prepare yourself.</item>
+            school_friend@R:I have some support card to use after my creatures to reinforce them, so you would better prepare
+            yourself.</item>
 
         <item>school_friend</item>
         <item>school_friend@R:Now I\'ll go full power! Prepare yourself!\n
             hero@L:How long will that last? I\'m not in the mood of playing.</item>
         <item>school_friend@R:Well, I admit there is no use to continue, I guess you\'re ready for the examination.\n
-            school_friend@R:More you level up and more you\'ll be able to easily invoke several powerful creatures, I have to admit I\'m curious to see see how far you\'ll end up in the army.\n
+            school_friend@R:More you level up and more you\'ll be able to easily invoke several powerful creatures, I have to
+            admit I\'m curious to see how far you\'ll end up in the army.\n
             school_friend@R:By the way, do you already knows what you\'ll do after your diploma?\n
             hero@L:Do I really have the choice?\n
-            school_friend@R:It\'s true that the Arya Kingdom is recruiting almost everyone for his army, but there is several possibilities for an invoker inside the army.\n
+            school_friend@R:It\'s true that the Erya Kingdom is recruiting almost everyone for his army, but there is several
+            possibilities for an invoker inside the army.\n
             school_friend@R:Some decide to help with construction and some prefer to fight.\n
             hero@L:In all cases women are not allowed to fight, they can only support the army. So the choice is quite limited.</item>
 
@@ -48,8 +52,26 @@
         <item>school_master@R:Here is the final examination day!\n
             school_master@R:How do you feel?\n
             hero@L:Ready to pass it.\n
-            school_master@R:Great. You just have to win that battle and you\'ll be an official Arya Kingdom invoker!</item>
-        <item>school_master@R:Great! That wasn\'t hard, right? I\'m happy to say you\'re now a real invoker!</item>
+            school_master@R:Great. You just have to win that battle and you\'ll be an official Erya Kingdom invoker!</item>
+        <item>school_master@R:Here you are! That wasn\'t hard for you, right?\n
+            school_master@R:I\'m happy to say you\'re now an official invoker. You\'ll soon receive your diploma and an Erya Kingdom
+            officer will interview you afterward.</item>
+
+        <item>officer</item>
+        <item>officer@R:So before we start let me present myself: I was also an invoker student and I\'m now lieutenant in the Erya army.\n
+            officer@R:I\'m notably in charge of recruiting invokers inside the kingdom of assign them to a specific regiment.\n
+            officer@R:First of all, show me what you are capable of.</item>
+        <item />
+
+        <item>officer</item>
+        <item>officer@R:Hum… I have to say I\'m impressed. You\'ll be a very good support soldier.\n
+            hero@L:Maybe, but it will not happen. I want to enter the 5th Infantry Regiment.\n
+            officer@R:The 5th Infantry Regiment? That is clearly not possible. Infantry regiments does not accept women and the 5th one is
+            directly exposed to the enemy.\n
+            officer@R:We only assign trained male invokers and swordsman there.\n
+            hero@L:I\'m trained enough for that, I would be more useful in that regiment than simply helping construct buildings or ships.\n
+            hero@L:I can do more than what you have seen for now and I\'ll prove it to you right now!</item>
+        <item />
 
     </string-array>
 

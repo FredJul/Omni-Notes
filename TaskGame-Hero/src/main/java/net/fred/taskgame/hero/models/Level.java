@@ -30,6 +30,8 @@ public class Level extends BaseModel {
             put("hero", R.drawable.invoker_female);
             put("school_friend", R.drawable.invoker_male);
             put("school_master", R.drawable.high_invoker_male);
+            put("officer", R.drawable.officer);
+            put("king", R.drawable.king);
         }
     };
     private final static List<Level> ALL_LEVELS_LIST = new ArrayList<>();
