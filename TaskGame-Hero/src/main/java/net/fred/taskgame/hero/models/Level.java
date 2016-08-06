@@ -42,17 +42,17 @@ public class Level extends BaseModel {
     @Column
     public boolean isCompleted;
 
-    public transient boolean isBossLevel;
+    public boolean isBossLevel;
 
-    public transient List<Card> enemyCards = new ArrayList<>();
-
-    @RawRes
-    public transient int battleMusicResId = INVALID_ID;
+    public List<Card> enemyCards = new ArrayList<>();
 
     @RawRes
-    public transient int startStoryMusicResId = INVALID_ID;
+    public int battleMusicResId = INVALID_ID;
+
     @RawRes
-    public transient int endStoryMusicResId = INVALID_ID;
+    public int startStoryMusicResId = INVALID_ID;
+    @RawRes
+    public int endStoryMusicResId = INVALID_ID;
 
     public
     @DrawableRes

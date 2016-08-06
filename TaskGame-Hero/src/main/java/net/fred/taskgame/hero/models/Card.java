@@ -94,17 +94,17 @@ public class Card extends BaseModel implements Cloneable {
     @Column
     public boolean isInDeck;
 
-    public transient Type type = Type.CREATURE;
-    public transient String name = "";
-    public transient String desc = "";
-    public transient int neededSlots;
-    public transient int attack;
-    public transient int defense;
-    public transient boolean useWeapon;
-    public transient boolean useMagic;
+    public Type type = Type.CREATURE;
+    public String name = "";
+    public String desc = "";
+    public int neededSlots;
+    public int attack;
+    public int defense;
+    public boolean useWeapon;
+    public boolean useMagic;
     @DrawableRes
-    public transient int iconResId = INVALID_ID;
-    public transient int price;
+    public int iconResId = INVALID_ID;
+    public int price;
     public transient FightAction fightAction;
     public transient SupportAction supportAction;
 

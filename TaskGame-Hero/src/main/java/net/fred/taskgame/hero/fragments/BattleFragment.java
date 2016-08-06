@@ -439,7 +439,11 @@ public class BattleFragment extends BaseFragment {
         }
 
         boolean isPlayerCreatureStillAlive = mBattleManager.isPlayerCreatureStillAlive();
-        mPlayerCardView.setCard(mBattleManager.getLastUsedPlayerCreatureCard());
+        if (isPlayerCreatureStillAlive) {
+            mPlayerCardView.setCard(mBattleManager.getLastUsedPlayerCreatureCard());
+        } else {
+            mPlayerCardView.setCard(null);
+        }
         mEnemyCardView.setCard(mBattleManager.getCurrentOrNextAliveEnemyCreatureCard());
 
         // The "no support" button view needs to be removed before card population
