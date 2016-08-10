@@ -249,12 +249,14 @@ public class BattleFragment extends BaseFragment {
                 mEnemyCardView.postDelayed(new Runnable() {
                     @Override
                     public void run() {
-                        if (mEnemyCardView.getCard().useMagic) {
-                            getMainActivity().playSound(MainActivity.SOUND_FIGHT_MAGIC);
-                        } else if (mEnemyCardView.getCard().useWeapon) {
-                            getMainActivity().playSound(MainActivity.SOUND_FIGHT_WEAPON);
-                        } else {
-                            getMainActivity().playSound(MainActivity.SOUND_FIGHT);
+                        if (getMainActivity() != null) {
+                            if (mEnemyCardView.getCard().useMagic) {
+                                getMainActivity().playSound(MainActivity.SOUND_FIGHT_MAGIC);
+                            } else if (mEnemyCardView.getCard().useWeapon) {
+                                getMainActivity().playSound(MainActivity.SOUND_FIGHT_WEAPON);
+                            } else {
+                                getMainActivity().playSound(MainActivity.SOUND_FIGHT);
+                            }
                         }
                     }
                 }, 100);
