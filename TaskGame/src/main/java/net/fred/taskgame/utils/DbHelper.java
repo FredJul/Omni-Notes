@@ -16,13 +16,16 @@
  */
 package net.fred.taskgame.utils;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.raizlabs.android.dbflow.config.FlowManager;
 import com.raizlabs.android.dbflow.sql.language.ConditionGroup;
 import com.raizlabs.android.dbflow.sql.language.Method;
 import com.raizlabs.android.dbflow.sql.language.OrderBy;
 import com.raizlabs.android.dbflow.sql.language.SQLCondition;
 import com.raizlabs.android.dbflow.sql.language.Select;
-import com.raizlabs.android.dbflow.sql.language.Update;
 import com.raizlabs.android.dbflow.structure.Model;
 import com.raizlabs.android.dbflow.structure.database.transaction.ProcessModelTransaction;
 
@@ -35,9 +38,26 @@ import net.fred.taskgame.models.Task_Table;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class DbHelper {
+
+    public static long getCurrentPoints() {
+        return PrefUtils.getLong(PrefUtils.PREF_CURRENT_POINTS, 0);
+    }
+
+    public static void updateCurrentPoints(long newPoints) {
+        PrefUtils.putLong(PrefUtils.PREF_CURRENT_POINTS, newPoints);
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        if (user != null) {
+            DatabaseReference database = FirebaseDatabase.getInstance().getReference();
+            Map<String, Object> childUpdates = new HashMap<>();
+            childUpdates.put(Constants.FIREBASE_CURRENT_POINTS_NODE, newPoints);
+            database.child(Constants.FIREBASE_USERS_NODE).child(user.getUid()).updateChildren(childUpdates);
+        }
+    }
 
     // Inserting or updating single task
     public static void updateTask(Task task, boolean updateLastModification) {
@@ -110,7 +130,7 @@ public class DbHelper {
     public static void finishTask(Task task) {
         task.isFinished = true;
         ReminderHelper.removeReminder(MainApplication.getContext(), task);
-        PrefUtils.putLong(PrefUtils.PREF_CURRENT_POINTS, PrefUtils.getLong(PrefUtils.PREF_CURRENT_POINTS, 0) + task.pointReward);
+        updateCurrentPoints(getCurrentPoints() + task.pointReward);
         updateTask(task, false);
     }
 
@@ -227,7 +247,14 @@ public class DbHelper {
     }
 
     public static void deleteCategoryAsync(Category category) {
-        new Update(Task.class).set(Task_Table.categoryId.isNull()).where(Task_Table.categoryId.eq(category.id));
+        // DO NOT USE the below commented solution: it will break firebase sync
+        //new Update(Task.class).set(Task_Table.categoryId.isNull()).where(Task_Table.categoryId.eq(category.id));
+
+        for (Task task : getTasks(Task_Table.categoryId.eq(category.id))) {
+            task.categoryId = Task.INVALID_ID;
+            task.async().save();
+        }
+
         category.async().delete();
     }
 }

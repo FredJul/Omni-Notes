@@ -47,8 +47,6 @@ import android.view.View.OnLongClickListener;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
 
-import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.games.Games;
 import com.raizlabs.android.dbflow.config.FlowManager;
 import com.raizlabs.android.dbflow.structure.Model;
 import com.raizlabs.android.dbflow.structure.database.transaction.ProcessModelTransaction;
@@ -588,33 +586,20 @@ public class ListFragment extends Fragment {
     }
 
     private void finishTasks(int[] positions) {
+        List<Task> tasks = mAdapter.getTasks();
         for (int position : positions) {
-            Task task = mAdapter.getTasks().get(position);
-
-            GoogleApiClient gameApiClient = getMainActivity().getApiClient();
+            Task task = tasks.get(position);
 
             if (TextUtils.isEmpty(task.questId)) {
                 DbHelper.finishTask(task);
-                if (gameApiClient != null && gameApiClient.isConnected()) {
-                    Games.Achievements.increment(gameApiClient, Constants.ACHIEVEMENT_FIRST_TASK_COMPLETED, 1);
-                    Games.Achievements.increment(gameApiClient, Constants.ACHIEVEMENT_REGULAR_USER, 1);
-                    Games.Achievements.increment(gameApiClient, Constants.ACHIEVEMENT_EFFICIENT_PEOPLE, 1);
-                }
                 // Saves tasks to be eventually restored at right position
                 mUndoTasks.add(task);
             } else {
-                // we directly delete quests (to ot be able to restore them), but we still add the reward
-                PrefUtils.putLong(PrefUtils.PREF_CURRENT_POINTS, PrefUtils.getLong(PrefUtils.PREF_CURRENT_POINTS, 0) + task.pointReward);
-                if (gameApiClient != null && gameApiClient.isConnected()) {
-                    Games.Events.increment(gameApiClient, task.questEventId, 1);
-                    Games.Quests.claim(gameApiClient, task.questId, task.questMilestoneId);
-                    Games.Achievements.increment(gameApiClient, Constants.ACHIEVEMENT_FIRST_QUEST_COMPLETED, 1);
-                }
+                // we directly delete quests (to not be able to restore them), but we still add the reward
+                DbHelper.updateCurrentPoints(DbHelper.getCurrentPoints() + task.pointReward);
 
                 DbHelper.deleteTask(task);
             }
-
-            mAdapter.getTasks().remove(task);
         }
 
         finishActionMode();
@@ -622,10 +607,10 @@ public class ListFragment extends Fragment {
     }
 
     private void restoreTasks(int[] positions) {
+        List<Task> tasks = mAdapter.getTasks();
         for (int position : positions) {
-            Task task = mAdapter.getTasks().get(position);
+            Task task = tasks.get(position);
             DbHelper.restoreTask(task);
-            mAdapter.getTasks().remove(task);
 
             // Saves tasks to be eventually restored at right position
             mUndoTasks.add(task);

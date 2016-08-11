@@ -70,8 +70,6 @@
     <string name="delete_all_finished_tasks">Delete all finished tasks</string>
     <string name="delete_finished_tasks_confirmation">Confirm deleting all finished tasks?</string>
     <string name="select_all">Select all</string>
-    <string name="permission_get_account">Permission to read your Google account is needed to start PlayGames authentication and save your data on the cloud</string>
-    <string name="permission_not_granted">Permission not granted</string>
     <string name="open_link_dialog_title">Do you want to open the link or modify it?</string>
     <string name="open_link">Open</string>
     <string name="modify_link">Modify</string>
@@ -89,10 +87,8 @@
     <string name="minutes">minutes</string>
     <string name="drawer_open">drawer open</string>
     <string name="drawer_close">drawer closed</string>
-    <string name="not_logged_in">Not logged in</string>
+    <string name="not_logged_in">Tap here to login</string>
     <string name="quest">Quest</string>
-    <string name="quests">Quests</string>
-    <string name="leaderboard">Leaderboard</string>
     <string name="sign_out_confirmation">Do you want to sign out?</string>
 
 </resources>

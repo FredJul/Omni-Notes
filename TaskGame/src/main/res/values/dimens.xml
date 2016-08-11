@@ -24,7 +24,7 @@
     <dimen name="icon_text_margin">12dp</dimen>
     <dimen name="navigation_drawer_line_height">48dp</dimen>
     <dimen name="navigation_drawer_icon_size">28dp</dimen>
-    <dimen name="navigation_drawer_header_height">190dp</dimen>
+    <dimen name="navigation_drawer_header_height">140dp</dimen>
     <dimen name="widget_height">56dp</dimen>
     <dimen name="text_size_small">11sp</dimen>
     <dimen name="text_size_normal">13sp</dimen>

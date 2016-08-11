@@ -18,9 +18,15 @@ package net.fred.taskgame.models;
 
 import android.support.annotation.ColorInt;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.google.gson.annotations.Expose;
 import com.raizlabs.android.dbflow.annotation.Column;
 import com.raizlabs.android.dbflow.annotation.Table;
+
+import net.fred.taskgame.utils.Constants;
 
 import org.parceler.Parcel;
 
@@ -52,5 +58,34 @@ public class Category extends IdBasedModel {
         }
 
         super.save();
+
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        if (user != null) {
+            DatabaseReference database = FirebaseDatabase.getInstance().getReference();
+            database.child(Constants.FIREBASE_USERS_NODE).child(user.getUid()).child(Constants.FIREBASE_CATEGORIES_NODE).child(String.valueOf(id)).setValue(this);
+        }
+    }
+
+    public void saveWithoutFirebase() {
+        if (creationDate == 0) {
+            creationDate = System.currentTimeMillis();
+        }
+
+        super.save();
+    }
+
+    @Override
+    public void delete() {
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        if (user != null) {
+            DatabaseReference database = FirebaseDatabase.getInstance().getReference();
+            database.child(Constants.FIREBASE_USERS_NODE).child(user.getUid()).child(Constants.FIREBASE_CATEGORIES_NODE).child(String.valueOf(id)).removeValue();
+        }
+
+        super.delete();
+    }
+
+    public void deleteWithoutFirebase() {
+        super.delete();
     }
 }

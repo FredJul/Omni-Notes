@@ -19,12 +19,17 @@ package net.fred.taskgame.models;
 import android.content.Context;
 import android.content.Intent;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.google.gson.annotations.Expose;
 import com.raizlabs.android.dbflow.annotation.Column;
 import com.raizlabs.android.dbflow.annotation.Table;
 import com.raizlabs.android.dbflow.sql.language.Select;
 
 import net.fred.taskgame.R;
+import net.fred.taskgame.utils.Constants;
 import net.fred.taskgame.utils.EqualityChecker;
 
 import org.parceler.Parcel;
@@ -73,12 +78,6 @@ public class Task extends IdBasedModel {
     @Column
     @Expose
     public String questId = "";
-    @Column
-    @Expose
-    public String questMilestoneId = "";
-    @Column
-    @Expose
-    public String questEventId = "";
 
     private transient Category mCategory;
 
@@ -136,9 +135,9 @@ public class Task extends IdBasedModel {
         }
 
         Object[] a = {id, title, content, creationDate, lastModificationDate, displayPriority, isFinished,
-                alarmDate, isChecklist, categoryId, pointReward, questId, questMilestoneId, questEventId};
+                alarmDate, isChecklist, categoryId, pointReward, questId};
         Object[] b = {task.id, task.title, task.content, task.creationDate, task.lastModificationDate, task.displayPriority, task.isFinished,
-                task.alarmDate, task.isChecklist, task.categoryId, task.pointReward, task.questId, task.questMilestoneId, task.questEventId};
+                task.alarmDate, task.isChecklist, task.categoryId, task.pointReward, task.questId};
         if (EqualityChecker.check(a, b)) {
             res = true;
         }
@@ -174,5 +173,34 @@ public class Task extends IdBasedModel {
         }
 
         super.save();
+
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        if (user != null) {
+            DatabaseReference database = FirebaseDatabase.getInstance().getReference();
+            database.child(Constants.FIREBASE_USERS_NODE).child(user.getUid()).child(Constants.FIREBASE_TASKS_NODE).child(String.valueOf(id)).setValue(this);
+        }
+    }
+
+    public void saveWithoutFirebase() {
+        if (creationDate == 0) {
+            creationDate = System.currentTimeMillis();
+        }
+
+        super.save();
+    }
+
+    @Override
+    public void delete() {
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        if (user != null) {
+            DatabaseReference database = FirebaseDatabase.getInstance().getReference();
+            database.child(Constants.FIREBASE_USERS_NODE).child(user.getUid()).child(Constants.FIREBASE_TASKS_NODE).child(String.valueOf(id)).removeValue();
+        }
+
+        super.delete();
+    }
+
+    public void deleteWithoutFirebase() {
+        super.delete();
     }
 }

@@ -20,6 +20,7 @@ package net.fred.taskgame;
 import android.app.Application;
 import android.content.Context;
 
+import com.google.firebase.database.FirebaseDatabase;
 import com.raizlabs.android.dbflow.config.FlowConfig;
 import com.raizlabs.android.dbflow.config.FlowManager;
 
@@ -32,6 +33,8 @@ public class MainApplication extends Application {
         super.onCreate();
 
         mContext = getApplicationContext();
+
+        FirebaseDatabase.getInstance().setPersistenceEnabled(true);
 
         FlowManager.init(new FlowConfig.Builder(this).build());
     }

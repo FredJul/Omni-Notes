@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "780715276155",
+    "firebase_url": "https://api-project-780715276155.firebaseio.com",
+    "project_id": "api-project-780715276155",
+    "storage_bucket": "api-project-780715276155.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:780715276155:android:1db24e6807c8cf77",
+        "android_client_info": {
+          "package_name": "net.fred.taskgame"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "780715276155-8uke1cso7bdgiunt4d72kagqks4nq41n.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "net.fred.taskgame",
+            "certificate_hash": "DA4EA6A38E132BE999BE17D16CF5B5BAFE94432C"
+          }
+        },
+        {
+          "client_id": "780715276155-8dpv81hb0dnraqiiecs3rr8nt652rqqo.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyChiaktbhHR_48fcBpEJW_UqAwYtYvEI8g"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "780715276155-8dpv81hb0dnraqiiecs3rr8nt652rqqo.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

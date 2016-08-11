@@ -17,10 +17,8 @@
 
 package net.fred.taskgame.activities;
 
-import android.Manifest;
 import android.animation.ValueAnimator;
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -37,6 +35,8 @@ import android.support.v4.graphics.drawable.RoundedBitmapDrawableFactory;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.app.AlertDialog;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.SparseArray;
 import android.view.Menu;
@@ -44,27 +44,30 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.DecelerateInterpolator;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.target.BitmapImageViewTarget;
-import com.google.android.gms.games.Games;
-import com.google.android.gms.games.Player;
-import com.google.android.gms.games.quest.Quests;
+import com.firebase.ui.auth.AuthUI;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.ChildEventListener;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import net.fred.taskgame.R;
 import net.fred.taskgame.fragments.DetailFragment;
 import net.fred.taskgame.fragments.ListFragment;
-import net.fred.taskgame.listeners.OnPermissionRequestedListener;
 import net.fred.taskgame.models.Category;
 import net.fred.taskgame.models.Task;
-import net.fred.taskgame.services.SyncService;
 import net.fred.taskgame.utils.Constants;
 import net.fred.taskgame.utils.DbHelper;
+import net.fred.taskgame.utils.Dog;
 import net.fred.taskgame.utils.NavigationUtils;
-import net.fred.taskgame.utils.PermissionsHelper;
 import net.fred.taskgame.utils.PrefUtils;
 import net.fred.taskgame.utils.ThrottledFlowContentObserver;
 import net.fred.taskgame.utils.UiUtils;
@@ -74,10 +77,10 @@ import org.parceler.Parcels;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class MainActivity extends BaseGameActivity implements FragmentManager.OnBackStackChangedListener, NavigationView.OnNavigationItemSelectedListener {
+public class MainActivity extends AppCompatActivity implements FragmentManager.OnBackStackChangedListener, NavigationView.OnNavigationItemSelectedListener {
 
     private static final int REQUEST_CODE_CATEGORY = 2;
-    private static final int REQUEST_CODE_QUESTS = 3;
+    private static final int REQUEST_CODE_SIGN_IN = 3;
 
     private FragmentManager mFragmentManager;
 
@@ -90,10 +93,9 @@ public class MainActivity extends BaseGameActivity implements FragmentManager.On
     @BindView(R.id.navigation_view)
     NavigationView mNavigationView;
 
+    private View mDrawerHeader;
     private ImageView mPlayerImageView;
     private TextView mPlayerName;
-    private Button mLeaderboardBtn;
-    private Button mQuestsBtn;
     private TextView mCurrentPoints;
     private ActionBarDrawerToggle mDrawerToggle;
 
@@ -110,6 +112,97 @@ public class MainActivity extends BaseGameActivity implements FragmentManager.On
             if (mCurrentPoints != null && PrefUtils.PREF_CURRENT_POINTS.equals(key)) {
                 mCurrentPoints.setText(String.valueOf(PrefUtils.getLong(PrefUtils.PREF_CURRENT_POINTS, 0)));
             }
+        }
+    };
+
+    private FirebaseUser mFirebaseUser;
+    private DatabaseReference mFirebaseDatabase;
+
+    private final ValueEventListener mFirebaseCurrentPointsListener = new ValueEventListener() {
+
+        @Override
+        public void onDataChange(DataSnapshot dataSnapshot) {
+            if (dataSnapshot.getValue() != null) {
+                PrefUtils.putLong(PrefUtils.PREF_CURRENT_POINTS, dataSnapshot.getValue(Long.class));
+            }
+        }
+
+        @Override
+        public void onCancelled(DatabaseError databaseError) {
+        }
+    };
+
+    private final ChildEventListener mFirebaseTasksListener = new ChildEventListener() {
+        @Override
+        public void onChildAdded(DataSnapshot dataSnapshot, String previousChildName) {
+            Dog.d(dataSnapshot.getKey());
+
+            Task task = dataSnapshot.getValue(Task.class);
+            task.id = Long.valueOf(dataSnapshot.getKey());
+            task.saveWithoutFirebase();
+        }
+
+        @Override
+        public void onChildChanged(DataSnapshot dataSnapshot, String previousChildName) {
+            Dog.d(dataSnapshot.getKey());
+
+            Task task = dataSnapshot.getValue(Task.class);
+            task.id = Long.valueOf(dataSnapshot.getKey());
+            task.saveWithoutFirebase();
+        }
+
+        @Override
+        public void onChildRemoved(DataSnapshot dataSnapshot) {
+            Dog.d(dataSnapshot.getKey());
+
+            Task task = new Task();
+            task.id = Long.valueOf(dataSnapshot.getKey());
+            task.deleteWithoutFirebase();
+        }
+
+        @Override
+        public void onChildMoved(DataSnapshot dataSnapshot, String previousChildName) {
+        }
+
+        @Override
+        public void onCancelled(DatabaseError databaseError) {
+        }
+    };
+
+    private final ChildEventListener mFirebaseCategoriesListener = new ChildEventListener() {
+        @Override
+        public void onChildAdded(DataSnapshot dataSnapshot, String previousChildName) {
+            Dog.d(dataSnapshot.getKey());
+
+            Category category = dataSnapshot.getValue(Category.class);
+            category.id = Long.valueOf(dataSnapshot.getKey());
+            category.saveWithoutFirebase();
+        }
+
+        @Override
+        public void onChildChanged(DataSnapshot dataSnapshot, String previousChildName) {
+            Dog.d(dataSnapshot.getKey());
+
+            Category category = dataSnapshot.getValue(Category.class);
+            category.id = Long.valueOf(dataSnapshot.getKey());
+            category.saveWithoutFirebase();
+        }
+
+        @Override
+        public void onChildRemoved(DataSnapshot dataSnapshot) {
+            Dog.d(dataSnapshot.getKey());
+
+            Category category = dataSnapshot.getValue(Category.class);
+            category.id = Long.valueOf(dataSnapshot.getKey());
+            category.deleteWithoutFirebase();
+        }
+
+        @Override
+        public void onChildMoved(DataSnapshot dataSnapshot, String previousChildName) {
+        }
+
+        @Override
+        public void onCancelled(DatabaseError databaseError) {
         }
     };
 
@@ -186,10 +279,40 @@ public class MainActivity extends BaseGameActivity implements FragmentManager.On
         initNavigationMenu();
     }
 
+    private void firebaseLogin() {
+        mFirebaseUser = FirebaseAuth.getInstance().getCurrentUser();
+
+        if (mFirebaseUser != null) {
+            mFirebaseDatabase = FirebaseDatabase.getInstance().getReference();
+            mFirebaseDatabase.child(Constants.FIREBASE_USERS_NODE).child(mFirebaseUser.getUid()).child(Constants.FIREBASE_TASKS_NODE).addChildEventListener(mFirebaseTasksListener);
+            mFirebaseDatabase.child(Constants.FIREBASE_USERS_NODE).child(mFirebaseUser.getUid()).child(Constants.FIREBASE_CATEGORIES_NODE).addChildEventListener(mFirebaseCategoriesListener);
+            mFirebaseDatabase.child(Constants.FIREBASE_USERS_NODE).child(mFirebaseUser.getUid()).child(Constants.FIREBASE_CURRENT_POINTS_NODE).addValueEventListener(mFirebaseCurrentPointsListener);
+
+            mPlayerName.setText(mFirebaseUser.getDisplayName());
+            Glide.with(MainActivity.this).load(mFirebaseUser.getPhotoUrl()).asBitmap().fitCenter().fallback(android.R.drawable.sym_def_app_icon).placeholder(android.R.drawable.sym_def_app_icon).into(new BitmapImageViewTarget(mPlayerImageView) {
+                @Override
+                protected void setResource(Bitmap resource) {
+                    RoundedBitmapDrawable circularBitmapDrawable = RoundedBitmapDrawableFactory.create(getResources(), resource);
+                    circularBitmapDrawable.setCircular(true);
+                    getView().setImageDrawable(circularBitmapDrawable);
+                }
+            });
+        }
+    }
+
+    private void firebaseLogout() {
+        if (mFirebaseDatabase != null) {
+            mFirebaseDatabase.removeEventListener(mFirebaseTasksListener);
+            mFirebaseDatabase.removeEventListener(mFirebaseCategoriesListener);
+            mFirebaseDatabase.removeEventListener(mFirebaseCurrentPointsListener);
+        }
+    }
+
     @Override
     protected void onDestroy() {
         mContentObserver.unregisterForContentChanges(this);
         PrefUtils.unregisterOnPrefChangeListener(mCurrentPointsObserver);
+        firebaseLogout();
 
         super.onDestroy();
     }
@@ -215,9 +338,11 @@ public class MainActivity extends BaseGameActivity implements FragmentManager.On
                 }
 
                 break;
-            case REQUEST_CODE_QUESTS:
-                // Just to refresh the list of quests if one has been accepted
-                SyncService.triggerSync(this);
+
+            case REQUEST_CODE_SIGN_IN:
+                if (resultCode == RESULT_OK) {
+                    firebaseLogin();
+                }
                 break;
             default:
                 break;
@@ -281,51 +406,48 @@ public class MainActivity extends BaseGameActivity implements FragmentManager.On
             @Override
             public void run() {
                 // Initialized the views which was not inflated before
-                if (mCurrentPoints == null) {
-                    mCurrentPoints = (TextView) mNavigationView.findViewById(R.id.currentPoints);
-
-                    View.OnClickListener loginListener = new View.OnClickListener() {
+                if (mDrawerHeader == null) {
+                    mDrawerHeader = mNavigationView.findViewById(R.id.drawer_header);
+                    mDrawerHeader.setOnClickListener(new View.OnClickListener() {
                         @Override
-                        public void onClick(View v) {
-                            PermissionsHelper.requestPermission(MainActivity.this, Manifest.permission.GET_ACCOUNTS,
-                                    R.string.permission_get_account, new OnPermissionRequestedListener() {
-                                        @Override
-                                        public void onPermissionGranted() {
-                                            beginUserInitiatedSignIn();
-                                        }
-                                    });
-                        }
-                    };
-                    mPlayerImageView = (ImageView) mNavigationView.findViewById(R.id.player);
-                    mPlayerImageView.setOnClickListener(loginListener);
+                        public void onClick(View view) {
+                            FirebaseAuth auth = FirebaseAuth.getInstance();
+                            if (auth.getCurrentUser() == null) {
+                                startActivityForResult(
+                                        AuthUI.getInstance().createSignInIntentBuilder()
+                                                .setTheme(R.style.AppTheme)
+                                                .setLogo(R.mipmap.ic_launcher)
+                                                .setProviders(new String[]{AuthUI.GOOGLE_PROVIDER, AuthUI.EMAIL_PROVIDER}) //, AuthUI.FACEBOOK_PROVIDER})
+                                                .build(),
+                                        REQUEST_CODE_SIGN_IN);
+                            } else {
+                                new AlertDialog.Builder(MainActivity.this)
+                                        .setMessage(R.string.sign_out_confirmation)
+                                        .setPositiveButton(R.string.confirm, new DialogInterface.OnClickListener() {
+                                            public void onClick(DialogInterface dialog, int id) {
+                                                AuthUI.getInstance().signOut(MainActivity.this);
 
-                    mPlayerName = (TextView) mNavigationView.findViewById(R.id.player_name);
-                    mPlayerName.setOnClickListener(loginListener);
-
-                    mLeaderboardBtn = (Button) mNavigationView.findViewById(R.id.leaderboard_btn);
-                    mLeaderboardBtn.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            try {
-                                startActivityForResult(Games.Leaderboards.getLeaderboardIntent(getApiClient(), Constants.LEADERBOARD_ID), 0);
-                            } catch (Exception ignored) {
+                                                Glide.with(MainActivity.this).load(android.R.drawable.sym_def_app_icon).into(mPlayerImageView);
+                                                mPlayerName.setText(R.string.not_logged_in);
+                                                firebaseLogout();
+                                            }
+                                        })
+                                        .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
+                                            public void onClick(DialogInterface dialog, int id) {
+                                            }
+                                        }).show();
                             }
                         }
                     });
+                    mCurrentPoints = (TextView) mDrawerHeader.findViewById(R.id.currentPoints);
+                    mPlayerImageView = (ImageView) mDrawerHeader.findViewById(R.id.player);
 
-                    mQuestsBtn = (Button) mNavigationView.findViewById(R.id.quests_btn);
-                    mQuestsBtn.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            try {
-                                startActivityForResult(Games.Quests.getQuestsIntent(getApiClient(), Quests.SELECT_ALL_QUESTS), REQUEST_CODE_QUESTS);
-                            } catch (Exception ignored) {
-                            }
-                        }
-                    });
+                    mPlayerName = (TextView) mDrawerHeader.findViewById(R.id.player_name);
+
+                    firebaseLogin();
+
+                    mCurrentPoints.setText(String.valueOf(PrefUtils.getLong(PrefUtils.PREF_CURRENT_POINTS, 0)));
                 }
-                mCurrentPoints.setText(String.valueOf(PrefUtils.getLong(PrefUtils.PREF_CURRENT_POINTS, 0)));
-
 
                 // Small hack to handle the long press on menu item
                 ViewGroup navigationList = (ViewGroup) mNavigationView.findViewById(android.support.design.R.id.design_navigation_view);
@@ -407,74 +529,6 @@ public class MainActivity extends BaseGameActivity implements FragmentManager.On
         }
 
         return -1;
-    }
-
-    @Override
-    public void onSignInSucceeded() {
-        mNavigationView.post(new Runnable() { // Needed because can be called before the drawer header is inflated
-            @Override
-            public void run() {
-                PrefUtils.putBoolean(PrefUtils.PREF_ALREADY_LOGGED_TO_GAMES, true);
-                SyncService.triggerSync(MainActivity.this);
-
-                Player player = Games.Players.getCurrentPlayer(getApiClient());
-                Glide.with(MainActivity.this).load(player.getIconImageUrl()).asBitmap().centerCrop().into(new BitmapImageViewTarget(mPlayerImageView) {
-                    @Override
-                    protected void setResource(Bitmap resource) {
-                        RoundedBitmapDrawable circularBitmapDrawable = RoundedBitmapDrawableFactory.create(getResources(), resource);
-                        circularBitmapDrawable.setCircular(true);
-                        getView().setImageDrawable(circularBitmapDrawable);
-                    }
-                });
-
-                View.OnClickListener logoutListener = new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        new AlertDialog.Builder(MainActivity.this)
-                                .setMessage(R.string.sign_out_confirmation)
-                                .setPositiveButton(R.string.confirm, new DialogInterface.OnClickListener() {
-                                    public void onClick(DialogInterface dialog, int id) {
-                                        signOut();
-                                        Glide.with(MainActivity.this).load(android.R.drawable.sym_def_app_icon).into(mPlayerImageView);
-                                        mPlayerName.setText(R.string.not_logged_in);
-                                        mLeaderboardBtn.setVisibility(View.GONE);
-                                        mQuestsBtn.setVisibility(View.GONE);
-
-                                        View.OnClickListener loginListener = new View.OnClickListener() {
-                                            @Override
-                                            public void onClick(View v) {
-                                                PermissionsHelper.requestPermission(MainActivity.this, Manifest.permission.GET_ACCOUNTS,
-                                                        R.string.permission_get_account, new OnPermissionRequestedListener() {
-                                                            @Override
-                                                            public void onPermissionGranted() {
-                                                                beginUserInitiatedSignIn();
-                                                            }
-                                                        });
-                                            }
-                                        };
-                                        mPlayerImageView.setOnClickListener(loginListener);
-                                        mPlayerName.setOnClickListener(loginListener);
-                                    }
-                                })
-                                .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
-                                    public void onClick(DialogInterface dialog, int id) {
-                                    }
-                                }).show();
-                    }
-                };
-                mPlayerImageView.setOnClickListener(logoutListener);
-                mPlayerName.setOnClickListener(logoutListener);
-
-                mPlayerName.setText(player.getDisplayName());
-
-                mLeaderboardBtn.setVisibility(View.VISIBLE);
-                mQuestsBtn.setVisibility(View.VISIBLE);
-            }
-        });
-    }
-
-    @Override
-    public void onSignInFailed() {
     }
 
     /**

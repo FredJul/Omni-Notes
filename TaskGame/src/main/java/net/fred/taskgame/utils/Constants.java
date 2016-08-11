@@ -18,7 +18,10 @@ package net.fred.taskgame.utils;
 
 public interface Constants {
 
-    String TAG = "TaskGame";
+    String FIREBASE_USERS_NODE = "users";
+    String FIREBASE_TASKS_NODE = "tasks";
+    String FIREBASE_CATEGORIES_NODE = "categories";
+    String FIREBASE_CURRENT_POINTS_NODE = "currentPoints";
 
     String INTENT_TASK_ID = "task_id";
     String INTENT_TASK = "task";
@@ -32,11 +35,4 @@ public interface Constants {
     String ACTION_WIDGET = "action_widget";
     String ACTION_WIDGET_SHOW_LIST = "action_widget_show_list";
     String ACTION_NOTIFICATION_CLICK = "action_notification_click";
-
-    String LEADERBOARD_ID = "CgkI--6GstwWEAIQAw";
-    String ACHIEVEMENT_FIRST_TASK_COMPLETED = "CgkI--6GstwWEAIQBA";
-    String ACHIEVEMENT_FIRST_QUEST_COMPLETED = "CgkI--6GstwWEAIQCg";
-    String ACHIEVEMENT_FIRST_POINT_USE_INTO_GAME = "CgkI--6GstwWEAIQCw";
-    String ACHIEVEMENT_REGULAR_USER = "CgkI--6GstwWEAIQDA";
-    String ACHIEVEMENT_EFFICIENT_PEOPLE = "CgkI--6GstwWEAIQDQ";
 }
