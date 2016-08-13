@@ -45,7 +45,7 @@ public class ListRemoteViewsFactory implements RemoteViewsFactory {
     private final int appWidgetId;
     private List<Task> tasks;
 
-    private final ThrottledFlowContentObserver mContentObserver = new ThrottledFlowContentObserver(100) {
+    private final ThrottledFlowContentObserver mContentObserver = new ThrottledFlowContentObserver(500) {
         @Override
         public void onChangeThrottled() {
             AppWidgetManager.getInstance(mContext).notifyAppWidgetViewDataChanged(appWidgetId, R.id.widget_list);
