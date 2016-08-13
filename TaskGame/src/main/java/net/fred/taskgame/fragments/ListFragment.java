@@ -587,8 +587,10 @@ public class ListFragment extends Fragment {
 
     private void finishTasks(int[] positions) {
         List<Task> tasks = mAdapter.getTasks();
+        List<Task> toRemoveTasks = new ArrayList<>();
         for (int position : positions) {
             Task task = tasks.get(position);
+            toRemoveTasks.add(task);
 
             if (TextUtils.isEmpty(task.questId)) {
                 DbUtils.finishTask(task);
@@ -601,6 +603,7 @@ public class ListFragment extends Fragment {
                 DbUtils.deleteTask(task);
             }
         }
+        tasks.removeAll(toRemoveTasks);
 
         finishActionMode();
         displayUndoBar(R.string.task_finished);
@@ -608,13 +611,14 @@ public class ListFragment extends Fragment {
 
     private void restoreTasks(int[] positions) {
         List<Task> tasks = mAdapter.getTasks();
+        List<Task> toRemoveTasks = new ArrayList<>();
         for (int position : positions) {
             Task task = tasks.get(position);
+            toRemoveTasks.add(task);
             DbUtils.restoreTask(task);
-
-            // Saves tasks to be eventually restored at right position
-            mUndoTasks.add(task);
         }
+        mUndoTasks.addAll(toRemoveTasks); // Saves tasks to be eventually restored at right position
+        tasks.removeAll(toRemoveTasks);
 
         finishActionMode();
         displayUndoBar(R.string.task_restored);
