@@ -29,7 +29,6 @@ import net.fred.taskgame.utils.Constants;
 import net.fred.taskgame.utils.Dog;
 import net.fred.taskgame.utils.NotificationsHelper;
 import net.fred.taskgame.utils.PrefUtils;
-import net.fred.taskgame.utils.TextHelper;
 import net.fred.taskgame.utils.date.DateHelper;
 
 import org.parceler.Parcels;
@@ -87,11 +86,9 @@ public class AlarmReceiver extends BroadcastReceiver {
                 .setLargeIcon(R.mipmap.ic_launcher)
                 .setMessage(text);
 
-        notificationsHelper.getBuilder().addAction(R.drawable.ic_snooze_reminder,
-                TextHelper.capitalize(context.getString(R.string.snooze, Long.valueOf(snoozeDelay))), piSnooze)
-                .addAction(R.drawable.ic_reminder,
-                        TextHelper.capitalize(context.getString(R.string
-                                .set_reminder)), piPostpone);
+        notificationsHelper.getBuilder()
+                .addAction(R.drawable.ic_snooze_reminder, context.getString(R.string.snooze, Long.valueOf(snoozeDelay)), piSnooze)
+                .addAction(R.drawable.ic_reminder, context.getString(R.string.set_reminder), piPostpone);
 
         // Ringtone options
         String ringtone = PrefUtils.getString("settings_notification_ringtone", null);

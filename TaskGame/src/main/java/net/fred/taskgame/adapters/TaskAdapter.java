@@ -3,7 +3,6 @@ package net.fred.taskgame.adapters;
 import android.graphics.Color;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
-import android.text.Spanned;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,7 +12,6 @@ import android.widget.TextView;
 
 import net.fred.taskgame.R;
 import net.fred.taskgame.models.Task;
-import net.fred.taskgame.utils.TextHelper;
 import net.fred.taskgame.utils.recycler.ItemActionListener;
 import net.fred.taskgame.utils.recycler.ItemActionViewHolder;
 
@@ -102,7 +100,7 @@ public class TaskAdapter extends MultiSelectAdapter<TaskAdapter.TaskViewHolder> 
         Task task = mTasks.get(position);
 
         // Init texts
-        Spanned[] titleAndContent = TextHelper.parseTitleAndContent(task);
+        String[] titleAndContent = task.getListItemTitleAndContent();
         holder.mTitle.setText(titleAndContent[0]);
         if (titleAndContent[1].length() > 0) {
             holder.mContent.setText(titleAndContent[1]);

@@ -22,7 +22,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.text.Spanned;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.RemoteViews;
@@ -34,7 +33,6 @@ import net.fred.taskgame.models.Task;
 import net.fred.taskgame.utils.Constants;
 import net.fred.taskgame.utils.DbUtils;
 import net.fred.taskgame.utils.PrefUtils;
-import net.fred.taskgame.utils.TextHelper;
 import net.fred.taskgame.utils.ThrottledFlowContentObserver;
 
 import org.parceler.Parcels;
@@ -102,7 +100,7 @@ public class ListRemoteViewsFactory implements RemoteViewsFactory {
 
         Task task = tasks.get(position);
 
-        Spanned[] titleAndContent = TextHelper.parseTitleAndContent(task);
+        String[] titleAndContent = task.getListItemTitleAndContent();
 
         row.setTextViewText(R.id.task_title, titleAndContent[0]);
         if (titleAndContent[1].length() > 0) {

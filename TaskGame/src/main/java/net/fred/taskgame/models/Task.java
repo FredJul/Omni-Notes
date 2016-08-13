@@ -144,9 +144,9 @@ public class Task extends IdBasedModel {
         Intent shareIntent = new Intent();
 
         shareIntent.setAction(Intent.ACTION_SEND);
-            shareIntent.setType("text/plain");
-            shareIntent.putExtra(Intent.EXTRA_SUBJECT, titleText);
-            shareIntent.putExtra(Intent.EXTRA_TEXT, contentText);
+        shareIntent.setType("text/plain");
+        shareIntent.putExtra(Intent.EXTRA_SUBJECT, titleText);
+        shareIntent.putExtra(Intent.EXTRA_TEXT, contentText);
 
         context.startActivity(Intent.createChooser(shareIntent, context.getResources().getString(R.string.share_message_chooser)));
     }
@@ -185,5 +185,34 @@ public class Task extends IdBasedModel {
 
     public void deleteWithoutFirebase() {
         super.delete();
+    }
+
+    public String[] getListItemTitleAndContent() {
+
+        // Defining title and content texts
+        String titleText = title.trim();
+        String contentText = content.trim();
+
+        if (titleText.length() <= 0 && contentText.length() >= 0) {
+            int wrapIndex = contentText.indexOf('\n');
+            if (wrapIndex != -1) {
+                titleText = contentText.substring(0, wrapIndex);
+                contentText = contentText.substring(titleText.length()).trim();
+            } else {
+                titleText = contentText;
+                contentText = "";
+            }
+        }
+
+        // Replacing checkmarks symbols with html entities
+        if (isChecklist) {
+            titleText = titleText.replace(it.feio.android.checklistview.interfaces.Constants.CHECKED_SYM, "✓ ")
+                    .replace(it.feio.android.checklistview.interfaces.Constants.UNCHECKED_SYM, "□ ");
+            contentText = contentText
+                    .replace(it.feio.android.checklistview.interfaces.Constants.CHECKED_SYM, "✓ ")
+                    .replace(it.feio.android.checklistview.interfaces.Constants.UNCHECKED_SYM, "□ ");
+        }
+
+        return new String[]{titleText, contentText};
     }
 }
