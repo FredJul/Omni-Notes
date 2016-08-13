@@ -2,7 +2,6 @@ package net.fred.taskgame.models;
 
 import android.database.Cursor;
 
-import com.google.gson.annotations.Expose;
 import com.raizlabs.android.dbflow.annotation.PrimaryKey;
 import com.raizlabs.android.dbflow.sql.language.Method;
 import com.raizlabs.android.dbflow.sql.language.Select;
@@ -14,7 +13,6 @@ public class IdBasedModel extends BaseModel {
     public final static long INVALID_ID = 0;
 
     @PrimaryKey
-    @Expose
     public long id = INVALID_ID;
 
     @Override

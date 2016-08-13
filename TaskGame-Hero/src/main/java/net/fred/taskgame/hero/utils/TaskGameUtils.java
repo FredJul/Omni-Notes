@@ -10,7 +10,7 @@ import android.support.annotation.NonNull;
 public class TaskGameUtils {
 
     /**
-     * Allow you to verify the TaskGame app is installed on the phone or not
+     * Allow you to verify if the TaskGame app is installed on the phone or not
      *
      * @param context any Context
      * @return true if the real TaskGame app is installed on the phone, false otherwise
@@ -18,7 +18,7 @@ public class TaskGameUtils {
     public static boolean isAppInstalled(@NonNull Context context) {
         try {
             Signature[] signatures = context.getPackageManager().getPackageInfo("net.fred.taskgame", PackageManager.GET_SIGNATURES).signatures;
-            if (signatures.length == 1 && signatures[0].hashCode() == -361897285) {
+            if (signatures.length == 1 && signatures[0].hashCode() == -361897285) { // We check the signature to be sure that's not a fake one
                 return true;
             }
         } catch (PackageManager.NameNotFoundException e) {

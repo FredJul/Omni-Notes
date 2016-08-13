@@ -22,7 +22,6 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.gson.annotations.Expose;
 import com.raizlabs.android.dbflow.annotation.Column;
 import com.raizlabs.android.dbflow.annotation.Table;
 
@@ -35,17 +34,13 @@ import org.parceler.Parcel;
 public class Category extends IdBasedModel {
 
     @Column
-    @Expose
     public String name = "";
     @Column
-    @Expose
     public String description = "";
     @Column
-    @Expose
     @ColorInt
     public int color;
     @Column
-    @Expose
     public long creationDate;
 
     public Category() {

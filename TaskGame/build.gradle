@@ -56,7 +56,6 @@ dependencies {
     compile "com.github.Raizlabs.DBFlow:dbflow:+"
     compile 'org.parceler:parceler-api:+'
     apt 'org.parceler:parceler:+'
-    compile 'com.google.code.gson:gson:+'
     compile 'com.jakewharton:butterknife:+'
     apt 'com.jakewharton:butterknife-compiler:+'
     compile 'io.reactivex:rxjava:+'

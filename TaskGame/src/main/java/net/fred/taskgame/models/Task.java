@@ -23,7 +23,6 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.gson.annotations.Expose;
 import com.raizlabs.android.dbflow.annotation.Column;
 import com.raizlabs.android.dbflow.annotation.Table;
 import com.raizlabs.android.dbflow.sql.language.Select;
@@ -46,37 +45,26 @@ public class Task extends IdBasedModel {
     public final static long VERY_HIGH_POINT_REWARD = 200;
 
     @Column
-    @Expose
     public String title = "";
     @Column
-    @Expose
     public String content = "";
     @Column
-    @Expose
     public long creationDate;
     @Column
-    @Expose
     public long lastModificationDate;
     @Column
-    @Expose
     public int displayPriority;
     @Column
-    @Expose
     public boolean isFinished;
     @Column
-    @Expose
     public long alarmDate;
     @Column
-    @Expose
     public boolean isChecklist;
     @Column
-    @Expose
     public long categoryId = INVALID_ID;
     @Column
-    @Expose
     public long pointReward = NORMAL_POINT_REWARD;
     @Column
-    @Expose
     public String questId = "";
 
     private transient Category mCategory;
