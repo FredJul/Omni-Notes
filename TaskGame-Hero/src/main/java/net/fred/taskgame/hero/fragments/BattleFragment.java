@@ -376,12 +376,13 @@ public class BattleFragment extends BaseFragment {
     }
 
     private void displayVictory() {
-        getMainActivity().playSound(MainActivity.SOUND_VICTORY);
+        if (getMainActivity() != null && isVisible()) {
+            getMainActivity().playSound(MainActivity.SOUND_VICTORY);
 
-        DialogFragment dialog = EndBattleDialogFragment.newInstance(mLevel, mLevel.isCompleted, EndBattleDialogFragment.EndType.PLAYER_WON);
-        FragmentTransaction transaction = getFragmentManager().beginTransaction().addToBackStack(null);
-        dialog.show(transaction, EndBattleDialogFragment.class.getName());
-
+            DialogFragment dialog = EndBattleDialogFragment.newInstance(mLevel, mLevel.isCompleted, EndBattleDialogFragment.EndType.PLAYER_WON);
+            FragmentTransaction transaction = getFragmentManager().beginTransaction().addToBackStack(null);
+            dialog.show(transaction, EndBattleDialogFragment.class.getName());
+        }
         mLevel.isCompleted = true;
         mLevel.save();
     }
