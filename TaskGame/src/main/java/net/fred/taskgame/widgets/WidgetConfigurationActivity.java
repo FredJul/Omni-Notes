@@ -31,7 +31,7 @@ import android.widget.Spinner;
 import net.fred.taskgame.R;
 import net.fred.taskgame.adapters.CategoryAdapter;
 import net.fred.taskgame.models.Category;
-import net.fred.taskgame.utils.DbHelper;
+import net.fred.taskgame.utils.DbUtils;
 
 import java.util.List;
 
@@ -68,7 +68,7 @@ public class WidgetConfigurationActivity extends Activity {
 
         categorySpinner = (Spinner) findViewById(R.id.widget_config_spinner);
         categorySpinner.setEnabled(false);
-        List<Category> categories = DbHelper.getCategories();
+        List<Category> categories = DbUtils.getCategories();
         categorySpinner.setAdapter(new CategoryAdapter(mActivity, categories));
 
         Button configOkButton = (Button) findViewById(R.id.widget_config_confirm);

@@ -36,7 +36,7 @@ import com.larswerkman.holocolorpicker.ValueBar;
 import net.fred.taskgame.R;
 import net.fred.taskgame.models.Category;
 import net.fred.taskgame.utils.Constants;
-import net.fred.taskgame.utils.DbHelper;
+import net.fred.taskgame.utils.DbUtils;
 import net.fred.taskgame.utils.NavigationUtils;
 
 import org.parceler.Parcels;
@@ -155,7 +155,7 @@ public class CategoryActivity extends Activity {
     private void deleteCategory() {
 
         // Retrieving how many tasks are categorized with category to be deleted
-        long count = DbHelper.getActiveTaskCountByCategory(category);
+        long count = DbUtils.getActiveTaskCountByCategory(category);
         String msg = "";
         if (count > 0) {
             msg = getString(R.string.delete_category_confirmation).replace("$1$", String.valueOf(count));
@@ -171,7 +171,7 @@ public class CategoryActivity extends Activity {
                             NavigationUtils.setNavigation(NavigationUtils.TASKS);
                         }
                         // Removes category and edit tasks associated with it
-                        DbHelper.deleteCategoryAsync(category);
+                        DbUtils.deleteCategoryAsync(category);
 
                         // Sets result to show proper message
                         setResult(RESULT_FIRST_USER);

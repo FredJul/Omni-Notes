@@ -42,7 +42,39 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class DbHelper {
+public class DbUtils {
+
+    public static String FIREBASE_USERS_NODE_NAME = "users";
+    public static String FIREBASE_TASKS_NODE_NAME = "tasks";
+    public static String FIREBASE_CATEGORIES_NODE_NAME = "categories";
+    public static String FIREBASE_CURRENT_POINTS_NODE_NAME = "currentPoints";
+
+    public static DatabaseReference getFirebaseCurrentUserNode() {
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        if (user != null) {
+            return FirebaseDatabase.getInstance().getReference().child(FIREBASE_USERS_NODE_NAME).child(user.getUid());
+        }
+
+        return null;
+    }
+
+    public static DatabaseReference getFirebaseTasksNode() {
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        if (user != null) {
+            return FirebaseDatabase.getInstance().getReference().child(FIREBASE_USERS_NODE_NAME).child(user.getUid()).child(FIREBASE_TASKS_NODE_NAME);
+        }
+
+        return null;
+    }
+
+    public static DatabaseReference getFirebaseCategoriesNode() {
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        if (user != null) {
+            return FirebaseDatabase.getInstance().getReference().child(FIREBASE_USERS_NODE_NAME).child(user.getUid()).child(FIREBASE_CATEGORIES_NODE_NAME);
+        }
+
+        return null;
+    }
 
     public static long getCurrentPoints() {
         return PrefUtils.getLong(PrefUtils.PREF_CURRENT_POINTS, 0);
@@ -50,12 +82,11 @@ public class DbHelper {
 
     public static void updateCurrentPoints(long newPoints) {
         PrefUtils.putLong(PrefUtils.PREF_CURRENT_POINTS, newPoints);
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-        if (user != null) {
-            DatabaseReference database = FirebaseDatabase.getInstance().getReference();
+        DatabaseReference firebase = getFirebaseCurrentUserNode();
+        if (firebase != null) {
             Map<String, Object> childUpdates = new HashMap<>();
-            childUpdates.put(Constants.FIREBASE_CURRENT_POINTS_NODE, newPoints);
-            database.child(Constants.FIREBASE_USERS_NODE).child(user.getUid()).updateChildren(childUpdates);
+            childUpdates.put(FIREBASE_CURRENT_POINTS_NODE_NAME, newPoints);
+            firebase.updateChildren(childUpdates);
         }
     }
 

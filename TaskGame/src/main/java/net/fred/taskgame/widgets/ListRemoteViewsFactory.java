@@ -32,7 +32,7 @@ import net.fred.taskgame.R;
 import net.fred.taskgame.models.Category;
 import net.fred.taskgame.models.Task;
 import net.fred.taskgame.utils.Constants;
-import net.fred.taskgame.utils.DbHelper;
+import net.fred.taskgame.utils.DbUtils;
 import net.fred.taskgame.utils.PrefUtils;
 import net.fred.taskgame.utils.TextHelper;
 import net.fred.taskgame.utils.ThrottledFlowContentObserver;
@@ -75,9 +75,9 @@ public class ListRemoteViewsFactory implements RemoteViewsFactory {
     private void getTasks() {
         long categoryId = PrefUtils.getLong(PrefUtils.PREF_WIDGET_PREFIX + appWidgetId, -1);
         if (categoryId != -1) {
-            tasks = DbHelper.getActiveTasksByCategory(categoryId);
+            tasks = DbUtils.getActiveTasksByCategory(categoryId);
         } else {
-            tasks = DbHelper.getActiveTasks();
+            tasks = DbUtils.getActiveTasks();
         }
     }
 

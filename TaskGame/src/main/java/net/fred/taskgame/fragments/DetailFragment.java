@@ -67,7 +67,7 @@ import net.fred.taskgame.models.Category;
 import net.fred.taskgame.models.IdBasedModel;
 import net.fred.taskgame.models.Task;
 import net.fred.taskgame.utils.Constants;
-import net.fred.taskgame.utils.DbHelper;
+import net.fred.taskgame.utils.DbUtils;
 import net.fred.taskgame.utils.Dog;
 import net.fred.taskgame.utils.KeyboardUtils;
 import net.fred.taskgame.utils.LoaderUtils;
@@ -229,7 +229,7 @@ public class DetailFragment extends Fragment implements OnReminderPickedListener
 
         // Action called from home shortcut
         if (Constants.ACTION_NOTIFICATION_CLICK.equals(i.getAction())) {
-            mOriginalTask = DbHelper.getTask(i.getLongExtra(Constants.INTENT_TASK_ID, 0));
+            mOriginalTask = DbUtils.getTask(i.getLongExtra(Constants.INTENT_TASK_ID, 0));
             // Checks if the note pointed from the shortcut has been deleted
             if (mOriginalTask == null) {
                 UiUtils.showMessage(getActivity(), R.string.shortcut_task_deleted);
@@ -250,7 +250,7 @@ public class DetailFragment extends Fragment implements OnReminderPickedListener
                     long categoryId = PrefUtils.getLong(PrefUtils.PREF_WIDGET_PREFIX + widgetId, -1);
                     if (categoryId != -1) {
                         try {
-                            Category cat = DbHelper.getCategory(categoryId);
+                            Category cat = DbUtils.getCategory(categoryId);
                             mTask = new Task();
                             mTask.setCategory(cat);
                         } catch (NumberFormatException e) {
@@ -606,7 +606,7 @@ public class DetailFragment extends Fragment implements OnReminderPickedListener
      */
     private void categorizeNote() {
         // Retrieves all available categories
-        final List<Category> categories = DbHelper.getCategories();
+        final List<Category> categories = DbUtils.getCategories();
 
         new AlertDialog.Builder(getActivity()).setTitle(R.string.categorize_as)
                 .setAdapter(new CategoryAdapter(getActivity(), categories), new DialogInterface.OnClickListener() {
@@ -680,7 +680,7 @@ public class DetailFragment extends Fragment implements OnReminderPickedListener
                 .setMessage(R.string.delete_task_confirmation)
                 .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
-                        DbHelper.deleteTask(mTask);
+                        DbUtils.deleteTask(mTask);
                         UiUtils.showMessage(getActivity(), R.string.task_deleted);
                         goHome();
                     }
@@ -724,7 +724,7 @@ public class DetailFragment extends Fragment implements OnReminderPickedListener
             @Override
             public void call(Subscriber<? super Void> subscriber) {
                 // Note updating on database
-                DbHelper.updateTask(mTask, lastModificationUpdatedNeeded());
+                DbUtils.updateTask(mTask, lastModificationUpdatedNeeded());
 
                 // Set reminder if is not passed yet
                 if (mTask.hasAlarmInFuture()) {

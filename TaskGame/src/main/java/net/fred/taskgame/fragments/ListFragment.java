@@ -61,7 +61,7 @@ import net.fred.taskgame.models.Category;
 import net.fred.taskgame.models.IdBasedModel;
 import net.fred.taskgame.models.Task;
 import net.fred.taskgame.utils.Constants;
-import net.fred.taskgame.utils.DbHelper;
+import net.fred.taskgame.utils.DbUtils;
 import net.fred.taskgame.utils.NavigationUtils;
 import net.fred.taskgame.utils.PrefUtils;
 import net.fred.taskgame.utils.ThrottledFlowContentObserver;
@@ -426,7 +426,7 @@ public class ListFragment extends Fragment {
                     @Override
                     public boolean onQueryTextChange(String pattern) {
                         mSearchQuery = pattern;
-                        onTasksLoaded(DbHelper.getTasksByPattern(mSearchQuery));
+                        onTasksLoaded(DbUtils.getTasksByPattern(mSearchQuery));
                         return true;
                     }
                 });
@@ -501,9 +501,9 @@ public class ListFragment extends Fragment {
 
             // if navigation is a category it will be set into note
             if (getMainActivity().getWidgetCatId() != -1) {
-                task.setCategory(DbHelper.getCategory(getMainActivity().getWidgetCatId()));
+                task.setCategory(DbUtils.getCategory(getMainActivity().getWidgetCatId()));
             } else if (NavigationUtils.isDisplayingACategory()) {
-                task.setCategory(DbHelper.getCategory(NavigationUtils.getNavigation()));
+                task.setCategory(DbUtils.getCategory(NavigationUtils.getNavigation()));
             }
         }
 
@@ -560,14 +560,14 @@ public class ListFragment extends Fragment {
             if (intent.getStringExtra(SearchManager.QUERY) != null) {
                 mSearchQuery = intent.getStringExtra(SearchManager.QUERY);
             }
-            onTasksLoaded(DbHelper.getTasksByPattern(mSearchQuery));
+            onTasksLoaded(DbUtils.getTasksByPattern(mSearchQuery));
         } else {
             // Check if is launched from a widget with categories to set tag
             if (getMainActivity().getWidgetCatId() != -1) {
-                onTasksLoaded(DbHelper.getActiveTasksByCategory(getMainActivity().getWidgetCatId()));
-                getMainActivity().getSupportActionBar().setTitle(DbHelper.getCategory(getMainActivity().getWidgetCatId()).name);
+                onTasksLoaded(DbUtils.getActiveTasksByCategory(getMainActivity().getWidgetCatId()));
+                getMainActivity().getSupportActionBar().setTitle(DbUtils.getCategory(getMainActivity().getWidgetCatId()).name);
             } else { // Gets all tasks
-                onTasksLoaded(DbHelper.getTasksFromCurrentNavigation());
+                onTasksLoaded(DbUtils.getTasksFromCurrentNavigation());
                 long currentNavigation = NavigationUtils.getNavigation();
                 if (currentNavigation == NavigationUtils.TASKS) {
                     getMainActivity().getSupportActionBar().setTitle(R.string.drawer_tasks_item);
@@ -575,7 +575,7 @@ public class ListFragment extends Fragment {
                     getMainActivity().getSupportActionBar().setTitle(R.string.drawer_finished_tasks_item);
                     getMainActivity().getSupportActionBar().setBackgroundDrawable(new ColorDrawable(ContextCompat.getColor(getContext(), R.color.finished_tasks_actionbar_color)));
                 } else {
-                    getMainActivity().getSupportActionBar().setTitle(DbHelper.getCategory(currentNavigation).name);
+                    getMainActivity().getSupportActionBar().setTitle(DbUtils.getCategory(currentNavigation).name);
                 }
             }
         }
@@ -591,14 +591,14 @@ public class ListFragment extends Fragment {
             Task task = tasks.get(position);
 
             if (TextUtils.isEmpty(task.questId)) {
-                DbHelper.finishTask(task);
+                DbUtils.finishTask(task);
                 // Saves tasks to be eventually restored at right position
                 mUndoTasks.add(task);
             } else {
                 // we directly delete quests (to not be able to restore them), but we still add the reward
-                DbHelper.updateCurrentPoints(DbHelper.getCurrentPoints() + task.pointReward);
+                DbUtils.updateCurrentPoints(DbUtils.getCurrentPoints() + task.pointReward);
 
-                DbHelper.deleteTask(task);
+                DbUtils.deleteTask(task);
             }
         }
 
@@ -610,7 +610,7 @@ public class ListFragment extends Fragment {
         List<Task> tasks = mAdapter.getTasks();
         for (int position : positions) {
             Task task = tasks.get(position);
-            DbHelper.restoreTask(task);
+            DbUtils.restoreTask(task);
 
             // Saves tasks to be eventually restored at right position
             mUndoTasks.add(task);
@@ -676,7 +676,7 @@ public class ListFragment extends Fragment {
             tasksToDelete.add(task);
         }
         mAdapter.getTasks().removeAll(tasksToDelete);
-        DbHelper.deleteTasks(tasksToDelete);
+        DbUtils.deleteTasks(tasksToDelete);
 
         finishActionMode();
 
@@ -690,7 +690,7 @@ public class ListFragment extends Fragment {
      */
     private void categorizeTasks(final int[] positions) {
         // Retrieves all available categories
-        final List<Category> categories = DbHelper.getCategories();
+        final List<Category> categories = DbUtils.getCategories();
 
         new AlertDialog.Builder(getActivity()).setTitle(R.string.categorize_as)
                 .setAdapter(new CategoryAdapter(getActivity(), categories), new DialogInterface.OnClickListener() {
@@ -717,7 +717,7 @@ public class ListFragment extends Fragment {
         for (int position : positions) {
             Task task = mAdapter.getTasks().get(position);
             task.setCategory(category);
-            DbHelper.updateTask(task, false);
+            DbUtils.updateTask(task, false);
 
             // Update adapter content
             if (NavigationUtils.getNavigation() != NavigationUtils.TASKS && NavigationUtils.getNavigation() != NavigationUtils.FINISHED_TASKS
@@ -744,9 +744,9 @@ public class ListFragment extends Fragment {
         // Cycles removed items to re-insert into adapter
         for (Task task : mUndoTasks) {
             if (NavigationUtils.getNavigation() == NavigationUtils.FINISHED_TASKS) {
-                DbHelper.finishTask(task); // finish it again
+                DbUtils.finishTask(task); // finish it again
             } else {
-                DbHelper.restoreTask(task);
+                DbUtils.restoreTask(task);
             }
         }
 

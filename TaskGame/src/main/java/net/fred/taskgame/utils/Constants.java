@@ -18,11 +18,6 @@ package net.fred.taskgame.utils;
 
 public interface Constants {
 
-    String FIREBASE_USERS_NODE = "users";
-    String FIREBASE_TASKS_NODE = "tasks";
-    String FIREBASE_CATEGORIES_NODE = "categories";
-    String FIREBASE_CURRENT_POINTS_NODE = "currentPoints";
-
     String INTENT_TASK_ID = "task_id";
     String INTENT_TASK = "task";
     String INTENT_CATEGORY = "category";

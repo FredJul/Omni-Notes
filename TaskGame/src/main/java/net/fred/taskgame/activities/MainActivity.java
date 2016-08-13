@@ -65,7 +65,7 @@ import net.fred.taskgame.fragments.ListFragment;
 import net.fred.taskgame.models.Category;
 import net.fred.taskgame.models.Task;
 import net.fred.taskgame.utils.Constants;
-import net.fred.taskgame.utils.DbHelper;
+import net.fred.taskgame.utils.DbUtils;
 import net.fred.taskgame.utils.Dog;
 import net.fred.taskgame.utils.NavigationUtils;
 import net.fred.taskgame.utils.PrefUtils;
@@ -155,7 +155,7 @@ public class MainActivity extends AppCompatActivity implements FragmentManager.O
         public void onChildRemoved(DataSnapshot dataSnapshot) {
             Dog.d(dataSnapshot.getKey());
 
-            Task task = new Task();
+            Task task = new Task(); // no need to copy everything, only id needed
             task.id = Long.valueOf(dataSnapshot.getKey());
             task.deleteWithoutFirebase();
         }
@@ -192,7 +192,7 @@ public class MainActivity extends AppCompatActivity implements FragmentManager.O
         public void onChildRemoved(DataSnapshot dataSnapshot) {
             Dog.d(dataSnapshot.getKey());
 
-            Category category = dataSnapshot.getValue(Category.class);
+            Category category = new Category(); // no need to copy everything, only id needed
             category.id = Long.valueOf(dataSnapshot.getKey());
             category.deleteWithoutFirebase();
         }
@@ -284,9 +284,9 @@ public class MainActivity extends AppCompatActivity implements FragmentManager.O
 
         if (mFirebaseUser != null) {
             mFirebaseDatabase = FirebaseDatabase.getInstance().getReference();
-            mFirebaseDatabase.child(Constants.FIREBASE_USERS_NODE).child(mFirebaseUser.getUid()).child(Constants.FIREBASE_TASKS_NODE).addChildEventListener(mFirebaseTasksListener);
-            mFirebaseDatabase.child(Constants.FIREBASE_USERS_NODE).child(mFirebaseUser.getUid()).child(Constants.FIREBASE_CATEGORIES_NODE).addChildEventListener(mFirebaseCategoriesListener);
-            mFirebaseDatabase.child(Constants.FIREBASE_USERS_NODE).child(mFirebaseUser.getUid()).child(Constants.FIREBASE_CURRENT_POINTS_NODE).addValueEventListener(mFirebaseCurrentPointsListener);
+            DbUtils.getFirebaseTasksNode().addChildEventListener(mFirebaseTasksListener);
+            DbUtils.getFirebaseCategoriesNode().addChildEventListener(mFirebaseCategoriesListener);
+            DbUtils.getFirebaseCurrentUserNode().child(DbUtils.FIREBASE_CURRENT_POINTS_NODE_NAME).addValueEventListener(mFirebaseCurrentPointsListener);
 
             mPlayerName.setText(mFirebaseUser.getDisplayName());
             Glide.with(MainActivity.this).load(mFirebaseUser.getPhotoUrl()).asBitmap().fitCenter().fallback(android.R.drawable.sym_def_app_icon).placeholder(android.R.drawable.sym_def_app_icon).into(new BitmapImageViewTarget(mPlayerImageView) {
@@ -342,6 +342,50 @@ public class MainActivity extends AppCompatActivity implements FragmentManager.O
             case REQUEST_CODE_SIGN_IN:
                 if (resultCode == RESULT_OK) {
                     firebaseLogin();
+
+                    // We successfully logged in, let's add on firebase what we have
+                    new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            final DatabaseReference categoriesFirebase = DbUtils.getFirebaseCategoriesNode();
+                            if (categoriesFirebase != null) {
+                                for (final Category category : DbUtils.getCategories()) {
+                                    categoriesFirebase.child(String.valueOf(category.id)).addListenerForSingleValueEvent(new ValueEventListener() {
+                                        @Override
+                                        public void onDataChange(DataSnapshot snapshot) {
+                                            if (!snapshot.exists()) {
+                                                Dog.d("add cat: " + category.id);
+                                                categoriesFirebase.child(String.valueOf(category.id)).setValue(category);
+                                            }
+                                        }
+
+                                        @Override
+                                        public void onCancelled(DatabaseError databaseError) {
+                                        }
+                                    });
+                                }
+                            }
+
+                            final DatabaseReference tasksFirebase = DbUtils.getFirebaseTasksNode();
+                            if (tasksFirebase != null) {
+                                for (final Task task : DbUtils.getTasks()) {
+                                    tasksFirebase.child(String.valueOf(task.id)).addListenerForSingleValueEvent(new ValueEventListener() {
+                                        @Override
+                                        public void onDataChange(DataSnapshot snapshot) {
+                                            if (!snapshot.exists()) {
+                                                Dog.d("add task: " + task.id);
+                                                tasksFirebase.child(String.valueOf(task.id)).setValue(task);
+                                            }
+                                        }
+
+                                        @Override
+                                        public void onCancelled(DatabaseError databaseError) {
+                                        }
+                                    });
+                                }
+                            }
+                        }
+                    }).run();
                 }
                 break;
             default:
@@ -358,7 +402,7 @@ public class MainActivity extends AppCompatActivity implements FragmentManager.O
 
         MenuItem item = menu.add(1, R.string.drawer_tasks_item, Menu.NONE, R.string.drawer_tasks_item);
         item.setIcon(R.drawable.ic_assignment_grey600_24dp);
-        long activeTaskCount = DbHelper.getActiveTaskCount();
+        long activeTaskCount = DbUtils.getActiveTaskCount();
         if (activeTaskCount > 0) {
             item.setActionView(R.layout.menu_counter);
             ((TextView) item.getActionView()).setText(String.valueOf(activeTaskCount));
@@ -368,7 +412,7 @@ public class MainActivity extends AppCompatActivity implements FragmentManager.O
         }
         nbItems++;
 
-        if (DbHelper.getFinishedTaskCount() > 0) {
+        if (DbUtils.getFinishedTaskCount() > 0) {
             item = menu.add(1, R.string.drawer_finished_tasks_item, Menu.NONE, R.string.drawer_finished_tasks_item);
             item.setIcon(R.drawable.ic_assignment_turned_in_grey600_24dp);
             if (currentNavigation == NavigationUtils.FINISHED_TASKS) {
@@ -378,9 +422,9 @@ public class MainActivity extends AppCompatActivity implements FragmentManager.O
         }
 
         // Retrieves data to fill tags list
-        for (Category category : DbHelper.getCategories()) {
+        for (Category category : DbUtils.getCategories()) {
             item = menu.add(1, R.string.category, Menu.NONE, category.name);
-            long categoryCount = DbHelper.getActiveTaskCountByCategory(category);
+            long categoryCount = DbUtils.getActiveTaskCountByCategory(category);
             if (categoryCount > 0) {
                 item.setActionView(R.layout.menu_counter);
                 ((TextView) item.getActionView()).setText(String.valueOf(categoryCount));
@@ -622,7 +666,7 @@ public class MainActivity extends AppCompatActivity implements FragmentManager.O
         if (receivedIntent(i)) {
             Task task = Parcels.unwrap(i.getParcelableExtra(Constants.INTENT_TASK));
             if (task == null) {
-                task = DbHelper.getTask(i.getLongExtra(Constants.INTENT_TASK_ID, 0));
+                task = DbUtils.getTask(i.getLongExtra(Constants.INTENT_TASK_ID, 0));
             }
             // Checks if the same note is already opened to avoid to open again
             if (task != null && isTaskAlreadyOpened(task)) {

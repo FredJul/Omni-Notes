@@ -23,7 +23,7 @@ import android.content.Intent;
 import android.os.IBinder;
 
 import net.fred.taskgame.models.Task;
-import net.fred.taskgame.utils.DbHelper;
+import net.fred.taskgame.utils.DbUtils;
 import net.fred.taskgame.utils.ReminderHelper;
 
 import java.util.List;
@@ -40,7 +40,7 @@ public class AlarmRestoreOnRebootService extends Service {
         Context context = getApplicationContext();
 
         // Retrieves all tasks with reminder set
-        List<Task> tasks = DbHelper.getTasksWithReminder(true);
+        List<Task> tasks = DbUtils.getTasksWithReminder(true);
 
         for (Task task : tasks) {
             ReminderHelper.addReminder(context, task);

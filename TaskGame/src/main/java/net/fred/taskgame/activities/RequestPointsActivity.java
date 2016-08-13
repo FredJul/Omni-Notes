@@ -7,7 +7,7 @@ import android.content.Intent;
 import android.os.Bundle;
 
 import net.fred.taskgame.R;
-import net.fred.taskgame.utils.DbHelper;
+import net.fred.taskgame.utils.DbUtils;
 import net.fred.taskgame.utils.PrefUtils;
 
 public class RequestPointsActivity extends Activity {
@@ -52,7 +52,7 @@ public class RequestPointsActivity extends Activity {
                     .setMessage(getString(R.string.points_needed, pointsNeeded))
                     .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int id) {
-                            DbHelper.updateCurrentPoints(currentPoints - pointsNeeded);
+                            DbUtils.updateCurrentPoints(currentPoints - pointsNeeded);
                             setResult(Activity.RESULT_OK);
                             finish();
                         }
