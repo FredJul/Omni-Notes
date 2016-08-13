@@ -50,8 +50,7 @@ public abstract class WidgetProvider extends AppWidgetProvider {
 
 
     @Override
-    public void onAppWidgetOptionsChanged(Context context, AppWidgetManager appWidgetManager, int appWidgetId,
-                                          Bundle newOptions) {
+    public void onAppWidgetOptionsChanged(Context context, AppWidgetManager appWidgetManager, int appWidgetId, Bundle newOptions) {
 
         setLayout(context, appWidgetManager, appWidgetId);
     }

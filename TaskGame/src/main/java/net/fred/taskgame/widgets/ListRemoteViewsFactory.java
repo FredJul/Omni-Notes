@@ -32,6 +32,7 @@ import net.fred.taskgame.models.Category;
 import net.fred.taskgame.models.Task;
 import net.fred.taskgame.utils.Constants;
 import net.fred.taskgame.utils.DbUtils;
+import net.fred.taskgame.utils.Dog;
 import net.fred.taskgame.utils.PrefUtils;
 import net.fred.taskgame.utils.ThrottledFlowContentObserver;
 
@@ -48,6 +49,8 @@ public class ListRemoteViewsFactory implements RemoteViewsFactory {
     private final ThrottledFlowContentObserver mContentObserver = new ThrottledFlowContentObserver(500) {
         @Override
         public void onChangeThrottled() {
+            Dog.d("change detected, widget updated");
+            // TODO seems to not update widget anymore
             AppWidgetManager.getInstance(mContext).notifyAppWidgetViewDataChanged(appWidgetId, R.id.widget_list);
         }
     };
