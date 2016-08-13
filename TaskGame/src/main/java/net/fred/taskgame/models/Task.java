@@ -187,7 +187,7 @@ public class Task extends IdBasedModel {
         super.delete();
     }
 
-    public String[] getListItemTitleAndContent() {
+    public String[] computeListItemTitleAndContent() {
 
         // Defining title and content texts
         String titleText = title.trim();

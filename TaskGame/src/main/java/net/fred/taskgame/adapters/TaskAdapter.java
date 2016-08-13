@@ -100,7 +100,7 @@ public class TaskAdapter extends MultiSelectAdapter<TaskAdapter.TaskViewHolder> 
         Task task = mTasks.get(position);
 
         // Init texts
-        String[] titleAndContent = task.getListItemTitleAndContent();
+        String[] titleAndContent = task.computeListItemTitleAndContent();
         holder.mTitle.setText(titleAndContent[0]);
         if (titleAndContent[1].length() > 0) {
             holder.mContent.setText(titleAndContent[1]);

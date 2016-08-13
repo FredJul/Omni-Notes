@@ -100,7 +100,7 @@ public class ListRemoteViewsFactory implements RemoteViewsFactory {
 
         Task task = tasks.get(position);
 
-        String[] titleAndContent = task.getListItemTitleAndContent();
+        String[] titleAndContent = task.computeListItemTitleAndContent();
 
         row.setTextViewText(R.id.task_title, titleAndContent[0]);
         if (titleAndContent[1].length() > 0) {
