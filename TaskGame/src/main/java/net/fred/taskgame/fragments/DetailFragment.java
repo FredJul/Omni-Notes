@@ -72,7 +72,6 @@ import net.fred.taskgame.utils.Dog;
 import net.fred.taskgame.utils.KeyboardUtils;
 import net.fred.taskgame.utils.LoaderUtils;
 import net.fred.taskgame.utils.PrefUtils;
-import net.fred.taskgame.utils.ReminderHelper;
 import net.fred.taskgame.utils.UiUtils;
 import net.fred.taskgame.utils.date.DateHelper;
 import net.fred.taskgame.utils.date.ReminderPickers;
@@ -669,7 +668,7 @@ public class DetailFragment extends Fragment implements OnReminderPickedListener
         mTask.isFinished = true;
         mExitMessage = getString(R.string.task_finished);
         mExitMessageStyle = UiUtils.MessageType.TYPE_WARN;
-        ReminderHelper.removeReminder(MainApplication.getContext(), mTask);
+        mTask.cancelReminder(MainApplication.getContext());
         saveTask();
     }
 
@@ -683,7 +682,7 @@ public class DetailFragment extends Fragment implements OnReminderPickedListener
         mTask.isFinished = false;
         mExitMessage = getString(R.string.task_restored);
         mExitMessageStyle = UiUtils.MessageType.TYPE_INFO;
-        ReminderHelper.addReminder(MainApplication.getContext(), mTask);
+        mTask.setupReminder(MainApplication.getContext());
         saveTask();
     }
 
@@ -741,7 +740,7 @@ public class DetailFragment extends Fragment implements OnReminderPickedListener
 
                 // Set reminder if is not passed yet
                 if (mTask.hasAlarmInFuture()) {
-                    ReminderHelper.addReminder(MainApplication.getContext(), mTask);
+                    mTask.setupReminder(MainApplication.getContext());
                 }
 
                 subscriber.onNext(null);

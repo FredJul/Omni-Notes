@@ -24,7 +24,6 @@ import android.os.IBinder;
 
 import net.fred.taskgame.models.Task;
 import net.fred.taskgame.utils.DbUtils;
-import net.fred.taskgame.utils.ReminderHelper;
 
 import java.util.List;
 
@@ -43,7 +42,7 @@ public class AlarmRestoreOnRebootService extends Service {
         List<Task> tasks = DbUtils.getTasksWithReminder(true);
 
         for (Task task : tasks) {
-            ReminderHelper.addReminder(context, task);
+            task.setupReminder(context);
         }
 
         return Service.START_NOT_STICKY;

@@ -36,8 +36,8 @@ public class NotificationsHelper {
     private NotificationManager mNotificationManager;
 
 
-    public NotificationsHelper(Context mContext) {
-        this.mContext = mContext;
+    public NotificationsHelper(Context context) {
+        this.mContext = context;
     }
 
 

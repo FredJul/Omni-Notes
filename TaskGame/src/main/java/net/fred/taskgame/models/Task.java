@@ -16,8 +16,11 @@
  */
 package net.fred.taskgame.models;
 
+import android.app.AlarmManager;
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
 
 import com.google.firebase.database.DatabaseReference;
 import com.raizlabs.android.dbflow.annotation.Column;
@@ -25,10 +28,13 @@ import com.raizlabs.android.dbflow.annotation.Table;
 import com.raizlabs.android.dbflow.sql.language.Select;
 
 import net.fred.taskgame.R;
+import net.fred.taskgame.receivers.AlarmReceiver;
+import net.fred.taskgame.utils.Constants;
 import net.fred.taskgame.utils.DbUtils;
 import net.fred.taskgame.utils.EqualityChecker;
 
 import org.parceler.Parcel;
+import org.parceler.Parcels;
 
 import java.util.Calendar;
 
@@ -214,5 +220,29 @@ public class Task extends IdBasedModel {
         }
 
         return new String[]{titleText, contentText};
+    }
+
+    public void setupReminder(Context context) {
+        if (hasAlarmInFuture()) {
+            Intent intent = new Intent(context, AlarmReceiver.class);
+            intent.putExtra(Constants.INTENT_TASK, Parcels.wrap(this));
+            PendingIntent sender = PendingIntent.getBroadcast(context, (int) creationDate, intent, PendingIntent.FLAG_CANCEL_CURRENT);
+            AlarmManager am = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+            if (Build.VERSION.SDK_INT >= 23) {
+                am.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, alarmDate, sender);
+            } else {
+                am.setExact(AlarmManager.RTC_WAKEUP, alarmDate, sender);
+            }
+        }
+    }
+
+    public void cancelReminder(Context context) {
+        if (alarmDate != 0) {
+            AlarmManager am = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+            Intent intent = new Intent(context, AlarmReceiver.class);
+            PendingIntent p = PendingIntent.getBroadcast(context, (int) creationDate, intent, 0);
+            am.cancel(p);
+            p.cancel();
+        }
     }
 }

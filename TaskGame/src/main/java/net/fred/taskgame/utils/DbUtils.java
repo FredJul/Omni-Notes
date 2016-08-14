@@ -160,7 +160,7 @@ public class DbUtils {
 
     public static void finishTask(Task task) {
         task.isFinished = true;
-        ReminderHelper.removeReminder(MainApplication.getContext(), task);
+        task.cancelReminder(MainApplication.getContext());
         updateCurrentPoints(getCurrentPoints() + task.pointReward);
         updateTask(task, false);
     }
@@ -175,14 +175,14 @@ public class DbUtils {
      * Deleting single task
      */
     public static void deleteTask(Task task) {
-        ReminderHelper.removeReminder(MainApplication.getContext(), task);
+        task.cancelReminder(MainApplication.getContext());
 
         task.delete();
     }
 
     public static void deleteTasks(List<Task> tasks) {
         for (Task task : tasks) {
-            ReminderHelper.removeReminder(MainApplication.getContext(), task);
+            task.cancelReminder(MainApplication.getContext());
         }
 
         ArrayList<Model> objectsToDelete = new ArrayList<>();
