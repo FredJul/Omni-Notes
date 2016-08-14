@@ -27,12 +27,14 @@ import net.fred.taskgame.MainApplication;
 
 public class PrefUtils {
 
-    public static final String PREF_ALREADY_LOGGED_TO_GAMES = "PREF_ALREADY_LOGGED_TO_GAMES";
+    public static final String PREF_SETTINGS_CHECKED_ITEM_BEHAVIOR = "settings_checked_items_behavior";
+    public static final String PREF_SETTINGS_NOTIFICATION_SNOOZE_DELAY = "settings_notification_snooze_delay";
+    public static final String PREF_SETTINGS_NOTIFICATION_RINGTONE = "settings_notification_ringtone";
+    public static final String PREF_SETTINGS_NOTIFICATION_VIBRATION = "settings_notification_vibration";
     public static final String PREF_NAVIGATION = "navigation";
     public static final String PREF_KEEP_CHECKED = "keep_checked";
     public static final String PREF_KEEP_CHECKMARKS = "show_checkmarks";
     public static final String PREF_WIDGET_PREFIX = "widget_";
-    public static final String PREF_LAST_SYNC_DATE = "PREF_LAST_SYNC_DATE";
     public static final String PREF_CURRENT_POINTS = "PREF_CURRENT_POINTS";
 
     public static boolean getBoolean(String key, boolean defValue) {

@@ -42,9 +42,9 @@ public class SettingsFragment extends PreferenceFragment {
         super.onResume();
 
         // Checklists
-        final ListPreference checklist = (ListPreference) findPreference("settings_checked_items_behavior");
+        final ListPreference checklist = (ListPreference) findPreference(PrefUtils.PREF_SETTINGS_CHECKED_ITEM_BEHAVIOR);
         if (checklist != null) {
-            int checklistIndex = checklist.findIndexOfValue(PrefUtils.getString("settings_checked_items_behavior", "0"));
+            int checklistIndex = checklist.findIndexOfValue(PrefUtils.getString(PrefUtils.PREF_SETTINGS_CHECKED_ITEM_BEHAVIOR, "0"));
             String checklistString = getResources().getStringArray(R.array.checked_items_behavior)[checklistIndex];
             checklist.setSummary(checklistString);
             checklist.setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
@@ -54,7 +54,7 @@ public class SettingsFragment extends PreferenceFragment {
                     String checklistString = getResources().getStringArray(R.array.checked_items_behavior)
                             [checklistIndex];
                     checklist.setSummary(checklistString);
-                    PrefUtils.putString("settings_checked_items_behavior", newValue.toString());
+                    PrefUtils.putString(PrefUtils.PREF_SETTINGS_CHECKED_ITEM_BEHAVIOR, newValue.toString());
                     checklist.setValueIndex(checklistIndex);
                     return false;
                 }
@@ -62,16 +62,15 @@ public class SettingsFragment extends PreferenceFragment {
         }
 
         // Notification snooze delay
-        final EditTextPreference snoozeDelay = (EditTextPreference) findPreference
-                ("settings_notification_snooze_delay");
+        final EditTextPreference snoozeDelay = (EditTextPreference) findPreference(PrefUtils.PREF_SETTINGS_NOTIFICATION_SNOOZE_DELAY);
         if (snoozeDelay != null) {
-            String snoozeDelayValue = PrefUtils.getString("settings_notification_snooze_delay", "10");
+            String snoozeDelayValue = PrefUtils.getString(PrefUtils.PREF_SETTINGS_NOTIFICATION_SNOOZE_DELAY, "10");
             snoozeDelay.setSummary(String.valueOf(snoozeDelayValue) + " " + getString(R.string.minutes));
             snoozeDelay.setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
                 @Override
                 public boolean onPreferenceChange(Preference preference, Object newValue) {
                     snoozeDelay.setSummary(String.valueOf(newValue) + " " + getString(R.string.minutes));
-                    PrefUtils.putString("settings_notification_snooze_delay", newValue.toString());
+                    PrefUtils.putString(PrefUtils.PREF_SETTINGS_NOTIFICATION_SNOOZE_DELAY, newValue.toString());
                     return false;
                 }
             });

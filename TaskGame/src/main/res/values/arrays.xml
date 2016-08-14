@@ -16,9 +16,9 @@
   -->
 <resources>
     <string-array name="checked_items_behavior">
-        <item>Keep position</item>
-        <item>Move to the end of the list</item>
         <item>Move to the end of unchecked items</item>
+        <item>Move to the end of the list</item>
+        <item>Keep position</item>
     </string-array>
 
     <string-array name="checked_items_behavior_values" translatable="false">

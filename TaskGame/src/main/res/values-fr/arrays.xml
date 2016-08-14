@@ -17,9 +17,9 @@
 -->
 <resources>
     <string-array name="checked_items_behavior">
-        <item>Maintenir la position</item>
         <item>Déplacer à la fin de la liste</item>
         <item>Déplacer à la fin des éléments non cochés</item>
+        <item>Maintenir la position</item>
     </string-array>
 
     <string-array name="task_difficulties">

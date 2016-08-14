@@ -64,7 +64,7 @@ public class AlarmReceiver extends BroadcastReceiver {
         PendingIntent piPostpone = PendingIntent.getActivity(context, 0, postponeIntent,
                 PendingIntent.FLAG_UPDATE_CURRENT);
 
-        String snoozeDelay = PrefUtils.getString("settings_notification_snooze_delay", "10");
+        String snoozeDelay = PrefUtils.getString(PrefUtils.PREF_SETTINGS_NOTIFICATION_SNOOZE_DELAY, "10");
 
         // Next create the bundle and initialize it
         Intent intent = new Intent(context, SnoozeActivity.class);
@@ -91,14 +91,14 @@ public class AlarmReceiver extends BroadcastReceiver {
                 .addAction(R.drawable.ic_reminder, context.getString(R.string.set_reminder), piPostpone);
 
         // Ringtone options
-        String ringtone = PrefUtils.getString("settings_notification_ringtone", null);
+        String ringtone = PrefUtils.getString(PrefUtils.PREF_SETTINGS_NOTIFICATION_RINGTONE, null);
         if (ringtone != null) {
             notificationsHelper.setRingtone(ringtone);
         }
 
         // Vibration options
         long[] pattern = {500, 500};
-        if (PrefUtils.getBoolean("settings_notification_vibration", true))
+        if (PrefUtils.getBoolean(PrefUtils.PREF_SETTINGS_NOTIFICATION_VIBRATION, true))
             notificationsHelper.setVibration(pattern);
 
         notificationsHelper.show(task.id);

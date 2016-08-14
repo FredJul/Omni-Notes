@@ -85,6 +85,7 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import it.feio.android.checklistview.Settings;
 import it.feio.android.checklistview.exceptions.ViewNotSupportedException;
 import it.feio.android.checklistview.interfaces.CheckListChangedListener;
 import it.feio.android.checklistview.models.ChecklistManager;
@@ -558,10 +559,22 @@ public class DetailFragment extends Fragment implements OnReminderPickedListener
     }
 
     private void toggleChecklist(final boolean keepChecked, final boolean showChecks) {
+        int checkBehavior = Settings.CHECKED_ON_TOP_OF_CHECKED;
+        switch (PrefUtils.getString(PrefUtils.PREF_SETTINGS_CHECKED_ITEM_BEHAVIOR, "0")) {
+            case "0":
+                checkBehavior = Settings.CHECKED_ON_TOP_OF_CHECKED;
+                break;
+            case "1":
+                checkBehavior = Settings.CHECKED_ON_BOTTOM;
+                break;
+            case "2":
+                checkBehavior = Settings.CHECKED_HOLD;
+                break;
+        }
+
         // Get instance and set options to convert EditText to CheckListView
         mChecklistManager = ChecklistManager.getInstance(getActivity())
-                .moveCheckedOnBottom(Integer.valueOf(PrefUtils.getString("settings_checked_items_behavior",
-                        String.valueOf(it.feio.android.checklistview.Settings.CHECKED_HOLD))))
+                .moveCheckedOnBottom(checkBehavior)
                 .showCheckMarks(showChecks)
                 .keepChecked(keepChecked)
                 .newEntryHint(getString(R.string.checklist_item_hint))

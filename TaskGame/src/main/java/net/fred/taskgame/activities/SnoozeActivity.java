@@ -50,7 +50,7 @@ public class SnoozeActivity extends FragmentActivity implements OnReminderPicked
 
         // If an alarm has been fired a notification must be generated
         if (Constants.ACTION_SNOOZE.equals(getIntent().getAction())) {
-            String snoozeDelay = PrefUtils.getString("settings_notification_snooze_delay", "10");
+            String snoozeDelay = PrefUtils.getString(PrefUtils.PREF_SETTINGS_NOTIFICATION_SNOOZE_DELAY, "10");
             long newAlarm = Calendar.getInstance().getTimeInMillis() + Integer.parseInt(snoozeDelay) * 60 * 1000;
             setAlarm(mTask, newAlarm);
             finish();
