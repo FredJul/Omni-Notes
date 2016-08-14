@@ -42,7 +42,7 @@ public class AlarmRestoreOnRebootService extends Service {
         List<Task> tasks = DbUtils.getTasksWithReminder(true);
 
         for (Task task : tasks) {
-            task.setupReminder(context);
+            task.setupReminderAlarm(context);
         }
 
         return Service.START_NOT_STICKY;

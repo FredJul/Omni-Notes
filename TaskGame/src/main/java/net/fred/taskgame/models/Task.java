@@ -222,7 +222,7 @@ public class Task extends IdBasedModel {
         return new String[]{titleText, contentText};
     }
 
-    public void setupReminder(Context context) {
+    public void setupReminderAlarm(Context context) {
         if (hasAlarmInFuture()) {
             Intent intent = new Intent(context, AlarmReceiver.class);
             intent.putExtra(Constants.INTENT_TASK, Parcels.wrap(this));
@@ -236,7 +236,7 @@ public class Task extends IdBasedModel {
         }
     }
 
-    public void cancelReminder(Context context) {
+    public void cancelReminderAlarm(Context context) {
         if (alarmDate != 0) {
             AlarmManager am = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
             Intent intent = new Intent(context, AlarmReceiver.class);

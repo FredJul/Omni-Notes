@@ -668,7 +668,7 @@ public class DetailFragment extends Fragment implements OnReminderPickedListener
         mTask.isFinished = true;
         mExitMessage = getString(R.string.task_finished);
         mExitMessageStyle = UiUtils.MessageType.TYPE_WARN;
-        mTask.cancelReminder(MainApplication.getContext());
+        mTask.cancelReminderAlarm(MainApplication.getContext());
         saveTask();
     }
 
@@ -682,7 +682,7 @@ public class DetailFragment extends Fragment implements OnReminderPickedListener
         mTask.isFinished = false;
         mExitMessage = getString(R.string.task_restored);
         mExitMessageStyle = UiUtils.MessageType.TYPE_INFO;
-        mTask.setupReminder(MainApplication.getContext());
+        mTask.setupReminderAlarm(MainApplication.getContext());
         saveTask();
     }
 
@@ -740,7 +740,7 @@ public class DetailFragment extends Fragment implements OnReminderPickedListener
 
                 // Set reminder if is not passed yet
                 if (mTask.hasAlarmInFuture()) {
-                    mTask.setupReminder(MainApplication.getContext());
+                    mTask.setupReminderAlarm(MainApplication.getContext());
                 }
 
                 subscriber.onNext(null);
