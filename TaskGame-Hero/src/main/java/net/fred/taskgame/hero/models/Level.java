@@ -3,6 +3,7 @@ package net.fred.taskgame.hero.models;
 import android.content.Context;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.RawRes;
+import android.util.Pair;
 import android.util.SparseBooleanArray;
 
 import com.raizlabs.android.dbflow.annotation.Column;
@@ -25,13 +26,14 @@ import java.util.Map;
 public class Level extends BaseModel {
 
     public final static int INVALID_ID = 0;
-    public final static Map<String, Integer> STORY_CHARS_DRAWABLE_MAP = new HashMap<String, Integer>() {
+    public final static Map<String, Pair<Integer, Integer>> STORY_CHARS_INFO_MAP = new HashMap<String, Pair<Integer, Integer>>() {
         {
-            put("hero", R.drawable.invoker_female);
-            put("school_friend", R.drawable.invoker_male);
-            put("school_master", R.drawable.high_invoker_male);
-            put("officer", R.drawable.officer);
-            put("king", R.drawable.king);
+            put("hero", new Pair<>(R.string.hero_name, R.drawable.invoker_female));
+            put("school_friend", new Pair<>(R.string.school_friend_name, R.drawable.invoker_male));
+            put("school_master", new Pair<>(R.string.school_master_name, R.drawable.high_invoker_male));
+            put("officer", new Pair<>(R.string.officer_name, R.drawable.officer));
+            put("counselor", new Pair<>(R.string.counselor_name, R.drawable.counselor));
+            put("king", new Pair<>(R.string.king_name, R.drawable.king));
         }
     };
     private final static List<Level> ALL_LEVELS_LIST = new ArrayList<>();
@@ -57,7 +59,7 @@ public class Level extends BaseModel {
     public
     @DrawableRes
     int getEnemyIcon(Context context) {
-        return STORY_CHARS_DRAWABLE_MAP.get(context.getResources().getStringArray(R.array.level_stories)[levelNumber * 3 - 3]);
+        return STORY_CHARS_INFO_MAP.get(context.getResources().getStringArray(R.array.level_stories)[levelNumber * 3 - 3]).second;
     }
 
     public String getStartStory(Context context) {
@@ -125,7 +127,7 @@ public class Level extends BaseModel {
         level.addEnemyCard(Card.CREATURE_ENCHANTED_TREE).addEnemyCard(Card.CREATURE_LICH);
 
         level = generateLevel(levelNumber++, completedList);
-        level.addEnemyCard(Card.CREATURE_ENCHANTED_TREE).addEnemyCard(Card.CREATURE_LICH);
+        level.addEnemyCard(Card.CREATURE_EMPTY_ARMOR).addEnemyCard(Card.SUPPORT_MEDICAL_ATTENTION).addEnemyCard(Card.SUPPORT_MEDICAL_ATTENTION);
     }
 
     private static Level generateLevel(int levelNumber, SparseBooleanArray completedList) {

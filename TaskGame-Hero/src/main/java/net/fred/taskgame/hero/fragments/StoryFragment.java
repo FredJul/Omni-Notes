@@ -4,6 +4,7 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.RawRes;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.content.ContextCompat;
 import android.text.SpannableString;
 import android.text.Spanned;
 import android.text.style.ForegroundColorSpan;
@@ -89,9 +90,17 @@ public class StoryFragment extends BaseFragment {
 
     private void updateUI() {
         String sentence = mSentences.get(0);
-        String[] split = sentence.split(":");
-        int charResId = Level.STORY_CHARS_DRAWABLE_MAP.get(split[0].substring(0, split[0].length() - 2).trim());
-        boolean isLeft = "L".equals(split[0].substring(split[0].length() - 1));
+        int separatorIndex = sentence.indexOf(':');
+        String charInfo = sentence.substring(0, separatorIndex);
+        String charId = charInfo.substring(0, charInfo.length() - 2).trim();
+        String charName = getString(Level.STORY_CHARS_INFO_MAP.get(charId).first);
+        int charResId = Level.STORY_CHARS_INFO_MAP.get(charId).second;
+        boolean isLeft = "L".equals(charInfo.substring(charInfo.length() - 1));
+
+        String text = charName + ": " + sentence.substring(separatorIndex + 1);
+        SpannableString spannedText = new SpannableString(text);
+        spannedText.setSpan(new ForegroundColorSpan(ContextCompat.getColor(getContext(), R.color.colorAccent)), 0, charName.length() + 1, Spanned.SPAN_INCLUSIVE_INCLUSIVE);
+
         if (isLeft) {
             mRightCharImageView.animate().alpha(0);
             mRightCharTextView.animate().alpha(0);
@@ -99,7 +108,7 @@ public class StoryFragment extends BaseFragment {
 
             mLeftCharImageView.setImageResource(charResId);
             mLeftCharImageView.animate().alpha(1);
-            displayTextCharPerChar(mLeftCharTextView, split[1]);
+            displayTextCharPerChar(mLeftCharTextView, spannedText);
             mLeftCharTextView.setAlpha(0);
             mLeftCharTextView.animate().alpha(1);
         } else {
@@ -109,13 +118,13 @@ public class StoryFragment extends BaseFragment {
             mRightCharImageView.setImageResource(charResId);
             mRightCharImageView.animate().alpha(1);
             mRightCharSeparatorView.animate().alpha(1);
-            displayTextCharPerChar(mRightCharTextView, split[1]);
+            displayTextCharPerChar(mRightCharTextView, spannedText);
             mRightCharTextView.setAlpha(0);
             mRightCharTextView.animate().alpha(1);
         }
     }
 
-    private void displayTextCharPerChar(final TextView textView, final String text) {
+    private void displayTextCharPerChar(final TextView textView, final SpannableString text) {
         mIsInTextAnimation = true;
 
         final int length = text.length();
