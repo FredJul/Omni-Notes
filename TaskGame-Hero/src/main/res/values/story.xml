@@ -1,6 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <resources>
+    <string name="hero_name">You</string>
+    <string name="school_friend_name">Student</string>
+    <string name="school_master_name">School Master</string>
+    <string name="officer_name">Army Recruiter</string>
+    <string name="counselor_name">King\'s Counselor</string>
+    <string name="king_name">King of Erya</string>
+
     <string-array name="level_stories">
         <!-- One levels is always composed of 3 items: enemy name, start story and end story
              Format is always "speaker_name@LeftOrRight:sentence" and a "\n" is needed to separate sentences

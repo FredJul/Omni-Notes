@@ -110,21 +110,21 @@ public class Level extends BaseModel {
         level.addEnemyCard(Card.CREATURE_SYLPH);
 
         level = generateLevel(levelNumber++, completedList);
-        level.addEnemyCard(Card.CREATURE_SKELETON);
+        level.addEnemyCard(Card.CREATURE_SKELETON).addEnemyCard(Card.CREATURE_SYLPH);
 
         level = generateLevel(levelNumber++, completedList);
-        level.addEnemyCard(Card.CREATURE_SKELETON).addEnemyCard(Card.SUPPORT_MEDICAL_ATTENTION).addEnemyCard(Card.SUPPORT_POWER_POTION);
+        level.addEnemyCard(Card.CREATURE_SYLPH).addEnemyCard(Card.CREATURE_MERMAN).addEnemyCard(Card.CREATURE_SKELETON);
 
         level = generateLevel(levelNumber++, completedList);
         level.isBossLevel = true;
         level.battleMusicResId = R.raw.boss_theme;
-        level.addEnemyCard(Card.CREATURE_MERMAN).addEnemyCard(Card.CREATURE_SYLPH).addEnemyCard(Card.CREATURE_SKELETON);
+        level.addEnemyCard(Card.CREATURE_SKELETON).addEnemyCard(Card.SUPPORT_POWER_POTION).addEnemyCard(Card.SUPPORT_MEDICAL_ATTENTION);
 
         level = generateLevel(levelNumber++, completedList);
-        level.addEnemyCard(Card.CREATURE_SKELETON).addEnemyCard(Card.CREATURE_TROLL).addEnemyCard(Card.CREATURE_SYLPH);
+        level.addEnemyCard(Card.CREATURE_SKELETON).addEnemyCard(Card.CREATURE_TROLL).addEnemyCard(Card.CREATURE_SYLPH_2);
 
         level = generateLevel(levelNumber++, completedList);
-        level.addEnemyCard(Card.CREATURE_ENCHANTED_TREE).addEnemyCard(Card.CREATURE_LICH);
+        level.addEnemyCard(Card.CREATURE_SKELETON).addEnemyCard(Card.CREATURE_LICH);
 
         level = generateLevel(levelNumber++, completedList);
         level.addEnemyCard(Card.CREATURE_EMPTY_ARMOR).addEnemyCard(Card.SUPPORT_MEDICAL_ATTENTION).addEnemyCard(Card.SUPPORT_MEDICAL_ATTENTION);

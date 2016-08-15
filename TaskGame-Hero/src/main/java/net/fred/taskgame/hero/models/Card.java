@@ -200,10 +200,20 @@ public class Card extends BaseModel implements Cloneable {
         Card card = generateDefaultCreatureCard(CREATURE_MERMAN, 1, obtainedList, inDeckList);
         card.price = 0; // First one is free
         card.name = "Merman";
-        card.attack = 2;
+        card.attack = 1;
         card.defense = 1;
         card.iconResId = R.drawable.merman;
-        card.desc = "Mermans are famous for their courage, even if it's not always enough to save their lives";
+        card.desc = "Mermans are famous for their courage, even if it's not always enough to save their lives\n ● Resistant to magic: -1 received damage";
+        card.fightAction = new FightAction() {
+            @Override
+            public void applyDamageFromOpponent(Card current, Card opponent) {
+                if (opponent.useMagic) {
+                    current.defense -= opponent.attack >= 1 ? opponent.attack - 1 : opponent.attack;
+                } else {
+                    current.defense -= opponent.attack;
+                }
+            }
+        };
         checkCreatureCard(card);
 
         card = generateDefaultCreatureCard(CREATURE_SYLPH, 1, obtainedList, inDeckList);
@@ -247,8 +257,8 @@ public class Card extends BaseModel implements Cloneable {
 
         card = generateDefaultCreatureCard(CREATURE_SKELETON, 2, obtainedList, inDeckList);
         card.name = "Skeleton Archer";
-        card.attack = 3;
-        card.defense = 3;
+        card.attack = 1;
+        card.defense = 6;
         card.useWeapon = true;
         card.iconResId = R.drawable.skeleton;
         card.desc = "Deads are not totally dead, and they strangely know how to send arrows in your face\n ● Resistant to magic: -1 received damage";
@@ -266,8 +276,8 @@ public class Card extends BaseModel implements Cloneable {
 
         card = generateDefaultCreatureCard(CREATURE_SYLPH_2, 3, obtainedList, inDeckList);
         card.name = "Charming Sylph";
-        card.attack = 6;
-        card.defense = 3;
+        card.attack = 2;
+        card.defense = 7;
         card.useMagic = true;
         card.iconResId = R.drawable.sylph_2;
         card.desc = "Will you dare hit a beautiful lady?\n ● Weak against weapons: +1 received damage";
@@ -285,8 +295,8 @@ public class Card extends BaseModel implements Cloneable {
 
         card = generateDefaultCreatureCard(CREATURE_GRUNT, 3, obtainedList, inDeckList);
         card.name = "Grunt";
-        card.attack = 4;
-        card.defense = 4;
+        card.attack = 3;
+        card.defense = 5;
         card.iconResId = R.drawable.grunt;
         card.desc = "Half human, half beast. Killing someone is a natural law for them and they don't perceive that as a problem.";
         checkCreatureCard(card);
@@ -311,8 +321,8 @@ public class Card extends BaseModel implements Cloneable {
 
         card = generateDefaultCreatureCard(CREATURE_LICH, 4, obtainedList, inDeckList);
         card.name = "Lich";
-        card.attack = 7;
-        card.defense = 5;
+        card.attack = 5;
+        card.defense = 6;
         card.useMagic = true;
         card.iconResId = R.drawable.lich;
         card.desc = "Ancient mage who found a way to not be affected by the time anymore";
@@ -320,8 +330,8 @@ public class Card extends BaseModel implements Cloneable {
 
         card = generateDefaultCreatureCard(CREATURE_EMPTY_ARMOR, 4, obtainedList, inDeckList);
         card.name = "Empty armor";
-        card.attack = 5;
-        card.defense = 7;
+        card.attack = 3;
+        card.defense = 11;
         card.useWeapon = true;
         card.iconResId = R.drawable.empty_armor;
         card.desc = "Looks empty and harmless, but don't turn your back on it or you may regret it";
@@ -329,8 +339,9 @@ public class Card extends BaseModel implements Cloneable {
 
         card = generateDefaultCreatureCard(CREATURE_SPECTRE, 5, obtainedList, inDeckList);
         card.name = "Spectre";
-        card.attack = 7;
-        card.defense = 9;
+        card.attack = 6;
+        card.price = card.neededSlots * 50 + 100;
+        card.defense = 10;
         card.useMagic = true;
         card.iconResId = R.drawable.spectre;
         card.desc = "It's never good when nightmare creatures are becoming reality and attack you";
@@ -338,16 +349,16 @@ public class Card extends BaseModel implements Cloneable {
 
         card = generateDefaultCreatureCard(CREATURE_ZOMBIE, 6, obtainedList, inDeckList);
         card.name = "Zombie";
-        card.attack = 6;
-        card.defense = 10;
+        card.attack = 4;
+        card.defense = 14;
         card.iconResId = R.drawable.zombie;
         card.desc = "Why dead people cannot live like everyone else?";
         checkCreatureCard(card);
 
         card = generateDefaultCreatureCard(CREATURE_SNAKE, 6, obtainedList, inDeckList);
         card.name = "M. Python";
-        card.attack = 8;
-        card.defense = 10;
+        card.attack = 7;
+        card.defense = 9;
         card.useWeapon = true;
         card.iconResId = R.drawable.snake;
         card.desc = "They are fast and, like Brian, always look at the bright side of life\n ● Weak against magic: +3 received damage";
@@ -365,8 +376,8 @@ public class Card extends BaseModel implements Cloneable {
 
         card = generateDefaultCreatureCard(CREATURE_TROLL_2, 7, obtainedList, inDeckList);
         card.name = "Slinger Troll";
-        card.attack = 5;
-        card.defense = 15;
+        card.attack = 4;
+        card.defense = 17;
         card.useWeapon = true;
         card.iconResId = R.drawable.troll_2;
         card.desc = "Always play 'Rock' in rock-paper-scissor game\n ● Resistant to weapon: -2 received damage\n ● Weak against magic: +3 received damage";
@@ -386,8 +397,8 @@ public class Card extends BaseModel implements Cloneable {
 
         card = generateDefaultCreatureCard(CREATURE_GRUNT_2, 7, obtainedList, inDeckList);
         card.name = "Crossbowman Grunt";
-        card.attack = 11;
-        card.defense = 10;
+        card.attack = 9;
+        card.defense = 11;
         card.useWeapon = true;
         card.iconResId = R.drawable.grunt_2;
         card.desc = "Born with less muscles than others, he compensates with a good manipulation of a crossbow";
@@ -548,10 +559,15 @@ public class Card extends BaseModel implements Cloneable {
     }
 
     private static void checkCreatureCard(Card card) {
+        // rules are:
+        // - points to split are equals to 3*slots +- 30%
+        // - defense need to be greater than 1.2*attack
+        // - attack is more important than defense, so big attackers should be penalised
+
         int acceptableSum = card.neededSlots * 3;
-        float margin = acceptableSum / 100f * 25f;
-        if (card.attack + card.defense > acceptableSum + margin || card.attack + card.defense < acceptableSum - margin) {
-            throw new IllegalStateException();
+        int margin = Math.round(acceptableSum / 100f * 30f);
+        if (card.attack > Math.round(card.defense / 1.2) || card.attack + card.defense > acceptableSum + margin || card.attack + card.defense < acceptableSum - margin) {
+            throw new IllegalStateException("Card " + card.name + " does not respect rules");
         }
     }
 }

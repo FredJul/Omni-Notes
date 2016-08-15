@@ -1,10 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <resources>
-    <string name="hero_name">You</string>
-    <string name="school_friend_name">Student</string>
-    <string name="school_master_name">School Master</string>
-    <string name="officer_name">Army Recruiter</string>
-    <string name="counselor_name">King\'s Counselor</string>
-    <string name="king_name">King of Erya</string>
 </resources>
