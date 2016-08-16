@@ -185,12 +185,14 @@ public class BattleFragment extends BaseFragment {
                 if (animationInProgress) {
                     mPlayerCardView.animateValueChange(null);
                 } else {
-                    mPlayerCardView.animateValueChange(new Runnable() {
+                    if (!mPlayerCardView.animateValueChange(new Runnable() {
                         @Override
                         public void run() {
                             animateNextStep();
                         }
-                    });
+                    })) {
+                        animateNextStep(); // if no animation at all, let's do the next step already now
+                    }
                 }
                 break;
             }
