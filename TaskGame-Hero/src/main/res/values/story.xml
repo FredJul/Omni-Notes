@@ -146,7 +146,7 @@
             hero@L:I am officially a thief, but in reality I\'m here to assassinate you.\n
             hero@L:Your death is part of a very big plan. Maybe your God actually approves it.\n
             priest@R:What? This church is surrounded by guards, I just have to call them and you\'ll be the one to die!\n
-            hero@L:Please do. I\'ll let you with my invocations now, and they need some witnesses of their "robbery".\n
+            hero@L:Please do. I\'ll let you with my invocations now, and they need some witnesses of their \"robbery\".\n
             priest@R:Wh…? GUARDS!</item>
         <item>story:The day after, at the King\'s castle…\n
             counselor@R:I heard that your mission was a success, some soldiers survived and declared that it was a thieves attack. I start to believe you are really
