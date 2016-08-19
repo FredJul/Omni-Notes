@@ -68,7 +68,7 @@ public class SnoozeActivity extends FragmentActivity implements OnReminderPicked
 
     private void removeNotification(Task task) {
         NotificationManager manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-        manager.cancel((int) task.id);
+        manager.cancel(task.id.hashCode());
     }
 
     private void setAlarm(Task task, long newAlarm) {

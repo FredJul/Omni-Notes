@@ -101,6 +101,6 @@ public class AlarmReceiver extends BroadcastReceiver {
         if (PrefUtils.getBoolean(PrefUtils.PREF_SETTINGS_NOTIFICATION_VIBRATION, true))
             notificationsHelper.setVibration(pattern);
 
-        notificationsHelper.show(task.id);
+        notificationsHelper.show(task.id.hashCode());
     }
 }

@@ -111,9 +111,9 @@ public class CategoryAdapter extends BaseAdapter {
     private boolean isSelected(int position) {
 
         // Managing temporary navigation indicator when coming from a widget
-        long widgetCatId = mActivity instanceof MainActivity ? ((MainActivity) mActivity).getWidgetCatId() : -1;
+        String widgetCatId = mActivity instanceof MainActivity ? ((MainActivity) mActivity).getWidgetCatId() : null;
 
-        long navigation = widgetCatId != -1 ? widgetCatId : NavigationUtils.getNavigation();
+        String navigation = widgetCatId != null ? widgetCatId : NavigationUtils.getNavigation();
         return (navigation == categories.get(position).id);
     }
 

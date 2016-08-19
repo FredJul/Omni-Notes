@@ -105,7 +105,7 @@ public class DbUtils {
      * @param id
      * @return
      */
-    public static Task getTask(long id) {
+    public static Task getTask(String id) {
         return new Select().from(Task.class).where(Task_Table.id.eq(id)).querySingle();
     }
 
@@ -116,10 +116,10 @@ public class DbUtils {
      * @return Tasks list
      */
     public static List<Task> getTasksFromCurrentNavigation() {
-        long navigation = NavigationUtils.getNavigation();
-        if (navigation == NavigationUtils.TASKS) {
+        String navigation = NavigationUtils.getNavigation();
+        if (NavigationUtils.TASKS.equals(navigation)) {
             return getActiveTasks();
-        } else if (navigation == NavigationUtils.FINISHED_TASKS) {
+        } else if (NavigationUtils.FINISHED_TASKS.equals(navigation)) {
             return getFinishedTasks();
         } else {
             return getActiveTasksByCategory(navigation);
@@ -243,7 +243,7 @@ public class DbUtils {
      * @param categoryId Category integer identifier
      * @return List of tasks with requested category
      */
-    public static List<Task> getActiveTasksByCategory(long categoryId) {
+    public static List<Task> getActiveTasksByCategory(String categoryId) {
         ArrayList<SQLCondition> conditionList = new ArrayList<>();
 
         conditionList.add(Task_Table.categoryId.eq(categoryId));
@@ -261,7 +261,7 @@ public class DbUtils {
         return new Select().from(Category.class).orderBy(Category_Table.creationDate, false).queryList();
     }
 
-    public static Category getCategory(long categoryId) {
+    public static Category getCategory(String categoryId) {
         return new Select().from(Category.class).where(Category_Table.id.eq(categoryId)).querySingle();
     }
 
@@ -282,7 +282,7 @@ public class DbUtils {
         //new Update(Task.class).set(Task_Table.categoryId.isNull()).where(Task_Table.categoryId.eq(category.id));
 
         for (Task task : getTasks(Task_Table.categoryId.eq(category.id))) {
-            task.categoryId = Task.INVALID_ID;
+            task.categoryId = null;
             task.async().save();
         }
 

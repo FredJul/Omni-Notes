@@ -64,7 +64,7 @@ public class Task extends IdBasedModel {
     @Column
     public boolean isChecklist;
     @Column
-    public long categoryId = INVALID_ID;
+    public String categoryId;
     @Column
     public long pointReward = NORMAL_POINT_REWARD;
     @Column
@@ -92,7 +92,7 @@ public class Task extends IdBasedModel {
     }
 
     public Category getCategory() {
-        if (categoryId == INVALID_ID) {
+        if (categoryId == null) {
             mCategory = null;
             return null;
         }
@@ -105,7 +105,7 @@ public class Task extends IdBasedModel {
     }
 
     public void setCategory(Category category) {
-        categoryId = category != null ? category.id : INVALID_ID;
+        categoryId = category != null ? category.id : null;
         mCategory = category;
     }
 
@@ -167,7 +167,7 @@ public class Task extends IdBasedModel {
 
         DatabaseReference firebase = DbUtils.getFirebaseTasksNode();
         if (firebase != null) {
-            firebase.child(String.valueOf(id)).setValue(this);
+            firebase.child(id).setValue(this);
         }
     }
 
@@ -183,7 +183,7 @@ public class Task extends IdBasedModel {
     public void delete() {
         DatabaseReference firebase = DbUtils.getFirebaseTasksNode();
         if (firebase != null) {
-            firebase.child(String.valueOf(id)).removeValue();
+            firebase.child(id).removeValue();
         }
 
         super.delete();

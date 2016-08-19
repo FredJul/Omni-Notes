@@ -1,30 +1,19 @@
 package net.fred.taskgame.models;
 
-import android.database.Cursor;
-
 import com.raizlabs.android.dbflow.annotation.PrimaryKey;
-import com.raizlabs.android.dbflow.sql.language.Method;
-import com.raizlabs.android.dbflow.sql.language.Select;
-import com.raizlabs.android.dbflow.sql.language.property.LongProperty;
 import com.raizlabs.android.dbflow.structure.BaseModel;
+
+import java.util.UUID;
 
 public class IdBasedModel extends BaseModel {
 
-    public final static long INVALID_ID = 0;
-
     @PrimaryKey
-    public long id = INVALID_ID;
+    public String id;
 
     @Override
     public void save() {
-        if (id <= 0) {
-            Cursor maxIdCursor = new Select(Method.max(new LongProperty(this.getClass(), "id"))).from(this.getClass()).query();
-            if (maxIdCursor != null) {
-                if (maxIdCursor.moveToFirst()) {
-                    id = maxIdCursor.getLong(0) + 1;
-                }
-                maxIdCursor.close();
-            }
+        if (id == null) {
+            id = UUID.randomUUID().toString();
         }
 
         super.save();

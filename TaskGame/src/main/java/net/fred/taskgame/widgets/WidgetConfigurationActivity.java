@@ -77,7 +77,7 @@ public class WidgetConfigurationActivity extends Activity {
             @Override
             public void onClick(View v) {
 
-                long categoryId = -1;
+                String categoryId = null;
                 if (mRadioGroup.getCheckedRadioButtonId() != R.id.widget_config_tasks) {
                     Category tag = (Category) categorySpinner.getSelectedItem();
                     categoryId = tag.id;

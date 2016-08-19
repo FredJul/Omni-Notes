@@ -53,7 +53,7 @@ public class Category extends IdBasedModel {
 
         DatabaseReference firebase = DbUtils.getFirebaseCategoriesNode();
         if (firebase != null) {
-            firebase.child(String.valueOf(id)).setValue(this);
+            firebase.child(id).setValue(this);
         }
     }
 
@@ -69,7 +69,7 @@ public class Category extends IdBasedModel {
     public void delete() {
         DatabaseReference firebase = DbUtils.getFirebaseCategoriesNode();
         if (firebase != null) {
-            firebase.child(String.valueOf(id)).removeValue();
+            firebase.child(id).removeValue();
         }
 
         super.delete();

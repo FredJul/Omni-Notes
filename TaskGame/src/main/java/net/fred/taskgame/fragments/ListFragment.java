@@ -58,7 +58,6 @@ import net.fred.taskgame.adapters.CategoryAdapter;
 import net.fred.taskgame.adapters.TaskAdapter;
 import net.fred.taskgame.models.AppDatabase;
 import net.fred.taskgame.models.Category;
-import net.fred.taskgame.models.IdBasedModel;
 import net.fred.taskgame.models.Task;
 import net.fred.taskgame.utils.Constants;
 import net.fred.taskgame.utils.DbUtils;
@@ -497,10 +496,10 @@ public class ListFragment extends Fragment {
     }
 
     private void editTask(final Task task) {
-        if (task.id == IdBasedModel.INVALID_ID) {
+        if (task.id == null) {
 
             // if navigation is a category it will be set into note
-            if (getMainActivity().getWidgetCatId() != -1) {
+            if (getMainActivity().getWidgetCatId() != null) {
                 task.setCategory(DbUtils.getCategory(getMainActivity().getWidgetCatId()));
             } else if (NavigationUtils.isDisplayingACategory()) {
                 task.setCategory(DbUtils.getCategory(NavigationUtils.getNavigation()));
@@ -563,15 +562,15 @@ public class ListFragment extends Fragment {
             onTasksLoaded(DbUtils.getTasksByPattern(mSearchQuery));
         } else {
             // Check if is launched from a widget with categories to set tag
-            if (getMainActivity().getWidgetCatId() != -1) {
+            if (getMainActivity().getWidgetCatId() != null) {
                 onTasksLoaded(DbUtils.getActiveTasksByCategory(getMainActivity().getWidgetCatId()));
                 getMainActivity().getSupportActionBar().setTitle(DbUtils.getCategory(getMainActivity().getWidgetCatId()).name);
             } else { // Gets all tasks
                 onTasksLoaded(DbUtils.getTasksFromCurrentNavigation());
-                long currentNavigation = NavigationUtils.getNavigation();
-                if (currentNavigation == NavigationUtils.TASKS) {
+                String currentNavigation = NavigationUtils.getNavigation();
+                if (NavigationUtils.TASKS.equals(currentNavigation)) {
                     getMainActivity().getSupportActionBar().setTitle(R.string.drawer_tasks_item);
-                } else if (currentNavigation == NavigationUtils.FINISHED_TASKS) {
+                } else if (NavigationUtils.FINISHED_TASKS.equals(currentNavigation)) {
                     getMainActivity().getSupportActionBar().setTitle(R.string.drawer_finished_tasks_item);
                     getMainActivity().getSupportActionBar().setBackgroundDrawable(new ColorDrawable(ContextCompat.getColor(getContext(), R.color.finished_tasks_actionbar_color)));
                 } else {

@@ -64,7 +64,6 @@ import net.fred.taskgame.activities.MainActivity;
 import net.fred.taskgame.adapters.CategoryAdapter;
 import net.fred.taskgame.listeners.OnReminderPickedListener;
 import net.fred.taskgame.models.Category;
-import net.fred.taskgame.models.IdBasedModel;
 import net.fred.taskgame.models.Task;
 import net.fred.taskgame.utils.Constants;
 import net.fred.taskgame.utils.DbUtils;
@@ -229,7 +228,7 @@ public class DetailFragment extends Fragment implements OnReminderPickedListener
 
         // Action called from home shortcut
         if (Constants.ACTION_NOTIFICATION_CLICK.equals(i.getAction())) {
-            mOriginalTask = DbUtils.getTask(i.getLongExtra(Constants.INTENT_TASK_ID, 0));
+            mOriginalTask = DbUtils.getTask(i.getStringExtra(Constants.INTENT_TASK_ID));
             // Checks if the note pointed from the shortcut has been deleted
             if (mOriginalTask == null) {
                 UiUtils.showMessage(getActivity(), R.string.shortcut_task_deleted);
@@ -247,8 +246,8 @@ public class DetailFragment extends Fragment implements OnReminderPickedListener
             if (i.hasExtra(Constants.INTENT_WIDGET)) {
                 String widgetId = i.getExtras().get(Constants.INTENT_WIDGET).toString();
                 if (widgetId != null) {
-                    long categoryId = PrefUtils.getLong(PrefUtils.PREF_WIDGET_PREFIX + widgetId, -1);
-                    if (categoryId != -1) {
+                    String categoryId = PrefUtils.getString(PrefUtils.PREF_WIDGET_PREFIX + widgetId, null);
+                    if (categoryId != null) {
                         try {
                             Category cat = DbUtils.getCategory(categoryId);
                             mTask = new Task();
@@ -451,7 +450,7 @@ public class DetailFragment extends Fragment implements OnReminderPickedListener
             MenuItemCompat.collapseActionView(searchMenuItem);
         }
 
-        boolean newNote = mTask.id == IdBasedModel.INVALID_ID;
+        boolean newNote = mTask.id == null;
 
         // If note is isFinished only this options will be available from menu
         if (mTask.isFinished) {
@@ -660,7 +659,7 @@ public class DetailFragment extends Fragment implements OnReminderPickedListener
 
     private void finishTask() {
         // Simply go back if is a new note
-        if (mTask.id == IdBasedModel.INVALID_ID) {
+        if (mTask.id == null) {
             goHome();
             return;
         }
@@ -674,7 +673,7 @@ public class DetailFragment extends Fragment implements OnReminderPickedListener
 
     private void restoreTask() {
         // Simply go back if is a new note
-        if (mTask.id == IdBasedModel.INVALID_ID) {
+        if (mTask.id == null) {
             goHome();
             return;
         }

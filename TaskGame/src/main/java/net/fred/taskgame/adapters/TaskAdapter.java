@@ -78,7 +78,7 @@ public class TaskAdapter extends MultiSelectAdapter<TaskAdapter.TaskViewHolder> 
 
     @Override
     public long getItemId(int position) {
-        return mTasks.get(position).id;
+        return mTasks.get(position).id.hashCode();
     }
 
     @Override

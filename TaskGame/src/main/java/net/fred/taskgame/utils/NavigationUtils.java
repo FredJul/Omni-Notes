@@ -21,22 +21,22 @@ import net.fred.taskgame.models.Category;
 
 public class NavigationUtils {
 
-    public static final long TASKS = -2;
-    public static final long FINISHED_TASKS = -1;
+    public static final String TASKS = "-2";
+    public static final String FINISHED_TASKS = "-1";
 
     /**
      * Returns actual navigation status
      */
-    public static long getNavigation() {
-        return PrefUtils.getLong(PrefUtils.PREF_NAVIGATION, TASKS);
+    public static String getNavigation() {
+        return PrefUtils.getString(PrefUtils.PREF_NAVIGATION, TASKS);
     }
 
-    public static void setNavigation(long newNavigation) {
-        PrefUtils.putLong(PrefUtils.PREF_NAVIGATION, newNavigation);
+    public static void setNavigation(String newNavigation) {
+        PrefUtils.putString(PrefUtils.PREF_NAVIGATION, newNavigation);
     }
 
     public static boolean isDisplayingACategory() {
-        return getNavigation() >= 0;
+        return getNavigation().length() > 2;
     }
 
     /**

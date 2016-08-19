@@ -138,7 +138,7 @@ public class MainActivity extends AppCompatActivity implements FragmentManager.O
             Dog.d(dataSnapshot.getKey());
 
             Task task = dataSnapshot.getValue(Task.class);
-            task.id = Long.valueOf(dataSnapshot.getKey());
+            task.id = dataSnapshot.getKey();
             task.saveWithoutFirebase();
         }
 
@@ -147,7 +147,7 @@ public class MainActivity extends AppCompatActivity implements FragmentManager.O
             Dog.d(dataSnapshot.getKey());
 
             Task task = dataSnapshot.getValue(Task.class);
-            task.id = Long.valueOf(dataSnapshot.getKey());
+            task.id = dataSnapshot.getKey();
             task.saveWithoutFirebase();
         }
 
@@ -156,7 +156,7 @@ public class MainActivity extends AppCompatActivity implements FragmentManager.O
             Dog.d(dataSnapshot.getKey());
 
             Task task = new Task(); // no need to copy everything, only id needed
-            task.id = Long.valueOf(dataSnapshot.getKey());
+            task.id = dataSnapshot.getKey();
             task.deleteWithoutFirebase();
         }
 
@@ -175,7 +175,7 @@ public class MainActivity extends AppCompatActivity implements FragmentManager.O
             Dog.d(dataSnapshot.getKey());
 
             Category category = dataSnapshot.getValue(Category.class);
-            category.id = Long.valueOf(dataSnapshot.getKey());
+            category.id = dataSnapshot.getKey();
             category.saveWithoutFirebase();
         }
 
@@ -184,7 +184,7 @@ public class MainActivity extends AppCompatActivity implements FragmentManager.O
             Dog.d(dataSnapshot.getKey());
 
             Category category = dataSnapshot.getValue(Category.class);
-            category.id = Long.valueOf(dataSnapshot.getKey());
+            category.id = dataSnapshot.getKey();
             category.saveWithoutFirebase();
         }
 
@@ -193,7 +193,7 @@ public class MainActivity extends AppCompatActivity implements FragmentManager.O
             Dog.d(dataSnapshot.getKey());
 
             Category category = new Category(); // no need to copy everything, only id needed
-            category.id = Long.valueOf(dataSnapshot.getKey());
+            category.id = dataSnapshot.getKey();
             category.deleteWithoutFirebase();
         }
 
@@ -398,7 +398,7 @@ public class MainActivity extends AppCompatActivity implements FragmentManager.O
         menu.clear();
         int nbItems = 0;
         final SparseArray<Category> listCategories = new SparseArray<>();
-        long currentNavigation = NavigationUtils.getNavigation();
+        String currentNavigation = NavigationUtils.getNavigation();
 
         MenuItem item = menu.add(1, R.string.drawer_tasks_item, Menu.NONE, R.string.drawer_tasks_item);
         item.setIcon(R.drawable.ic_assignment_grey600_24dp);
@@ -407,7 +407,7 @@ public class MainActivity extends AppCompatActivity implements FragmentManager.O
             item.setActionView(R.layout.menu_counter);
             ((TextView) item.getActionView()).setText(String.valueOf(activeTaskCount));
         }
-        if (currentNavigation == NavigationUtils.TASKS) {
+        if (NavigationUtils.TASKS.equals(currentNavigation)) {
             item.setChecked(true);
         }
         nbItems++;
@@ -415,7 +415,7 @@ public class MainActivity extends AppCompatActivity implements FragmentManager.O
         if (DbUtils.getFinishedTaskCount() > 0) {
             item = menu.add(1, R.string.drawer_finished_tasks_item, Menu.NONE, R.string.drawer_finished_tasks_item);
             item.setIcon(R.drawable.ic_assignment_turned_in_grey600_24dp);
-            if (currentNavigation == NavigationUtils.FINISHED_TASKS) {
+            if (NavigationUtils.FINISHED_TASKS.equals(currentNavigation)) {
                 item.setChecked(true);
             }
             nbItems++;
@@ -433,7 +433,7 @@ public class MainActivity extends AppCompatActivity implements FragmentManager.O
             extraIntent.putExtra("category", category.id);
             item.setIntent(extraIntent);
             item.setIcon(new ColorDrawable(category.color));
-            if (currentNavigation == category.id) {
+            if (category.id.equals(currentNavigation)) {
                 item.setChecked(true);
             }
 
@@ -546,7 +546,7 @@ public class MainActivity extends AppCompatActivity implements FragmentManager.O
                 } else if (item.getItemId() == R.string.drawer_finished_tasks_item) {
                     updateNavigation(NavigationUtils.FINISHED_TASKS);
                 } else { // This is a category
-                    updateNavigation(item.getIntent().getLongExtra("category", 0));
+                    updateNavigation(item.getIntent().getStringExtra("category"));
                 }
                 break;
         }
@@ -555,7 +555,7 @@ public class MainActivity extends AppCompatActivity implements FragmentManager.O
         return true;
     }
 
-    public void updateNavigation(long navigation) {
+    public void updateNavigation(String navigation) {
         NavigationUtils.setNavigation(navigation);
 
         if (getIntent() != null && getIntent().hasExtra(Constants.INTENT_WIDGET)) {
@@ -564,15 +564,15 @@ public class MainActivity extends AppCompatActivity implements FragmentManager.O
         }
     }
 
-    public long getWidgetCatId() {
+    public String getWidgetCatId() {
         // Check if is launched from a widget with categories to set tag
         if (getIntent() != null && getIntent().hasExtra(Constants.INTENT_WIDGET)) {
             //noinspection ConstantConditions
             String widgetId = getIntent().getExtras().get(Constants.INTENT_WIDGET).toString();
-            return PrefUtils.getLong(PrefUtils.PREF_WIDGET_PREFIX + widgetId, -1);
+            return PrefUtils.getString(PrefUtils.PREF_WIDGET_PREFIX + widgetId, null);
         }
 
-        return -1;
+        return null;
     }
 
     /**
@@ -666,7 +666,7 @@ public class MainActivity extends AppCompatActivity implements FragmentManager.O
         if (receivedIntent(i)) {
             Task task = Parcels.unwrap(i.getParcelableExtra(Constants.INTENT_TASK));
             if (task == null) {
-                task = DbUtils.getTask(i.getLongExtra(Constants.INTENT_TASK_ID, 0));
+                task = DbUtils.getTask(i.getStringExtra(Constants.INTENT_TASK_ID));
             }
             // Checks if the same note is already opened to avoid to open again
             if (task != null && isTaskAlreadyOpened(task)) {

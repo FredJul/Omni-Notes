@@ -74,8 +74,8 @@ public class ListRemoteViewsFactory implements RemoteViewsFactory {
     }
 
     private void getTasks() {
-        long categoryId = PrefUtils.getLong(PrefUtils.PREF_WIDGET_PREFIX + appWidgetId, -1);
-        if (categoryId != -1) {
+        String categoryId = PrefUtils.getString(PrefUtils.PREF_WIDGET_PREFIX + appWidgetId, null);
+        if (categoryId != null) {
             tasks = DbUtils.getActiveTasksByCategory(categoryId);
         } else {
             tasks = DbUtils.getActiveTasks();
@@ -164,7 +164,7 @@ public class ListRemoteViewsFactory implements RemoteViewsFactory {
         return false;
     }
 
-    public static void updateConfiguration(int mAppWidgetId, long categoryId) {
-        PrefUtils.putLong(PrefUtils.PREF_WIDGET_PREFIX + String.valueOf(mAppWidgetId), categoryId);
+    public static void updateConfiguration(int mAppWidgetId, String categoryId) {
+        PrefUtils.putString(PrefUtils.PREF_WIDGET_PREFIX + String.valueOf(mAppWidgetId), categoryId);
     }
 }
