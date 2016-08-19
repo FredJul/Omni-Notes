@@ -39,6 +39,8 @@ public class StoryFragment extends BaseFragment {
 
     @BindView(R.id.root_view)
     ViewGroup mRootView;
+    @BindView(R.id.story_text)
+    TextView mStoryTextView;
     @BindView(R.id.right_char)
     ImageView mRightCharImageView;
     @BindView(R.id.right_char_text)
@@ -92,39 +94,54 @@ public class StoryFragment extends BaseFragment {
         String sentence = mSentences.get(0);
         int separatorIndex = sentence.indexOf(':');
         String charInfo = sentence.substring(0, separatorIndex);
-        String charId = charInfo.substring(0, charInfo.length() - 2).trim();
-        String charName = getString(Level.STORY_CHARS_INFO_MAP.get(charId).first);
-        int charResId = Level.STORY_CHARS_INFO_MAP.get(charId).second;
-        boolean isLeft = "L".equals(charInfo.substring(charInfo.length() - 1));
 
-        String text = charName + ": " + sentence.substring(separatorIndex + 1);
-        SpannableString spannedText = new SpannableString(text);
-        spannedText.setSpan(new ForegroundColorSpan(ContextCompat.getColor(getContext(), R.color.colorAccent)), 0, charName.length() + 1, Spanned.SPAN_INCLUSIVE_INCLUSIVE);
-
-        if (isLeft) {
+        if ("story".equals(charInfo.trim())) {
             mRightCharImageView.animate().alpha(0);
             mRightCharTextView.animate().alpha(0);
             mRightCharSeparatorView.animate().alpha(0);
-
-            mLeftCharImageView.setImageResource(charResId);
-            mLeftCharImageView.animate().alpha(1);
-            displayTextCharPerChar(mLeftCharTextView, spannedText);
-            mLeftCharTextView.setAlpha(0);
-            mLeftCharTextView.animate().alpha(1);
-        } else {
             mLeftCharImageView.animate().alpha(0);
             mLeftCharTextView.animate().alpha(0);
 
-            mRightCharImageView.setImageResource(charResId);
-            mRightCharImageView.animate().alpha(1);
-            mRightCharSeparatorView.animate().alpha(1);
-            displayTextCharPerChar(mRightCharTextView, spannedText);
-            mRightCharTextView.setAlpha(0);
-            mRightCharTextView.animate().alpha(1);
+            displayTextCharPerChar(mStoryTextView, new SpannableString(sentence.substring(separatorIndex + 1)), 50);
+            mStoryTextView.setAlpha(0);
+            mStoryTextView.animate().alpha(1);
+        } else {
+            mStoryTextView.animate().alpha(0);
+
+            String charId = charInfo.substring(0, charInfo.length() - 2).trim();
+            String charName = getString(Level.STORY_CHARS_INFO_MAP.get(charId).first);
+            int charResId = Level.STORY_CHARS_INFO_MAP.get(charId).second;
+            boolean isLeft = "L".equals(charInfo.substring(charInfo.length() - 1));
+
+            String text = charName + ": " + sentence.substring(separatorIndex + 1);
+            SpannableString spannedText = new SpannableString(text);
+            spannedText.setSpan(new ForegroundColorSpan(ContextCompat.getColor(getContext(), R.color.colorAccent)), 0, charName.length() + 1, Spanned.SPAN_INCLUSIVE_INCLUSIVE);
+
+            if (isLeft) {
+                mRightCharImageView.animate().alpha(0);
+                mRightCharTextView.animate().alpha(0);
+                mRightCharSeparatorView.animate().alpha(0);
+
+                mLeftCharImageView.setImageResource(charResId);
+                mLeftCharImageView.animate().alpha(1);
+                displayTextCharPerChar(mLeftCharTextView, spannedText, 20);
+                mLeftCharTextView.setAlpha(0);
+                mLeftCharTextView.animate().alpha(1);
+            } else {
+                mLeftCharImageView.animate().alpha(0);
+                mLeftCharTextView.animate().alpha(0);
+
+                mRightCharImageView.setImageResource(charResId);
+                mRightCharImageView.animate().alpha(1);
+                mRightCharSeparatorView.animate().alpha(1);
+                displayTextCharPerChar(mRightCharTextView, spannedText, 20);
+                mRightCharTextView.setAlpha(0);
+                mRightCharTextView.animate().alpha(1);
+            }
         }
     }
 
-    private void displayTextCharPerChar(final TextView textView, final SpannableString text) {
+    private void displayTextCharPerChar(final TextView textView, final SpannableString text, final int delay) {
         mIsInTextAnimation = true;
 
         final int length = text.length();
@@ -139,13 +156,13 @@ public class StoryFragment extends BaseFragment {
 
                 if (at < text.length()) {
                     textView.setTag(at + 1);
-                    textView.postDelayed(this, 20);
+                    textView.postDelayed(this, delay);
                 } else {
                     mIsInTextAnimation = false;
                 }
             }
         };
-        textView.postDelayed(displayOneChar, 50);
+        textView.postDelayed(displayOneChar, delay * 2);
     }
 
     @Override

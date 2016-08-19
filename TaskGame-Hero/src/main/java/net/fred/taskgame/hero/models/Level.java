@@ -34,6 +34,7 @@ public class Level extends BaseModel {
             put("officer", new Pair<>(R.string.officer_name, R.drawable.officer));
             put("counselor", new Pair<>(R.string.counselor_name, R.drawable.counselor));
             put("king", new Pair<>(R.string.king_name, R.drawable.king));
+            put("priest", new Pair<>(R.string.priest_name, R.drawable.priest));
         }
     };
     private final static List<Level> ALL_LEVELS_LIST = new ArrayList<>();
@@ -128,6 +129,18 @@ public class Level extends BaseModel {
 
         level = generateLevel(levelNumber++, completedList);
         level.addEnemyCard(Card.CREATURE_EMPTY_ARMOR).addEnemyCard(Card.SUPPORT_MEDICAL_ATTENTION).addEnemyCard(Card.SUPPORT_MEDICAL_ATTENTION);
+
+        level = generateLevel(levelNumber++, completedList);
+        level.isBossLevel = true;
+        level.battleMusicResId = R.raw.boss_theme;
+        level.startStoryMusicResId = R.raw.story_suspens;
+        level.endStoryMusicResId = R.raw.story_suspens;
+        level.addEnemyCard(Card.CREATURE_EMPTY_ARMOR).addEnemyCard(Card.CREATURE_GRUNT);
+
+        level = generateLevel(levelNumber++, completedList);
+        level.startStoryMusicResId = R.raw.story_suspens;
+        level.endStoryMusicResId = R.raw.story_suspens;
+        level.addEnemyCard(Card.CREATURE_EMPTY_ARMOR).addEnemyCard(Card.CREATURE_EMPTY_ARMOR);
     }
 
     private static Level generateLevel(int levelNumber, SparseBooleanArray completedList) {

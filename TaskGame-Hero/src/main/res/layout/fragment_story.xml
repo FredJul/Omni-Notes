@@ -50,6 +50,18 @@
         android:background="@drawable/enemy_separator"
         tools:alpha="1" />
 
+    <TextView
+        android:id="@+id/story_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:alpha="0"
+        android:textColor="@color/cardview_dark_background"
+        android:textSize="20dp"
+        tools:alpha="1"
+        tools:ignore="SpUsage"
+        tools:text="Story line bla bla bla bla bla bla" />
+
     <ImageView
         android:id="@+id/left_char"
         android:layout_width="250dp"

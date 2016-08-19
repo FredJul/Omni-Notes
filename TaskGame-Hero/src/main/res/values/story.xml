@@ -7,6 +7,7 @@
     <string name="officer_name">Army Recruiter</string>
     <string name="counselor_name">King\'s Counselor</string>
     <string name="king_name">King of Erya</string>
+    <string name="priest_name">High Priest</string>
 
     <string-array name="level_stories">
         <!-- One levels is always composed of 3 items: enemy name, start story and end story
@@ -101,6 +102,67 @@
         <item>counselor@R:Why are you opposing resistance? I could execute you for that, and what tells me that you do not want to harm our Majesty?\n
             hero@L:It is really important for me to see the King, and killing him will not save my village.\n
             counselor@R:Well… You\'ll first explain your plan to me in privacy. Then I may change my mind.</item>
+
+        <item>king</item>
+        <item>counselor@R:So, please describe me that plan of you.\n
+            hero@L:Well, it\'s…\n
+            king@R:Sorry to interrupt, Counselor, I would need your help in the war room. Please call everyone.\n
+            counselor@R:Majesty, I were actually interviewing this girl who pretends to have a solution for our problem, it\'s maybe good to listen
+            to her before doing that meeting.\n
+            king@R:Well, young girl, if my counselor says so, you can speak.\n
+            hero@L:Sir, I came here to propose a deal.\n
+            hero@L:Let me start a war between Myrth and Qahor. In exchange I ask to stop drying up the Oras\'s river.\n
+            king@R:Start a war between Myrth and Qahor? Why would I want that?\n
+            hero@L:Because Myrth knows that they will not win without your help. If we ally with them, we can defeat Qahor and share their lands.\n
+            hero@L:We could notably obtain the Great Mountains, including their water sources, which should solve our water issues.\n
+            hero@L:Moreover, today Myrth and Qahor are allies. When they will run out of water as well, they will certainly think of a similar plan against us.
+            It\'s maybe already the case, we need to reverse the trend.\n
+            counselor@R:Surprisingly, you may be quite close to the reality. Our Majesty and myself just learned that Myrth and Qahor\'s Kings started to meet
+            each other quite a lot theses days, I don\'t think it\'s positive for us.\n
+            king@R:Well, young girl, I like your analyse. But tell me: how do you plan to start that war?\n
+            hero@L:I don\'t think it is hard, humans can be easily manipulated.\n
+            hero@L:My invoking capabilities are a bit different than usual: I can invoke creatures at a very long distances and during a long period. I could
+            go to Myrth and invoke some false Qahor\'s soldiers inside the King\'s castle to assassinate the King.\n
+            hero@L:If my invocations succeed to kill the King, the Myrth\'s Prince will believe that Qahor is behing that and will declare war to them.\n
+            hero@L:If my invocations fail, the Myrth\'s King will start the war himself.\n
+            hero@L:In all cases we reach our goals.\n
+            king@R:…\n
+            king@R:This could work, but it is all based on your supposed invoking capabilities.\n
+            king@R:Let test them with some guards of mine.</item>
+        <item>king@R:…\n
+            king@R:I start to be convinced. But I can\'t trust you yet. Moreover I have no guarantee that you are actually capable of killing an innocent man.\n
+            hero@L:A king is never really innocent.\n
+            king@R:Hahaha! You\'re courageous to dare saying that in front of me!\n
+            king@R:But that\'s not wrong actually. I start to like you, little girl.\n
+            king@R:Counselor, please continue to investigate that proposal. Meanwhile, find a way to be sure she is really capable of it.</item>
+
+        <item>priest</item>
+        <item>counselor@R:I found you a task to prove your efficiency. I would like you to kill the High Priest of the city and make it looks like a robbery.\n
+            counselor@R:If you succeed in it we will accept your deal. If you fail, we will execute you for tentative of assassination on a representative of God.\n
+            hero@L:What did this man do to deserve that?\n
+            counselor@R:You\'ll know if you return.\n
+            story:The evening, in the church…\n
+            priest@R:Who are you? What are you doing here at this hour?\n
+            hero@L:I am officially a thief, but in reality I\'m here to assassinate you.\n
+            hero@L:Your death is part of a very big plan. Maybe your God actually approves it.\n
+            priest@R:What? This church is surrounded by guards, I just have to call them and you\'ll be the one to die!\n
+            hero@L:Please do. I\'ll let you with my invocations now, and they need some witnesses of their "robbery".\n
+            priest@R:Wh…? GUARDS!</item>
+        <item>story:The day after, at the King\'s castle…\n
+            counselor@R:I heard that your mission was a success, some soldiers survived and declared that it was a thieves attack. I start to believe you are really
+            capable of what you proposed.\n
+            counselor@R:Do you want to know why I gave you that mission?\n
+            hero@L:For that priest I\'m sure it does not really matter anymore.\n
+            counselor@R:You are a strange girl, you know?\n
+            counselor@R:Anyway, the reason of that mission was quite simple actually. This high priest started to give some negative speech about our King, we believe
+            this could start a rebellion.\n
+            hero@L:So you just wanted to protect the King?\n
+            counselor@R:Our King appreciates the religion, but only when it legitimates his reign. It is true that he was not in love anymore with that priest.\n
+            counselor@R:However he did not ask me to kill him, and I did not do it for him. I actually think some arguments of that priest were valid, but I had to make
+            him silent to protect the country.\n
+            counselor@R:We will soon enter in war, if we go through a revolt now we will have to split our forces and will certainly suffer a quick invasion from our neighbours.\n
+            counselor@R:I believe nobody wants that, including the people and the priests. What seems to be an odious act can actually be something needed.\n
+            hero@L:I understand.</item>
 
     </string-array>
 
