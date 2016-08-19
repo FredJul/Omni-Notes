@@ -36,7 +36,6 @@
     <string name="last_update">Mis à jour : %s</string>
     <string name="delete_task_confirmation">Confirmer la suppression de la tâche ?</string>
     <string name="confirm">Confirmer</string>
-    <string name="task_updated">Tâche mise à jour</string>
     <string name="empty_task_not_saved">Tâche vide non enregistrée</string>
     <string name="share_message_chooser">Partager avec</string>
     <string name="alarm_set_on">Rappel défini le %1s</string>
@@ -85,7 +84,6 @@
     <string name="app_not_found">Vous n\'avez installé aucune application capable de gérer ce type de lien</string>
     <string name="difficulty">Difficulté:</string>
     <string name="not_logged_in">Taper ici pour se connecter</string>
-    <string name="quest">Quête</string>
     <string name="sign_out_confirmation">Voulez-vous vous déconnecter ?</string>
     <string name="no_points">Désolé, vous n\'avez aucune feuille et devriez essayer d\'effectuer des tâches avant. Voulez-vous ouvrir TaskGame ?</string>
     <string name="not_enough_points">Désolé, vous avez seulement %d feuilles et devriez essayer d\'effectuer des tâches avant. Voulez-vous ouvrir TaskGame ?</string>

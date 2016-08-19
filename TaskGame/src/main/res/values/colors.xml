@@ -23,10 +23,8 @@
     <color name="colorAccent">#ff218f67</color>
 
     <!--Floating action button-->
-    <color name="white">#fafafa</color>
 
     <color name="gray_bg">#e2e2e2</color>
-    <color name="list_note_title">#cc000000</color>
     <color name="list_note_dates">#aa000000</color>
     <color name="drawer_text">#bb222222</color>
     <color name="selected">#8833B5E5</color>

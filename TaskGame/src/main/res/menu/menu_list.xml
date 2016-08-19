@@ -31,21 +31,21 @@
         android:orderInCategory="100"
         android:title="@string/search"
         app:actionViewClass="android.support.v7.widget.SearchView"
-        app:showAsAction="collapseActionView|always"/>
+        app:showAsAction="collapseActionView|ifRoom" />
     <item
         android:id="@+id/menu_share"
         android:icon="@drawable/ic_share_white_24dp"
         android:orderInCategory="300"
         android:title="@string/share"
         android:visible="false"
-        app:showAsAction="always"/>
+        app:showAsAction="ifRoom" />
     <item
         android:id="@+id/menu_category"
         android:icon="@drawable/tag_text_outline"
         android:orderInCategory="600"
         android:title="@string/category"
         android:visible="false"
-        app:showAsAction="always"/>
+        app:showAsAction="ifRoom" />
     <item
         android:id="@+id/menu_finish_task"
         android:icon="@drawable/ic_assignment_turned_in_white_24dp"

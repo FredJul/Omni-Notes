@@ -115,7 +115,6 @@ public class MainActivity extends AppCompatActivity implements FragmentManager.O
         }
     };
 
-    private FirebaseUser mFirebaseUser;
     private DatabaseReference mFirebaseDatabase;
 
     private final ValueEventListener mFirebaseCurrentPointsListener = new ValueEventListener() {
@@ -280,16 +279,16 @@ public class MainActivity extends AppCompatActivity implements FragmentManager.O
     }
 
     private void firebaseLogin() {
-        mFirebaseUser = FirebaseAuth.getInstance().getCurrentUser();
+        FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
 
-        if (mFirebaseUser != null) {
+        if (firebaseUser != null) {
             mFirebaseDatabase = FirebaseDatabase.getInstance().getReference();
             DbUtils.getFirebaseTasksNode().addChildEventListener(mFirebaseTasksListener);
             DbUtils.getFirebaseCategoriesNode().addChildEventListener(mFirebaseCategoriesListener);
             DbUtils.getFirebaseCurrentUserNode().child(DbUtils.FIREBASE_CURRENT_POINTS_NODE_NAME).addValueEventListener(mFirebaseCurrentPointsListener);
 
-            mPlayerName.setText(mFirebaseUser.getDisplayName());
-            Glide.with(MainActivity.this).load(mFirebaseUser.getPhotoUrl()).asBitmap().fitCenter().fallback(android.R.drawable.sym_def_app_icon).placeholder(android.R.drawable.sym_def_app_icon).into(new BitmapImageViewTarget(mPlayerImageView) {
+            mPlayerName.setText(firebaseUser.getDisplayName());
+            Glide.with(MainActivity.this).load(firebaseUser.getPhotoUrl()).asBitmap().fitCenter().fallback(android.R.drawable.sym_def_app_icon).placeholder(android.R.drawable.sym_def_app_icon).into(new BitmapImageViewTarget(mPlayerImageView) {
                 @Override
                 protected void setResource(Bitmap resource) {
                     RoundedBitmapDrawable circularBitmapDrawable = RoundedBitmapDrawableFactory.create(getResources(), resource);
@@ -698,7 +697,7 @@ public class MainActivity extends AppCompatActivity implements FragmentManager.O
 
     private boolean isTaskAlreadyOpened(Task task) {
         DetailFragment detailFragment = (DetailFragment) mFragmentManager.findFragmentByTag(DetailFragment.class.getName());
-        return detailFragment != null && detailFragment.getCurrentTask().id == task.id;
+        return detailFragment != null && detailFragment.getCurrentTask().id.equals(task.id);
     }
 
     public void switchToList() {

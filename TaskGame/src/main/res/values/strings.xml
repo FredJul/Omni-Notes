@@ -36,7 +36,6 @@
     <string name="last_update">Updated: %s</string>
     <string name="delete_task_confirmation">Confirm task deletion?</string>
     <string name="confirm">Confirm</string>
-    <string name="task_updated">Task updated</string>
     <string name="empty_task_not_saved">Can\'t save an empty task</string>
     <string name="share_message_chooser">Share with</string>
     <string name="alarm_set_on">Reminder set for %1s</string>
@@ -88,7 +87,6 @@
     <string name="drawer_open">drawer open</string>
     <string name="drawer_close">drawer closed</string>
     <string name="not_logged_in">Tap here to login</string>
-    <string name="quest">Quest</string>
     <string name="sign_out_confirmation">Do you want to sign out?</string>
 
 </resources>

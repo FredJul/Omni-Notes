@@ -205,7 +205,7 @@ public class DbUtils {
     public static List<Task> getTasksByPattern(String pattern) {
         ArrayList<SQLCondition> conditionList = new ArrayList<>();
 
-        conditionList.add(Task_Table.isFinished.is(NavigationUtils.getNavigation() == NavigationUtils.FINISHED_TASKS));
+        conditionList.add(Task_Table.isFinished.is(NavigationUtils.FINISHED_TASKS.equals(NavigationUtils.getNavigation())));
 
         if (NavigationUtils.isDisplayingACategory()) {
             conditionList.add(Task_Table.categoryId.eq(NavigationUtils.getNavigation()));

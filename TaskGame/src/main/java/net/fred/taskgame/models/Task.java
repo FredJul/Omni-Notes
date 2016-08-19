@@ -67,8 +67,6 @@ public class Task extends IdBasedModel {
     public String categoryId;
     @Column
     public long pointReward = NORMAL_POINT_REWARD;
-    @Column
-    public String questId = "";
 
     private transient Category mCategory;
 
@@ -87,7 +85,6 @@ public class Task extends IdBasedModel {
         isChecklist = task.isChecklist;
         categoryId = task.categoryId;
         pointReward = task.pointReward;
-        questId = task.questId;
         mCategory = task.mCategory;
     }
 
@@ -110,10 +107,7 @@ public class Task extends IdBasedModel {
     }
 
     public boolean hasAlarmInFuture() {
-        if (alarmDate > Calendar.getInstance().getTimeInMillis()) {
-            return true;
-        }
-        return false;
+        return alarmDate > Calendar.getInstance().getTimeInMillis();
     }
 
     public boolean equals(Object o) {
@@ -126,9 +120,9 @@ public class Task extends IdBasedModel {
         }
 
         Object[] a = {id, title, content, creationDate, lastModificationDate, displayPriority, isFinished,
-                alarmDate, isChecklist, categoryId, pointReward, questId};
+                alarmDate, isChecklist, categoryId, pointReward};
         Object[] b = {task.id, task.title, task.content, task.creationDate, task.lastModificationDate, task.displayPriority, task.isFinished,
-                task.alarmDate, task.isChecklist, task.categoryId, task.pointReward, task.questId};
+                task.alarmDate, task.isChecklist, task.categoryId, task.pointReward};
         if (EqualityChecker.check(a, b)) {
             res = true;
         }

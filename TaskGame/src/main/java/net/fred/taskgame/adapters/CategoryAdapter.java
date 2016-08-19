@@ -114,7 +114,7 @@ public class CategoryAdapter extends BaseAdapter {
         String widgetCatId = mActivity instanceof MainActivity ? ((MainActivity) mActivity).getWidgetCatId() : null;
 
         String navigation = widgetCatId != null ? widgetCatId : NavigationUtils.getNavigation();
-        return (navigation == categories.get(position).id);
+        return navigation.equals(categories.get(position).id);
     }
 
 }

@@ -117,6 +117,7 @@ public class Card extends BaseModel implements Cloneable {
         };
     }
 
+    @SuppressWarnings("CloneDoesntCallSuperClone")
     @Override
     public Card clone() {
         Card card = new Card();

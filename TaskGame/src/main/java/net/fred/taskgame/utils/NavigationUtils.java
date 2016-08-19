@@ -43,7 +43,7 @@ public class NavigationUtils {
      * Checks if passed parameters is the category user is actually navigating in
      */
     public static boolean isDisplayingCategory(Category category) {
-        return (category != null && getNavigation() == category.id);
+        return (category != null && getNavigation().equals(category.id));
     }
 
 }

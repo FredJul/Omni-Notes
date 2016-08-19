@@ -35,7 +35,6 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.SearchView.OnQueryTextListener;
 import android.support.v7.widget.helper.ItemTouchHelper;
-import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -207,7 +206,7 @@ public class ListFragment extends Fragment {
             mAdapter.clearSelections();
 
             // Defines the conditions to set actionbar items visible or not
-            if (!(NavigationUtils.getNavigation() == NavigationUtils.FINISHED_TASKS)) {
+            if (!NavigationUtils.FINISHED_TASKS.equals(NavigationUtils.getNavigation())) {
                 mFab.show();
             }
 
@@ -296,7 +295,7 @@ public class ListFragment extends Fragment {
             public void onItemSwiped(int position) {
                 // Depending on settings and note status this action will...
 
-                if (NavigationUtils.getNavigation() == NavigationUtils.FINISHED_TASKS) { // ...restore
+                if (NavigationUtils.FINISHED_TASKS.equals(NavigationUtils.getNavigation())) { // ...restore
                     restoreTasks(new int[]{position});
                 } else { // ...finish
                     finishTasks(new int[]{position});
@@ -354,7 +353,7 @@ public class ListFragment extends Fragment {
     private void prepareActionModeMenu() {
         Menu menu = mActionMode.getMenu();
 
-        if (NavigationUtils.getNavigation() == NavigationUtils.FINISHED_TASKS) {
+        if (NavigationUtils.FINISHED_TASKS.equals(NavigationUtils.getNavigation())) {
             menu.findItem(R.id.menu_restore_task).setVisible(true);
             menu.findItem(R.id.menu_delete).setVisible(true);
         } else {
@@ -436,7 +435,7 @@ public class ListFragment extends Fragment {
 
     private void setActionItemsVisibility(Menu menu) {
         // Defines the conditions to set actionbar items visible or not
-        boolean isInFinishedTasksView = (NavigationUtils.getNavigation() == NavigationUtils.FINISHED_TASKS);
+        boolean isInFinishedTasksView = NavigationUtils.FINISHED_TASKS.equals(NavigationUtils.getNavigation());
 
         if (!isInFinishedTasksView) {
             mFab.show();
@@ -591,18 +590,11 @@ public class ListFragment extends Fragment {
             Task task = tasks.get(position);
             toRemoveTasks.add(task);
 
-            if (TextUtils.isEmpty(task.questId)) {
                 DbUtils.finishTask(task);
-                // Saves tasks to be eventually restored at right position
-                mUndoTasks.add(task);
-            } else {
-                // we directly delete quests (to not be able to restore them), but we still add the reward
-                DbUtils.updateCurrentPoints(DbUtils.getCurrentPoints() + task.pointReward);
-
-                DbUtils.deleteTask(task);
-            }
         }
         tasks.removeAll(toRemoveTasks);
+        // Saves tasks to be eventually restored at right position
+        mUndoTasks.addAll(toRemoveTasks);
 
         finishActionMode();
         displayUndoBar(R.string.task_finished);
@@ -723,7 +715,7 @@ public class ListFragment extends Fragment {
             DbUtils.updateTask(task, false);
 
             // Update adapter content
-            if (NavigationUtils.getNavigation() != NavigationUtils.TASKS && NavigationUtils.getNavigation() != NavigationUtils.FINISHED_TASKS
+            if (!NavigationUtils.TASKS.equals(NavigationUtils.getNavigation()) && !NavigationUtils.FINISHED_TASKS.equals(NavigationUtils.getNavigation())
                     && !NavigationUtils.isDisplayingCategory(category)) {
                 mAdapter.notifyItemRemoved(mAdapter.getTasks().indexOf(task));
                 mAdapter.getTasks().remove(task);
@@ -746,7 +738,7 @@ public class ListFragment extends Fragment {
     private void onUndo() {
         // Cycles removed items to re-insert into adapter
         for (Task task : mUndoTasks) {
-            if (NavigationUtils.getNavigation() == NavigationUtils.FINISHED_TASKS) {
+            if (NavigationUtils.FINISHED_TASKS.equals(NavigationUtils.getNavigation())) {
                 DbUtils.finishTask(task); // finish it again
             } else {
                 DbUtils.restoreTask(task);

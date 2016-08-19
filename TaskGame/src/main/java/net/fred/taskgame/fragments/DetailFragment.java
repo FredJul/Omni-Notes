@@ -168,11 +168,7 @@ public class DetailFragment extends Fragment implements OnReminderPickedListener
             mReminderDateButton.setText(getString(R.string.alarm_set_on, DateHelper.getDateTimeShort(getContext(), mTask.alarmDate)));
         }
 
-        if (TextUtils.isEmpty(mTask.questId)) {
             getMainActivity().getSupportActionBar().setTitle(R.string.task);
-        } else {
-            getMainActivity().getSupportActionBar().setTitle(R.string.quest);
-        }
 
         if (mTask.isFinished) {
             getMainActivity().getSupportActionBar().setBackgroundDrawable(new ColorDrawable(ContextCompat.getColor(getContext(), R.color.finished_tasks_actionbar_color)));
@@ -367,7 +363,6 @@ public class DetailFragment extends Fragment implements OnReminderPickedListener
             mCreationDateTextView.setVisibility(View.GONE);
         }
 
-        if (TextUtils.isEmpty(mTask.questId)) {
             if (mTask.pointReward == Task.LOW_POINT_REWARD) {
                 mRewardSpinner.setSelection(0);
             } else if (mTask.pointReward == Task.NORMAL_POINT_REWARD) {
@@ -404,11 +399,6 @@ public class DetailFragment extends Fragment implements OnReminderPickedListener
 
                 }
             });
-        } else { // For a quest: do not display or allow edition of some fields
-            mTitleEditText.setEnabled(false);
-            mContentEditText.setEnabled(false);
-            mRewardLayout.setVisibility(View.GONE);
-        }
     }
 
     /**
@@ -429,9 +419,7 @@ public class DetailFragment extends Fragment implements OnReminderPickedListener
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        if (TextUtils.isEmpty(mTask.questId)) { // no menu for quests
             inflater.inflate(R.menu.menu_detail, menu);
-        }
 
         super.onCreateOptionsMenu(menu, inflater);
     }
@@ -439,11 +427,6 @@ public class DetailFragment extends Fragment implements OnReminderPickedListener
 
     @Override
     public void onPrepareOptionsMenu(Menu menu) {
-
-        if (!TextUtils.isEmpty(mTask.questId)) { // no menu for quests
-            return;
-        }
-
         // Closes search view if left open in List fragment
         MenuItem searchMenuItem = menu.findItem(R.id.menu_search);
         if (searchMenuItem != null) {
@@ -699,13 +682,7 @@ public class DetailFragment extends Fragment implements OnReminderPickedListener
     }
 
     public void saveAndExit() {
-        if (TextUtils.isEmpty(mTask.questId)) { // do not modify any quests
-            mExitMessage = getString(R.string.task_updated);
-            mExitMessageStyle = UiUtils.MessageType.TYPE_INFO;
-            saveTask();
-        } else {
             goHome();
-        }
     }
 
 

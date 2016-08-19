@@ -22,7 +22,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.text.TextUtils;
 import android.view.View;
 import android.widget.RemoteViews;
 import android.widget.RemoteViewsService.RemoteViewsFactory;
@@ -115,21 +114,12 @@ public class ListRemoteViewsFactory implements RemoteViewsFactory {
         row.setTextViewText(R.id.reward_points, String.valueOf(task.pointReward));
 
         // Init task and category marker colors
-        if (!TextUtils.isEmpty(task.questId)) { // If this is an official quest, let's make it quite visible
-            row.setViewVisibility(R.id.quest_icon, View.VISIBLE);
-
-            // Resetting transparent color to the view
-            row.setInt(R.id.category_marker, "setBackgroundColor", Color.TRANSPARENT);
-        } else {
-            row.setViewVisibility(R.id.quest_icon, View.GONE);
-
             // If category is set the color will be applied on the appropriate target
             if (task.getCategory() != null) {
                 row.setInt(R.id.category_marker, "setBackgroundColor", task.getCategory().color);
             } else {
                 row.setInt(R.id.category_marker, "setBackgroundColor", Color.TRANSPARENT);
             }
-        }
 
         // Next, set a fill-intent, which will be used to fill in the pending intent template
         // that is set on the collection view in StackWidgetProvider.
