@@ -65,5 +65,5 @@ dependencies {
     compile "com.android.support:appcompat-v7:+"
     compile 'com.android.support:recyclerview-v7:+'
     compile 'com.android.support:cardview-v7:+'
-    compile 'com.android.support:design:+'
+    compile 'com.android.support:design:24.1.1' // To fix a bug with BottomSheetBehavior on 24.2.0
 }
