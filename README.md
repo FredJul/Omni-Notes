@@ -9,19 +9,15 @@ All derivative works need to respect the GPLv3 license of this software and publ
 ![](https://lh3.googleusercontent.com/qFC0H8zPJRTvz7nQ9OpujExqGwmvqTLD8S1UnH7nSnzTnIx4iDVndNZcXcc2jIr6vA=h310) _
 ![](https://lh3.googleusercontent.com/9T_ILE4FrvDZyT0FRM6l9Y9FsnG3nYItUPK8d5PI7O7KCyE9o2fLfL5kU2AepTGEOb9F=h310) _
 
-### Motivate yourself to do borring tasks and make your life funnier!
+### Motivate yourself to do boring tasks and make your life funnier!
 
 Each time you finish a task, you'll earn some points and will be able to spend them into a game as a reward. Several Android games can support TaskGame points, you are not limited to one and can regularly change.
-
-### Make our old Earth a better place! 
-
-In addition of your own task, you can accept some public-interest quests and do them in exchange of a large quantity of points. You may just cheat to get the points, but if only few people do it for real it's already a great victory. Try it!
 
 ### How to install TaskGame?
 
 To get access to the alpha version on PlayStore just go here: https://play.google.com/apps/testing/net.fred.taskgame
 
-To install a demo game consuming TaskGame points you can manually install this APK: https://github.com/FredJul/memory-game/blob/master/TaskGame-memory.apk
+To play with the first game just go here: https://play.google.com/apps/testing/net.fred.taskgame.hero
 
 ### How to use TaskGame points into my game?
 

@@ -682,7 +682,9 @@ public class DetailFragment extends Fragment implements OnReminderPickedListener
     }
 
     public void saveAndExit() {
-            goHome();
+        mExitMessage = getString(R.string.task_updated);
+        mExitMessageStyle = UiUtils.MessageType.TYPE_INFO;
+        saveTask();
     }
 
 

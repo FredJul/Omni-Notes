@@ -36,6 +36,7 @@
     <string name="last_update">Mis à jour : %s</string>
     <string name="delete_task_confirmation">Confirmer la suppression de la tâche ?</string>
     <string name="confirm">Confirmer</string>
+    <string name="task_updated">Tâche mise à jour</string>
     <string name="empty_task_not_saved">Tâche vide non enregistrée</string>
     <string name="share_message_chooser">Partager avec</string>
     <string name="alarm_set_on">Rappel défini le %1s</string>

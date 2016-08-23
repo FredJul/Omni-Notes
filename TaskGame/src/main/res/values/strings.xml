@@ -36,6 +36,7 @@
     <string name="last_update">Updated: %s</string>
     <string name="delete_task_confirmation">Confirm task deletion?</string>
     <string name="confirm">Confirm</string>
+    <string name="task_updated">Task updated</string>
     <string name="empty_task_not_saved">Can\'t save an empty task</string>
     <string name="share_message_chooser">Share with</string>
     <string name="alarm_set_on">Reminder set for %1s</string>
