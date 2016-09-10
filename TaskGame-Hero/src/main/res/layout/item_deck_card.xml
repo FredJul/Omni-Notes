@@ -1,19 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<net.fred.taskgame.hero.views.GameCardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/card"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:layout_margin="15dp">
-
-    <net.fred.taskgame.hero.views.GameCardView
-        android:id="@+id/card"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:useLargeLayout="true" />
-
-    <ImageView
-        android:id="@+id/is_in_deck_indicator"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:src="@drawable/button_ok_pressed" />
-</FrameLayout>
+    android:layout_margin="5dp"
+    android:padding="6dp"
+    app:useLargeLayout="true"
+    tools:background="@drawable/card_background_character" />

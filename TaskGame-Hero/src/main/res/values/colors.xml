@@ -8,5 +8,6 @@
 
     <color name="card_text_color">#DECD87</color>
     <color name="translucent_dark_background">#DD000000</color>
+    <color name="selected_card_background">#eff700</color>
 
 </resources>

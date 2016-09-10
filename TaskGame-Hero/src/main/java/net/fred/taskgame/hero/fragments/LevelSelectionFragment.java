@@ -13,6 +13,7 @@ import net.fred.taskgame.hero.R;
 import net.fred.taskgame.hero.adapters.LevelSelectionAdapter;
 import net.fred.taskgame.hero.adapters.RecyclerViewItemListener;
 import net.fred.taskgame.hero.models.Level;
+import net.fred.taskgame.hero.utils.UiUtils;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -40,6 +41,16 @@ public class LevelSelectionFragment extends BaseFragment {
             }
         });
         mRecyclerView.setAdapter(adapter);
+
+        // Scroll to the first level to do
+        int firstNotCompletedLevel = 0;
+        for (Level level : Level.getAllLevelsList()) {
+            if (!level.isCompleted) {
+                break;
+            }
+            firstNotCompletedLevel++;
+        }
+        layoutManager.scrollToPositionWithOffset(firstNotCompletedLevel, UiUtils.dpToPixel(50));
 
         return layout;
     }

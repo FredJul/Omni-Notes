@@ -4,7 +4,6 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 
 import net.fred.taskgame.hero.R;
 import net.fred.taskgame.hero.models.Card;
@@ -24,9 +23,6 @@ public class ComposeDeckAdapter extends RecyclerView.Adapter<ComposeDeckAdapter.
 
         @BindView(R.id.card)
         GameCardView mCard;
-
-        @BindView(R.id.is_in_deck_indicator)
-        ImageView mIsInDeckIndicator;
 
         public CardViewHolder(View v) {
             super(v);
@@ -67,7 +63,7 @@ public class ComposeDeckAdapter extends RecyclerView.Adapter<ComposeDeckAdapter.
         Card card = mCards.get(position);
 
         holder.mCard.setCard(card);
-        holder.mIsInDeckIndicator.setVisibility(card.isInDeck ? View.VISIBLE : View.GONE);
+        holder.mCard.setBackgroundResource(card.isInDeck ? R.drawable.selected_rounded_background : 0);
 
         holder.mCard.setOnClickListener(new View.OnClickListener() {
             @Override
