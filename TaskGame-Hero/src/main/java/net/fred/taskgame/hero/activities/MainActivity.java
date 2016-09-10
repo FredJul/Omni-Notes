@@ -27,6 +27,8 @@ import net.fred.taskgame.hero.models.Level;
 import net.fred.taskgame.hero.utils.TaskGameUtils;
 import net.fred.taskgame.hero.utils.UiUtils;
 
+import java.util.List;
+
 import butterknife.ButterKnife;
 
 public class MainActivity extends AppCompatActivity {
@@ -132,13 +134,36 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void startBattle(Level level) {
+        List<Card> deckCards = Card.getDeckCardList();
+
+        boolean hasCreatureCardInDeck = false;
+        for (Card deckCard : deckCards) {
+            if (deckCard.type == Card.Type.CREATURE) {
+                hasCreatureCardInDeck = true;
+                break;
+            }
+        }
+        if (!hasCreatureCardInDeck) {
+            new AlertDialog.Builder(this)
+                    .setTitle("Invalid deck")
+                    .setMessage("Please select at least one creature card in your deck")
+                    .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int i) {
+                            dialog.dismiss();
+                        }
+                    })
+                    .show();
+            return;
+        }
+
         FragmentTransaction transaction = mFragmentManager.beginTransaction();
         UiUtils.animateTransition(transaction, UiUtils.TransitionType.TRANSITION_FADE_IN);
         if (!TextUtils.isEmpty(level.getStartStory(this))) {
             transaction.replace(R.id.fragment_container, StoryFragment.newInstance(level, false), StoryFragment.class.getName()).addToBackStack(null).commitAllowingStateLoss();
         } else {
             playSound(SOUND_ENTER_BATTLE);
-            transaction.replace(R.id.fragment_container, BattleFragment.newInstance(level, Card.getDeckCardList()), BattleFragment.class.getName()).addToBackStack(null).commitAllowingStateLoss();
+            transaction.replace(R.id.fragment_container, BattleFragment.newInstance(level, deckCards), BattleFragment.class.getName()).addToBackStack(null).commitAllowingStateLoss();
         }
     }
 
