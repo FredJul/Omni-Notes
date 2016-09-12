@@ -429,7 +429,7 @@ public class Card extends BaseModel implements Cloneable {
         card = generateDefaultSupportCard(SUPPORT_ADD_WEAPON, 3, obtainedList, inDeckList);
         card.name = "Battle axe";
         card.iconResId = R.drawable.axe;
-        card.desc = "The best way to gain respect from your enemy is by putting an axe in his face\n ● +6 attack if he doesn't use weapon or magic";
+        card.desc = "The best way to gain respect from your enemy is by putting an axe in his face\n ● +6 attack if he doesn't use weapon nor magic";
         card.supportAction = new SupportAction() {
             @Override
             public void executeSupportAction(BattleManager manager, boolean fromEnemyPointOfView) {
@@ -443,7 +443,7 @@ public class Card extends BaseModel implements Cloneable {
         card = generateDefaultSupportCard(SUPPORT_WEAPON_EROSION, 3, obtainedList, inDeckList);
         card.name = "Weapon erosion";
         card.iconResId = R.drawable.erode_weapon;
-        card.desc = "Your enemy weapon starts to run into pieces. Serves him damned right!\n ● Lower enemy attack by 5 if he uses a weapon";
+        card.desc = "Your enemy weapon starts to run into pieces. Serves him damned right!\n ● -5 attack if he uses a weapon";
         card.supportAction = new SupportAction() {
             @Override
             public void executeSupportAction(BattleManager manager, boolean fromEnemyPointOfView) {
