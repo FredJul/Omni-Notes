@@ -144,7 +144,7 @@ public class MainActivity extends AppCompatActivity {
             }
         }
         if (!hasCreatureCardInDeck) {
-            new AlertDialog.Builder(this)
+            new AlertDialog.Builder(this, android.R.style.Theme_Material_Light_Dialog_Alert)
                     .setTitle("Invalid deck")
                     .setMessage("Please select at least one creature card in your deck")
                     .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
