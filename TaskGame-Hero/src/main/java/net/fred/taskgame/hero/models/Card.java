@@ -413,7 +413,7 @@ public class Card extends BaseModel implements Cloneable {
         card = generateDefaultSupportCard(SUPPORT_MEDICAL_ATTENTION, 2, obtainedList, inDeckList);
         card.name = "Medical Attention";
         card.iconResId = R.drawable.medical_attention;
-        card.desc = "Ok it's a summoned creature, but does that means you should be heartless?\n ● Regain defense by 4 if wounded";
+        card.desc = "Ok it's a summoned creature, but does that means you should be heartless?\n ● +4 defense if wounded";
         card.supportAction = new SupportAction() {
             @Override
             public void executeSupportAction(BattleManager manager, boolean fromEnemyPointOfView) {
@@ -429,7 +429,7 @@ public class Card extends BaseModel implements Cloneable {
         card = generateDefaultSupportCard(SUPPORT_ADD_WEAPON, 3, obtainedList, inDeckList);
         card.name = "Battle axe";
         card.iconResId = R.drawable.axe;
-        card.desc = "The best way to gain respect from your enemy is by putting an axe in his face\n ● Increase attack by 6 if the creature doesn't already use any weapon or magic";
+        card.desc = "The best way to gain respect from your enemy is by putting an axe in his face\n ● +6 attack if he doesn't use weapon or magic";
         card.supportAction = new SupportAction() {
             @Override
             public void executeSupportAction(BattleManager manager, boolean fromEnemyPointOfView) {
@@ -491,7 +491,7 @@ public class Card extends BaseModel implements Cloneable {
         card = generateDefaultSupportCard(SUPPORT_CONFUSION, 5, obtainedList, inDeckList);
         card.name = "Confusion";
         card.iconResId = R.drawable.confusion;
-        card.desc = "We say that the pen is mightier than the sword, but there is something even more efficient: a sneaky confusing lie\n ● Enemy is confused and skip this turn";
+        card.desc = "Confuse your enemy with a sneaky but efficient lie\n ● Enemy is confused and skips one turn";
         card.supportAction = new SupportAction() {
             @Override
             public void executeSupportAction(BattleManager manager, boolean fromEnemyPointOfView) {
@@ -515,7 +515,7 @@ public class Card extends BaseModel implements Cloneable {
         card = generateDefaultSupportCard(SUPPORT_SWITCH_POTION, 7, obtainedList, inDeckList);
         card.name = "Switch potion";
         card.iconResId = R.drawable.purple_potion;
-        card.desc = "Your creature switch it's attack/defense level with his opponent's ones. How does the potion work? Well, it's secret.";
+        card.desc = "Your creature switch it's attack/defense level with his opponent's ones. How does the potion work? Well, it's a secret.";
         card.supportAction = new SupportAction() {
             @Override
             public void executeSupportAction(BattleManager manager, boolean fromEnemyPointOfView) {

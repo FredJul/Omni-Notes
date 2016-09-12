@@ -40,6 +40,7 @@
             android:shadowRadius="7"
             android:text="@{String.valueOf(card.neededSlots)}"
             android:textColor="@color/card_text_color"
+            app:minTextSize="9dp"
             app:maxTextSize="15dp"
             tools:text="30" />
 
@@ -54,6 +55,7 @@
             android:shadowRadius="7"
             android:text="@{card.name}"
             android:textColor="@color/card_text_color"
+            app:minTextSize="9dp"
             app:maxTextSize="12dp"
             tools:text="Skeleton Archer" />
 
@@ -69,6 +71,7 @@
             android:shadowRadius="7"
             android:text="@{card.desc}"
             android:textColor="@color/card_text_color"
+            app:minTextSize="9dp"
             app:maxTextSize="12dp"
             tools:text="Desc with several lines on it" />
 
@@ -99,6 +102,7 @@
             android:shadowRadius="7"
             android:text="@{String.valueOf(card.attack)}"
             android:textColor="@color/card_text_color"
+            app:minTextSize="9dp"
             app:maxTextSize="12dp"
             tools:text="30" />
 
@@ -113,6 +117,7 @@
             android:shadowRadius="7"
             android:text="@{String.valueOf(card.defense)}"
             android:textColor="@color/card_text_color"
+            app:minTextSize="9dp"
             app:maxTextSize="12dp"
             tools:text="30" />
 

@@ -176,11 +176,15 @@ public class BattleManager {
         BattleStep step = mSteps.remove(0);
         switch (step) {
             case APPLY_PLAYER_SUPPORT: {
-                Card.getAllCardsMap().get(mUsedPlayerCards.get(mUsedPlayerCards.size() - 1).id).supportAction.executeSupportAction(this, false);
+                if (!mStunPlayer) {
+                    Card.getAllCardsMap().get(mUsedPlayerCards.get(mUsedPlayerCards.size() - 1).id).supportAction.executeSupportAction(this, false);
+                }
                 break;
             }
             case APPLY_ENEMY_SUPPORT: {
-                Card.getAllCardsMap().get(mUsedEnemyCards.get(mUsedEnemyCards.size() - 1).id).supportAction.executeSupportAction(this, true);
+                if (!mStunEnemy) {
+                    Card.getAllCardsMap().get(mUsedEnemyCards.get(mUsedEnemyCards.size() - 1).id).supportAction.executeSupportAction(this, true);
+                }
                 break;
             }
             case APPLY_DAMAGES: {
