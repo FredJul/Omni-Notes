@@ -152,11 +152,6 @@
                 android:resource="@xml/appwidget_list" />
         </receiver>
 
-        <provider
-            android:name=".providers.FakeProvider"
-            android:authorities="net.fred.taskgame"
-            android:exported="false" />
-
         <service
             android:name=".widgets.ListWidgetService"
             android:permission="android.permission.BIND_REMOTEVIEWS" />

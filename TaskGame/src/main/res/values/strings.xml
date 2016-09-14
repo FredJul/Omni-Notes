@@ -20,7 +20,7 @@
     <string name="drawer_tasks_item">To-do tasks</string>
     <string name="drawer_finished_tasks_item">Finished tasks</string>
     <string name="task">Task</string>
-    <string name="tasks">Tasks</string>
+    <string name="all_tasks">All tasks</string>
     <string name="title">Title</string>
     <string name="search">Search</string>
     <string name="content">Content</string>

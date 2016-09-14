@@ -56,18 +56,19 @@ public class WidgetConfigurationActivity extends Activity {
             public void onCheckedChanged(RadioGroup group, int checkedId) {
                 switch (checkedId) {
                     case R.id.widget_config_tasks:
-                        categorySpinner.setEnabled(false);
+                        categorySpinner.setVisibility(View.GONE);
                         break;
 
                     case R.id.widget_config_categories:
-                        categorySpinner.setEnabled(true);
+                        categorySpinner.setVisibility(View.VISIBLE);
                         break;
                 }
             }
         });
 
         categorySpinner = (Spinner) findViewById(R.id.widget_config_spinner);
-        categorySpinner.setEnabled(false);
+        categorySpinner.setVisibility(View.GONE);
+
         List<Category> categories = DbUtils.getCategories();
         categorySpinner.setAdapter(new CategoryAdapter(mActivity, categories));
 
@@ -87,19 +88,12 @@ public class WidgetConfigurationActivity extends Activity {
                 ListRemoteViewsFactory.updateConfiguration(mAppWidgetId, categoryId);
 
                 Intent resultValue = new Intent();
-                resultValue.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID,
-                        mAppWidgetId);
+                resultValue.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, mAppWidgetId);
                 setResult(RESULT_OK, resultValue);
 
                 finish();
             }
         });
-
-        // Checks if no tags are available and then disable that option
-        if (categories.size() == 0) {
-            mRadioGroup.setVisibility(View.GONE);
-            categorySpinner.setVisibility(View.GONE);
-        }
 
         Intent intent = getIntent();
         Bundle extras = intent.getExtras();
@@ -110,6 +104,17 @@ public class WidgetConfigurationActivity extends Activity {
 
         // If they gave us an intent without the widget id, just bail.
         if (mAppWidgetId == AppWidgetManager.INVALID_APPWIDGET_ID) {
+            finish();
+        }
+
+        if (categories.isEmpty()) {
+            // Updating the ListRemoteViewsFactory parameter to get the list of tasks
+            ListRemoteViewsFactory.updateConfiguration(mAppWidgetId, null);
+
+            Intent resultValue = new Intent();
+            resultValue.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, mAppWidgetId);
+            setResult(RESULT_OK, resultValue);
+
             finish();
         }
     }

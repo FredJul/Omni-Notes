@@ -49,7 +49,6 @@ public class ListRemoteViewsFactory implements RemoteViewsFactory {
         @Override
         public void onChangeThrottled() {
             Dog.d("change detected, widget updated");
-            // TODO seems to not update widget anymore
             AppWidgetManager.getInstance(mContext).notifyAppWidgetViewDataChanged(appWidgetId, R.id.widget_list);
         }
     };

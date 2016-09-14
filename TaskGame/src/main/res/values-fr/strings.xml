@@ -20,7 +20,7 @@
     <string name="drawer_tasks_item">Tâches à faire</string>
     <string name="drawer_finished_tasks_item">Tâches finies</string>
     <string name="task">Tâche</string>
-    <string name="tasks">Tâches</string>
+    <string name="all_tasks">Toutes les tâches</string>
     <string name="title">Titre </string>
     <string name="search">Rechercher</string>
     <string name="content">Contenu</string>

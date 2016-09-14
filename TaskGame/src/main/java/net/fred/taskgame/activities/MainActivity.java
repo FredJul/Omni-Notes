@@ -449,7 +449,7 @@ public class MainActivity extends AppCompatActivity implements FragmentManager.O
             @Override
             public void run() {
                 // Initialized the views which was not inflated before
-                if (mDrawerHeader == null) {
+                if (mDrawerHeader == null && !isFinishing() && !isDestroyed()) {
                     mDrawerHeader = mNavigationView.findViewById(R.id.drawer_header);
                     mDrawerHeader.setOnClickListener(new View.OnClickListener() {
                         @Override

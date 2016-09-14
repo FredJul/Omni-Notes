@@ -29,6 +29,6 @@
         android:id="@+id/widget_list"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="#aa000000" />
+        android:background="@android:color/white" />
 
 </LinearLayout>

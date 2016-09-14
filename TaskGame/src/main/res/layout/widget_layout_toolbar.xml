@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
+<?xml version="1.0" encoding="utf-8"?><!--
   ~ Copyright (C) 2015 Federico Iosue (federico.iosue@gmail.com)
   ~
   ~ This program is free software: you can redistribute it and/or modify
@@ -18,9 +17,9 @@
 
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-              android:layout_height="@dimen/widget_height"
+    android:layout_height="@dimen/widget_height"
     android:background="@color/colorPrimaryDark"
-              android:elevation="4dp">
+    android:elevation="4dp">
 
     <ImageView
         android:id="@+id/list"
