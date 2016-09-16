@@ -13,9 +13,18 @@
         tools:text="10" />
 
     <ImageView
+        android:id="@+id/boss_icon"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:layout_gravity="center"
+        android:scaleX="-1"
+        android:translationZ="5dp" /> <!-- why translationZ is needed to be correctly displayed? -->
+
+    <ImageView
         android:id="@+id/lock_icon"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:src="@drawable/locked" />
+        android:src="@drawable/locked"
+        android:translationZ="10dp" /> <!-- why translationZ is needed to be correctly displayed? -->
 </FrameLayout>

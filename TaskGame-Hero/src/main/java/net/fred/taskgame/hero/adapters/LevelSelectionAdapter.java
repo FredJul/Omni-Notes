@@ -1,13 +1,13 @@
 package net.fred.taskgame.hero.adapters;
 
 import android.support.v7.widget.RecyclerView;
-import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 
+import net.fred.taskgame.hero.MainApplication;
 import net.fred.taskgame.hero.R;
 import net.fred.taskgame.hero.models.Level;
 import net.fred.taskgame.hero.utils.UiUtils;
@@ -30,6 +30,8 @@ public class LevelSelectionAdapter extends RecyclerView.Adapter<LevelSelectionAd
         Button mLevelNumber;
         @BindView(R.id.lock_icon)
         ImageView mLockIcon;
+        @BindView(R.id.boss_icon)
+        ImageView mBossIcon;
 
         public LevelViewHolder(View v) {
             super(v);
@@ -71,12 +73,11 @@ public class LevelSelectionAdapter extends RecyclerView.Adapter<LevelSelectionAd
 
         holder.mLockIcon.setVisibility(View.GONE);
         if (level.isBossLevel) {
-            holder.mLevelNumber.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 45);
-            holder.mLevelNumber.setPadding(0, BOSS_ICON_PADDING, 0, 0);
-            holder.mLevelNumber.setText("⚔");
+            holder.mLevelNumber.setText("");
+            holder.mBossIcon.setVisibility(View.VISIBLE);
+            holder.mBossIcon.setImageResource(level.getEnemyIcon(MainApplication.getContext()));
         } else {
-            holder.mLevelNumber.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 20);
-            holder.mLevelNumber.setPadding(0, LEVEL_NUMBER_PADDING, 0, 0);
+            holder.mBossIcon.setVisibility(View.GONE);
             holder.mLevelNumber.setText(String.valueOf(level.levelNumber));
         }
         holder.mLevelNumber.setOnClickListener(new View.OnClickListener() {
@@ -96,7 +97,11 @@ public class LevelSelectionAdapter extends RecyclerView.Adapter<LevelSelectionAd
             holder.mLevelNumber.setSelected(true);
             holder.mLevelNumber.setEnabled(false);
             holder.mLevelNumber.setText("");
-            holder.mLockIcon.setVisibility(View.VISIBLE);
+            if (!level.isBossLevel) {
+                holder.mLockIcon.setVisibility(View.VISIBLE);
+            } else {
+                holder.mLockIcon.setVisibility(View.GONE);
+            }
         }
     }
 
