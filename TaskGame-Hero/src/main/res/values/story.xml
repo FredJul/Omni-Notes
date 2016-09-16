@@ -151,16 +151,16 @@
             counselor@R:I heard that your mission was a success, some soldiers survived and declared that it was a thieves attack. I start to believe you are really
             capable of what you proposed.\n
             counselor@R:Do you want to know why I gave you that mission?\n
-            hero@L:For that priest I\'m sure it does not really matter anymore.\n
+            hero@L:From that priest point of view I\'m sure it does not really matter anymore.\n
             counselor@R:You are a strange girl, you know?\n
-            counselor@R:Anyway, the reason of that mission was quite simple actually. This high priest started to give some negative speech about our King, we believe
-            this could start a rebellion.\n
+            counselor@R:Anyway, the reason of that mission was quite simple actually. This high priest started to spread some negative words against our King, and we believe
+            this could start a revolt.\n
             hero@L:So you just wanted to protect the King?\n
             counselor@R:Our King appreciates the religion, but only when it legitimates his reign. It is true that he was not in love anymore with that priest.\n
             counselor@R:However he did not ask me to kill him, and I did not do it for him. I actually think some arguments of that priest were valid, but I had to make
             him silent to protect the country.\n
             counselor@R:We will soon enter in war, if we go through a revolt now we will have to split our forces and will certainly suffer a quick invasion from our neighbours.\n
-            counselor@R:I believe nobody wants that, including the people and the priests. What seems to be an odious act can actually be something needed.\n
+            counselor@R:I believe nobody wants that, including the people and the priests. What seems to be an odious act can sometimes be something needed.\n
             hero@L:I understand.</item>
 
     </string-array>
