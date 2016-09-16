@@ -128,7 +128,7 @@ public class ListRemoteViewsFactory implements RemoteViewsFactory {
         fillInIntent.putExtras(extras);
         // Make it possible to distinguish the individual on-click
         // action of a given item
-        row.setOnClickFillInIntent(R.id.card_view, fillInIntent);
+        row.setOnClickFillInIntent(R.id.root, fillInIntent);
 
         return (row);
     }

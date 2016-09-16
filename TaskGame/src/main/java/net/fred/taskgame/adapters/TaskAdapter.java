@@ -1,7 +1,6 @@
 package net.fred.taskgame.adapters;
 
 import android.graphics.Color;
-import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -25,8 +24,8 @@ public class TaskAdapter extends MultiSelectAdapter<TaskAdapter.TaskViewHolder> 
 
     public static class TaskViewHolder extends RecyclerView.ViewHolder implements ItemActionViewHolder {
 
-        @BindView(R.id.card_view)
-        CardView mCardView;
+        @BindView(R.id.root)
+        View mRoot;
         @BindView(R.id.category_marker)
         View mCategoryMarker;
         @BindView(R.id.task_title)
@@ -44,12 +43,12 @@ public class TaskAdapter extends MultiSelectAdapter<TaskAdapter.TaskViewHolder> 
         @Override
         public void onItemSelected() {
             // Highlighted if is part of multi selection of tasks. Remember to search for child with card ui
-            mCardView.setCardBackgroundColor(Color.LTGRAY);
+            mRoot.setBackgroundColor(Color.LTGRAY);
         }
 
         @Override
         public void onItemClear() {
-            mCardView.setCardBackgroundColor(Color.WHITE);
+            mRoot.setBackgroundColor(Color.TRANSPARENT);
         }
     }
 

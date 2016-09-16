@@ -32,6 +32,7 @@ import android.support.v4.view.GravityCompat;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.view.ActionMode;
 import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.SearchView.OnQueryTextListener;
 import android.support.v7.widget.helper.ItemTouchHelper;
@@ -64,6 +65,7 @@ import net.fred.taskgame.utils.NavigationUtils;
 import net.fred.taskgame.utils.PrefUtils;
 import net.fred.taskgame.utils.ThrottledFlowContentObserver;
 import net.fred.taskgame.utils.UiUtils;
+import net.fred.taskgame.utils.recycler.DividerItemDecoration;
 import net.fred.taskgame.utils.recycler.ItemActionListener;
 import net.fred.taskgame.utils.recycler.SimpleItemTouchHelperCallback;
 import net.fred.taskgame.views.EmptyRecyclerView;
@@ -329,6 +331,8 @@ public class ListFragment extends Fragment {
         };
         mAdapter = new TaskAdapter(listener, mRecyclerView, new ArrayList<Task>());
         mRecyclerView.setEmptyView(mEmptyView);
+        RecyclerView.ItemDecoration itemDecoration = new DividerItemDecoration(getActivity(), DividerItemDecoration.VERTICAL_LIST);
+        mRecyclerView.addItemDecoration(itemDecoration);
 
         mRecyclerView.setLayoutManager(layoutManager);
 
@@ -590,7 +594,7 @@ public class ListFragment extends Fragment {
             Task task = tasks.get(position);
             toRemoveTasks.add(task);
 
-                DbUtils.finishTask(task);
+            DbUtils.finishTask(task);
         }
         tasks.removeAll(toRemoveTasks);
         // Saves tasks to be eventually restored at right position

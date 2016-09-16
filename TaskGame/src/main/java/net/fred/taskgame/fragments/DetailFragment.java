@@ -168,7 +168,7 @@ public class DetailFragment extends Fragment implements OnReminderPickedListener
             mReminderDateButton.setText(getString(R.string.alarm_set_on, DateHelper.getDateTimeShort(getContext(), mTask.alarmDate)));
         }
 
-            getMainActivity().getSupportActionBar().setTitle(R.string.task);
+        getMainActivity().getSupportActionBar().setTitle(R.string.task);
 
         if (mTask.isFinished) {
             getMainActivity().getSupportActionBar().setBackgroundDrawable(new ColorDrawable(ContextCompat.getColor(getContext(), R.color.finished_tasks_actionbar_color)));
@@ -363,42 +363,42 @@ public class DetailFragment extends Fragment implements OnReminderPickedListener
             mCreationDateTextView.setVisibility(View.GONE);
         }
 
-            if (mTask.pointReward == Task.LOW_POINT_REWARD) {
-                mRewardSpinner.setSelection(0);
-            } else if (mTask.pointReward == Task.NORMAL_POINT_REWARD) {
-                mRewardSpinner.setSelection(1);
-            } else if (mTask.pointReward == Task.HIGH_POINT_REWARD) {
-                mRewardSpinner.setSelection(2);
-            } else if (mTask.pointReward == Task.VERY_HIGH_POINT_REWARD) {
-                mRewardSpinner.setSelection(3);
+        if (mTask.pointReward == Task.LOW_POINT_REWARD) {
+            mRewardSpinner.setSelection(0);
+        } else if (mTask.pointReward == Task.NORMAL_POINT_REWARD) {
+            mRewardSpinner.setSelection(1);
+        } else if (mTask.pointReward == Task.HIGH_POINT_REWARD) {
+            mRewardSpinner.setSelection(2);
+        } else if (mTask.pointReward == Task.VERY_HIGH_POINT_REWARD) {
+            mRewardSpinner.setSelection(3);
+        }
+        mRewardPoints.setText(String.valueOf(mTask.pointReward));
+
+        mRewardSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                switch (position) {
+                    case 0:
+                        mTask.pointReward = Task.LOW_POINT_REWARD;
+                        break;
+                    case 1:
+                        mTask.pointReward = Task.NORMAL_POINT_REWARD;
+                        break;
+                    case 2:
+                        mTask.pointReward = Task.HIGH_POINT_REWARD;
+                        break;
+                    case 3:
+                        mTask.pointReward = Task.VERY_HIGH_POINT_REWARD;
+                        break;
+                }
+                mRewardPoints.setText(String.valueOf(mTask.pointReward));
             }
-            mRewardPoints.setText(String.valueOf(mTask.pointReward));
 
-            mRewardSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-                @Override
-                public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                    switch (position) {
-                        case 0:
-                            mTask.pointReward = Task.LOW_POINT_REWARD;
-                            break;
-                        case 1:
-                            mTask.pointReward = Task.NORMAL_POINT_REWARD;
-                            break;
-                        case 2:
-                            mTask.pointReward = Task.HIGH_POINT_REWARD;
-                            break;
-                        case 3:
-                            mTask.pointReward = Task.VERY_HIGH_POINT_REWARD;
-                            break;
-                    }
-                    mRewardPoints.setText(String.valueOf(mTask.pointReward));
-                }
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
 
-                @Override
-                public void onNothingSelected(AdapterView<?> parent) {
-
-                }
-            });
+            }
+        });
     }
 
     /**
@@ -419,7 +419,7 @@ public class DetailFragment extends Fragment implements OnReminderPickedListener
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-            inflater.inflate(R.menu.menu_detail, menu);
+        inflater.inflate(R.menu.menu_detail, menu);
 
         super.onCreateOptionsMenu(menu, inflater);
     }

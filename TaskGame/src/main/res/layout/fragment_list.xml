@@ -16,9 +16,7 @@
   -->
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:layout_marginLeft="@dimen/activity_additional_margin"
-    android:layout_marginRight="@dimen/activity_additional_margin">
+    android:layout_height="match_parent">
 
     <net.fred.taskgame.views.EmptyRecyclerView
         android:id="@+id/recycler_view"

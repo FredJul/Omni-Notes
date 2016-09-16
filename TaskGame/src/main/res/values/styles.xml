@@ -24,7 +24,7 @@
         <item name="colorAccent">@color/colorAccent</item>
         <item name="windowActionModeOverlay">true</item>
         <item name="actionModeBackground">@color/colorPrimaryDark</item>
-        <item name="android:windowBackground">@color/gray_bg</item>
+        <item name="android:windowBackground">@android:color/white</item>
     </style>
 
     <style name="AppTheme.NoActionBar">
