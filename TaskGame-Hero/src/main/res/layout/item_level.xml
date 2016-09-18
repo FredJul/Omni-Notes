@@ -18,7 +18,7 @@
         android:layout_height="60dp"
         android:layout_gravity="center"
         android:scaleX="-1"
-        android:translationZ="5dp" /> <!-- why translationZ is needed to be correctly displayed? -->
+        android:translationZ="50dp" /> <!-- why translationZ is needed to be correctly displayed? -->
 
     <ImageView
         android:id="@+id/lock_icon"
@@ -26,5 +26,5 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:src="@drawable/locked"
-        android:translationZ="10dp" /> <!-- why translationZ is needed to be correctly displayed? -->
+        android:translationZ="100dp" /> <!-- why translationZ is needed to be correctly displayed? -->
 </FrameLayout>
