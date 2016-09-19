@@ -162,13 +162,13 @@
     <orderEntry type="library" exported="" name="play-services-auth-base-9.4.0" level="project" />
     <orderEntry type="library" exported="" name="rxandroid-0.24.0" level="project" />
     <orderEntry type="library" exported="" name="firebase-auth-9.4.0" level="project" />
-    <orderEntry type="library" exported="" name="rxjava-1.1.10" level="project" />
     <orderEntry type="library" exported="" name="appcompat-v7-24.2.1" level="project" />
     <orderEntry type="library" exported="" name="support-vector-drawable-24.2.1" level="project" />
     <orderEntry type="library" exported="" name="HoloColorPicker-1.5" level="project" />
     <orderEntry type="library" exported="" name="support-core-utils-24.2.1" level="project" />
     <orderEntry type="library" exported="" name="facebook-android-sdk-4.14.1" level="project" />
     <orderEntry type="library" exported="" name="play-services-basement-9.4.0" level="project" />
+    <orderEntry type="library" exported="" name="rxjava-1.2.0" level="project" />
     <orderEntry type="library" exported="" name="play-services-tasks-9.4.0" level="project" />
     <orderEntry type="library" exported="" name="firebase-database-connection-9.4.0" level="project" />
     <orderEntry type="library" exported="" name="dbflow-core-3.1.1" level="project" />

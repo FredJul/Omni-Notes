@@ -331,7 +331,7 @@ public class ListFragment extends Fragment {
         };
         mAdapter = new TaskAdapter(listener, mRecyclerView, new ArrayList<Task>());
         mRecyclerView.setEmptyView(mEmptyView);
-        RecyclerView.ItemDecoration itemDecoration = new DividerItemDecoration(getActivity(), DividerItemDecoration.VERTICAL_LIST);
+        RecyclerView.ItemDecoration itemDecoration = new DividerItemDecoration(getActivity(), false, true);
         mRecyclerView.addItemDecoration(itemDecoration);
 
         mRecyclerView.setLayoutManager(layoutManager);
