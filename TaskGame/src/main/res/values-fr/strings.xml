@@ -41,7 +41,7 @@
     <string name="share_message_chooser">Partager avec</string>
     <string name="alarm_set_on">Rappel défini le %1s</string>
     <string name="discard_changes">Annuler les modifications</string>
-    <string name="remove_reminder">Supprimer le rappel ?</string>
+    <string name="remove_reminder">Supprimer le rappel</string>
     <string name="set_reminder">Choisir rappel</string>
     <string name="categories">Catégories</string>
     <string name="add_category">Ajouter une catégorie</string>

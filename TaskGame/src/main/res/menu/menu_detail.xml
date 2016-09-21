@@ -25,11 +25,25 @@
         android:title="@string/category"
         app:showAsAction="always"/>
     <item
+        android:id="@+id/menu_set_reminder"
+        android:icon="@drawable/ic_alarm_white_24dp"
+        android:orderInCategory="400"
+        android:title="@string/set_reminder"
+        android:visible="false"
+        app:showAsAction="always" />
+    <item
+        android:id="@+id/menu_remove_reminder"
+        android:icon="@drawable/ic_alarm_off_white_24dp"
+        android:orderInCategory="400"
+        android:title="@string/remove_reminder"
+        android:visible="false"
+        app:showAsAction="always" />
+    <item
         android:id="@+id/menu_share"
         android:icon="@drawable/ic_share_white_24dp"
-        android:orderInCategory="400"
+        android:orderInCategory="600"
         android:title="@string/share"
-        app:showAsAction="always"/>
+        app:showAsAction="always" />
     <item
         android:id="@+id/menu_finish_task"
         android:icon="@drawable/ic_assignment_turned_in_white_24dp"

@@ -106,17 +106,6 @@
         android:layout_weight="1"
         android:orientation="vertical">
 
-        <Button
-            android:id="@+id/switch_checkviews"
-            style="?android:attr/buttonBarButtonStyle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="end"
-            android:drawablePadding="5dp"
-            android:drawableStart="@drawable/ic_list_grey600_24dp"
-            android:text="@string/checklist_on"
-            android:textSize="@dimen/text_size_small" />
-
         <ScrollView
             android:id="@+id/content_wrapper"
             android:layout_width="match_parent"
@@ -148,18 +137,17 @@
         android:background="@color/gray_bg" />
 
     <Button
-        android:id="@+id/reminder_date"
+        android:id="@+id/switch_checkviews"
         style="?android:attr/buttonBarButtonStyle"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:drawablePadding="5dp"
-        android:drawableStart="@drawable/ic_alarm_grey600_24dp"
-        android:gravity="center_vertical"
-        android:hint="@string/set_reminder"
+        android:drawableStart="@drawable/ic_list_grey600_24dp"
+        android:text="@string/checklist_on"
         android:textSize="@dimen/text_size_small" />
 
     <TextView
-        android:id="@+id/creation_date"
+        android:id="@+id/task_info"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:padding="6dp"

@@ -1,6 +1,5 @@
 apply plugin: 'com.android.application'
 apply plugin: 'com.neenbedankt.android-apt'
-apply plugin: 'com.google.gms.google-services'
 
 android {
     compileSdkVersion 24
@@ -61,7 +60,8 @@ dependencies {
     compile 'io.reactivex:rxjava:+'
     compile 'me.tatarka.rxloader:rxloader:+'
 
-    compile "com.google.firebase:firebase-database:+"
+    compile "com.google.firebase:firebase-database:9.4.0"
+    // The 9.6.0 does not seems to work, moreover we can't use the '+' here
     compile 'com.firebaseui:firebase-ui-auth:+'
     compile "com.android.support:appcompat-v7:+"
     compile 'com.android.support:recyclerview-v7:+'
@@ -70,3 +70,7 @@ dependencies {
     compile 'com.larswerkman:HoloColorPicker:+'
     compile 'com.github.federicoiosue:CheckListView:+'
 }
+
+// ADD THIS AT THE BOTTOM
+apply plugin: 'com.google.gms.google-services'
+

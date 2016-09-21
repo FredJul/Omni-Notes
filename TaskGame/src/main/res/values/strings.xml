@@ -41,7 +41,7 @@
     <string name="share_message_chooser">Share with</string>
     <string name="alarm_set_on">Reminder set for %1s</string>
     <string name="discard_changes">Discard changes</string>
-    <string name="remove_reminder">Remove reminder?</string>
+    <string name="remove_reminder">Remove reminder</string>
     <string name="set_reminder">Set reminder</string>
     <string name="categories">Categories</string>
     <string name="add_category">Add category</string>

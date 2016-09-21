@@ -46,7 +46,6 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.View.OnDragListener;
-import android.view.View.OnLongClickListener;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.Button;
@@ -112,10 +111,8 @@ public class DetailFragment extends Fragment implements OnReminderPickedListener
     ScrollView mScrollView;
     @BindView(R.id.switch_checkviews)
     Button mSwitchCheckViewsButton;
-    @BindView(R.id.reminder_date)
-    Button mReminderDateButton;
-    @BindView(R.id.creation_date)
-    TextView mCreationDateTextView;
+    @BindView(R.id.task_info)
+    TextView mTaskInfoTextView;
 
     private Task mTask;
     private Task mOriginalTask;
@@ -162,10 +159,6 @@ public class DetailFragment extends Fragment implements OnReminderPickedListener
 
         if (mTask == null) {
             mTask = new Task(mOriginalTask);
-        }
-
-        if (mTask.alarmDate != 0) {
-            mReminderDateButton.setText(getString(R.string.alarm_set_on, DateHelper.getDateTimeShort(getContext(), mTask.alarmDate)));
         }
 
         getMainActivity().getSupportActionBar().setTitle(R.string.task);
@@ -327,41 +320,7 @@ public class DetailFragment extends Fragment implements OnReminderPickedListener
             toggleChecklist();
         }
 
-        // Preparation for reminder icon
-        mReminderDateButton.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                ReminderPickers reminderPicker = new ReminderPickers(getActivity(), DetailFragment.this);
-                reminderPicker.pick(mTask.hasAlarmInFuture() ? mTask.alarmDate : Calendar.getInstance().getTimeInMillis());
-            }
-        });
-        mReminderDateButton.setOnLongClickListener(new OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View v) {
-                new AlertDialog.Builder(getActivity())
-                        .setMessage(R.string.remove_reminder)
-                        .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int id) {
-                                mTask.alarmDate = 0;
-                                mReminderDateButton.setText("");
-                            }
-                        }).show();
-                return true;
-            }
-        });
-
-        // Footer dates of creation
-        String creation = DateHelper.getDateTimeShort(getActivity(), mTask.creationDate);
-        if (!TextUtils.isEmpty(creation)) {
-            String lastModification = DateHelper.getDateTimeShort(getActivity(), mTask.lastModificationDate);
-            if (TextUtils.isEmpty(lastModification)) {
-                mCreationDateTextView.append(getString(R.string.creation, creation));
-            } else {
-                mCreationDateTextView.append(getString(R.string.creation, creation) + "  —  " + getString(R.string.last_update, lastModification));
-            }
-        } else {
-            mCreationDateTextView.setVisibility(View.GONE);
-        }
+        updateTaskInfoString();
 
         if (mTask.pointReward == Task.LOW_POINT_REWARD) {
             mRewardSpinner.setSelection(0);
@@ -399,6 +358,31 @@ public class DetailFragment extends Fragment implements OnReminderPickedListener
 
             }
         });
+    }
+
+    private void updateTaskInfoString() {
+        String info = "";
+
+        // Footer dates of creation
+        String lastModification = DateHelper.getDateTimeShort(getActivity(), mTask.lastModificationDate);
+        if (!TextUtils.isEmpty(lastModification)) {
+            info = getString(R.string.last_update, lastModification);
+        } else {
+            String creation = DateHelper.getDateTimeShort(getActivity(), mTask.creationDate);
+            if (!TextUtils.isEmpty(creation)) {
+                info = getString(R.string.creation, creation);
+            }
+        }
+
+        if (mTask.alarmDate != 0) {
+            info = getString(R.string.alarm_set_on, DateHelper.getDateTimeShort(getContext(), mTask.alarmDate)) + "  —  " + info;
+        }
+
+        if (!info.isEmpty()) {
+            mTaskInfoTextView.setText(info);
+        } else {
+            mTaskInfoTextView.setVisibility(View.GONE);
+        }
     }
 
     /**
@@ -443,6 +427,14 @@ public class DetailFragment extends Fragment implements OnReminderPickedListener
         } else {
             menu.findItem(R.id.menu_finish_task).setVisible(!newNote);
         }
+
+        if (mTask.alarmDate != 0) {
+            menu.findItem(R.id.menu_set_reminder).setVisible(false);
+            menu.findItem(R.id.menu_remove_reminder).setVisible(true);
+        } else {
+            menu.findItem(R.id.menu_set_reminder).setVisible(true);
+            menu.findItem(R.id.menu_remove_reminder).setVisible(false);
+        }
     }
 
     public void goHome() {
@@ -475,6 +467,15 @@ public class DetailFragment extends Fragment implements OnReminderPickedListener
                 break;
             case R.id.menu_share:
                 shareTask();
+                break;
+            case R.id.menu_set_reminder:
+                ReminderPickers reminderPicker = new ReminderPickers(getActivity(), DetailFragment.this);
+                reminderPicker.pick(mTask.hasAlarmInFuture() ? mTask.alarmDate : Calendar.getInstance().getTimeInMillis());
+                break;
+            case R.id.menu_remove_reminder:
+                mTask.alarmDate = 0;
+                getActivity().invalidateOptionsMenu();
+                updateTaskInfoString();
                 break;
             case R.id.menu_finish_task:
                 finishTask();
@@ -783,9 +784,8 @@ public class DetailFragment extends Fragment implements OnReminderPickedListener
     @Override
     public void onReminderPicked(long reminder) {
         mTask.alarmDate = reminder;
-        if (isAdded()) {
-            mReminderDateButton.setText(getString(R.string.alarm_set_on, DateHelper.getDateTimeShort(getActivity(), reminder)));
-        }
+        getActivity().invalidateOptionsMenu();
+        updateTaskInfoString();
     }
 
     @Override
