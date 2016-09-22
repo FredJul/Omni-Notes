@@ -87,8 +87,8 @@ public class AlarmReceiver extends BroadcastReceiver {
                 .setMessage(text);
 
         notificationsHelper.getBuilder()
-                .addAction(R.drawable.ic_snooze_reminder, context.getString(R.string.snooze, Long.valueOf(snoozeDelay)), piSnooze)
-                .addAction(R.drawable.ic_reminder, context.getString(R.string.set_reminder), piPostpone);
+                .addAction(R.drawable.ic_update_white_24dp, context.getString(R.string.snooze, Long.valueOf(snoozeDelay)), piSnooze)
+                .addAction(R.drawable.ic_alarm_white_24dp, context.getString(R.string.set_reminder), piPostpone);
 
         // Ringtone options
         String ringtone = PrefUtils.getString(PrefUtils.PREF_SETTINGS_NOTIFICATION_RINGTONE, null);

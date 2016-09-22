@@ -19,11 +19,13 @@ package net.fred.taskgame.activities;
 
 import android.animation.ValueAnimator;
 import android.app.Activity;
+import android.content.ActivityNotFoundException;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.drawable.ColorDrawable;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
@@ -442,6 +444,9 @@ public class MainActivity extends AppCompatActivity implements FragmentManager.O
 
         menu.setGroupCheckable(1, true, true);
 
+        item = menu.add(Menu.NONE, R.string.find_games, Menu.NONE, R.string.find_games);
+        item.setIcon(R.drawable.ic_mood_grey600_24dp);
+
         item = menu.add(Menu.NONE, R.string.settings, Menu.NONE, R.string.settings);
         item.setIcon(R.drawable.ic_settings_grey600_24dp);
 
@@ -532,6 +537,14 @@ public class MainActivity extends AppCompatActivity implements FragmentManager.O
     public boolean onNavigationItemSelected(MenuItem item) {
         // Handle navigation view item clicks here.
         switch (item.getItemId()) {
+            case R.string.find_games:
+                final String appPackageName = "net.fred.taskgame.hero";
+                try {
+                    startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=" + appPackageName)));
+                } catch (ActivityNotFoundException e) {
+                    startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=" + appPackageName)));
+                }
+                break;
             case R.string.settings:
                 Intent settingsIntent = new Intent(this, SettingsActivity.class);
                 startActivity(settingsIntent);
