@@ -76,7 +76,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignBaseline="@+id/reward_spinner"
-                android:layout_alignParentRight="true"
+                android:layout_alignParentEnd="true"
                 android:layout_marginEnd="15dp"
                 android:layout_marginStart="5dp"
                 android:layout_marginTop="3dp"
@@ -100,36 +100,28 @@
         android:layout_height="1dp"
         android:background="@color/gray_bg" />
 
-    <LinearLayout
+    <ScrollView
+        android:id="@+id/content_wrapper"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        android:orientation="vertical">
+        android:scrollbarSize="4dp"
+        android:scrollbarStyle="outsideOverlay"
+        android:scrollbarThumbVertical="@drawable/scroll_bar">
 
-        <ScrollView
-            android:id="@+id/content_wrapper"
+        <EditText
+            android:id="@+id/detail_content"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:scrollbarSize="4dp"
-            android:scrollbarStyle="outsideOverlay"
-            android:scrollbarThumbVertical="@drawable/scroll_bar">
+            android:layout_height="wrap_content"
+            android:autoLink="all"
+            android:background="@null"
+            android:hint="@string/content"
+            android:imeOptions="actionDone"
+            android:inputType="textCapSentences|textMultiLine"
+            android:padding="12dp"
+            android:textSize="@dimen/text_size_big" />
 
-            <EditText
-                android:id="@+id/detail_content"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:autoLink="all"
-                android:background="@null"
-                android:hint="@string/content"
-                android:imeOptions="actionDone"
-                android:inputType="textCapSentences|textMultiLine"
-                android:paddingBottom="12dp"
-                android:paddingEnd="12dp"
-                android:paddingStart="12dp"
-                android:textSize="@dimen/text_size_big" />
-
-        </ScrollView>
-    </LinearLayout>
+    </ScrollView>
 
     <View
         android:layout_width="match_parent"
