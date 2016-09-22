@@ -89,5 +89,6 @@
     <string name="no_points">Désolé, vous n\'avez aucune feuille et devriez essayer d\'effectuer des tâches avant. Voulez-vous ouvrir TaskGame ?</string>
     <string name="not_enough_points">Désolé, vous avez seulement %d feuilles et devriez essayer d\'effectuer des tâches avant. Voulez-vous ouvrir TaskGame ?</string>
     <string name="points_needed">%d feuilles vont être dépensées. Voulez-vous continuer?</string>
+    <string name="find_games">Dépenser points dans un jeu</string>
 
 </resources>

@@ -89,6 +89,6 @@
     <string name="drawer_close">drawer closed</string>
     <string name="not_logged_in">Tap here to login</string>
     <string name="sign_out_confirmation">Do you want to sign out?</string>
-    <string name="find_games">How to spend points?</string>
+    <string name="find_games">Spend points in a game</string>
 
 </resources>
