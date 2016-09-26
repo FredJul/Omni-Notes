@@ -11,13 +11,25 @@ import java.util.List;
 @Parcel
 public class BattleManager {
 
-    public enum BattleStep {APPLY_PLAYER_SUPPORT, APPLY_ENEMY_SUPPORT, FIGHT, APPLY_DAMAGES, PLAYER_DEATH, ENEMY_DEATH, END_TURN, PLAYER_WON, ENEMY_WON, DRAW}
+    public enum BattleStep {APPLY_PLAYER_SUPPORT, SELECT_STRATEGY, APPLY_ENEMY_SUPPORT, FIGHT, APPLY_DAMAGES, PLAYER_DEATH, ENEMY_DEATH, END_TURN, PLAYER_WON, ENEMY_WON, DRAW}
+
+    public enum BattleStrategy {ATTACK, DEFENSE, ALEATORY}
+
+    public enum AleatoryAffectedField {ATTACK, DEFENSE}
+
+    public class AleatoryResult {
+        public AleatoryAffectedField affectedField;
+        public int bonusOrPenalty;
+    }
 
     List<Card> mRemainingEnemyCards = new ArrayList<>();
     List<Card> mUsedEnemyCards = new ArrayList<>();
     List<Card> mRemainingPlayerCards = new ArrayList<>();
     List<Card> mUsedPlayerCards = new ArrayList<>();
-    List<BattleStep> mSteps = new ArrayList<>();
+    BattleStep mCurrentStep = BattleStep.APPLY_PLAYER_SUPPORT;
+    List<BattleStep> mNextSteps = new ArrayList<>();
+
+    BattleStrategy mCurrentStrategy = BattleStrategy.ATTACK;
 
     boolean mStunPlayer, mStunEnemy;
 
@@ -145,6 +157,7 @@ public class BattleManager {
     }
 
     public void play() {
+        mNextSteps.add(BattleStep.SELECT_STRATEGY);
         if (!isEnemyCreatureStillAlive()) {
             Card enemy = getNextEnemyCreatureCard();
             mUsedEnemyCards.add(enemy);
@@ -153,12 +166,12 @@ public class BattleManager {
             if (mRemainingEnemyCards.size() > 0 && mRemainingEnemyCards.get(0).type == Card.Type.SUPPORT) {
                 mUsedEnemyCards.add(mRemainingEnemyCards.get(0));
                 mRemainingEnemyCards.remove(0);
-                mSteps.add(BattleStep.APPLY_ENEMY_SUPPORT);
+                mNextSteps.add(BattleStep.APPLY_ENEMY_SUPPORT);
             }
         }
 
-        mSteps.add(BattleStep.FIGHT);
-        mSteps.add(BattleStep.APPLY_DAMAGES);
+        mNextSteps.add(BattleStep.FIGHT);
+        mNextSteps.add(BattleStep.APPLY_DAMAGES);
     }
 
     public void play(Card card) {
@@ -166,15 +179,54 @@ public class BattleManager {
         mUsedPlayerCards.add(card);
 
         if (card.type == Card.Type.SUPPORT) {
-            mSteps.add(BattleStep.APPLY_PLAYER_SUPPORT);
+            mNextSteps.add(BattleStep.APPLY_PLAYER_SUPPORT);
         }
 
         play();
     }
 
-    public BattleStep getNextStep() {
-        BattleStep step = mSteps.remove(0);
-        switch (step) {
+    public AleatoryResult applyNewStrategy(BattleStrategy currentStrategy) {
+        mCurrentStrategy = currentStrategy;
+        if (currentStrategy == BattleStrategy.ALEATORY) {
+            AleatoryResult result = new AleatoryResult();
+
+            // 1 chance on top of 2
+            result.affectedField = Math.random() > 0.555d ? AleatoryAffectedField.ATTACK : AleatoryAffectedField.DEFENSE;
+
+            Card player = getLastUsedPlayerCreatureCard();
+            if (result.affectedField == AleatoryAffectedField.ATTACK) {
+                result.bonusOrPenalty = getRandomIntBetween(1, Math.round(player.attack / 2.0f)); // up to 50% bonus or penalty
+                if (Math.random() > 0.555d) { // 1 chance on 2 to get a negative value
+                    result.bonusOrPenalty *= -1;
+                }
+                player.attack += result.bonusOrPenalty;
+                if (player.attack <= 0) {
+                    player.attack = 1;
+                }
+            } else {
+                result.bonusOrPenalty = getRandomIntBetween(1, Math.round(player.defense / 2.0f)); // up to 50% bonus or penalty
+                if (Math.random() > 0.555d) { // 1 chance on 2 to get a negative value
+                    result.bonusOrPenalty *= -1;
+                }
+                player.defense += result.bonusOrPenalty;
+                if (player.defense <= 0) {
+                    player.defense = 1;
+                }
+            }
+
+            return result;
+        }
+
+        return null;
+    }
+
+    public BattleStep getCurrentStep() {
+        return mCurrentStep;
+    }
+
+    public BattleStep executeNextStep() {
+        mCurrentStep = mNextSteps.remove(0);
+        switch (mCurrentStep) {
             case APPLY_PLAYER_SUPPORT: {
                 if (!mStunPlayer) {
                     Card.getAllCardsMap().get(mUsedPlayerCards.get(mUsedPlayerCards.size() - 1).id).supportAction.executeSupportAction(this, false);
@@ -192,12 +244,21 @@ public class BattleManager {
                 Card player = getLastUsedPlayerCreatureCard();
 
                 // Change the defense points
-                if (!mStunPlayer) {
+                if (!mStunPlayer && mCurrentStrategy != BattleStrategy.DEFENSE) {
                     Card.getAllCardsMap().get(enemy.id).fightAction.applyDamageFromOpponent(enemy, player);
                     enemy.defense = enemy.defense < 0 ? 0 : enemy.defense;
                 }
                 if (!mStunEnemy) {
-                    Card.getAllCardsMap().get(player.id).fightAction.applyDamageFromOpponent(player, enemy);
+                    if (mCurrentStrategy == BattleStrategy.DEFENSE) {
+                        // We reduce damage from 0 to 100% depending of luck
+                        int previousDefense = player.defense;
+                        Card.getAllCardsMap().get(player.id).fightAction.applyDamageFromOpponent(player, enemy);
+                        int realDamage = (int) Math.round((previousDefense - player.defense) * Math.random());
+                        player.defense = previousDefense - realDamage;
+                    } else {
+                        Card.getAllCardsMap().get(player.id).fightAction.applyDamageFromOpponent(player, enemy);
+                    }
+
                     player.defense = player.defense < 0 ? 0 : player.defense;
                 }
                 mStunPlayer = false;
@@ -205,10 +266,10 @@ public class BattleManager {
 
                 // Death computation
                 if (enemy.defense <= 0) {
-                    mSteps.add(BattleStep.ENEMY_DEATH);
+                    mNextSteps.add(BattleStep.ENEMY_DEATH);
                 }
                 if (player.defense <= 0) {
-                    mSteps.add(BattleStep.PLAYER_DEATH);
+                    mNextSteps.add(BattleStep.PLAYER_DEATH);
                 }
 
                 // End of battle
@@ -237,20 +298,20 @@ public class BattleManager {
                 }
 
                 if (enemyRemainingLife <= 0 && playerRemainingLife <= 0) {
-                    mSteps.add(BattleStep.DRAW);
+                    mNextSteps.add(BattleStep.DRAW);
                 } else if (enemyRemainingLife <= 0 && playerRemainingLife > 0) {
-                    mSteps.add(BattleStep.PLAYER_WON);
+                    mNextSteps.add(BattleStep.PLAYER_WON);
                 } else if (enemyRemainingLife > 0 && playerRemainingLife <= 0) {
-                    mSteps.add(BattleStep.ENEMY_WON);
+                    mNextSteps.add(BattleStep.ENEMY_WON);
                 } else {
-                    mSteps.add(BattleStep.END_TURN);
+                    mNextSteps.add(BattleStep.END_TURN);
                 }
                 break;
             }
         }
 
-        Dog.i(step.name());
-        return step;
+        Dog.i(mCurrentStep.name());
+        return mCurrentStep;
     }
 
     public void stunEnemy(boolean fromEnemyPointOfView) {
@@ -259,5 +320,12 @@ public class BattleManager {
         } else {
             mStunEnemy = true;
         }
+    }
+
+    private int getRandomIntBetween(int lower, int higher) {
+        if (higher <= lower) {
+            return lower;
+        }
+        return (int) (Math.random() * (higher + 1 - lower)) + lower;
     }
 }

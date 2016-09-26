@@ -2,7 +2,7 @@
     android:id="@+id/drawer_header"
     android:layout_width="match_parent"
     android:layout_height="@dimen/navigation_drawer_header_height"
-    android:background="@color/colorPrimary">
+    android:background="@color/color_primary">
 
     <ImageView
         android:id="@+id/player"

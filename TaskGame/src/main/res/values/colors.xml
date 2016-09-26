@@ -18,9 +18,9 @@
 <resources>
 
     <!-- Material -->
-    <color name="colorPrimary">#2aac7d</color>
-    <color name="colorPrimaryDark">#ff1d805c</color>
-    <color name="colorAccent">#ff218f67</color>
+    <color name="color_primary">#2aac7d</color>
+    <color name="color_primary_dark">#ff1d805c</color>
+    <color name="color_accent">#ff218f67</color>
 
     <!--Floating action button-->
 
@@ -31,7 +31,7 @@
     <color name="finished_tasks_actionbar_color">#096342</color>
 
     <!-- toasts -->
-    <color name="info">@color/colorPrimary</color>
+    <color name="info">@color/color_primary</color>
     <color name="warning">#ffffb32d</color>
     <color name="error">#ffe54230</color>
 

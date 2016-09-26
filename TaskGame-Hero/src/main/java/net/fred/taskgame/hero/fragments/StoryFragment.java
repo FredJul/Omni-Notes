@@ -115,7 +115,7 @@ public class StoryFragment extends BaseFragment {
 
             String text = charName + ": " + sentence.substring(separatorIndex + 1);
             SpannableString spannedText = new SpannableString(text);
-            spannedText.setSpan(new ForegroundColorSpan(ContextCompat.getColor(getContext(), R.color.colorAccent)), 0, charName.length() + 1, Spanned.SPAN_INCLUSIVE_INCLUSIVE);
+            spannedText.setSpan(new ForegroundColorSpan(ContextCompat.getColor(getContext(), R.color.color_accent)), 0, charName.length() + 1, Spanned.SPAN_INCLUSIVE_INCLUSIVE);
 
             if (isLeft) {
                 mRightCharImageView.animate().alpha(0);

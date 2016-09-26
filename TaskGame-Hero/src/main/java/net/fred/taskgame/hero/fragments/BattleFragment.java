@@ -11,6 +11,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.Toast;
 
 import net.fred.taskgame.hero.R;
 import net.fred.taskgame.hero.activities.MainActivity;
@@ -48,8 +49,11 @@ public class BattleFragment extends BaseFragment {
     @BindView(R.id.enemy_support_card)
     GameCardView mEnemySupportCardView;
 
-    @BindView(R.id.card_list_scroll_view)
-    View mCardListScrollView;
+    @BindView(R.id.select_card_bottom_sheet)
+    View mSelectCardBottomSheet;
+
+    @BindView(R.id.select_strategy_bottom_sheet)
+    View mSelectStrategyBottomSheet;
 
     @BindView(R.id.card_list)
     LinearLayout mCardListLayout;
@@ -65,7 +69,8 @@ public class BattleFragment extends BaseFragment {
 
     private BattleManager mBattleManager = new BattleManager();
     private Level mLevel;
-    private BottomSheetBehavior mBottomSheetBehavior;
+    private BottomSheetBehavior mSelectCardBottomSheetBehavior;
+    private BottomSheetBehavior mSelectStrategyBottomSheetBehavior;
     private GameCardView mCurrentlyAnimatedCard;
 
     public static BattleFragment newInstance(Level level, List<Card> playerCards) {
@@ -93,8 +98,11 @@ public class BattleFragment extends BaseFragment {
             mBattleManager.addPlayerCards(playerCards);
         }
 
-        mBottomSheetBehavior = BottomSheetBehavior.from(mCardListScrollView);
-        mBottomSheetBehavior.setPeekHeight(UiUtils.dpToPixel(100));
+        mSelectCardBottomSheetBehavior = BottomSheetBehavior.from(mSelectCardBottomSheet);
+        mSelectCardBottomSheetBehavior.setPeekHeight(UiUtils.dpToPixel(100));
+
+        mSelectStrategyBottomSheetBehavior = BottomSheetBehavior.from(mSelectStrategyBottomSheet);
+        mSelectStrategyBottomSheetBehavior.setPeekHeight(UiUtils.dpToPixel(100));
 
         mEnemyImageView.setImageResource(mLevel.getEnemyIcon(getContext()));
 
@@ -126,10 +134,10 @@ public class BattleFragment extends BaseFragment {
 
         final Card playedCard = mCurrentlyAnimatedCard.getCard();
         if (playedCard.type == Card.Type.CREATURE) {
-            int cardPaddingStart = mCurrentlyAnimatedCard.getPaddingStart() - mCardListScrollView.getScrollX();
-            int cardPaddingTop = mCurrentlyAnimatedCard.getPaddingTop() + mCardListScrollView.getPaddingTop();
+            int cardPaddingStart = mCurrentlyAnimatedCard.getPaddingStart() - mSelectCardBottomSheet.getScrollX();
+            int cardPaddingTop = mCurrentlyAnimatedCard.getPaddingTop() + mSelectCardBottomSheet.getPaddingTop();
             mCurrentlyAnimatedCard.animate().scaleX(1).scaleY(1).translationX(0).translationY(0)
-                    .x(mPlayerCardView.getX() - mCardListScrollView.getX() - cardPaddingStart).y(mPlayerCardView.getY() - mCardListScrollView.getY() - cardPaddingTop)
+                    .x(mPlayerCardView.getX() - mSelectCardBottomSheet.getX() - cardPaddingStart).y(mPlayerCardView.getY() - mSelectCardBottomSheet.getY() - cardPaddingTop)
                     .withEndAction(new Runnable() {
                         @Override
                         public void run() {
@@ -167,12 +175,32 @@ public class BattleFragment extends BaseFragment {
         }
     }
 
+    @OnClick(R.id.attack_strategy_btn)
+    public void onAttackStrategyButtonClicked() {
+        mBattleManager.applyNewStrategy(BattleManager.BattleStrategy.ATTACK);
+        onStrategySelected();
+    }
+
+    @OnClick(R.id.defense_strategy_btn)
+    public void onDefenseStrategyButtonClicked() {
+        mBattleManager.applyNewStrategy(BattleManager.BattleStrategy.DEFENSE);
+        onStrategySelected();
+    }
+
+    @OnClick(R.id.aleatory_strategy_btn)
+    public void onAleatoryStrategyButtonClicked() {
+        BattleManager.AleatoryResult result = mBattleManager.applyNewStrategy(BattleManager.BattleStrategy.ALEATORY);
+        String displayResult = (result.bonusOrPenalty > 0 ? "+" : "") + result.bonusOrPenalty + " of " + (result.affectedField == BattleManager.AleatoryAffectedField.ATTACK ? "attack" : "defense");
+        Toast.makeText(getContext(), displayResult, Toast.LENGTH_SHORT).show();
+        onStrategySelected();
+    }
+
     private void animateNextStep() {
         if (getMainActivity() == null) {
             return;  // Do nothing if not correctly attached
         }
 
-        BattleManager.BattleStep step = mBattleManager.getNextStep();
+        BattleManager.BattleStep step = mBattleManager.executeNextStep();
         switch (step) {
             case APPLY_PLAYER_SUPPORT: {
                 boolean animationInProgress = mEnemyCardView.animateValueChange(new Runnable() {
@@ -194,6 +222,11 @@ public class BattleFragment extends BaseFragment {
                         animateNextStep(); // if no animation at all, let's do the next step already now
                     }
                 }
+                break;
+            }
+            case SELECT_STRATEGY: {
+                stopCardHighlighting();
+                updateBottomSheetUI();
                 break;
             }
             case APPLY_ENEMY_SUPPORT: {
@@ -416,26 +449,43 @@ public class BattleFragment extends BaseFragment {
             return; // We already clicked on it once and are in the middle of the animation
         }
 
-        mBottomSheetBehavior.setHideable(true);
-        mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
+        mSelectCardBottomSheetBehavior.setHideable(true);
+        mSelectCardBottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
 
         mCurrentlyAnimatedCard = cardView;
         cardView.animate()
                 .scaleX(1.7f)
                 .scaleY(1.7f)
-                .translationX((getView().getWidth() / 2f) - (cardView.getWidth() / 2f) - cardView.getX() + mCardListScrollView.getScrollX())
+                .translationX((getView().getWidth() / 2f) - (cardView.getWidth() / 2f) - cardView.getX() + mSelectCardBottomSheet.getScrollX())
                 .translationY(-(mCardListLayout.getHeight() * 1.8f));
+
         mDarkLayer.setVisibility(View.VISIBLE);
+        mDarkLayer.setClickable(true);
         mDarkLayer.animate().alpha(1);
     }
 
     private void stopCardHighlighting() {
+        mDarkLayer.setClickable(false);
         mDarkLayer.animate().alpha(0).withEndAction(new Runnable() {
             @Override
             public void run() {
                 mDarkLayer.setVisibility(View.GONE);
             }
         });
+    }
+
+    private void onStrategySelected() {
+        mSelectStrategyBottomSheetBehavior.setHideable(true);
+        mSelectStrategyBottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
+
+        if (!mPlayerCardView.animateValueChange(new Runnable() {
+            @Override
+            public void run() {
+                animateNextStep();
+            }
+        })) {
+            animateNextStep(); // if no animation at all, let's do the next step already now
+        }
     }
 
     private void updateUI() {
@@ -456,7 +506,7 @@ public class BattleFragment extends BaseFragment {
             mCardListLayout.removeViewAt(mCardListLayout.getChildCount() - 1);
         }
 
-        // Create or remove only rhe necessary number of views and reuse the existing ones
+        // Create or remove only the necessary number of views and reuse the existing ones
         List<Card> newCards = isPlayerCreatureStillAlive ? mBattleManager.getRemainingPlayerSupportCards() : mBattleManager.getRemainingPlayerCharacterCards();
         int diff = newCards.size() - mCardListLayout.getChildCount();
         if (diff > 0) { // We need more cards
@@ -490,8 +540,8 @@ public class BattleFragment extends BaseFragment {
             playWithoutSupportBtn.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    mBottomSheetBehavior.setHideable(true);
-                    mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
+                    mSelectCardBottomSheetBehavior.setHideable(true);
+                    mSelectCardBottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
                     mBattleManager.play();
                     animateNextStep();
                 }
@@ -505,15 +555,32 @@ public class BattleFragment extends BaseFragment {
     }
 
     private void updateBottomSheetUI() {
-        if (mCardListLayout.getChildCount() > 0) {
-            if (mBottomSheetBehavior.isHideable()) {
-                mBottomSheetBehavior.setHideable(false);
-                mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+        if (mBattleManager.getCurrentStep() == BattleManager.BattleStep.SELECT_STRATEGY) {
+            if (mSelectStrategyBottomSheetBehavior.isHideable()) {
+                mSelectStrategyBottomSheetBehavior.setHideable(false);
+                mSelectStrategyBottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+            }
+
+            if (!mSelectCardBottomSheetBehavior.isHideable()) {
+                mSelectCardBottomSheetBehavior.setHideable(true);
+                mSelectCardBottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
             }
         } else {
-            if (!mBottomSheetBehavior.isHideable()) {
-                mBottomSheetBehavior.setHideable(true);
-                mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
+            if (!mSelectStrategyBottomSheetBehavior.isHideable()) {
+                mSelectStrategyBottomSheetBehavior.setHideable(true);
+                mSelectStrategyBottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
+            }
+
+            if (mCardListLayout.getChildCount() > 0) {
+                if (mSelectCardBottomSheetBehavior.isHideable()) {
+                    mSelectCardBottomSheetBehavior.setHideable(false);
+                    mSelectCardBottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+                }
+            } else {
+                if (!mSelectCardBottomSheetBehavior.isHideable()) {
+                    mSelectCardBottomSheetBehavior.setHideable(true);
+                    mSelectCardBottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
+                }
             }
         }
     }

@@ -2,9 +2,9 @@
 <resources>
 
     <!-- Material -->
-    <color name="colorPrimary">#EDDFCB</color>
-    <color name="colorPrimaryDark">#D9BA8F</color>
-    <color name="colorAccent">#C99E61</color>
+    <color name="color_primary">#EDDFCB</color>
+    <color name="color_primary_dark">#D9BA8F</color>
+    <color name="color_accent">#C99E61</color>
 
     <color name="card_text_color">#DECD87</color>
     <color name="translucent_dark_background">#DD000000</color>

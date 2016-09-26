@@ -89,13 +89,13 @@
     </FrameLayout>
 
     <HorizontalScrollView
-        android:id="@+id/card_list_scroll_view"
+        android:id="@+id/select_card_bottom_sheet"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@drawable/battle_deck_background"
         android:clipChildren="false"
         android:clipToPadding="false"
-        app:layout_behavior="android.support.design.widget.BottomSheetBehavior">
+        app:layout_behavior="net.fred.taskgame.hero.views.BugfixedBottomSheetBehavior">
 
         <LinearLayout
             android:id="@+id/card_list"
@@ -104,4 +104,84 @@
             android:clipChildren="false"
             android:orientation="horizontal" />
     </HorizontalScrollView>
+
+    <LinearLayout
+        android:id="@+id/select_strategy_bottom_sheet"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/battle_deck_background"
+        android:gravity="center_horizontal"
+        android:orientation="vertical"
+        android:padding="10dp"
+        app:layout_behavior="net.fred.taskgame.hero.views.BugfixedBottomSheetBehavior">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="10dp"
+            android:text="Select strategy"
+            android:textColor="#8e601e"
+            android:textSize="23dp" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="10dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/attack_strategy_btn"
+                android:layout_width="140dp"
+                android:layout_height="75dp"
+                android:text="Attack" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="15dp"
+                android:text="Just attack the enemy, it often works without trouble after all" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="10dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/defense_strategy_btn"
+                android:layout_width="140dp"
+                android:layout_height="75dp"
+                android:text="Defense" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="15dp"
+                android:text="Do not attack but have a chance to reduce received damaged" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="10dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/aleatory_strategy_btn"
+                android:layout_width="140dp"
+                android:layout_height="75dp"
+                android:text="Aleatory" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="15dp"
+                android:text="Aleatory give a bonus or penalty then do normal attack" />
+        </LinearLayout>
+
+    </LinearLayout>
 </android.support.design.widget.CoordinatorLayout>
