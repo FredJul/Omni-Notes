@@ -37,7 +37,7 @@ public class BattleFragment extends BaseFragment {
     public static final String ARG_LEVEL = "ARG_LEVEL";
 
     private static final String STATE_BATTLE_MANAGER = "STATE_BATTLE_MANAGER";
-    private static final int MAX_NO_SUPPORT_CARD_BTN_WIDTH = UiUtils.dpToPixel(190);
+    private static final int MAX_NO_SUPPORT_CARD_BTN_WIDTH = UiUtils.dpToPixel(210);
     private static final int NO_SUPPORT_CARD_BTN_MARGIN = UiUtils.dpToPixel(10);
 
     @BindView(R.id.enemy_portrait)
@@ -536,6 +536,7 @@ public class BattleFragment extends BaseFragment {
         if (isPlayerCreatureStillAlive && newCards.size() > 0) {
             Button playWithoutSupportBtn = new Button(getContext());
             playWithoutSupportBtn.setText("Don't use support card");
+            playWithoutSupportBtn.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_close_white_24dp, 0, 0, 0);
             playWithoutSupportBtn.setMaxWidth(MAX_NO_SUPPORT_CARD_BTN_WIDTH);
             playWithoutSupportBtn.setOnClickListener(new View.OnClickListener() {
                 @Override

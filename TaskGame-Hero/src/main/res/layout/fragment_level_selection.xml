@@ -32,7 +32,7 @@
         android:scaleType="fitXY" />
 
     <LinearLayout
-        android:layout_width="120dp"
+        android:layout_width="144dp"
         android:layout_height="200dp"
         android:layout_alignParentBottom="true"
         android:layout_alignParentEnd="true"
@@ -44,6 +44,7 @@
             android:id="@+id/buy_cards"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:drawableLeft="@drawable/ic_shopping_cart_white_24dp"
             android:text="Get new cards" />
 
         <Button
@@ -51,6 +52,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
+            android:drawableLeft="@drawable/ic_view_module_white_24dp"
             android:text="Compose deck" />
     </LinearLayout>
 </RelativeLayout>

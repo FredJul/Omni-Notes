@@ -85,6 +85,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="bottom|center_horizontal"
             android:layout_marginBottom="15dp"
+            android:drawableLeft="@drawable/ic_check_white_24dp"
             android:text="Use that card" />
     </FrameLayout>
 
@@ -132,8 +133,9 @@
 
             <Button
                 android:id="@+id/attack_strategy_btn"
-                android:layout_width="140dp"
+                android:layout_width="160dp"
                 android:layout_height="75dp"
+                android:drawableLeft="@drawable/ic_new_releases_white_24dp"
                 android:text="Attack" />
 
             <TextView
@@ -152,8 +154,9 @@
 
             <Button
                 android:id="@+id/defense_strategy_btn"
-                android:layout_width="140dp"
+                android:layout_width="160dp"
                 android:layout_height="75dp"
+                android:drawableLeft="@drawable/ic_security_white_24dp"
                 android:text="Defense" />
 
             <TextView
@@ -172,8 +175,9 @@
 
             <Button
                 android:id="@+id/aleatory_strategy_btn"
-                android:layout_width="140dp"
+                android:layout_width="160dp"
                 android:layout_height="75dp"
+                android:drawableLeft="@drawable/ic_iso_white_24dp"
                 android:text="Aleatory" />
 
             <TextView
