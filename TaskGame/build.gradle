@@ -60,8 +60,7 @@ dependencies {
     compile 'io.reactivex:rxjava:+'
     compile 'me.tatarka.rxloader:rxloader:+'
 
-    compile "com.google.firebase:firebase-database:9.4.0"
-    // The 9.6.0 does not seems to work, moreover we can't use the '+' here
+    compile "com.google.firebase:firebase-database:9.6.1" // we can't use the '+' here
     compile 'com.firebaseui:firebase-ui-auth:+'
     compile "com.android.support:appcompat-v7:+"
     compile 'com.android.support:recyclerview-v7:+'
