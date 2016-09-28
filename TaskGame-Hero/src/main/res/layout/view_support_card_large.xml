@@ -48,9 +48,9 @@
 
         <net.fred.taskgame.hero.views.AutoResizeTextView
             android:id="@+id/name"
-            android:layout_width="187dp"
-            android:layout_height="34dp"
-            android:layout_marginStart="20dp"
+            android:layout_width="192dp"
+            android:layout_height="27dp"
+            android:layout_marginStart="10dp"
             android:layout_marginTop="15dp"
             android:maxLines="2"
             android:shadowColor="@android:color/black"
@@ -59,6 +59,7 @@
             android:textColor="@color/card_text_color"
             app:minTextSize="15dp"
             app:maxTextSize="20dp"
+            android:gravity="center_vertical"
             tools:text="Red potion" />
 
         <net.fred.taskgame.hero.views.AutoResizeTextView
