@@ -20,25 +20,23 @@ import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.os.Bundle;
 
 import net.fred.taskgame.R;
 import net.fred.taskgame.activities.SnoozeActivity;
 import net.fred.taskgame.models.Task;
 import net.fred.taskgame.utils.Constants;
+import net.fred.taskgame.utils.DbUtils;
 import net.fred.taskgame.utils.Dog;
 import net.fred.taskgame.utils.NotificationsHelper;
 import net.fred.taskgame.utils.PrefUtils;
 import net.fred.taskgame.utils.date.DateHelper;
-
-import org.parceler.Parcels;
 
 public class AlarmReceiver extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {
         try {
-            Task task = Parcels.unwrap(intent.getExtras().getParcelable(Constants.INTENT_TASK));
+            Task task = DbUtils.getTask(intent.getExtras().getString(Constants.INTENT_TASK_ID));
             createNotification(context, task);
         } catch (Exception e) {
             Dog.e("Error while creating reminder notification", e);
@@ -53,13 +51,13 @@ public class AlarmReceiver extends BroadcastReceiver {
 
         Intent snoozeIntent = new Intent(context, SnoozeActivity.class);
         snoozeIntent.setAction(Constants.ACTION_SNOOZE);
-        snoozeIntent.putExtra(Constants.INTENT_TASK, Parcels.wrap(task));
+        snoozeIntent.putExtra(Constants.INTENT_TASK_ID, task.id); // Do not use parcelable with API 24+ for PendingIntent
         snoozeIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         PendingIntent piSnooze = PendingIntent.getActivity(context, 0, snoozeIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
         Intent postponeIntent = new Intent(context, SnoozeActivity.class);
         postponeIntent.setAction(Constants.ACTION_POSTPONE);
-        postponeIntent.putExtra(Constants.INTENT_TASK, Parcels.wrap(task));
+        postponeIntent.putExtra(Constants.INTENT_TASK_ID, task.id); // Do not use parcelable with API 24+ for PendingIntent
         snoozeIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         PendingIntent piPostpone = PendingIntent.getActivity(context, 0, postponeIntent,
                 PendingIntent.FLAG_UPDATE_CURRENT);
@@ -68,9 +66,7 @@ public class AlarmReceiver extends BroadcastReceiver {
 
         // Next create the bundle and initialize it
         Intent intent = new Intent(context, SnoozeActivity.class);
-        Bundle bundle = new Bundle();
-        bundle.putParcelable(Constants.INTENT_TASK, Parcels.wrap(task));
-        intent.putExtras(bundle);
+        intent.putExtra(Constants.INTENT_TASK_ID, task.id); // Do not use parcelable with API 24+ for PendingIntent
 
         // Sets the Activity to start in a new, empty task
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);

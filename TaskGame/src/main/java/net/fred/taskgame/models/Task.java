@@ -34,7 +34,6 @@ import net.fred.taskgame.utils.DbUtils;
 import net.fred.taskgame.utils.EqualityChecker;
 
 import org.parceler.Parcel;
-import org.parceler.Parcels;
 
 import java.util.Calendar;
 
@@ -219,8 +218,8 @@ public class Task extends IdBasedModel {
     public void setupReminderAlarm(Context context) {
         if (hasAlarmInFuture()) {
             Intent intent = new Intent(context, AlarmReceiver.class);
-            intent.putExtra(Constants.INTENT_TASK, Parcels.wrap(this));
-            PendingIntent sender = PendingIntent.getBroadcast(context, (int) creationDate, intent, PendingIntent.FLAG_CANCEL_CURRENT);
+            intent.putExtra(Constants.INTENT_TASK_ID, id); // Do not use parcelable with API 24+ for PendingIntent
+            PendingIntent sender = PendingIntent.getBroadcast(context, id.hashCode(), intent, PendingIntent.FLAG_UPDATE_CURRENT);
             AlarmManager am = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
             if (Build.VERSION.SDK_INT >= 23) {
                 am.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, alarmDate, sender);

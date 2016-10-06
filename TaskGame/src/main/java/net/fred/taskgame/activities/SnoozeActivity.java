@@ -17,9 +17,7 @@
 
 package net.fred.taskgame.activities;
 
-import android.app.AlarmManager;
 import android.app.NotificationManager;
-import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -27,18 +25,14 @@ import android.support.v4.app.FragmentActivity;
 
 import net.fred.taskgame.listeners.OnReminderPickedListener;
 import net.fred.taskgame.models.Task;
-import net.fred.taskgame.receivers.AlarmReceiver;
 import net.fred.taskgame.utils.Constants;
+import net.fred.taskgame.utils.DbUtils;
 import net.fred.taskgame.utils.PrefUtils;
 import net.fred.taskgame.utils.date.ReminderPickers;
-
-import org.parceler.Parcels;
 
 import java.util.Calendar;
 
 public class SnoozeActivity extends FragmentActivity implements OnReminderPickedListener {
-
-    private static final int INTENT_ALARM_CODE = 12345;
 
     private Task mTask;
 
@@ -46,13 +40,13 @@ public class SnoozeActivity extends FragmentActivity implements OnReminderPicked
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        mTask = Parcels.unwrap(getIntent().getParcelableExtra(Constants.INTENT_TASK));
+        mTask = DbUtils.getTask(getIntent().getExtras().getString(Constants.INTENT_TASK_ID));
 
         // If an alarm has been fired a notification must be generated
         if (Constants.ACTION_SNOOZE.equals(getIntent().getAction())) {
             String snoozeDelay = PrefUtils.getString(PrefUtils.PREF_SETTINGS_NOTIFICATION_SNOOZE_DELAY, "10");
-            long newAlarm = Calendar.getInstance().getTimeInMillis() + Integer.parseInt(snoozeDelay) * 60 * 1000;
-            setAlarm(mTask, newAlarm);
+            mTask.alarmDate = Calendar.getInstance().getTimeInMillis() + Integer.parseInt(snoozeDelay) * 60 * 1000;
+            mTask.setupReminderAlarm(this);
             finish();
         } else if (Constants.ACTION_POSTPONE.equals(getIntent().getAction())) {
             new ReminderPickers(this, this).pick(mTask.alarmDate);
@@ -71,18 +65,10 @@ public class SnoozeActivity extends FragmentActivity implements OnReminderPicked
         manager.cancel(task.id.hashCode());
     }
 
-    private void setAlarm(Task task, long newAlarm) {
-        Intent intent = new Intent(this, AlarmReceiver.class);
-        intent.putExtra(Constants.INTENT_TASK, Parcels.wrap(task));
-        PendingIntent sender = PendingIntent.getBroadcast(this, INTENT_ALARM_CODE, intent, PendingIntent.FLAG_CANCEL_CURRENT);
-        AlarmManager am = (AlarmManager) this.getSystemService(ALARM_SERVICE);
-        am.set(AlarmManager.RTC_WAKEUP, newAlarm, sender);
-    }
-
     @Override
     public void onReminderPicked(long reminder) {
         mTask.alarmDate = reminder;
-        setAlarm(mTask, reminder);
+        mTask.setupReminderAlarm(this);
         finish();
     }
 }
