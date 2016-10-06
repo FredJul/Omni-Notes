@@ -789,6 +789,11 @@ public class DetailFragment extends Fragment implements OnReminderPickedListener
     }
 
     @Override
+    public void onReminderDismissed() {
+        // Nothing to do
+    }
+
+    @Override
     public void onTextChanged(CharSequence s, int start, int before, int count) {
         scrollContent();
     }
@@ -821,7 +826,7 @@ public class DetailFragment extends Fragment implements OnReminderPickedListener
     }
 
     /**
-     * Used to check currently opened note from activity to avoid openind multiple times the same one
+     * Used to check currently opened note from activity to avoid opening multiple times the same one
      */
     public Task getCurrentTask() {
         return mTask;

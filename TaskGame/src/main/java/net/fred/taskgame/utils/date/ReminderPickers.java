@@ -21,6 +21,7 @@ import android.app.DatePickerDialog;
 import android.app.DatePickerDialog.OnDateSetListener;
 import android.app.TimePickerDialog;
 import android.app.TimePickerDialog.OnTimeSetListener;
+import android.content.DialogInterface;
 import android.support.v4.app.FragmentActivity;
 import android.text.format.DateFormat;
 import android.widget.DatePicker;
@@ -60,6 +61,14 @@ public class ReminderPickers implements OnDateSetListener, OnTimeSetListener {
         int d = cal.get(Calendar.DAY_OF_MONTH);
 
         DatePickerDialog picker = new DatePickerDialog(mActivity, android.R.style.Theme_Material_Light_Dialog_Alert, this, y, m, d);
+        picker.setOnDismissListener(new DialogInterface.OnDismissListener() {
+            @Override
+            public void onDismiss(DialogInterface dialog) {
+                if (mOnReminderPickedListener != null) {
+                    mOnReminderPickedListener.onReminderDismissed();
+                }
+            }
+        });
         picker.show();
     }
 
@@ -71,6 +80,14 @@ public class ReminderPickers implements OnDateSetListener, OnTimeSetListener {
         // Create a new instance of TimePickerDialog and return it
         boolean is24HourMode = DateFormat.is24HourFormat(mActivity);
         TimePickerDialog picker = new TimePickerDialog(mActivity, android.R.style.Theme_Material_Light_Dialog_Alert, this, hour, minute, is24HourMode);
+        picker.setOnDismissListener(new DialogInterface.OnDismissListener() {
+            @Override
+            public void onDismiss(DialogInterface dialog) {
+                if (mOnReminderPickedListener != null) {
+                    mOnReminderPickedListener.onReminderDismissed();
+                }
+            }
+        });
         picker.show();
     }
 

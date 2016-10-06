@@ -71,4 +71,9 @@ public class SnoozeActivity extends FragmentActivity implements OnReminderPicked
         mTask.setupReminderAlarm(this);
         finish();
     }
+
+    @Override
+    public void onReminderDismissed() {
+        finish();
+    }
 }

@@ -20,4 +20,6 @@ package net.fred.taskgame.listeners;
 
 public interface OnReminderPickedListener {
     void onReminderPicked(long reminder);
+
+    void onReminderDismissed();
 }
