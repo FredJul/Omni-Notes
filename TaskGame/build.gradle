@@ -58,7 +58,7 @@ dependencies {
     compile 'com.jakewharton:butterknife:+'
     apt 'com.jakewharton:butterknife-compiler:+'
     compile 'io.reactivex:rxjava:+'
-    compile 'me.tatarka.rxloader:rxloader:+'
+    compile 'io.reactivex:rxandroid:+'
 
     compile "com.google.firebase:firebase-database:9.4.0"
     // we can't use the '+' here, 9.6.1 does work at execution

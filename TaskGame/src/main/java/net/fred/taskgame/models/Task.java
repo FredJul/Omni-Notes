@@ -218,7 +218,7 @@ public class Task extends IdBasedModel {
     public void setupReminderAlarm(Context context) {
         if (hasAlarmInFuture()) {
             Intent intent = new Intent(context, AlarmReceiver.class);
-            intent.putExtra(Constants.INTENT_TASK_ID, id); // Do not use parcelable with API 24+ for PendingIntent
+            intent.putExtra(Constants.INTENT_TASK_ID, id); // Do not use parcelable with API 24+ for PendingIntentve
             PendingIntent sender = PendingIntent.getBroadcast(context, id.hashCode(), intent, PendingIntent.FLAG_UPDATE_CURRENT);
             AlarmManager am = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
             if (Build.VERSION.SDK_INT >= 23) {

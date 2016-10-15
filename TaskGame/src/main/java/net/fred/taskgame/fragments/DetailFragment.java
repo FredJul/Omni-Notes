@@ -68,7 +68,6 @@ import net.fred.taskgame.utils.Constants;
 import net.fred.taskgame.utils.DbUtils;
 import net.fred.taskgame.utils.Dog;
 import net.fred.taskgame.utils.KeyboardUtils;
-import net.fred.taskgame.utils.LoaderUtils;
 import net.fred.taskgame.utils.PrefUtils;
 import net.fred.taskgame.utils.UiUtils;
 import net.fred.taskgame.utils.date.DateHelper;
@@ -86,9 +85,10 @@ import it.feio.android.checklistview.Settings;
 import it.feio.android.checklistview.exceptions.ViewNotSupportedException;
 import it.feio.android.checklistview.interfaces.CheckListChangedListener;
 import it.feio.android.checklistview.models.ChecklistManager;
-import me.tatarka.rxloader.RxLoaderObserver;
 import rx.Observable;
 import rx.Subscriber;
+import rx.schedulers.Schedulers;
+import rx.subscriptions.CompositeSubscription;
 
 
 public class DetailFragment extends Fragment implements OnReminderPickedListener, TextWatcher, CheckListChangedListener {
@@ -123,6 +123,8 @@ public class DetailFragment extends Fragment implements OnReminderPickedListener
     private int mContentLineCounter = 1;
     private View mToggleChecklistView;
     private FloatingActionButton mFab;
+
+    private CompositeSubscription mCompositeSubscription = new CompositeSubscription();
 
     public static DetailFragment newInstance(Task task) {
         DetailFragment fragment = new DetailFragment();
@@ -210,6 +212,12 @@ public class DetailFragment extends Fragment implements OnReminderPickedListener
             KeyboardUtils.hideKeyboard(mToggleChecklistView);
             mContentEditText.clearFocus();
         }
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        mCompositeSubscription.unsubscribe();
     }
 
     private void handleIntents() {
@@ -711,9 +719,9 @@ public class DetailFragment extends Fragment implements OnReminderPickedListener
             return;
         }
 
-        LoaderUtils.startAsync(this, new Observable.OnSubscribe<Void>() {
+        mCompositeSubscription.add(Observable.create(new Observable.OnSubscribe<Void>() {
             @Override
-            public void call(Subscriber<? super Void> subscriber) {
+            public void call(final Subscriber<? super Void> subscriber) {
                 // Note updating on database
                 DbUtils.updateTask(mTask, lastModificationUpdatedNeeded());
 
@@ -724,13 +732,8 @@ public class DetailFragment extends Fragment implements OnReminderPickedListener
 
                 subscriber.onNext(null);
             }
-        }, new RxLoaderObserver<Void>() {
-
-            @Override
-            public void onNext(Void result) {
-                goHome();
-            }
-        });
+        }).subscribeOn(Schedulers.io())
+                .subscribe());
     }
 
 

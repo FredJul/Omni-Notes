@@ -54,7 +54,6 @@ import com.bumptech.glide.request.target.BitmapImageViewTarget;
 import com.firebase.ui.auth.AuthUI;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -71,6 +70,7 @@ import net.fred.taskgame.utils.DbUtils;
 import net.fred.taskgame.utils.Dog;
 import net.fred.taskgame.utils.NavigationUtils;
 import net.fred.taskgame.utils.PrefUtils;
+import net.fred.taskgame.utils.RxFirebase;
 import net.fred.taskgame.utils.ThrottledFlowContentObserver;
 import net.fred.taskgame.utils.UiUtils;
 
@@ -78,6 +78,10 @@ import org.parceler.Parcels;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.functions.Action1;
+import rx.schedulers.Schedulers;
+import rx.subscriptions.CompositeSubscription;
 
 public class MainActivity extends AppCompatActivity implements FragmentManager.OnBackStackChangedListener, NavigationView.OnNavigationItemSelectedListener {
 
@@ -101,6 +105,8 @@ public class MainActivity extends AppCompatActivity implements FragmentManager.O
     private TextView mCurrentPoints;
     private ActionBarDrawerToggle mDrawerToggle;
 
+    private CompositeSubscription mCompositeSubscription = new CompositeSubscription();
+
     private final ThrottledFlowContentObserver mContentObserver = new ThrottledFlowContentObserver(100) {
         @Override
         public void onChangeThrottled() {
@@ -118,94 +124,6 @@ public class MainActivity extends AppCompatActivity implements FragmentManager.O
     };
 
     private DatabaseReference mFirebaseDatabase;
-
-    private final ValueEventListener mFirebaseCurrentPointsListener = new ValueEventListener() {
-
-        @Override
-        public void onDataChange(DataSnapshot dataSnapshot) {
-            if (dataSnapshot.getValue() != null) {
-                PrefUtils.putLong(PrefUtils.PREF_CURRENT_POINTS, dataSnapshot.getValue(Long.class));
-            }
-        }
-
-        @Override
-        public void onCancelled(DatabaseError databaseError) {
-        }
-    };
-
-    private final ChildEventListener mFirebaseTasksListener = new ChildEventListener() {
-        @Override
-        public void onChildAdded(DataSnapshot dataSnapshot, String previousChildName) {
-            Dog.d(dataSnapshot.getKey());
-
-            Task task = dataSnapshot.getValue(Task.class);
-            task.id = dataSnapshot.getKey();
-            task.saveWithoutFirebase();
-        }
-
-        @Override
-        public void onChildChanged(DataSnapshot dataSnapshot, String previousChildName) {
-            Dog.d(dataSnapshot.getKey());
-
-            Task task = dataSnapshot.getValue(Task.class);
-            task.id = dataSnapshot.getKey();
-            task.saveWithoutFirebase();
-        }
-
-        @Override
-        public void onChildRemoved(DataSnapshot dataSnapshot) {
-            Dog.d(dataSnapshot.getKey());
-
-            Task task = new Task(); // no need to copy everything, only id needed
-            task.id = dataSnapshot.getKey();
-            task.deleteWithoutFirebase();
-        }
-
-        @Override
-        public void onChildMoved(DataSnapshot dataSnapshot, String previousChildName) {
-        }
-
-        @Override
-        public void onCancelled(DatabaseError databaseError) {
-        }
-    };
-
-    private final ChildEventListener mFirebaseCategoriesListener = new ChildEventListener() {
-        @Override
-        public void onChildAdded(DataSnapshot dataSnapshot, String previousChildName) {
-            Dog.d(dataSnapshot.getKey());
-
-            Category category = dataSnapshot.getValue(Category.class);
-            category.id = dataSnapshot.getKey();
-            category.saveWithoutFirebase();
-        }
-
-        @Override
-        public void onChildChanged(DataSnapshot dataSnapshot, String previousChildName) {
-            Dog.d(dataSnapshot.getKey());
-
-            Category category = dataSnapshot.getValue(Category.class);
-            category.id = dataSnapshot.getKey();
-            category.saveWithoutFirebase();
-        }
-
-        @Override
-        public void onChildRemoved(DataSnapshot dataSnapshot) {
-            Dog.d(dataSnapshot.getKey());
-
-            Category category = new Category(); // no need to copy everything, only id needed
-            category.id = dataSnapshot.getKey();
-            category.deleteWithoutFirebase();
-        }
-
-        @Override
-        public void onChildMoved(DataSnapshot dataSnapshot, String previousChildName) {
-        }
-
-        @Override
-        public void onCancelled(DatabaseError databaseError) {
-        }
-    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -285,9 +203,77 @@ public class MainActivity extends AppCompatActivity implements FragmentManager.O
 
         if (firebaseUser != null) {
             mFirebaseDatabase = FirebaseDatabase.getInstance().getReference();
-            DbUtils.getFirebaseTasksNode().addChildEventListener(mFirebaseTasksListener);
-            DbUtils.getFirebaseCategoriesNode().addChildEventListener(mFirebaseCategoriesListener);
-            DbUtils.getFirebaseCurrentUserNode().child(DbUtils.FIREBASE_CURRENT_POINTS_NODE_NAME).addValueEventListener(mFirebaseCurrentPointsListener);
+            mCompositeSubscription.add(RxFirebase.observeChildren(DbUtils.getFirebaseTasksNode())
+                    .subscribeOn(Schedulers.io())
+                    .subscribe(new Action1<RxFirebase.FirebaseChildEvent>() {
+                        @Override
+                        public void call(RxFirebase.FirebaseChildEvent ev) {
+                            switch (ev.eventType) {
+                                case CHILD_ADDED:
+                                case CHILD_CHANGED: {
+                                    Task task = ev.snapshot.getValue(Task.class);
+                                    task.id = ev.snapshot.getKey();
+                                    task.saveWithoutFirebase();
+                                    break;
+                                }
+                                case CHILD_REMOVED: {
+                                    Task task = new Task(); // no need to copy everything, only id needed
+                                    task.id = ev.snapshot.getKey();
+                                    task.deleteWithoutFirebase();
+                                    break;
+                                }
+                            }
+                        }
+                    }, new Action1<Throwable>() {
+                        @Override
+                        public void call(Throwable throwable) {
+                            Dog.e("Error", throwable);
+                        }
+                    }));
+
+            mCompositeSubscription.add(RxFirebase.observeChildren(DbUtils.getFirebaseCategoriesNode())
+                    .subscribeOn(Schedulers.io())
+                    .subscribe(new Action1<RxFirebase.FirebaseChildEvent>() {
+                        @Override
+                        public void call(RxFirebase.FirebaseChildEvent ev) {
+                            switch (ev.eventType) {
+                                case CHILD_ADDED:
+                                case CHILD_CHANGED: {
+                                    Category category = ev.snapshot.getValue(Category.class);
+                                    category.id = ev.snapshot.getKey();
+                                    category.saveWithoutFirebase();
+                                    break;
+                                }
+                                case CHILD_REMOVED: {
+                                    Category category = new Category(); // no need to copy everything, only id needed
+                                    category.id = ev.snapshot.getKey();
+                                    category.deleteWithoutFirebase();
+                                    break;
+                                }
+                            }
+                        }
+                    }, new Action1<Throwable>() {
+                        @Override
+                        public void call(Throwable throwable) {
+                            Dog.e("Error", throwable);
+                        }
+                    }));
+
+            mCompositeSubscription.add(RxFirebase.observeSingle(DbUtils.getFirebaseCurrentUserNode().child(DbUtils.FIREBASE_CURRENT_POINTS_NODE_NAME))
+                    .subscribeOn(Schedulers.io())
+                    .subscribe(new Action1<DataSnapshot>() {
+                        @Override
+                        public void call(DataSnapshot snapshot) {
+                            if (snapshot.getValue() != null) {
+                                PrefUtils.putLong(PrefUtils.PREF_CURRENT_POINTS, snapshot.getValue(Long.class));
+                            }
+                        }
+                    }, new Action1<Throwable>() {
+                        @Override
+                        public void call(Throwable throwable) {
+                            Dog.e("Error", throwable);
+                        }
+                    }));
 
             mPlayerName.setText(firebaseUser.getDisplayName());
             Glide.with(MainActivity.this).load(firebaseUser.getPhotoUrl()).asBitmap().fitCenter().fallback(android.R.drawable.sym_def_app_icon).placeholder(android.R.drawable.sym_def_app_icon).into(new BitmapImageViewTarget(mPlayerImageView) {
@@ -302,11 +288,7 @@ public class MainActivity extends AppCompatActivity implements FragmentManager.O
     }
 
     private void firebaseLogout() {
-        if (mFirebaseDatabase != null) {
-            mFirebaseDatabase.removeEventListener(mFirebaseTasksListener);
-            mFirebaseDatabase.removeEventListener(mFirebaseCategoriesListener);
-            mFirebaseDatabase.removeEventListener(mFirebaseCurrentPointsListener);
-        }
+        mCompositeSubscription.unsubscribe();
     }
 
     @Override
