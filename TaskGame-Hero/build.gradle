@@ -54,9 +54,9 @@ android {
 dependencies {
     compile fileTree(dir: 'libs', include: '*.jar')
 
-    apt 'com.github.Raizlabs.DBFlow:dbflow-processor:+'
-    compile "com.github.Raizlabs.DBFlow:dbflow-core:+"
-    compile "com.github.Raizlabs.DBFlow:dbflow:+"
+    apt 'com.github.Raizlabs.DBFlow:dbflow-processor:3.1.1'
+    compile "com.github.Raizlabs.DBFlow:dbflow-core:3.1.1"
+    compile "com.github.Raizlabs.DBFlow:dbflow:3.1.1"
     compile 'org.parceler:parceler-api:+'
     apt 'org.parceler:parceler:+'
     compile 'com.jakewharton:butterknife:+'
