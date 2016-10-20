@@ -87,6 +87,8 @@ import it.feio.android.checklistview.interfaces.CheckListChangedListener;
 import it.feio.android.checklistview.models.ChecklistManager;
 import rx.Observable;
 import rx.Subscriber;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.functions.Action1;
 import rx.schedulers.Schedulers;
 import rx.subscriptions.CompositeSubscription;
 
@@ -733,7 +735,13 @@ public class DetailFragment extends Fragment implements OnReminderPickedListener
                 subscriber.onNext(null);
             }
         }).subscribeOn(Schedulers.io())
-                .subscribe());
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Action1<Void>() {
+                    @Override
+                    public void call(Void aVoid) {
+                        goHome();
+                    }
+                }));
     }
 
 
