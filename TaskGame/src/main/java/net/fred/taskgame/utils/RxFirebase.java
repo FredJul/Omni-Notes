@@ -12,11 +12,12 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
-import rx.Observable;
-import rx.Subscriber;
-import rx.functions.Action0;
-import rx.functions.Func1;
-import rx.subscriptions.Subscriptions;
+import io.reactivex.Observable;
+import io.reactivex.ObservableEmitter;
+import io.reactivex.ObservableOnSubscribe;
+import io.reactivex.functions.Cancellable;
+import io.reactivex.functions.Predicate;
+
 
 public class RxFirebase {
 
@@ -40,53 +41,53 @@ public class RxFirebase {
     }
 
     public static Observable<FirebaseChildEvent> observeChildren(final Query ref) {
-        return Observable.create(new Observable.OnSubscribe<FirebaseChildEvent>() {
+        return Observable.create(new ObservableOnSubscribe<FirebaseChildEvent>() {
 
             @Override
-            public void call(final Subscriber<? super FirebaseChildEvent> subscriber) {
+            public void subscribe(final ObservableEmitter<FirebaseChildEvent> emitter) throws Exception {
                 final ChildEventListener listener = ref.addChildEventListener(new ChildEventListener() {
                     @Override
                     public void onChildAdded(DataSnapshot dataSnapshot, String prevName) {
-                        subscriber.onNext(new FirebaseChildEvent(dataSnapshot, EventType.CHILD_ADDED, prevName));
+                        emitter.onNext(new FirebaseChildEvent(dataSnapshot, EventType.CHILD_ADDED, prevName));
                     }
 
                     @Override
                     public void onChildChanged(DataSnapshot dataSnapshot, String prevName) {
-                        subscriber.onNext(new FirebaseChildEvent(dataSnapshot, EventType.CHILD_CHANGED, prevName));
+                        emitter.onNext(new FirebaseChildEvent(dataSnapshot, EventType.CHILD_CHANGED, prevName));
                     }
 
                     @Override
                     public void onChildRemoved(DataSnapshot dataSnapshot) {
-                        subscriber.onNext(new FirebaseChildEvent(dataSnapshot, EventType.CHILD_REMOVED, null));
+                        emitter.onNext(new FirebaseChildEvent(dataSnapshot, EventType.CHILD_REMOVED, null));
                     }
 
                     @Override
                     public void onChildMoved(DataSnapshot dataSnapshot, String prevName) {
-                        subscriber.onNext(new FirebaseChildEvent(dataSnapshot, EventType.CHILD_MOVED, prevName));
+                        emitter.onNext(new FirebaseChildEvent(dataSnapshot, EventType.CHILD_MOVED, prevName));
                     }
 
                     @Override
                     public void onCancelled(DatabaseError error) {
                         // Notify Subscriber
-                        subscriber.onError(error.toException());
+                        emitter.onError(error.toException());
                     }
                 });
 
                 // When the subscription is cancelled, remove the listener
-                subscriber.add(Subscriptions.create(new Action0() {
+                emitter.setCancellable(new Cancellable() {
                     @Override
-                    public void call() {
+                    public void cancel() throws Exception {
                         ref.removeEventListener(listener);
                     }
-                }));
+                });
             }
         });
     }
 
-    private static Func1<FirebaseChildEvent, Boolean> makeEventFilter(final EventType eventType) {
-        return new Func1<FirebaseChildEvent, Boolean>() {
+    private static Predicate<FirebaseChildEvent> makeEventFilter(final EventType eventType) {
+        return new Predicate<FirebaseChildEvent>() {
             @Override
-            public Boolean call(FirebaseChildEvent firebaseChildEvent) {
+            public boolean test(FirebaseChildEvent firebaseChildEvent) throws Exception {
                 return firebaseChildEvent.eventType == eventType;
             }
         };
@@ -110,30 +111,30 @@ public class RxFirebase {
 
     public static Observable<DataSnapshot> observe(final Query ref) {
 
-        return Observable.create(new Observable.OnSubscribe<DataSnapshot>() {
+        return Observable.create(new ObservableOnSubscribe<DataSnapshot>() {
 
             @Override
-            public void call(final Subscriber<? super DataSnapshot> subscriber) {
+            public void subscribe(final ObservableEmitter<DataSnapshot> emitter) throws Exception {
                 final ValueEventListener listener = ref.addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
-                        subscriber.onNext(dataSnapshot);
+                        emitter.onNext(dataSnapshot);
                     }
 
                     @Override
                     public void onCancelled(DatabaseError error) {
                         // Notify Subscriber
-                        subscriber.onError(error.toException());
+                        emitter.onError(error.toException());
                     }
                 });
 
                 // When the subscription is cancelled, remove the listener
-                subscriber.add(Subscriptions.create(new Action0() {
+                emitter.setCancellable(new Cancellable() {
                     @Override
-                    public void call() {
+                    public void cancel() throws Exception {
                         ref.removeEventListener(listener);
                     }
-                }));
+                });
             }
         });
     }
@@ -144,20 +145,20 @@ public class RxFirebase {
      */
     public static Observable<DataSnapshot> observeSingle(final Query ref) {
 
-        return Observable.create(new Observable.OnSubscribe<DataSnapshot>() {
+        return Observable.create(new ObservableOnSubscribe<DataSnapshot>() {
 
             @Override
-            public void call(final Subscriber<? super DataSnapshot> subscriber) {
+            public void subscribe(final ObservableEmitter<DataSnapshot> emitter) throws Exception {
                 ref.addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
-                        subscriber.onNext(dataSnapshot);
+                        emitter.onNext(dataSnapshot);
                     }
 
                     @Override
                     public void onCancelled(DatabaseError error) {
                         // Notify Subscriber
-                        subscriber.onError(error.toException());
+                        emitter.onError(error.toException());
                     }
                 });
             }
@@ -171,20 +172,20 @@ public class RxFirebase {
      * @return
      */
     public static Observable<Task<Void>> observePush(final DatabaseReference dbRef, final Object object) {
-        return Observable.create(new Observable.OnSubscribe<Task<Void>>() {
+        return Observable.create(new ObservableOnSubscribe<Task<Void>>() {
             @Override
-            public void call(final Subscriber<? super Task<Void>> subscriber) {
+            public void subscribe(final ObservableEmitter<Task<Void>> emitter) throws Exception {
                 dbRef.push().setValue(object)
                         .addOnCompleteListener(new OnCompleteListener<Void>() {
                             @Override
                             public void onComplete(@NonNull Task<Void> task) {
-                                subscriber.onNext(task);
+                                emitter.onNext(task);
                             }
                         })
                         .addOnFailureListener(new OnFailureListener() {
                             @Override
                             public void onFailure(@NonNull Exception e) {
-                                subscriber.onError(e);
+                                emitter.onError(e);
                             }
                         });
             }
@@ -197,20 +198,20 @@ public class RxFirebase {
      * @return
      */
     public static Observable<Task<Void>> observeUpdate(final DatabaseReference dbRef, final Object object) {
-        return Observable.create(new Observable.OnSubscribe<Task<Void>>() {
+        return Observable.create(new ObservableOnSubscribe<Task<Void>>() {
             @Override
-            public void call(final Subscriber<? super Task<Void>> subscriber) {
+            public void subscribe(final ObservableEmitter<Task<Void>> emitter) throws Exception {
                 dbRef.setValue(object)
                         .addOnCompleteListener(new OnCompleteListener<Void>() {
                             @Override
                             public void onComplete(@NonNull Task<Void> task) {
-                                subscriber.onNext(task);
+                                emitter.onNext(task);
                             }
                         })
                         .addOnFailureListener(new OnFailureListener() {
                             @Override
                             public void onFailure(@NonNull Exception e) {
-                                subscriber.onError(e);
+                                emitter.onError(e);
                             }
                         });
             }

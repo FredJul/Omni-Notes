@@ -21,6 +21,7 @@ import net.fred.taskgame.hero.models.Level;
 import net.fred.taskgame.hero.utils.Dog;
 import net.fred.taskgame.hero.utils.UiUtils;
 import net.fred.taskgame.hero.views.GameCardView;
+import net.frju.androidquery.gen.Q;
 
 import org.parceler.Parcels;
 
@@ -419,7 +420,7 @@ public class BattleFragment extends BaseFragment {
             dialog.show(transaction, EndBattleDialogFragment.class.getName());
         }
         mLevel.isCompleted = true;
-        mLevel.save();
+        Q.Level.save(mLevel).query();
     }
 
     @OnClick(R.id.back)

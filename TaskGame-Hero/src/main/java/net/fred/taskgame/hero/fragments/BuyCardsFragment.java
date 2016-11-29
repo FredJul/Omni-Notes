@@ -17,6 +17,7 @@ import net.fred.taskgame.hero.adapters.RecyclerViewItemListener;
 import net.fred.taskgame.hero.models.Card;
 import net.fred.taskgame.hero.utils.TaskGameUtils;
 import net.fred.taskgame.hero.views.EmptyRecyclerView;
+import net.frju.androidquery.gen.Q;
 
 import java.util.List;
 
@@ -85,7 +86,7 @@ public class BuyCardsFragment extends BaseFragment {
     private void buyCard(int position, Card card) {
         getMainActivity().playSound(MainActivity.SOUND_NEW_CARD);
         card.isObtained = true;
-        card.save();
+        Q.Card.save(card).query();
         mNonObtainedCardList.remove(position);
         mAdapter.notifyItemRemoved(position);
     }

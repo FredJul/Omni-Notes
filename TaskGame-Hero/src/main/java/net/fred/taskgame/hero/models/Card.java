@@ -5,14 +5,11 @@ import android.support.annotation.DrawableRes;
 import android.util.SparseBooleanArray;
 import android.widget.ImageView;
 
-import com.raizlabs.android.dbflow.annotation.Column;
-import com.raizlabs.android.dbflow.annotation.PrimaryKey;
-import com.raizlabs.android.dbflow.annotation.Table;
-import com.raizlabs.android.dbflow.sql.language.Select;
-import com.raizlabs.android.dbflow.structure.BaseModel;
-
 import net.fred.taskgame.hero.R;
 import net.fred.taskgame.hero.logic.BattleManager;
+import net.frju.androidquery.annotation.Column;
+import net.frju.androidquery.annotation.Table;
+import net.frju.androidquery.gen.Q;
 
 import org.parceler.Parcel;
 
@@ -21,8 +18,8 @@ import java.util.LinkedHashMap;
 import java.util.List;
 
 @Parcel
-@Table(database = AppDatabase.class)
-public class Card extends BaseModel implements Cloneable {
+@Table(localDatabaseProvider = LocalDatabaseProvider.class)
+public class Card implements Cloneable {
 
     public interface FightAction {
         void applyDamageFromOpponent(Card current, Card opponent);
@@ -85,7 +82,7 @@ public class Card extends BaseModel implements Cloneable {
 
     private final static LinkedHashMap<Integer, Card> ALL_CARDS_MAP = new LinkedHashMap<>();
 
-    @PrimaryKey
+    @Column(primaryKey = true)
     public int id = INVALID_ID;
 
     @Column
@@ -188,7 +185,7 @@ public class Card extends BaseModel implements Cloneable {
 
         SparseBooleanArray obtainedList = new SparseBooleanArray();
         SparseBooleanArray inDeckList = new SparseBooleanArray();
-        for (Card card : new Select().from(Card.class).queryList()) {
+        for (Card card : Q.Card.select().query().toArray()) {
             obtainedList.append(card.id, card.isObtained);
             inDeckList.append(card.id, card.isInDeck);
         }

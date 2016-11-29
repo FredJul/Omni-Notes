@@ -23,6 +23,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.StringRes;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -47,28 +48,24 @@ import android.view.View.OnLongClickListener;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
 
-import com.raizlabs.android.dbflow.config.FlowManager;
-import com.raizlabs.android.dbflow.structure.Model;
-import com.raizlabs.android.dbflow.structure.database.transaction.ProcessModelTransaction;
-
 import net.fred.taskgame.R;
 import net.fred.taskgame.activities.CategoryActivity;
 import net.fred.taskgame.activities.MainActivity;
 import net.fred.taskgame.adapters.CategoryAdapter;
 import net.fred.taskgame.adapters.TaskAdapter;
-import net.fred.taskgame.models.AppDatabase;
 import net.fred.taskgame.models.Category;
 import net.fred.taskgame.models.Task;
 import net.fred.taskgame.utils.Constants;
 import net.fred.taskgame.utils.DbUtils;
 import net.fred.taskgame.utils.NavigationUtils;
 import net.fred.taskgame.utils.PrefUtils;
-import net.fred.taskgame.utils.ThrottledFlowContentObserver;
+import net.fred.taskgame.utils.ThrottledContentObserver;
 import net.fred.taskgame.utils.UiUtils;
 import net.fred.taskgame.utils.recycler.DividerItemDecoration;
 import net.fred.taskgame.utils.recycler.ItemActionListener;
 import net.fred.taskgame.utils.recycler.SimpleItemTouchHelperCallback;
 import net.fred.taskgame.views.EmptyRecyclerView;
+import net.frju.androidquery.gen.Q;
 
 import org.parceler.Parcels;
 
@@ -101,7 +98,7 @@ public class ListFragment extends Fragment {
     // Search variables
     private String mSearchQuery;
 
-    private final ThrottledFlowContentObserver mContentObserver = new ThrottledFlowContentObserver(100) {
+    private final ThrottledContentObserver mContentObserver = new ThrottledContentObserver(new Handler(), 100) {
         @Override
         public void onChangeThrottled() {
             if (getActivity() != null) {
@@ -139,8 +136,8 @@ public class ListFragment extends Fragment {
         initRecyclerView();
 
         // registers for callbacks from the specified tables
-        mContentObserver.registerForContentChanges(inflater.getContext(), Task.class);
-        mContentObserver.registerForContentChanges(inflater.getContext(), Category.class);
+        getContext().getContentResolver().registerContentObserver(Q.Task.getContentUri(), true, mContentObserver);
+        getContext().getContentResolver().registerContentObserver(Q.Category.getContentUri(), true, mContentObserver);
 
         PrefUtils.registerOnPrefChangeListener(mPrefListener);
 
@@ -181,7 +178,7 @@ public class ListFragment extends Fragment {
 
     @Override
     public void onDestroyView() {
-        mContentObserver.unregisterForContentChanges(getView().getContext());
+        getContext().getContentResolver().unregisterContentObserver(mContentObserver);
         PrefUtils.unregisterOnPrefChangeListener(mPrefListener);
 
         super.onDestroyView();
@@ -278,17 +275,10 @@ public class ListFragment extends Fragment {
                 for (int i = 0; i < count; i++) {
                     Task task = tasks.get(i);
                     task.displayPriority = i;
+                    task.saveInFirebase();
                 }
 
-                ArrayList<Model> objectsToSave = new ArrayList<>();
-                objectsToSave.addAll(tasks);
-                FlowManager.getDatabase(AppDatabase.class).beginTransactionAsync(new ProcessModelTransaction.Builder<>(objectsToSave,
-                        new ProcessModelTransaction.ProcessModel<Model>() {
-                            @Override
-                            public void processModel(Model model) {
-                                model.save();
-                            }
-                        }).build()).build().execute();
+                Q.Task.updateViaContentProvider().model(tasks).query();
 
                 finishActionMode();
             }
@@ -673,9 +663,10 @@ public class ListFragment extends Fragment {
         for (int position : positions) {
             Task task = mAdapter.getTasks().get(position);
             tasksToDelete.add(task);
+            task.deleteInFirebase();
         }
         mAdapter.getTasks().removeAll(tasksToDelete);
-        DbUtils.deleteTasks(tasksToDelete);
+        Q.Task.deleteViaContentProvider().model(tasksToDelete).query();
 
         finishActionMode();
 

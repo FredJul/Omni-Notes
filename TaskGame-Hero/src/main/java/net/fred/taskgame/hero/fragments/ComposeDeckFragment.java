@@ -15,6 +15,7 @@ import net.fred.taskgame.hero.adapters.ComposeDeckAdapter;
 import net.fred.taskgame.hero.adapters.RecyclerViewItemListener;
 import net.fred.taskgame.hero.models.Card;
 import net.fred.taskgame.hero.models.Level;
+import net.frju.androidquery.gen.Q;
 
 import java.util.List;
 
@@ -50,7 +51,7 @@ public class ComposeDeckFragment extends BaseFragment {
                 if (card.isInDeck || (!card.isInDeck && getUsedSlots() + card.neededSlots <= Level.getCorrespondingDeckSlots())) {
                     getMainActivity().playSound(MainActivity.SOUND_CHANGE_CARD);
                     card.isInDeck = !card.isInDeck;
-                    card.save();
+                    Q.Card.save(card).query();
                     mAdapter.notifyItemChanged(position);
 
                     updateUI();

@@ -23,29 +23,37 @@ import android.content.Intent;
 import android.os.Build;
 
 import com.google.firebase.database.DatabaseReference;
-import com.raizlabs.android.dbflow.annotation.Column;
-import com.raizlabs.android.dbflow.annotation.Table;
-import com.raizlabs.android.dbflow.sql.language.Select;
 
+import net.fred.taskgame.MainApplication;
 import net.fred.taskgame.R;
+import net.fred.taskgame.models.providers.ContentDatabaseProvider;
+import net.fred.taskgame.models.providers.LocalDatabaseProvider;
 import net.fred.taskgame.receivers.AlarmReceiver;
 import net.fred.taskgame.utils.Constants;
 import net.fred.taskgame.utils.DbUtils;
 import net.fred.taskgame.utils.EqualityChecker;
+import net.frju.androidquery.annotation.Column;
+import net.frju.androidquery.annotation.Table;
+import net.frju.androidquery.database.ModelListener;
+import net.frju.androidquery.gen.Q;
+import net.frju.androidquery.operation.condition.Where;
 
 import org.parceler.Parcel;
 
 import java.util.Calendar;
+import java.util.UUID;
 
 @Parcel
-@Table(database = AppDatabase.class)
-public class Task extends IdBasedModel {
+@Table(localDatabaseProvider = LocalDatabaseProvider.class, contentDatabaseProvider = ContentDatabaseProvider.class)
+public class Task implements ModelListener {
 
     public final static long LOW_POINT_REWARD = 20;
     public final static long NORMAL_POINT_REWARD = 50;
     public final static long HIGH_POINT_REWARD = 100;
     public final static long VERY_HIGH_POINT_REWARD = 200;
 
+    @Column(primaryKey = true)
+    public String id;
     @Column
     public String title = "";
     @Column
@@ -94,7 +102,7 @@ public class Task extends IdBasedModel {
         }
 
         if (mCategory == null) {
-            mCategory = new Select().from(Category.class).where(Category_Table.id.is(categoryId)).querySingle();
+            mCategory = Q.Category.select().where(Where.where(Q.Category.ID, Where.Op.IS, categoryId)).querySingle();
         }
 
         return mCategory;
@@ -150,40 +158,18 @@ public class Task extends IdBasedModel {
         context.startActivity(Intent.createChooser(shareIntent, context.getResources().getString(R.string.share_message_chooser)));
     }
 
-    @Override
-    public void save() {
-        if (creationDate == 0) {
-            creationDate = System.currentTimeMillis();
-        }
-
-        super.save();
-
+    public void saveInFirebase() {
         DatabaseReference firebase = DbUtils.getFirebaseTasksNode();
         if (firebase != null) {
             firebase.child(id).setValue(this);
         }
     }
 
-    public void saveWithoutFirebase() {
-        if (creationDate == 0) {
-            creationDate = System.currentTimeMillis();
-        }
-
-        super.save();
-    }
-
-    @Override
-    public void delete() {
+    public void deleteInFirebase() {
         DatabaseReference firebase = DbUtils.getFirebaseTasksNode();
         if (firebase != null) {
             firebase.child(id).removeValue();
         }
-
-        super.delete();
-    }
-
-    public void deleteWithoutFirebase() {
-        super.delete();
     }
 
     public String[] computeListItemTitleAndContent() {
@@ -237,5 +223,26 @@ public class Task extends IdBasedModel {
             am.cancel(p);
             p.cancel();
         }
+    }
+
+    @Override
+    public void onPreInsert() {
+        if (id == null) {
+            id = UUID.randomUUID().toString();
+        }
+
+        if (creationDate == 0) {
+            creationDate = System.currentTimeMillis();
+        }
+    }
+
+    @Override
+    public void onPreUpdate() {
+
+    }
+
+    @Override
+    public void onPreDelete() {
+        cancelReminderAlarm(MainApplication.getContext());
     }
 }

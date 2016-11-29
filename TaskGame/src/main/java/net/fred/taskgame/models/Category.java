@@ -19,17 +19,24 @@ package net.fred.taskgame.models;
 import android.support.annotation.ColorInt;
 
 import com.google.firebase.database.DatabaseReference;
-import com.raizlabs.android.dbflow.annotation.Column;
-import com.raizlabs.android.dbflow.annotation.Table;
 
+import net.fred.taskgame.models.providers.ContentDatabaseProvider;
+import net.fred.taskgame.models.providers.LocalDatabaseProvider;
 import net.fred.taskgame.utils.DbUtils;
+import net.frju.androidquery.annotation.Column;
+import net.frju.androidquery.annotation.Table;
+import net.frju.androidquery.database.ModelListener;
 
 import org.parceler.Parcel;
 
-@Parcel
-@Table(database = AppDatabase.class)
-public class Category extends IdBasedModel {
+import java.util.UUID;
 
+@Parcel
+@Table(localDatabaseProvider = LocalDatabaseProvider.class, contentDatabaseProvider = ContentDatabaseProvider.class)
+public class Category implements ModelListener {
+
+    @Column(primaryKey = true)
+    public String id;
     @Column
     public String name = "";
     @Column
@@ -43,39 +50,38 @@ public class Category extends IdBasedModel {
     public Category() {
     }
 
-    @Override
-    public void save() {
-        if (creationDate == 0) {
-            creationDate = System.currentTimeMillis();
-        }
-
-        super.save();
-
+    public void saveInFirebase() {
         DatabaseReference firebase = DbUtils.getFirebaseCategoriesNode();
         if (firebase != null) {
             firebase.child(id).setValue(this);
         }
     }
 
-    public void saveWithoutFirebase() {
-        if (creationDate == 0) {
-            creationDate = System.currentTimeMillis();
-        }
-
-        super.save();
-    }
-
-    @Override
-    public void delete() {
+    public void deleteInFirebase() {
         DatabaseReference firebase = DbUtils.getFirebaseCategoriesNode();
         if (firebase != null) {
             firebase.child(id).removeValue();
         }
-
-        super.delete();
     }
 
-    public void deleteWithoutFirebase() {
-        super.delete();
+    @Override
+    public void onPreInsert() {
+        if (id == null) {
+            id = UUID.randomUUID().toString();
+        }
+
+        if (creationDate == 0) {
+            creationDate = System.currentTimeMillis();
+        }
+    }
+
+    @Override
+    public void onPreUpdate() {
+
+    }
+
+    @Override
+    public void onPreDelete() {
+
     }
 }

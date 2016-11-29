@@ -21,8 +21,8 @@ import android.app.Application;
 import android.content.Context;
 
 import com.google.firebase.database.FirebaseDatabase;
-import com.raizlabs.android.dbflow.config.FlowConfig;
-import com.raizlabs.android.dbflow.config.FlowManager;
+
+import net.frju.androidquery.gen.Q;
 
 public class MainApplication extends Application {
 
@@ -36,13 +36,7 @@ public class MainApplication extends Application {
 
         FirebaseDatabase.getInstance().setPersistenceEnabled(true);
 
-        FlowManager.init(new FlowConfig.Builder(this).build());
-    }
-
-    @Override
-    public void onTerminate() {
-        super.onTerminate();
-        FlowManager.destroy();
+        Q.init(this);
     }
 
     public static Context getContext() {

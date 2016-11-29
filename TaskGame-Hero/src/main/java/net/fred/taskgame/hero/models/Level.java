@@ -6,13 +6,10 @@ import android.support.annotation.RawRes;
 import android.util.Pair;
 import android.util.SparseBooleanArray;
 
-import com.raizlabs.android.dbflow.annotation.Column;
-import com.raizlabs.android.dbflow.annotation.PrimaryKey;
-import com.raizlabs.android.dbflow.annotation.Table;
-import com.raizlabs.android.dbflow.sql.language.Select;
-import com.raizlabs.android.dbflow.structure.BaseModel;
-
 import net.fred.taskgame.hero.R;
+import net.frju.androidquery.annotation.Column;
+import net.frju.androidquery.annotation.Table;
+import net.frju.androidquery.gen.Q;
 
 import org.parceler.Parcel;
 
@@ -22,8 +19,8 @@ import java.util.List;
 import java.util.Map;
 
 @Parcel
-@Table(database = AppDatabase.class)
-public class Level extends BaseModel {
+@Table(localDatabaseProvider = LocalDatabaseProvider.class)
+public class Level {
 
     public final static int INVALID_ID = 0;
     public final static Map<String, Pair<Integer, Integer>> STORY_CHARS_INFO_MAP = new HashMap<String, Pair<Integer, Integer>>() {
@@ -39,7 +36,7 @@ public class Level extends BaseModel {
     };
     private final static List<Level> ALL_LEVELS_LIST = new ArrayList<>();
 
-    @PrimaryKey
+    @Column(primaryKey = true)
     public int levelNumber;
 
     @Column
@@ -98,7 +95,7 @@ public class Level extends BaseModel {
         ALL_LEVELS_LIST.clear();
 
         SparseBooleanArray completedList = new SparseBooleanArray();
-        for (Level level : new Select().from(Level.class).queryList()) {
+        for (Level level : Q.Level.select().query().toArray()) {
             completedList.append(level.levelNumber, level.isCompleted);
         }
 

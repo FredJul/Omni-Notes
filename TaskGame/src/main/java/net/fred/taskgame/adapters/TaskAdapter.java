@@ -19,7 +19,7 @@ import butterknife.ButterKnife;
 
 public class TaskAdapter extends MultiSelectAdapter<TaskAdapter.TaskViewHolder> {
 
-    private final List<Task> mTasks;
+    private List<Task> mTasks;
     private final ItemActionListener mItemActionListener;
 
     public static class TaskViewHolder extends RecyclerView.ViewHolder implements ItemActionViewHolder {
@@ -66,8 +66,7 @@ public class TaskAdapter extends MultiSelectAdapter<TaskAdapter.TaskViewHolder> 
     }
 
     public void setTasks(List<Task> tasks) {
-        mTasks.clear();
-        mTasks.addAll(tasks);
+        mTasks = tasks;
         notifyDataSetChanged();
     }
 
@@ -144,6 +143,6 @@ public class TaskAdapter extends MultiSelectAdapter<TaskAdapter.TaskViewHolder> 
 
     @Override
     public int getItemCount() {
-        return mTasks.size();
+        return mTasks != null ? mTasks.size() : 0;
     }
 }

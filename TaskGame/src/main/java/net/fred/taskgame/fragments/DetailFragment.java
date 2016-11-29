@@ -72,6 +72,7 @@ import net.fred.taskgame.utils.PrefUtils;
 import net.fred.taskgame.utils.UiUtils;
 import net.fred.taskgame.utils.date.DateHelper;
 import net.fred.taskgame.utils.date.ReminderPickers;
+import net.frju.androidquery.gen.Q;
 
 import org.parceler.Parcels;
 
@@ -81,16 +82,17 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import io.reactivex.Observable;
+import io.reactivex.ObservableEmitter;
+import io.reactivex.ObservableOnSubscribe;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.functions.Consumer;
+import io.reactivex.schedulers.Schedulers;
 import it.feio.android.checklistview.Settings;
 import it.feio.android.checklistview.exceptions.ViewNotSupportedException;
 import it.feio.android.checklistview.interfaces.CheckListChangedListener;
 import it.feio.android.checklistview.models.ChecklistManager;
-import rx.Observable;
-import rx.Subscriber;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.functions.Action1;
-import rx.schedulers.Schedulers;
-import rx.subscriptions.CompositeSubscription;
 
 
 public class DetailFragment extends Fragment implements OnReminderPickedListener, TextWatcher, CheckListChangedListener {
@@ -126,7 +128,7 @@ public class DetailFragment extends Fragment implements OnReminderPickedListener
     private View mToggleChecklistView;
     private FloatingActionButton mFab;
 
-    private CompositeSubscription mCompositeSubscription = new CompositeSubscription();
+    private CompositeDisposable mCompositeDisposable = new CompositeDisposable();
 
     public static DetailFragment newInstance(Task task) {
         DetailFragment fragment = new DetailFragment();
@@ -219,7 +221,7 @@ public class DetailFragment extends Fragment implements OnReminderPickedListener
     @Override
     public void onDestroy() {
         super.onDestroy();
-        mCompositeSubscription.unsubscribe();
+        mCompositeDisposable.clear();
     }
 
     private void handleIntents() {
@@ -685,7 +687,8 @@ public class DetailFragment extends Fragment implements OnReminderPickedListener
                 .setMessage(R.string.delete_task_confirmation)
                 .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
-                        DbUtils.deleteTask(mTask);
+                        mTask.deleteInFirebase();
+                        Q.Task.deleteViaContentProvider().model(mTask).query();
                         UiUtils.showMessage(getActivity(), R.string.task_deleted);
                         goHome();
                     }
@@ -721,9 +724,9 @@ public class DetailFragment extends Fragment implements OnReminderPickedListener
             return;
         }
 
-        mCompositeSubscription.add(Observable.create(new Observable.OnSubscribe<Void>() {
+        mCompositeDisposable.add(Observable.create(new ObservableOnSubscribe<Task>() {
             @Override
-            public void call(final Subscriber<? super Void> subscriber) {
+            public void subscribe(ObservableEmitter<Task> emitter) throws Exception {
                 // Note updating on database
                 DbUtils.updateTask(mTask, lastModificationUpdatedNeeded());
 
@@ -732,13 +735,13 @@ public class DetailFragment extends Fragment implements OnReminderPickedListener
                     mTask.setupReminderAlarm(MainApplication.getContext());
                 }
 
-                subscriber.onNext(null);
+                emitter.onNext(mTask);
             }
         }).subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Action1<Void>() {
+                .subscribe(new Consumer<Task>() {
                     @Override
-                    public void call(Void aVoid) {
+                    public void accept(Task task) throws Exception {
                         goHome();
                     }
                 }));

@@ -27,6 +27,7 @@ import android.graphics.Bitmap;
 import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
@@ -71,17 +72,17 @@ import net.fred.taskgame.utils.Dog;
 import net.fred.taskgame.utils.NavigationUtils;
 import net.fred.taskgame.utils.PrefUtils;
 import net.fred.taskgame.utils.RxFirebase;
-import net.fred.taskgame.utils.ThrottledFlowContentObserver;
+import net.fred.taskgame.utils.ThrottledContentObserver;
 import net.fred.taskgame.utils.UiUtils;
+import net.frju.androidquery.gen.Q;
 
 import org.parceler.Parcels;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.functions.Action1;
-import rx.schedulers.Schedulers;
-import rx.subscriptions.CompositeSubscription;
+import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.functions.Consumer;
+import io.reactivex.schedulers.Schedulers;
 
 public class MainActivity extends AppCompatActivity implements FragmentManager.OnBackStackChangedListener, NavigationView.OnNavigationItemSelectedListener {
 
@@ -105,9 +106,9 @@ public class MainActivity extends AppCompatActivity implements FragmentManager.O
     private TextView mCurrentPoints;
     private ActionBarDrawerToggle mDrawerToggle;
 
-    private CompositeSubscription mCompositeSubscription = new CompositeSubscription();
+    private CompositeDisposable mCompositeDisposable = new CompositeDisposable();
 
-    private final ThrottledFlowContentObserver mContentObserver = new ThrottledFlowContentObserver(100) {
+    private final ThrottledContentObserver mContentObserver = new ThrottledContentObserver(new Handler(), 100) {
         @Override
         public void onChangeThrottled() {
             initNavigationMenu();
@@ -188,8 +189,8 @@ public class MainActivity extends AppCompatActivity implements FragmentManager.O
         displayHomeOrUpIcon();
 
         // registers for callbacks from the specified tables
-        mContentObserver.registerForContentChanges(this, Task.class);
-        mContentObserver.registerForContentChanges(this, Category.class);
+        getContentResolver().registerContentObserver(Q.Task.getContentUri(), true, mContentObserver);
+        getContentResolver().registerContentObserver(Q.Category.getContentUri(), true, mContentObserver);
 
         PrefUtils.registerOnPrefChangeListener(mCurrentPointsObserver);
 
@@ -203,74 +204,74 @@ public class MainActivity extends AppCompatActivity implements FragmentManager.O
 
         if (firebaseUser != null) {
             mFirebaseDatabase = FirebaseDatabase.getInstance().getReference();
-            mCompositeSubscription.add(RxFirebase.observeChildren(DbUtils.getFirebaseTasksNode())
+            mCompositeDisposable.add(RxFirebase.observeChildren(DbUtils.getFirebaseTasksNode())
                     .subscribeOn(Schedulers.io())
-                    .subscribe(new Action1<RxFirebase.FirebaseChildEvent>() {
+                    .subscribe(new Consumer<RxFirebase.FirebaseChildEvent>() {
                         @Override
-                        public void call(RxFirebase.FirebaseChildEvent ev) {
+                        public void accept(RxFirebase.FirebaseChildEvent ev) throws Exception {
                             switch (ev.eventType) {
                                 case CHILD_ADDED:
                                 case CHILD_CHANGED: {
                                     Task task = ev.snapshot.getValue(Task.class);
                                     task.id = ev.snapshot.getKey();
-                                    task.saveWithoutFirebase();
+                                    Q.Task.saveViaContentProvider(task).query();
                                     break;
                                 }
                                 case CHILD_REMOVED: {
                                     Task task = new Task(); // no need to copy everything, only id needed
                                     task.id = ev.snapshot.getKey();
-                                    task.deleteWithoutFirebase();
+                                    Q.Task.deleteViaContentProvider().model(task).query();
                                     break;
                                 }
                             }
                         }
-                    }, new Action1<Throwable>() {
+                    }, new Consumer<Throwable>() {
                         @Override
-                        public void call(Throwable throwable) {
+                        public void accept(Throwable throwable) throws Exception {
                             Dog.e("Error", throwable);
                         }
                     }));
 
-            mCompositeSubscription.add(RxFirebase.observeChildren(DbUtils.getFirebaseCategoriesNode())
+            mCompositeDisposable.add(RxFirebase.observeChildren(DbUtils.getFirebaseCategoriesNode())
                     .subscribeOn(Schedulers.io())
-                    .subscribe(new Action1<RxFirebase.FirebaseChildEvent>() {
+                    .subscribe(new Consumer<RxFirebase.FirebaseChildEvent>() {
                         @Override
-                        public void call(RxFirebase.FirebaseChildEvent ev) {
+                        public void accept(RxFirebase.FirebaseChildEvent ev) throws Exception {
                             switch (ev.eventType) {
                                 case CHILD_ADDED:
                                 case CHILD_CHANGED: {
                                     Category category = ev.snapshot.getValue(Category.class);
                                     category.id = ev.snapshot.getKey();
-                                    category.saveWithoutFirebase();
+                                    Q.Category.saveViaContentProvider(category).query();
                                     break;
                                 }
                                 case CHILD_REMOVED: {
                                     Category category = new Category(); // no need to copy everything, only id needed
                                     category.id = ev.snapshot.getKey();
-                                    category.deleteWithoutFirebase();
+                                    Q.Category.deleteViaContentProvider().model(category).query();
                                     break;
                                 }
                             }
                         }
-                    }, new Action1<Throwable>() {
+                    }, new Consumer<Throwable>() {
                         @Override
-                        public void call(Throwable throwable) {
+                        public void accept(Throwable throwable) throws Exception {
                             Dog.e("Error", throwable);
                         }
                     }));
 
-            mCompositeSubscription.add(RxFirebase.observeSingle(DbUtils.getFirebaseCurrentUserNode().child(DbUtils.FIREBASE_CURRENT_POINTS_NODE_NAME))
+            mCompositeDisposable.add(RxFirebase.observeSingle(DbUtils.getFirebaseCurrentUserNode().child(DbUtils.FIREBASE_CURRENT_POINTS_NODE_NAME))
                     .subscribeOn(Schedulers.io())
-                    .subscribe(new Action1<DataSnapshot>() {
+                    .subscribe(new Consumer<DataSnapshot>() {
                         @Override
-                        public void call(DataSnapshot snapshot) {
+                        public void accept(DataSnapshot snapshot) throws Exception {
                             if (snapshot.getValue() != null) {
                                 PrefUtils.putLong(PrefUtils.PREF_CURRENT_POINTS, snapshot.getValue(Long.class));
                             }
                         }
-                    }, new Action1<Throwable>() {
+                    }, new Consumer<Throwable>() {
                         @Override
-                        public void call(Throwable throwable) {
+                        public void accept(Throwable throwable) throws Exception {
                             Dog.e("Error", throwable);
                         }
                     }));
@@ -288,12 +289,12 @@ public class MainActivity extends AppCompatActivity implements FragmentManager.O
     }
 
     private void firebaseLogout() {
-        mCompositeSubscription.unsubscribe();
+        mCompositeDisposable.clear();
     }
 
     @Override
     protected void onDestroy() {
-        mContentObserver.unregisterForContentChanges(this);
+        getContentResolver().unregisterContentObserver(mContentObserver);
         PrefUtils.unregisterOnPrefChangeListener(mCurrentPointsObserver);
         firebaseLogout();
 

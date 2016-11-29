@@ -38,6 +38,7 @@ import net.fred.taskgame.models.Category;
 import net.fred.taskgame.utils.Constants;
 import net.fred.taskgame.utils.DbUtils;
 import net.fred.taskgame.utils.NavigationUtils;
+import net.frju.androidquery.gen.Q;
 
 import org.parceler.Parcels;
 
@@ -144,7 +145,8 @@ public class CategoryActivity extends Activity {
         category.color = picker.getColor();
 
         // Saved to DB and new id or update result catched
-        category.save();
+        Q.Category.saveViaContentProvider(category).query();
+        category.saveInFirebase();
 
         // Sets result to show proper message
         getIntent().putExtra(Constants.INTENT_CATEGORY, Parcels.wrap(category));

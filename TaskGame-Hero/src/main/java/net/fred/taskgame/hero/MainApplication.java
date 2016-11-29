@@ -20,11 +20,9 @@ package net.fred.taskgame.hero;
 import android.app.Application;
 import android.content.Context;
 
-import com.raizlabs.android.dbflow.config.FlowConfig;
-import com.raizlabs.android.dbflow.config.FlowManager;
-
 import net.fred.taskgame.hero.models.Card;
 import net.fred.taskgame.hero.models.Level;
+import net.frju.androidquery.gen.Q;
 
 public class MainApplication extends Application {
 
@@ -36,15 +34,10 @@ public class MainApplication extends Application {
 
         mContext = getApplicationContext();
 
-        FlowManager.init(new FlowConfig.Builder(this).build());
+        Q.init(this);
+
         Card.populate();
         Level.populate();
-    }
-
-    @Override
-    public void onTerminate() {
-        super.onTerminate();
-        FlowManager.destroy();
     }
 
     public static Context getContext() {

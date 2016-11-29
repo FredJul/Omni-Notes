@@ -155,6 +155,11 @@
             android:name=".widgets.ListWidgetService"
             android:permission="android.permission.BIND_REMOTEVIEWS" />
 
+        <provider
+            android:name=".models.providers.ModelContentProvider"
+            android:authorities="net.fred.taskgame.models.providers.ModelContentProvider"
+            android:exported="false" />
+
     </application>
 
 </manifest>

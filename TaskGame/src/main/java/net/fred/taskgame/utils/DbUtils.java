@@ -20,27 +20,22 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.raizlabs.android.dbflow.config.FlowManager;
-import com.raizlabs.android.dbflow.sql.language.ConditionGroup;
-import com.raizlabs.android.dbflow.sql.language.Method;
-import com.raizlabs.android.dbflow.sql.language.OrderBy;
-import com.raizlabs.android.dbflow.sql.language.SQLCondition;
-import com.raizlabs.android.dbflow.sql.language.Select;
-import com.raizlabs.android.dbflow.structure.Model;
-import com.raizlabs.android.dbflow.structure.database.transaction.ProcessModelTransaction;
 
 import net.fred.taskgame.MainApplication;
-import net.fred.taskgame.models.AppDatabase;
 import net.fred.taskgame.models.Category;
-import net.fred.taskgame.models.Category_Table;
 import net.fred.taskgame.models.Task;
-import net.fred.taskgame.models.Task_Table;
+import net.frju.androidquery.gen.Q;
+import net.frju.androidquery.operation.condition.Condition;
+import net.frju.androidquery.operation.condition.Where;
+import net.frju.androidquery.operation.keyword.OrderBy;
 
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import io.reactivex.schedulers.Schedulers;
 
 public class DbUtils {
 
@@ -96,7 +91,8 @@ public class DbUtils {
             task.lastModificationDate = Calendar.getInstance().getTimeInMillis();
         }
 
-        task.save();
+        Q.Task.saveViaContentProvider(task).query();
+        task.saveInFirebase();
     }
 
     /**
@@ -106,7 +102,7 @@ public class DbUtils {
      * @return
      */
     public static Task getTask(String id) {
-        return new Select().from(Task.class).where(Task_Table.id.eq(id)).querySingle();
+        return Q.Task.select().where(Where.where(Q.Task.ID, Where.Op.IS, id)).querySingle();
     }
 
 
@@ -128,11 +124,11 @@ public class DbUtils {
 
 
     public static List<Task> getActiveTasks() {
-        return getTasks(Task_Table.isFinished.eq(false));
+        return getTasks(Condition.where(Q.Task.IS_FINISHED, Where.Op.IS, false));
     }
 
     public static List<Task> getFinishedTasks() {
-        return getTasks(Task_Table.isFinished.eq(true));
+        return getTasks(Condition.where(Q.Task.IS_FINISHED, Where.Op.IS, true));
     }
 
 
@@ -142,7 +138,7 @@ public class DbUtils {
      * @return Tasks list
      */
     public static List<Task> getTasks() {
-        return getTasks(new SQLCondition[]{});
+        return getTasks(null);
     }
 
     /**
@@ -150,12 +146,12 @@ public class DbUtils {
      *
      * @return Tasks list
      */
-    public static List<Task> getTasks(SQLCondition... conditions) {
-        ArrayList<OrderBy> orderByList = new ArrayList<>();
-        orderByList.add(OrderBy.fromProperty(Task_Table.displayPriority).ascending());
-        orderByList.add(OrderBy.fromProperty(Task_Table.creationDate).descending());
+    public static List<Task> getTasks(Condition... conditions) {
+        OrderBy[] orderBy = new OrderBy[2];
+        orderBy[0] = new OrderBy(Q.Task.DISPLAY_PRIORITY, OrderBy.Order.ASC);
+        orderBy[1] = new OrderBy(Q.Task.CREATION_DATE, OrderBy.Order.DESC);
 
-        return new Select().from(Task.class).where(conditions).orderByAll(orderByList).queryList();
+        return Q.Task.select().where(conditions).orderBy(orderBy).query().toList();
     }
 
     public static void finishTask(Task task) {
@@ -170,32 +166,6 @@ public class DbUtils {
         updateTask(task, false);
     }
 
-
-    /**
-     * Deleting single task
-     */
-    public static void deleteTask(Task task) {
-        task.cancelReminderAlarm(MainApplication.getContext());
-
-        task.delete();
-    }
-
-    public static void deleteTasks(List<Task> tasks) {
-        for (Task task : tasks) {
-            task.cancelReminderAlarm(MainApplication.getContext());
-        }
-
-        ArrayList<Model> objectsToDelete = new ArrayList<>();
-        objectsToDelete.addAll(tasks);
-        FlowManager.getDatabase(AppDatabase.class).beginTransactionAsync(new ProcessModelTransaction.Builder<>(objectsToDelete,
-                new ProcessModelTransaction.ProcessModel<Model>() {
-                    @Override
-                    public void processModel(Model model) {
-                        model.delete();
-                    }
-                }).build()).build().execute();
-    }
-
     /**
      * Gets tasks matching pattern with title or content text
      *
@@ -203,17 +173,19 @@ public class DbUtils {
      * @return Tasks list
      */
     public static List<Task> getTasksByPattern(String pattern) {
-        ArrayList<SQLCondition> conditionList = new ArrayList<>();
+        ArrayList<Condition> Conditions = new ArrayList<>();
 
-        conditionList.add(Task_Table.isFinished.is(NavigationUtils.FINISHED_TASKS.equals(NavigationUtils.getNavigation())));
+        Conditions.add(Condition.where(Q.Task.IS_FINISHED, Where.Op.IS, NavigationUtils.FINISHED_TASKS.equals(NavigationUtils.getNavigation())));
 
         if (NavigationUtils.isDisplayingACategory()) {
-            conditionList.add(Task_Table.categoryId.eq(NavigationUtils.getNavigation()));
+            Conditions.add(Condition.where(Q.Task.CATEGORY_ID, Where.Op.IS, NavigationUtils.getNavigation()));
         }
 
-        conditionList.add(ConditionGroup.clause().and(Task_Table.title.like("%" + pattern + "%")).or(Task_Table.content.like("%" + pattern + "%")));
+        Conditions.add(Condition.where(Q.Task.CATEGORY_ID, Where.Op.IS, NavigationUtils.getNavigation()));
 
-        return getTasks(conditionList.toArray(new SQLCondition[conditionList.size()]));
+        Conditions.add(Condition.or(Condition.where(Q.Task.TITLE, Where.Op.LIKE, "%" + pattern + "%"), Condition.where(Q.Task.CONTENT, Where.Op.LIKE, "%" + pattern + "%")));
+
+        return getTasks(Conditions.toArray(new Condition[Conditions.size()]));
     }
 
 
@@ -224,17 +196,17 @@ public class DbUtils {
      * @return Tasks list
      */
     public static List<Task> getTasksWithReminder(boolean filterPastReminders) {
-        ArrayList<SQLCondition> conditionList = new ArrayList<>();
+        ArrayList<Condition> conditions = new ArrayList<>();
 
         if (filterPastReminders) {
-            conditionList.add(Task_Table.alarmDate.greaterThanOrEq(Calendar.getInstance().getTimeInMillis()));
+            conditions.add(Condition.where(Q.Task.ALARM_DATE, Where.Op.MORE_THAN_OR_EQUAL, Calendar.getInstance().getTimeInMillis()));
         } else {
-            conditionList.add(Task_Table.alarmDate.isNotNull());
+            conditions.add(Condition.where(Q.Task.ALARM_DATE, Where.Op.IS_NOT, null));
         }
 
-        conditionList.add(Task_Table.isFinished.isNot(true));
+        conditions.add(Condition.where(Q.Task.IS_FINISHED, Where.Op.IS_NOT, true));
 
-        return getTasks(conditionList.toArray(new SQLCondition[conditionList.size()]));
+        return getTasks(conditions.toArray(new Condition[conditions.size()]));
     }
 
     /**
@@ -244,12 +216,12 @@ public class DbUtils {
      * @return List of tasks with requested category
      */
     public static List<Task> getActiveTasksByCategory(String categoryId) {
-        ArrayList<SQLCondition> conditionList = new ArrayList<>();
+        ArrayList<Condition> conditions = new ArrayList<>();
 
-        conditionList.add(Task_Table.categoryId.eq(categoryId));
-        conditionList.add(Task_Table.isFinished.isNot(true));
+        conditions.add(Condition.where(Q.Task.CATEGORY_ID, Where.Op.IS, categoryId));
+        conditions.add(Condition.where(Q.Task.IS_FINISHED, Where.Op.IS_NOT, true));
 
-        return getTasks(conditionList.toArray(new SQLCondition[conditionList.size()]));
+        return getTasks(conditions.toArray(new Condition[conditions.size()]));
     }
 
     /**
@@ -258,34 +230,41 @@ public class DbUtils {
      * @return List of categories
      */
     public static List<Category> getCategories() {
-        return new Select().from(Category.class).orderBy(Category_Table.creationDate, false).queryList();
+        return Q.Category.select().orderBy(Q.Category.CREATION_DATE, OrderBy.Order.DESC).query().toList();
     }
 
     public static Category getCategory(String categoryId) {
-        return new Select().from(Category.class).where(Category_Table.id.eq(categoryId)).querySingle();
+        return Q.Category.select().where(Condition.where(Q.Category.ID, Where.Op.IS, categoryId)).querySingle();
     }
 
     public static long getActiveTaskCount() {
-        return new Select(Method.count()).from(Task.class).where(Task_Table.isFinished.eq(false)).count();
+        return Q.Task.count().where(Condition.where(Q.Task.IS_FINISHED, Where.Op.IS, false)).query();
     }
 
     public static long getFinishedTaskCount() {
-        return new Select(Method.count()).from(Task.class).where(Task_Table.isFinished.eq(true)).count();
+        return Q.Task.count().where(Condition.where(Q.Task.IS_FINISHED, Where.Op.IS, true)).query();
     }
 
     public static long getActiveTaskCountByCategory(Category category) {
-        return new Select(Method.count()).from(Task.class).where(Task_Table.isFinished.eq(false), Task_Table.categoryId.eq(category.id)).count();
+        return Q.Task.count().where(
+                Condition.and(
+                        Condition.where(Q.Task.IS_FINISHED, Where.Op.IS, false),
+                        Condition.where(Q.Task.CATEGORY_ID, Where.Op.IS, category.id)
+                )
+        ).query();
     }
 
     public static void deleteCategoryAsync(Category category) {
         // DO NOT USE the below commented solution: it will break firebase sync
         //new Update(Task.class).set(Task_Table.categoryId.isNull()).where(Task_Table.categoryId.eq(category.id));
 
-        for (Task task : getTasks(Task_Table.categoryId.eq(category.id))) {
+        for (Task task : getTasks(Condition.where(Q.Task.CATEGORY_ID, Where.Op.IS, category.id))) {
             task.categoryId = null;
-            task.async().save();
+            Q.Task.updateViaContentProvider().model(task).rx().subscribeOn(Schedulers.io()).subscribe();
+            task.saveInFirebase();
         }
 
-        category.async().delete();
+        Q.Category.deleteViaContentProvider().model(category).rx().subscribeOn(Schedulers.io()).subscribe();
+        category.deleteInFirebase();
     }
 }

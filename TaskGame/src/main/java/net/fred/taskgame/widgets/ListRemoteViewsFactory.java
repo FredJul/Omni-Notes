@@ -22,18 +22,19 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.View;
 import android.widget.RemoteViews;
 import android.widget.RemoteViewsService.RemoteViewsFactory;
 
 import net.fred.taskgame.R;
-import net.fred.taskgame.models.Category;
 import net.fred.taskgame.models.Task;
 import net.fred.taskgame.utils.Constants;
 import net.fred.taskgame.utils.DbUtils;
 import net.fred.taskgame.utils.Dog;
 import net.fred.taskgame.utils.PrefUtils;
-import net.fred.taskgame.utils.ThrottledFlowContentObserver;
+import net.fred.taskgame.utils.ThrottledContentObserver;
+import net.frju.androidquery.gen.Q;
 
 import org.parceler.Parcels;
 
@@ -45,7 +46,7 @@ public class ListRemoteViewsFactory implements RemoteViewsFactory {
     private final int appWidgetId;
     private List<Task> tasks;
 
-    private final ThrottledFlowContentObserver mContentObserver = new ThrottledFlowContentObserver(500) {
+    private final ThrottledContentObserver mContentObserver = new ThrottledContentObserver(new Handler(), 500) {
         @Override
         public void onChangeThrottled() {
             Dog.d("change detected, widget updated");
@@ -62,8 +63,8 @@ public class ListRemoteViewsFactory implements RemoteViewsFactory {
     @Override
     public void onCreate() {
         getTasks();
-        mContentObserver.registerForContentChanges(mContext, Task.class);
-        mContentObserver.registerForContentChanges(mContext, Category.class);
+        mContext.getContentResolver().registerContentObserver(Q.Task.getContentUri(), true, mContentObserver);
+        mContext.getContentResolver().registerContentObserver(Q.Category.getContentUri(), true, mContentObserver);
     }
 
     @Override
@@ -83,7 +84,7 @@ public class ListRemoteViewsFactory implements RemoteViewsFactory {
 
     @Override
     public void onDestroy() {
-        mContentObserver.unregisterForContentChanges(mContext);
+        mContext.getContentResolver().unregisterContentObserver(mContentObserver);
 
         PrefUtils.remove(PrefUtils.PREF_WIDGET_PREFIX + String.valueOf(appWidgetId));
     }
@@ -113,12 +114,12 @@ public class ListRemoteViewsFactory implements RemoteViewsFactory {
         row.setTextViewText(R.id.reward_points, String.valueOf(task.pointReward));
 
         // Init task and category marker colors
-            // If category is set the color will be applied on the appropriate target
-            if (task.getCategory() != null) {
-                row.setInt(R.id.category_marker, "setBackgroundColor", task.getCategory().color);
-            } else {
-                row.setInt(R.id.category_marker, "setBackgroundColor", Color.TRANSPARENT);
-            }
+        // If category is set the color will be applied on the appropriate target
+        if (task.getCategory() != null) {
+            row.setInt(R.id.category_marker, "setBackgroundColor", task.getCategory().color);
+        } else {
+            row.setInt(R.id.category_marker, "setBackgroundColor", Color.TRANSPARENT);
+        }
 
         // Next, set a fill-intent, which will be used to fill in the pending intent template
         // that is set on the collection view in StackWidgetProvider.
