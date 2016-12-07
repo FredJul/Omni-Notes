@@ -43,12 +43,14 @@ public class TaskAdapter extends MultiSelectAdapter<TaskAdapter.TaskViewHolder> 
         @Override
         public void onItemSelected() {
             // Highlighted if is part of multi selection of tasks. Remember to search for child with card ui
-            mRoot.setBackgroundColor(Color.LTGRAY);
+            mRoot.setBackgroundResource(R.color.gray_bg);
+            mRoot.setElevation(1);
         }
 
         @Override
         public void onItemClear() {
-            mRoot.setBackgroundColor(Color.TRANSPARENT);
+            mRoot.setBackgroundColor(Color.WHITE);
+            mRoot.setElevation(0);
         }
     }
 
