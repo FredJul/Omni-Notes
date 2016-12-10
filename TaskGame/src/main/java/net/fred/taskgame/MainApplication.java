@@ -26,13 +26,13 @@ import net.frju.androidquery.gen.Q;
 
 public class MainApplication extends Application {
 
-    private static Context mContext;
+    private static Context sContext;
 
     @Override
     public void onCreate() {
         super.onCreate();
 
-        mContext = getApplicationContext();
+        sContext = getApplicationContext();
 
         FirebaseDatabase.getInstance().setPersistenceEnabled(true);
 
@@ -40,7 +40,7 @@ public class MainApplication extends Application {
     }
 
     public static Context getContext() {
-        return MainApplication.mContext;
+        return MainApplication.sContext;
     }
 
 }
