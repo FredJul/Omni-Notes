@@ -7,8 +7,8 @@ import android.util.Pair;
 import android.util.SparseBooleanArray;
 
 import net.fred.taskgame.hero.R;
-import net.frju.androidquery.annotation.Column;
-import net.frju.androidquery.annotation.Table;
+import net.frju.androidquery.annotation.DbField;
+import net.frju.androidquery.annotation.DbModel;
 import net.frju.androidquery.gen.Q;
 
 import org.parceler.Parcel;
@@ -19,7 +19,7 @@ import java.util.List;
 import java.util.Map;
 
 @Parcel
-@Table(localDatabaseProvider = LocalDatabaseProvider.class)
+@DbModel(localDatabaseProvider = LocalDatabaseProvider.class)
 public class Level {
 
     public final static int INVALID_ID = 0;
@@ -36,10 +36,10 @@ public class Level {
     };
     private final static List<Level> ALL_LEVELS_LIST = new ArrayList<>();
 
-    @Column(primaryKey = true)
+    @DbField(primaryKey = true)
     public int levelNumber;
 
-    @Column
+    @DbField
     public boolean isCompleted;
 
     public boolean isBossLevel;

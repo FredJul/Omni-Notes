@@ -7,8 +7,8 @@ import android.widget.ImageView;
 
 import net.fred.taskgame.hero.R;
 import net.fred.taskgame.hero.logic.BattleManager;
-import net.frju.androidquery.annotation.Column;
-import net.frju.androidquery.annotation.Table;
+import net.frju.androidquery.annotation.DbField;
+import net.frju.androidquery.annotation.DbModel;
 import net.frju.androidquery.gen.Q;
 
 import org.parceler.Parcel;
@@ -18,7 +18,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 
 @Parcel
-@Table(localDatabaseProvider = LocalDatabaseProvider.class)
+@DbModel(localDatabaseProvider = LocalDatabaseProvider.class)
 public class Card implements Cloneable {
 
     public interface FightAction {
@@ -82,13 +82,13 @@ public class Card implements Cloneable {
 
     private final static LinkedHashMap<Integer, Card> ALL_CARDS_MAP = new LinkedHashMap<>();
 
-    @Column(primaryKey = true)
+    @DbField(primaryKey = true)
     public int id = INVALID_ID;
 
-    @Column
+    @DbField
     public boolean isObtained;
 
-    @Column
+    @DbField
     public boolean isInDeck;
 
     public Type type = Type.CREATURE;
@@ -562,9 +562,9 @@ public class Card implements Cloneable {
         // - defense need to be greater than 1.2*attack
         // - attack is more important than defense, so big attackers should be penalised
 
-        int acceptableSum = card.neededSlots * 3;
-        int margin = Math.round(acceptableSum / 100f * 30f);
-        if (card.attack > Math.round(card.defense / 1.2) || card.attack + card.defense > acceptableSum + margin || card.attack + card.defense < acceptableSum - margin) {
+        int accepDbModelSum = card.neededSlots * 3;
+        int margin = Math.round(accepDbModelSum / 100f * 30f);
+        if (card.attack > Math.round(card.defense / 1.2) || card.attack + card.defense > accepDbModelSum + margin || card.attack + card.defense < accepDbModelSum - margin) {
             throw new IllegalStateException("Card " + card.name + " does not respect rules");
         }
     }

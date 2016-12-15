@@ -32,8 +32,8 @@ import net.fred.taskgame.receivers.AlarmReceiver;
 import net.fred.taskgame.utils.Constants;
 import net.fred.taskgame.utils.DbUtils;
 import net.fred.taskgame.utils.EqualityChecker;
-import net.frju.androidquery.annotation.Column;
-import net.frju.androidquery.annotation.Table;
+import net.frju.androidquery.annotation.DbField;
+import net.frju.androidquery.annotation.DbModel;
 import net.frju.androidquery.database.ModelListener;
 import net.frju.androidquery.gen.Q;
 import net.frju.androidquery.operation.condition.Where;
@@ -44,7 +44,7 @@ import java.util.Calendar;
 import java.util.UUID;
 
 @Parcel
-@Table(localDatabaseProvider = LocalDatabaseProvider.class, contentDatabaseProvider = ContentDatabaseProvider.class)
+@DbModel(localDatabaseProvider = LocalDatabaseProvider.class, contentDatabaseProvider = ContentDatabaseProvider.class)
 public class Task implements ModelListener {
 
     public final static long LOW_POINT_REWARD = 20;
@@ -52,27 +52,27 @@ public class Task implements ModelListener {
     public final static long HIGH_POINT_REWARD = 100;
     public final static long VERY_HIGH_POINT_REWARD = 200;
 
-    @Column(primaryKey = true)
+    @DbField(primaryKey = true)
     public String id;
-    @Column
+    @DbField
     public String title = "";
-    @Column
+    @DbField
     public String content = "";
-    @Column
+    @DbField
     public long creationDate;
-    @Column
+    @DbField
     public long lastModificationDate;
-    @Column
+    @DbField
     public int displayPriority;
-    @Column
+    @DbField
     public boolean isFinished;
-    @Column
+    @DbField
     public long alarmDate;
-    @Column
+    @DbField
     public boolean isChecklist;
-    @Column
+    @DbField
     public String categoryId;
-    @Column
+    @DbField
     public long pointReward = NORMAL_POINT_REWARD;
 
     private transient Category mCategory;

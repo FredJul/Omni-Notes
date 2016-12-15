@@ -23,8 +23,8 @@ import com.google.firebase.database.DatabaseReference;
 import net.fred.taskgame.models.providers.ContentDatabaseProvider;
 import net.fred.taskgame.models.providers.LocalDatabaseProvider;
 import net.fred.taskgame.utils.DbUtils;
-import net.frju.androidquery.annotation.Column;
-import net.frju.androidquery.annotation.Table;
+import net.frju.androidquery.annotation.DbField;
+import net.frju.androidquery.annotation.DbModel;
 import net.frju.androidquery.database.ModelListener;
 
 import org.parceler.Parcel;
@@ -32,19 +32,19 @@ import org.parceler.Parcel;
 import java.util.UUID;
 
 @Parcel
-@Table(localDatabaseProvider = LocalDatabaseProvider.class, contentDatabaseProvider = ContentDatabaseProvider.class)
+@DbModel(localDatabaseProvider = LocalDatabaseProvider.class, contentDatabaseProvider = ContentDatabaseProvider.class)
 public class Category implements ModelListener {
 
-    @Column(primaryKey = true)
+    @DbField(primaryKey = true)
     public String id;
-    @Column
+    @DbField
     public String name = "";
-    @Column
+    @DbField
     public String description = "";
-    @Column
+    @DbField
     @ColorInt
     public int color;
-    @Column
+    @DbField
     public long creationDate;
 
     public Category() {

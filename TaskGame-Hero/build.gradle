@@ -21,21 +21,24 @@ android {
         enabled = true
     }
 
+    Properties properties = new Properties()
+    properties.load(project.rootProject.file('local.properties').newDataInputStream())
+
     signingConfigs {
         debug {
-            if (project.hasProperty("KEYSTORE_PATH")) {
-                storeFile file(KEYSTORE_PATH)
-                storePassword KEYSTORE_PASSWORD
-                keyAlias KEY_ALIAS
-                keyPassword KEY_PASSWORD
+            if (properties.getProperty("KEYSTORE_PATH") != null) {
+                storeFile file(properties.getProperty("KEYSTORE_PATH"))
+                storePassword properties.getProperty("KEYSTORE_PASSWORD")
+                keyAlias properties.getProperty("KEY_ALIAS")
+                keyPassword properties.getProperty("KEY_PASSWORD")
             }
         }
         release {
-            if (project.hasProperty("KEYSTORE_PATH")) {
-                storeFile file(KEYSTORE_PATH)
-                storePassword KEYSTORE_PASSWORD
-                keyAlias KEY_ALIAS
-                keyPassword KEY_PASSWORD
+            if (properties.getProperty("KEYSTORE_PATH") != null) {
+                storeFile file(properties.getProperty("KEYSTORE_PATH"))
+                storePassword properties.getProperty("KEYSTORE_PASSWORD")
+                keyAlias properties.getProperty("KEY_ALIAS")
+                keyPassword properties.getProperty("KEY_PASSWORD")
             }
         }
     }
@@ -53,14 +56,15 @@ android {
 dependencies {
     compile fileTree(dir: 'libs', include: '*.jar')
 
-    annotationProcessor 'net.frju.androidquery:android-query-preprocessor:1.2.7'
-    compile 'net.frju.androidquery:android-query:1.2.7'
+    annotationProcessor 'net.frju.androidquery:android-query-preprocessor:1.2.8'
+    compile 'net.frju.androidquery:android-query:1.2.8'
     compile 'org.parceler:parceler-api:+'
     annotationProcessor 'org.parceler:parceler:+'
     compile 'com.jakewharton:butterknife:+'
     annotationProcessor 'com.jakewharton:butterknife-compiler:+'
 
-    compile "com.android.support:appcompat-v7:+"
+    compile "com.android.support:appcompat-v7:25.0.1"
+    // 25.1.0 has some bugs with remaining fragment
     compile 'com.android.support:recyclerview-v7:+'
     compile 'com.android.support:cardview-v7:+'
     compile 'com.android.support:design:24.1.1' // To fix a bug with BottomSheetBehavior on 24.2.0+
