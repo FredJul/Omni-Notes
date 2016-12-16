@@ -18,7 +18,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 
 @Parcel
-@DbModel(localDatabaseProvider = LocalDatabaseProvider.class)
+@DbModel(databaseProvider = LocalDatabaseProvider.class)
 public class Card implements Cloneable {
 
     public interface FightAction {

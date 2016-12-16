@@ -688,7 +688,7 @@ public class DetailFragment extends Fragment implements OnReminderPickedListener
                 .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
                         mTask.deleteInFirebase();
-                        Q.Task.deleteViaContentProvider().model(mTask).query();
+                        Q.Task.delete().model(mTask).query();
                         UiUtils.showMessage(getActivity(), R.string.task_deleted);
                         goHome();
                     }

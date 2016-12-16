@@ -91,7 +91,7 @@ public class DbUtils {
             task.lastModificationDate = Calendar.getInstance().getTimeInMillis();
         }
 
-        Q.Task.saveViaContentProvider(task).query();
+        Q.Task.save(task).query();
         task.saveInFirebase();
     }
 
@@ -260,11 +260,11 @@ public class DbUtils {
 
         for (Task task : getTasks(Condition.where(Q.Task.CATEGORY_ID, Where.Op.IS, category.id))) {
             task.categoryId = null;
-            Q.Task.updateViaContentProvider().model(task).rx2().subscribeOn(Schedulers.io()).subscribe();
+            Q.Task.update().model(task).rx2().subscribeOn(Schedulers.io()).subscribe();
             task.saveInFirebase();
         }
 
-        Q.Category.deleteViaContentProvider().model(category).rx2().subscribeOn(Schedulers.io()).subscribe();
+        Q.Category.delete().model(category).rx2().subscribeOn(Schedulers.io()).subscribe();
         category.deleteInFirebase();
     }
 }

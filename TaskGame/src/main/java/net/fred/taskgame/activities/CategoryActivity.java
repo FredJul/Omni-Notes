@@ -145,7 +145,7 @@ public class CategoryActivity extends Activity {
         category.color = picker.getColor();
 
         // Saved to DB and new id or update result catched
-        Q.Category.saveViaContentProvider(category).query();
+        Q.Category.save(category).query();
         category.saveInFirebase();
 
         // Sets result to show proper message

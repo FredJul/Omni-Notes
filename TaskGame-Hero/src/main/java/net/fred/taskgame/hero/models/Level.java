@@ -19,7 +19,7 @@ import java.util.List;
 import java.util.Map;
 
 @Parcel
-@DbModel(localDatabaseProvider = LocalDatabaseProvider.class)
+@DbModel(databaseProvider = LocalDatabaseProvider.class)
 public class Level {
 
     public final static int INVALID_ID = 0;

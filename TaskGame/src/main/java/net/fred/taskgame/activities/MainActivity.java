@@ -214,13 +214,13 @@ public class MainActivity extends AppCompatActivity implements FragmentManager.O
                                 case CHILD_CHANGED: {
                                     Task task = ev.snapshot.getValue(Task.class);
                                     task.id = ev.snapshot.getKey();
-                                    Q.Task.saveViaContentProvider(task).query();
+                                    Q.Task.save(task).query();
                                     break;
                                 }
                                 case CHILD_REMOVED: {
                                     Task task = new Task(); // no need to copy everything, only id needed
                                     task.id = ev.snapshot.getKey();
-                                    Q.Task.deleteViaContentProvider().model(task).query();
+                                    Q.Task.delete().model(task).query();
                                     break;
                                 }
                             }
@@ -242,13 +242,13 @@ public class MainActivity extends AppCompatActivity implements FragmentManager.O
                                 case CHILD_CHANGED: {
                                     Category category = ev.snapshot.getValue(Category.class);
                                     category.id = ev.snapshot.getKey();
-                                    Q.Category.saveViaContentProvider(category).query();
+                                    Q.Category.save(category).query();
                                     break;
                                 }
                                 case CHILD_REMOVED: {
                                     Category category = new Category(); // no need to copy everything, only id needed
                                     category.id = ev.snapshot.getKey();
-                                    Q.Category.deleteViaContentProvider().model(category).query();
+                                    Q.Category.delete().model(category).query();
                                     break;
                                 }
                             }

@@ -20,7 +20,6 @@ import android.support.annotation.ColorInt;
 
 import com.google.firebase.database.DatabaseReference;
 
-import net.fred.taskgame.models.providers.ContentDatabaseProvider;
 import net.fred.taskgame.models.providers.LocalDatabaseProvider;
 import net.fred.taskgame.utils.DbUtils;
 import net.frju.androidquery.annotation.DbField;
@@ -32,7 +31,7 @@ import org.parceler.Parcel;
 import java.util.UUID;
 
 @Parcel
-@DbModel(localDatabaseProvider = LocalDatabaseProvider.class, contentDatabaseProvider = ContentDatabaseProvider.class)
+@DbModel(databaseProvider = LocalDatabaseProvider.class)
 public class Category implements ModelListener {
 
     @DbField(primaryKey = true)

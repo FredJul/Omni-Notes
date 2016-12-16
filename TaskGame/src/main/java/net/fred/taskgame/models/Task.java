@@ -26,7 +26,6 @@ import com.google.firebase.database.DatabaseReference;
 
 import net.fred.taskgame.MainApplication;
 import net.fred.taskgame.R;
-import net.fred.taskgame.models.providers.ContentDatabaseProvider;
 import net.fred.taskgame.models.providers.LocalDatabaseProvider;
 import net.fred.taskgame.receivers.AlarmReceiver;
 import net.fred.taskgame.utils.Constants;
@@ -44,7 +43,7 @@ import java.util.Calendar;
 import java.util.UUID;
 
 @Parcel
-@DbModel(localDatabaseProvider = LocalDatabaseProvider.class, contentDatabaseProvider = ContentDatabaseProvider.class)
+@DbModel(databaseProvider = LocalDatabaseProvider.class)
 public class Task implements ModelListener {
 
     public final static long LOW_POINT_REWARD = 20;

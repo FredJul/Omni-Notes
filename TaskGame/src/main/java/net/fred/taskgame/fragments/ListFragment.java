@@ -278,7 +278,7 @@ public class ListFragment extends Fragment {
                     task.saveInFirebase();
                 }
 
-                Q.Task.updateViaContentProvider().model(tasks).query();
+                Q.Task.update().model(tasks).query();
 
                 finishActionMode();
             }
@@ -666,7 +666,7 @@ public class ListFragment extends Fragment {
             task.deleteInFirebase();
         }
         mAdapter.getTasks().removeAll(tasksToDelete);
-        Q.Task.deleteViaContentProvider().model(tasksToDelete).query();
+        Q.Task.delete().model(tasksToDelete).query();
 
         finishActionMode();
 
