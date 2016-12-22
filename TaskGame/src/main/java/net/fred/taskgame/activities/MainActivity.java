@@ -620,12 +620,6 @@ public class MainActivity extends AppCompatActivity implements FragmentManager.O
 //        return true;
 //    }
 
-    /*
-     * (non-Javadoc)
-     * @see android.support.v7.app.ActionBarActivity#onBackPressed()
-     *
-     * Overrides the onBackPressed behavior for the attached fragments
-     */
     @Override
     public void onBackPressed() {
         // DetailFragment
