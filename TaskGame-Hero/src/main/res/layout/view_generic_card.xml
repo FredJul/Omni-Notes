@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge>
+
+    <include layout="@layout/view_creature_card" />
+
+    <include layout="@layout/view_support_card" />
+</merge>

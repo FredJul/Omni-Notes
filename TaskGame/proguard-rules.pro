@@ -1,7 +1,10 @@
 # This is an opensource project, let's keep the filename and line numbers
 -renamesourcefileattribute SourceFile
--keepattributes SourceFile,LineNumberTable
+-keepattributes SourceFile,LineNumberTable, Signature
 -keepnames class *
+
+# Add this global rule
+-keepattributes Signature
 
 # Support v7
 # https://code.google.com/p/android/issues/detail?id=58508

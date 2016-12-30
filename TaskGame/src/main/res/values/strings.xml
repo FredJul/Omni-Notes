@@ -17,10 +17,10 @@
   ~ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   -->
 <resources>
-    <string name="drawer_tasks_item">To-do tasks</string>
-    <string name="drawer_finished_tasks_item">Finished tasks</string>
+    <string name="drawer_tasks_item">To-do _tasks</string>
+    <string name="drawer_finished_tasks_item">Finished _tasks</string>
     <string name="task">Task</string>
-    <string name="all_tasks">All tasks</string>
+    <string name="all_tasks">All _tasks</string>
     <string name="title">Title</string>
     <string name="search">Search</string>
     <string name="content">Content</string>
@@ -55,9 +55,9 @@
     <string name="categorize_as">Categorize as</string>
     <string name="title_activity_category">Edit category</string>
     <string name="delete_unused_category_confirmation">Confirm category deletion?</string>
-    <string name="delete_category_confirmation">This category is used by $1$ task/s.\nConfirm tasks un-categorization and category deletion?</string>
+    <string name="delete_category_confirmation">This category is used by $1$ task/s.\nConfirm _tasks un-categorization and category deletion?</string>
     <string name="remove_category">Remove category</string>
-    <string name="tasks_category_removed">Category removed from tasks</string>
+    <string name="tasks_category_removed">Category removed from _tasks</string>
     <string name="tasks_categorized_as">Tasks categorized as</string>
     <string name="no_items_in_list">Nothing here!</string>
     <string name="checklist_on">Enable checklist</string>
@@ -67,16 +67,16 @@
     <string name="checklist_keep_symbols">Keep check marks</string>
     <string name="snooze">In %d mins</string>
     <string name="shortcut_task_deleted">Shortcut points to deleted task</string>
-    <string name="delete_all_finished_tasks">Delete all finished tasks</string>
-    <string name="delete_finished_tasks_confirmation">Confirm deleting all finished tasks?</string>
+    <string name="delete_all_finished_tasks">Delete all finished _tasks</string>
+    <string name="delete_finished_tasks_confirmation">Confirm deleting all finished _tasks?</string>
     <string name="select_all">Select all</string>
     <string name="open_link_dialog_title">Do you want to open the link or modify it?</string>
     <string name="open_link">Open</string>
     <string name="modify_link">Modify</string>
     <string name="app_not_found">You did not installed any application which can handle this kind of link</string>
     <string name="difficulty">Difficulty:</string>
-    <string name="no_points">Sorry, you don\'t have any task points and should try to finish some tasks before. Do you want to open TaskGame?</string>
-    <string name="not_enough_points">Sorry, you only have %d task points and should try to finish some tasks before. Do you want to open TaskGame?</string>
+    <string name="no_points">Sorry, you don\'t have any task points and should try to finish some _tasks before. Do you want to open TaskGame?</string>
+    <string name="not_enough_points">Sorry, you only have %d task points and should try to finish some _tasks before. Do you want to open TaskGame?</string>
     <string name="points_needed">%d task points will be spent. Do you want to continue?</string>
     <string name="settings">Settings</string>
     <string name="settings_enable_vibration">Vibration</string>
