@@ -422,9 +422,9 @@ class ListFragment : Fragment() {
                 onTasksLoaded(DbUtils.tasksFromCurrentNavigation)
                 val currentNavigation = NavigationUtils.navigation
                 if (NavigationUtils.TASKS == currentNavigation) {
-                    mainActivity?.supportActionBar?.setTitle(R.string.drawer_tasks_item)
+                    mainActivity?.supportActionBar?.setTitle(R.string.all_tasks)
                 } else if (NavigationUtils.FINISHED_TASKS == currentNavigation) {
-                    mainActivity?.supportActionBar?.setTitle(R.string.drawer_finished_tasks_item)
+                    mainActivity?.supportActionBar?.setTitle(R.string.finished_tasks)
                     mainActivity?.supportActionBar?.setBackgroundDrawable(ColorDrawable(ContextCompat.getColor(context, R.color.finished_tasks_actionbar_color)))
                 } else {
                     mainActivity?.supportActionBar?.title = DbUtils.getCategory(currentNavigation).name

@@ -38,7 +38,7 @@ import android.support.v4.widget.DrawerLayout
 import android.support.v7.app.ActionBarDrawerToggle
 import android.support.v7.app.AlertDialog
 import android.support.v7.app.AppCompatActivity
-import android.util.SparseArray
+import android.support.v7.view.menu.MenuView
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
@@ -63,11 +63,13 @@ import net.fred.taskgame.utils.*
 import net.frju.androidquery.gen.Q
 import net.frju.androidquery.utils.ThrottledContentObserver
 import org.jetbrains.anko.onClick
+import org.jetbrains.anko.onLongClick
 import org.parceler.Parcels
 
 class MainActivity : AppCompatActivity(), FragmentManager.OnBackStackChangedListener, NavigationView.OnNavigationItemSelectedListener {
 
     private val drawer_header by lazy { navigation_view.findViewById(R.id.drawer_header) as ViewGroup }
+    private val navigation_menu_view by lazy { navigation_view.findViewById(R.id.design_navigation_view) as ViewGroup }
     private val player_image by lazy { drawer_header.findViewById(R.id.player_image) as ImageView }
     private val player_name by lazy { drawer_header.findViewById(R.id.player_name) as TextView }
     private val current_points by lazy { drawer_header.findViewById(R.id.current_points) as TextView }
@@ -288,13 +290,10 @@ class MainActivity : AppCompatActivity(), FragmentManager.OnBackStackChangedList
     }
 
     private fun initNavigationMenu() {
-        val menu = navigation_view.menu
-        menu.clear()
-        var nbItems = 0
-        val listCategories = SparseArray<Category>()
+        navigation_view.menu.clear()
         val currentNavigation = NavigationUtils.navigation
 
-        var item = menu.add(1, R.string.drawer_tasks_item, Menu.NONE, R.string.drawer_tasks_item)
+        var item = navigation_view.menu.add(1, R.string.all_tasks, Menu.NONE, R.string.all_tasks)
         item.setIcon(R.drawable.ic_assignment_grey600_24dp)
         val activeTaskCount = DbUtils.activeTaskCount
         if (activeTaskCount > 0) {
@@ -304,43 +303,41 @@ class MainActivity : AppCompatActivity(), FragmentManager.OnBackStackChangedList
         if (NavigationUtils.TASKS == currentNavigation) {
             item.isChecked = true
         }
-        nbItems++
 
         if (DbUtils.finishedTaskCount > 0) {
-            item = menu.add(1, R.string.drawer_finished_tasks_item, Menu.NONE, R.string.drawer_finished_tasks_item)
+            item = navigation_view.menu.add(1, R.string.finished_tasks, Menu.NONE, R.string.finished_tasks)
             item.setIcon(R.drawable.ic_assignment_turned_in_grey600_24dp)
             if (NavigationUtils.FINISHED_TASKS == currentNavigation) {
                 item.isChecked = true
             }
-            nbItems++
         }
 
         // Retrieves data to fill tags list
+        val mapCategories = mutableMapOf<String, Category>()
         for (category in DbUtils.categories) {
-            item = menu.add(1, R.string.category, Menu.NONE, category.name)
+            item = navigation_view.menu.add(1, R.string.category, Menu.NONE, category.name)
             val categoryCount = DbUtils.getActiveTaskCountByCategory(category)
             if (categoryCount > 0) {
                 item.setActionView(R.layout.menu_counter)
                 (item.actionView as TextView).text = categoryCount.toString()
             }
             val extraIntent = Intent()
-            extraIntent.putExtra("category", category.id)
+            extraIntent.putExtra(Constants.INTENT_CATEGORY, category.id)
             item.intent = extraIntent
             item.icon = ColorDrawable(category.color)
             if (category.id == currentNavigation) {
                 item.isChecked = true
             }
 
-            nbItems++
-            listCategories.put(nbItems, category)
+            mapCategories.put(category.id!!, category)
         }
 
-        menu.setGroupCheckable(1, true, true)
+        navigation_view.menu.setGroupCheckable(1, true, true)
 
-        item = menu.add(Menu.NONE, R.string.find_games, Menu.NONE, R.string.find_games)
+        item = navigation_view.menu.add(Menu.NONE, R.string.find_games, Menu.NONE, R.string.find_games)
         item.setIcon(R.drawable.ic_mood_grey600_24dp)
 
-        item = menu.add(Menu.NONE, R.string.settings, Menu.NONE, R.string.settings)
+        item = navigation_view.menu.add(Menu.NONE, R.string.settings, Menu.NONE, R.string.settings)
         item.setIcon(R.drawable.ic_settings_grey600_24dp)
 
         navigation_view.post {
@@ -381,15 +378,19 @@ class MainActivity : AppCompatActivity(), FragmentManager.OnBackStackChangedList
             }
 
             // Small hack to handle the long press on menu item
-            val navigationList = navigation_view.findViewById(android.support.design.R.id.design_navigation_view) as ViewGroup
-            for (i in 0..listCategories.size() - 1) {
-                val catPos = listCategories.keyAt(i)
-                val categoryView = navigationList.getChildAt(catPos)
-                categoryView?.setOnLongClickListener {
-                    editCategory(listCategories.get(catPos))
-                    true
-                }
-            }
+            (0..navigation_menu_view.childCount - 1)
+                    .map { navigation_menu_view.getChildAt(it) }
+                    .forEach {
+                        if (it is MenuView.ItemView) {
+                            it.onLongClick {
+                                val catId = (it as MenuView.ItemView).itemData.intent?.getStringExtra(Constants.INTENT_CATEGORY)
+                                if (catId != null) {
+                                    editCategory(mapCategories[catId]!!)
+                                }
+                                true
+                            }
+                        }
+                    }
         }
     }
 
@@ -430,12 +431,12 @@ class MainActivity : AppCompatActivity(), FragmentManager.OnBackStackChangedList
                 // Reset intent
                 intent.action = Intent.ACTION_MAIN
 
-                if (item.itemId == R.string.drawer_tasks_item) {
+                if (item.itemId == R.string.all_tasks) {
                     updateNavigation(NavigationUtils.TASKS)
-                } else if (item.itemId == R.string.drawer_finished_tasks_item) {
+                } else if (item.itemId == R.string.finished_tasks) {
                     updateNavigation(NavigationUtils.FINISHED_TASKS)
                 } else { // This is a category
-                    updateNavigation(item.intent.getStringExtra("category"))
+                    updateNavigation(item.intent.getStringExtra(Constants.INTENT_CATEGORY))
                 }
             }
         }
