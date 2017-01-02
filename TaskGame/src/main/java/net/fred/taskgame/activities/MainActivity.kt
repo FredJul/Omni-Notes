@@ -229,7 +229,7 @@ class MainActivity : AppCompatActivity(), FragmentManager.OnBackStackChangedList
         super.onDestroy()
     }
 
-    public override fun onActivityResult(requestCode: Int, resultCode: Int, intent: Intent) {
+    public override fun onActivityResult(requestCode: Int, resultCode: Int, intent: Intent?) {
         super.onActivityResult(requestCode, resultCode, intent)
 
         when (requestCode) {

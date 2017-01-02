@@ -29,23 +29,19 @@ import android.support.design.widget.FloatingActionButton
 import android.support.v4.app.Fragment
 import android.support.v4.content.ContextCompat
 import android.support.v4.view.MenuItemCompat
-import android.text.Editable
 import android.text.Spannable
 import android.text.TextUtils
-import android.text.TextWatcher
 import android.text.method.MovementMethod
 import android.text.style.URLSpan
 import android.view.*
-import android.widget.*
+import android.widget.AdapterView
+import android.widget.TextView
+import android.widget.Toast
 import io.reactivex.Observable
 import io.reactivex.ObservableOnSubscribe
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
-import it.feio.android.checklistview.Settings
-import it.feio.android.checklistview.exceptions.ViewNotSupportedException
-import it.feio.android.checklistview.interfaces.CheckListChangedListener
-import it.feio.android.checklistview.models.ChecklistManager
 import kotlinx.android.synthetic.main.fragment_detail.*
 import net.fred.taskgame.App
 import net.fred.taskgame.R
@@ -64,21 +60,17 @@ import org.parceler.Parcels
 import java.util.*
 
 
-class DetailFragment : Fragment(), OnReminderPickedListener, TextWatcher, CheckListChangedListener {
-
-    private var contentEditText: EditText? = null
+class DetailFragment : Fragment(), OnReminderPickedListener {
 
     /**
      * Used to check currently opened note from activity to avoid opening multiple times the same one
      */
     var currentTask: Task? = null
     private var originalTask: Task? = null
-    private var checklistManager: ChecklistManager? = null
     // Values to print result
     private var exitMessage: String? = null
     private var exitMessageStyle: UiUtils.MessageType = UiUtils.MessageType.TYPE_INFO
     private var contentLineCounter = 1
-    private var toggleChecklistView: View? = null
 
     private val compositeDisposable = CompositeDisposable()
 
@@ -117,8 +109,6 @@ class DetailFragment : Fragment(), OnReminderPickedListener, TextWatcher, CheckL
             mainActivity?.supportActionBar?.setBackgroundDrawable(null)
         }
 
-        contentEditText = detail_content
-
         initViews()
 
         mainActivity?.lazyFab?.hide(object : FloatingActionButton.OnVisibilityChangedListener() {
@@ -132,29 +122,15 @@ class DetailFragment : Fragment(), OnReminderPickedListener, TextWatcher, CheckL
             }
         })
 
-        switch_checkviews.onClick {
-            toggleChecklistAndKeepChecked()
-        }
-
         setHasOptionsMenu(true)
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
         currentTask!!.title = detail_title.text.toString()
-        currentTask!!.content = taskContent
+        currentTask!!.content = detail_content.text.toString()
         outState.putParcelable("mTask", Parcels.wrap<Task>(currentTask))
         outState.putParcelable("originalTask", Parcels.wrap<Task>(originalTask))
         super.onSaveInstanceState(outState)
-    }
-
-    override fun onPause() {
-        super.onPause()
-
-        // Closes keyboard on exit
-        if (toggleChecklistView != null) {
-            KeyboardUtils.hideKeyboard(toggleChecklistView)
-            contentEditText?.clearFocus()
-        }
     }
 
     override fun onDestroy() {
@@ -241,7 +217,7 @@ class DetailFragment : Fragment(), OnReminderPickedListener, TextWatcher, CheckL
         //When editor action is pressed focus is moved to last character in content field
         detail_title.setOnEditorActionListener { v, actionId, event ->
             detail_title.requestFocus()
-            detail_title.setSelection(contentEditText!!.text.length)
+            detail_title.setSelection(detail_content.text.length)
             false
         }
         detail_title.movementMethod = LinkHandler()
@@ -250,17 +226,8 @@ class DetailFragment : Fragment(), OnReminderPickedListener, TextWatcher, CheckL
         }
 
         // Init content edit text
-        contentEditText?.setText(currentTask!!.content)
-        // Avoid focused line goes under the keyboard
-        contentEditText?.addTextChangedListener(this)
-        contentEditText?.movementMethod = LinkHandler()
-        // Restore checklist
-        toggleChecklistView = contentEditText
-        if (currentTask!!.checklist) {
-            currentTask!!.checklist = false
-            toggleChecklistView!!.alpha = 0f
-            toggleChecklist()
-        }
+        detail_content.setText(currentTask!!.content)
+        detail_content.movementMethod = LinkHandler()
 
         updateTaskInfoString()
 
@@ -306,7 +273,7 @@ class DetailFragment : Fragment(), OnReminderPickedListener, TextWatcher, CheckL
             }
         }
 
-        if (!currentTask!!.alarmDate.equals(0)) {
+        if (currentTask!!.alarmDate != 0L) {
             info = getString(R.string.alarm_set_on, DateHelper.getDateTimeShort(context, currentTask!!.alarmDate)) + "  —  " + info
         }
 
@@ -354,7 +321,7 @@ class DetailFragment : Fragment(), OnReminderPickedListener, TextWatcher, CheckL
             menu.findItem(R.id.menu_finish_task).isVisible = !newNote
         }
 
-        if (!currentTask!!.alarmDate.equals(0)) {
+        if (currentTask!!.alarmDate != 0L) {
             menu.findItem(R.id.menu_set_reminder).isVisible = false
             menu.findItem(R.id.menu_remove_reminder).isVisible = true
         } else {
@@ -403,100 +370,6 @@ class DetailFragment : Fragment(), OnReminderPickedListener, TextWatcher, CheckL
         }
         return super.onOptionsItemSelected(item)
     }
-
-    fun toggleChecklistAndKeepChecked() {
-
-        // In case checklist is active a prompt will ask about many options to decide hot to convert back to simple text
-        if (!currentTask!!.checklist) {
-            toggleChecklist()
-            return
-        }
-
-        // If checklist is active but no items are checked the conversion is done automatically without prompting user
-        if (checklistManager!!.checkedCount == 0) {
-            toggleChecklist(true, false)
-            return
-        }
-
-        // Inflate the popup_layout.xml
-        val inflater = activity.getSystemService(Activity.LAYOUT_INFLATER_SERVICE) as LayoutInflater
-        val layout = inflater.inflate(R.layout.dialog_remove_checklist_layout, null)
-
-        // Retrieves options checkboxes and initialize their values
-        val keepChecked = layout.findViewById(R.id.checklist_keep_checked) as CheckBox
-        val keepCheckmarks = layout.findViewById(R.id.checklist_keep_checkmarks) as CheckBox
-        keepChecked.isChecked = PrefUtils.getBoolean(PrefUtils.PREF_KEEP_CHECKED, true)
-        keepCheckmarks.isChecked = PrefUtils.getBoolean(PrefUtils.PREF_KEEP_CHECKMARKS, true)
-
-        AlertDialog.Builder(activity)
-                .setView(layout)
-                .setPositiveButton(android.R.string.ok) { dialog, id ->
-                    PrefUtils.putBoolean(PrefUtils.PREF_KEEP_CHECKED, keepChecked.isChecked)
-                    PrefUtils.putBoolean(PrefUtils.PREF_KEEP_CHECKMARKS, keepCheckmarks.isChecked)
-
-                    toggleChecklist()
-                }.show()
-    }
-
-
-    /**
-     * Toggles checklist view
-     */
-    private fun toggleChecklist() {
-        val keepChecked = PrefUtils.getBoolean(PrefUtils.PREF_KEEP_CHECKED, true)
-        val showChecks = PrefUtils.getBoolean(PrefUtils.PREF_KEEP_CHECKMARKS, true)
-        toggleChecklist(keepChecked, showChecks)
-    }
-
-    private fun toggleChecklist(keepChecked: Boolean, showChecks: Boolean) {
-        var checkBehavior = Settings.CHECKED_ON_TOP_OF_CHECKED
-        when (PrefUtils.getString(PrefUtils.PREF_SETTINGS_CHECKED_ITEM_BEHAVIOR, "0")) {
-            "0" -> checkBehavior = Settings.CHECKED_ON_TOP_OF_CHECKED
-            "1" -> checkBehavior = Settings.CHECKED_ON_BOTTOM
-            "2" -> checkBehavior = Settings.CHECKED_HOLD
-        }
-
-        // Get instance and set options to convert EditText to CheckListView
-        checklistManager = ChecklistManager.getInstance(activity)
-                .moveCheckedOnBottom(checkBehavior)
-                .showCheckMarks(showChecks)
-                .keepChecked(keepChecked)
-                .newEntryHint(getString(R.string.checklist_item_hint))
-                .dragVibrationEnabled(true)
-
-        // Links parsing options
-        checklistManager!!.addTextChangedListener(this)
-        checklistManager!!.setCheckListChangedListener(this)
-
-        // Switches the views
-        var newView: View? = null
-        try {
-            newView = checklistManager!!.convert(toggleChecklistView!!)
-        } catch (e: ViewNotSupportedException) {
-            Dog.e("Error switching checklist view", e)
-        }
-
-        // Switches the views
-        if (newView != null) {
-            checklistManager!!.replaceViews(toggleChecklistView, newView)
-            toggleChecklistView = newView
-            if (newView is EditText) {
-                contentEditText = newView // not beautiful, but fix a bug
-            }
-            //			fade(toggleChecklistView, true);
-            toggleChecklistView!!.animate().alpha(1f).scaleXBy(0f).scaleX(1f).scaleYBy(0f).scaleY(1f)
-            currentTask!!.checklist = !currentTask!!.checklist
-        }
-
-        if (!currentTask!!.checklist) {
-            switch_checkviews.setText(R.string.checklist_on)
-            switch_checkviews.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_list_grey600_24dp, 0, 0, 0)
-        } else {
-            switch_checkviews.setText(R.string.checklist_off)
-            switch_checkviews.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_subject_grey600_24dp, 0, 0, 0)
-        }
-    }
-
 
     /**
      * Categorize note choosing from a list of previously created categories
@@ -589,7 +462,7 @@ class DetailFragment : Fragment(), OnReminderPickedListener, TextWatcher, CheckL
     internal fun saveTask() {
         // Changed fields
         currentTask!!.title = detail_title.text.toString()
-        currentTask!!.content = taskContent
+        currentTask!!.content = detail_content.text.toString()
 
         // Check if some text or attachments of any type have been inserted or
         // is an empty note
@@ -645,27 +518,12 @@ class DetailFragment : Fragment(), OnReminderPickedListener, TextWatcher, CheckL
         return tmpTask != originalTask
     }
 
-    private val taskContent: String
-        get() {
-            var content = ""
-            if (!currentTask!!.checklist) {
-                content = contentEditText?.text.toString()
-            } else {
-                if (checklistManager != null) {
-                    checklistManager!!.keepChecked(true)
-                            .showCheckMarks(true)
-                    content = checklistManager!!.text
-                }
-            }
-            return content
-        }
-
     /**
      * Updates share intent
      */
     private fun shareTask() {
         currentTask!!.title = detail_title.text.toString()
-        currentTask!!.content = taskContent
+        currentTask!!.content = detail_content.text.toString()
         currentTask!!.share(activity)
     }
 
@@ -678,33 +536,6 @@ class DetailFragment : Fragment(), OnReminderPickedListener, TextWatcher, CheckL
     override fun onReminderDismissed() {
         // Nothing to do
     }
-
-    override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
-        scrollContent()
-    }
-
-    override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {}
-
-    override fun afterTextChanged(s: Editable) {}
-
-    override fun onCheckListChanged() {
-        scrollContent()
-    }
-
-    private fun scrollContent() {
-        if (currentTask!!.checklist) {
-            if (checklistManager!!.count > contentLineCounter) {
-                content_wrapper.scrollBy(0, 60)
-            }
-            contentLineCounter = checklistManager!!.count
-        } else {
-            if (contentEditText!!.lineCount > contentLineCounter) {
-                content_wrapper.scrollBy(0, 60)
-            }
-            contentLineCounter = contentEditText!!.lineCount
-        }
-    }
-
 
     inner class LinkHandler : MovementMethod {
 

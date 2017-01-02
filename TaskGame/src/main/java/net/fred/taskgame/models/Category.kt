@@ -55,7 +55,7 @@ class Category : ModelListener {
             id = UUID.randomUUID().toString()
         }
 
-        if (creationDate.equals(0)) {
+        if (creationDate == 0L) {
             creationDate = System.currentTimeMillis()
         }
     }

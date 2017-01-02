@@ -18,6 +18,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@android:color/white"
     android:orientation="vertical">
 
     <RelativeLayout
@@ -100,49 +101,33 @@
         android:layout_height="1dp"
         android:background="@color/gray_bg" />
 
-    <ScrollView
-        android:id="@+id/content_wrapper"
+    <EditText
+        android:id="@+id/detail_content"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        android:scrollbarSize="4dp"
-        android:scrollbarStyle="outsideOverlay"
-        android:scrollbarThumbVertical="@drawable/scroll_bar">
-
-        <EditText
-            android:id="@+id/detail_content"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:autoLink="all"
-            android:background="@null"
-            android:hint="@string/content"
-            android:imeOptions="actionDone"
-            android:inputType="textCapSentences|textMultiLine"
-            android:padding="12dp"
-            android:textSize="@dimen/text_size_big" />
-
-    </ScrollView>
+        android:autoLink="all"
+        android:background="@null"
+        android:gravity="top"
+        android:hint="@string/task_details"
+        android:imeOptions="actionDone"
+        android:inputType="textCapSentences|textMultiLine"
+        android:padding="12dp"
+        android:textSize="@dimen/text_size_big" />
 
     <View
         android:layout_width="match_parent"
         android:layout_height="1dp"
         android:background="@color/gray_bg" />
 
-    <Button
-        android:id="@+id/switch_checkviews"
-        style="?android:attr/buttonBarButtonStyle"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:drawablePadding="5dp"
-        android:drawableStart="@drawable/ic_list_grey600_24dp"
-        android:text="@string/checklist_on"
-        android:textSize="@dimen/text_size_small" />
-
     <TextView
         android:id="@+id/task_info"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:padding="6dp"
+        android:paddingBottom="15dp"
+        android:paddingEnd="50dp"
+        android:paddingStart="10dp"
+        android:paddingTop="15dp"
         android:textSize="@dimen/text_size_small"
         tools:text="creation date" />
 </LinearLayout>

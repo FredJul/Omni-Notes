@@ -136,8 +136,12 @@ class ListRemoteViewsFactory(private val context: Context, intent: Intent) : Rem
 
     companion object {
 
-        fun updateConfiguration(mAppWidgetId: Int, categoryId: String) {
-            PrefUtils.putString(PrefUtils.PREF_WIDGET_PREFIX + mAppWidgetId.toString(), categoryId)
+        fun updateConfiguration(mAppWidgetId: Int, categoryId: String?) {
+            if (categoryId == null) {
+                PrefUtils.remove(PrefUtils.PREF_WIDGET_PREFIX + mAppWidgetId.toString())
+            } else {
+                PrefUtils.putString(PrefUtils.PREF_WIDGET_PREFIX + mAppWidgetId.toString(), categoryId)
+            }
         }
     }
 }

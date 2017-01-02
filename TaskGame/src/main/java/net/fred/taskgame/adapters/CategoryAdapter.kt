@@ -27,19 +27,18 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.BaseAdapter
-import android.widget.ImageView
-import android.widget.TextView
+import kotlinx.android.synthetic.main.item_category.view.*
 import net.fred.taskgame.R
 import net.fred.taskgame.activities.MainActivity
 import net.fred.taskgame.models.Category
 import net.fred.taskgame.utils.NavigationUtils
 
-class CategoryAdapter(private val mActivity: Activity, private val categories: List<Category>) : BaseAdapter() {
+class CategoryAdapter(private val activity: Activity, private val categories: List<Category>) : BaseAdapter() {
     private val layout: Int
-    private val inflater: LayoutInflater = mActivity.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
+    private val inflater: LayoutInflater = activity.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
 
     init {
-        this.layout = R.layout.category_list_item
+        this.layout = R.layout.item_category
     }
 
     override fun getCount(): Int {
@@ -60,37 +59,28 @@ class CategoryAdapter(private val mActivity: Activity, private val categories: L
         // Finds elements
         val category = categories[position]
 
-        val holder: CategoryViewHolder
         if (convertView == null) {
             convertView = inflater.inflate(layout, parent, false)
-
-            holder = CategoryViewHolder()
-
-            holder.imgIcon = convertView!!.findViewById(R.id.icon) as ImageView
-            holder.txtTitle = convertView.findViewById(R.id.title) as TextView
-            convertView.tag = holder
-        } else {
-            holder = convertView.tag as CategoryViewHolder
         }
 
         // Set the results into TextViews
-        holder.txtTitle!!.text = category.name
+        convertView!!.title.text = category.name
 
         if (isSelected(position)) {
-            holder.txtTitle!!.setTextColor(Color.BLACK)
-            holder.txtTitle!!.setTypeface(null, Typeface.BOLD)
+            convertView.title.setTextColor(Color.BLACK)
+            convertView.title.setTypeface(null, Typeface.BOLD)
         } else {
-            holder.txtTitle!!.setTextColor(ContextCompat.getColor(mActivity, R.color.drawer_text))
-            holder.txtTitle!!.setTypeface(null, Typeface.NORMAL)
+            convertView.title.setTextColor(ContextCompat.getColor(activity, R.color.drawer_text))
+            convertView.title.setTypeface(null, Typeface.NORMAL)
         }
 
         // Set the results into ImageView checking if an icon is present before
-        val img = ContextCompat.getDrawable(mActivity, R.drawable.square)
+        val img = ContextCompat.getDrawable(activity, R.drawable.square)
         val cf = LightingColorFilter(Color.TRANSPARENT, category.color)
         img.mutate().colorFilter = cf
-        holder.imgIcon!!.setImageDrawable(img)
+        convertView.icon.setImageDrawable(img)
         val padding = 12
-        holder.imgIcon!!.setPadding(padding, padding, padding, padding)
+        convertView.icon.setPadding(padding, padding, padding, padding)
 
         return convertView
     }
@@ -99,7 +89,7 @@ class CategoryAdapter(private val mActivity: Activity, private val categories: L
     private fun isSelected(position: Int): Boolean {
 
         // Managing temporary navigation indicator when coming from a widget
-        val widgetCatId = if (mActivity is MainActivity) mActivity.widgetCatId else null
+        val widgetCatId = if (activity is MainActivity) activity.widgetCatId else null
 
         val navigation = widgetCatId ?: NavigationUtils.navigation
         return navigation == categories[position].id
@@ -107,7 +97,3 @@ class CategoryAdapter(private val mActivity: Activity, private val categories: L
 
 }
 
-internal class CategoryViewHolder {
-    var imgIcon: ImageView? = null
-    var txtTitle: TextView? = null
-}

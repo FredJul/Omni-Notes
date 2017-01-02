@@ -47,13 +47,11 @@ import net.fred.taskgame.adapters.TaskAdapter
 import net.fred.taskgame.models.Category
 import net.fred.taskgame.models.Task
 import net.fred.taskgame.utils.*
-import net.fred.taskgame.utils.recycler.DividerItemDecoration
 import net.fred.taskgame.utils.recycler.ItemActionListener
 import net.fred.taskgame.utils.recycler.SimpleItemTouchHelperCallback
 import net.frju.androidquery.gen.Q
 import net.frju.androidquery.utils.ThrottledContentObserver
 import org.jetbrains.anko.onClick
-import org.jetbrains.anko.onLongClick
 import org.parceler.Parcels
 import java.util.*
 
@@ -120,12 +118,6 @@ class ListFragment : Fragment() {
 
         mainActivity?.lazyFab?.setImageResource(R.drawable.ic_add_white_24dp)
         mainActivity?.lazyFab?.onClick { editTask(Task()) }
-        mainActivity?.lazyFab?.onLongClick {
-            val taskWithChecklist = Task()
-            taskWithChecklist.checklist = true
-            editTask(taskWithChecklist)
-            true
-        }
 
         // Init tasks list
         initTasksList(activity.intent)
@@ -231,8 +223,6 @@ class ListFragment : Fragment() {
         }
         adapter = TaskAdapter(listener, recycler_view, ArrayList<Task>())
         recycler_view.setEmptyView(empty_view)
-        val itemDecoration = DividerItemDecoration(activity, false, true)
-        recycler_view.addItemDecoration(itemDecoration)
 
         recycler_view.layoutManager = layoutManager
 
@@ -413,6 +403,7 @@ class ListFragment : Fragment() {
             MenuItemCompat.collapseActionView(searchMenuItem) // collapsing the menu will trigger a new call to initTasksList
         }
 
+        // To put back the default color (not the one of finished items)
         mainActivity?.supportActionBar?.setBackgroundDrawable(null)
 
         // Searching

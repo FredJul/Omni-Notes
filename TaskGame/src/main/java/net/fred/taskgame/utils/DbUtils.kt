@@ -81,7 +81,7 @@ object DbUtils {
 
     // Inserting or updating single task
     fun updateTask(task: Task, updateLastModification: Boolean) {
-        if (!task.creationDate.equals(0) && updateLastModification) { // If there already was a creation date, we put at least modification date
+        if (task.creationDate != 0L && updateLastModification) { // If there already was a creation date, we put at least modification date
             task.lastModificationDate = Calendar.getInstance().timeInMillis
         }
 

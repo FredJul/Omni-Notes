@@ -62,7 +62,7 @@ kapt {
 dependencies {
     compile fileTree(dir: 'libs', include: '*.jar')
     compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
-    compile 'org.jetbrains.anko:anko-sdk19:+'
+    compile 'org.jetbrains.anko:anko-sdk21:+'
 
     kapt "net.frju.androidquery:android-query-preprocessor:${androidquery_version}"
     compile "net.frju.androidquery:android-query:${androidquery_version}"

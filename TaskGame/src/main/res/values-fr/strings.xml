@@ -23,7 +23,7 @@
     <string name="all_tasks">Toutes les tâches</string>
     <string name="title">Titre </string>
     <string name="search">Rechercher</string>
-    <string name="content">Contenu</string>
+    <string name="task_details">Détails</string>
     <string name="share">Partager</string>
     <string name="undo">Annuler</string>
     <string name="finish_task">Finir tâche</string>

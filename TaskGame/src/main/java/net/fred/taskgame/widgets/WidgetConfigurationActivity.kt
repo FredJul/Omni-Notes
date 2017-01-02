@@ -64,7 +64,7 @@ class WidgetConfigurationActivity : Activity() {
             }
 
             // Updating the ListRemoteViewsFactory parameter to get the list of tasks
-            ListRemoteViewsFactory.updateConfiguration(appWidgetId, categoryId!!)
+            ListRemoteViewsFactory.updateConfiguration(appWidgetId, categoryId)
 
             val resultValue = Intent()
             resultValue.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId)
@@ -86,7 +86,7 @@ class WidgetConfigurationActivity : Activity() {
 
         if (categories.isEmpty()) {
             // Updating the ListRemoteViewsFactory parameter to get the list of tasks
-            ListRemoteViewsFactory.updateConfiguration(appWidgetId, "")
+            ListRemoteViewsFactory.updateConfiguration(appWidgetId, null)
 
             val resultValue = Intent()
             resultValue.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId)

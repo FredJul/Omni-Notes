@@ -18,7 +18,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="@dimen/widget_height"
-    android:background="@color/color_primary_dark"
+    android:background="@color/color_primary"
     android:elevation="4dp">
 
     <ImageView
@@ -26,7 +26,6 @@
         android:layout_width="0dp"
         android:layout_height="match_parent"
         android:layout_weight="1"
-        android:background="@drawable/icon_selector"
         android:gravity="center"
         android:padding="10dp"
         android:src="@drawable/ic_assignment_white_24dp" />
@@ -36,7 +35,6 @@
         android:layout_width="0dp"
         android:layout_height="match_parent"
         android:layout_weight="1"
-        android:background="@drawable/icon_selector"
         android:gravity="center"
         android:padding="10dp"
         android:src="@drawable/ic_add_circle_white_24dp" />

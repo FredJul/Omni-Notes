@@ -23,7 +23,7 @@
     <string name="all_tasks">All _tasks</string>
     <string name="title">Title</string>
     <string name="search">Search</string>
-    <string name="content">Content</string>
+    <string name="task_details">Details</string>
     <string name="share">Share</string>
     <string name="undo">Undo</string>
     <string name="finish_task">Finish task</string>

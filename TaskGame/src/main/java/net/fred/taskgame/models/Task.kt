@@ -57,11 +57,9 @@ class Task : ModelListener {
     @DbField
     var alarmDate: Long = 0
     @DbField
-    var checklist: Boolean = false
-    @DbField
     var categoryId: String? = null
     @DbField
-    var pointReward = NORMAL_POINT_REWARD
+    var pointReward = LOW_POINT_REWARD
 
     @Transient
     @org.parceler.Transient
@@ -96,7 +94,6 @@ class Task : ModelListener {
         displayPriority = task.displayPriority
         finished = task.finished
         alarmDate = task.alarmDate
-        checklist = task.checklist
         categoryId = task.categoryId
         pointReward = task.pointReward
         category = task.category
@@ -148,15 +145,6 @@ class Task : ModelListener {
             }
         }
 
-        // Replacing checkmarks symbols with html entities
-        if (checklist) {
-            titleText = titleText.replace(it.feio.android.checklistview.interfaces.Constants.CHECKED_SYM, "✓ ")
-                    .replace(it.feio.android.checklistview.interfaces.Constants.UNCHECKED_SYM, "□ ")
-            contentText = contentText
-                    .replace(it.feio.android.checklistview.interfaces.Constants.CHECKED_SYM, "✓ ")
-                    .replace(it.feio.android.checklistview.interfaces.Constants.UNCHECKED_SYM, "□ ")
-        }
-
         return arrayOf(titleText, contentText)
     }
 
@@ -175,7 +163,7 @@ class Task : ModelListener {
     }
 
     fun cancelReminderAlarm(context: Context) {
-        if (!alarmDate.equals(0)) {
+        if (alarmDate != 0L) {
             val am = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
             val intent = Intent(context, AlarmReceiver::class.java)
             val p = PendingIntent.getBroadcast(context, creationDate.toInt(), intent, 0)
@@ -189,7 +177,7 @@ class Task : ModelListener {
             id = UUID.randomUUID().toString()
         }
 
-        if (creationDate.equals(0)) {
+        if (creationDate == 0L) {
             creationDate = System.currentTimeMillis()
         }
     }
@@ -216,7 +204,6 @@ class Task : ModelListener {
         if (displayPriority != other.displayPriority) return false
         if (finished != other.finished) return false
         if (alarmDate != other.alarmDate) return false
-        if (checklist != other.checklist) return false
         if (categoryId != other.categoryId) return false
         if (pointReward != other.pointReward) return false
 
@@ -232,7 +219,6 @@ class Task : ModelListener {
         result = 31 * result + displayPriority
         result = 31 * result + finished.hashCode()
         result = 31 * result + alarmDate.hashCode()
-        result = 31 * result + checklist.hashCode()
         result = 31 * result + (categoryId?.hashCode() ?: 0)
         result = 31 * result + pointReward.hashCode()
         return result
