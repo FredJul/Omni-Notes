@@ -28,8 +28,6 @@ object PrefUtils {
     val PREF_SETTINGS_NOTIFICATION_RINGTONE = "settings_notification_ringtone"
     val PREF_SETTINGS_NOTIFICATION_VIBRATION = "settings_notification_vibration"
     val PREF_NAVIGATION = "navigation"
-    val PREF_KEEP_CHECKED = "keep_checked"
-    val PREF_KEEP_CHECKMARKS = "show_checkmarks"
     val PREF_WIDGET_PREFIX = "widget_"
     val PREF_CURRENT_POINTS = "PREF_CURRENT_POINTS"
 

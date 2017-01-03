@@ -17,6 +17,7 @@
 
 package net.fred.taskgame.fragments
 
+import android.app.Activity.RESULT_OK
 import android.app.AlertDialog
 import android.app.SearchManager
 import android.content.Intent
@@ -25,6 +26,7 @@ import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.os.Handler
 import android.os.Parcelable
+import android.speech.RecognizerIntent
 import android.support.annotation.StringRes
 import android.support.design.widget.Snackbar
 import android.support.v4.app.Fragment
@@ -119,7 +121,25 @@ class ListFragment : Fragment() {
         super.onActivityCreated(savedInstanceState)
 
         mainActivity?.lazyFab?.setImageResource(R.drawable.ic_add_white_24dp)
-        mainActivity?.lazyFab?.onClick { editTask(Task()) }
+        mainActivity?.lazyFab?.onClick {
+            if (quick_task.text.isEmpty()) {
+                editTask(Task())
+            } else {
+                val newQuickTask = Task()
+                newQuickTask.title = quick_task.text.toString()
+                DbUtils.updateTaskAsync(newQuickTask, false)
+                quick_task.setText("")
+            }
+        }
+
+        mic_button.onClick {
+            val intent = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH)
+            intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL,
+                    RecognizerIntent.LANGUAGE_MODEL_FREE_FORM)
+
+            // Start the activity, the intent will be populated with the speech text
+            startActivityForResult(intent, REQUEST_CODE_SPEACH)
+        }
 
         // Init tasks list
         initTasksList(activity.intent)
@@ -304,6 +324,7 @@ class ListFragment : Fragment() {
                     }
 
                     override fun onQueryTextChange(pattern: String): Boolean {
+                        Dog.e(pattern)
                         searchQuery = pattern
                         onTasksLoaded(DbUtils.getTasksByPattern(searchQuery!!))
                         return true
@@ -377,11 +398,20 @@ class ListFragment : Fragment() {
         super.onActivityResult(requestCode, resultCode, intent)
 
         when (requestCode) {
-            REQUEST_CODE_CATEGORY_TASKS -> if (intent != null) {
-                val tag = Parcels.unwrap<Category>(intent.getParcelableExtra<Parcelable>(Constants.EXTRA_CATEGORY))
-                categorizeTasks(adapter!!.selectedItems, tag)
+            REQUEST_CODE_CATEGORY_TASKS -> {
+                if (intent != null) {
+                    val tag = Parcels.unwrap<Category>(intent.getParcelableExtra<Parcelable>(Constants.EXTRA_CATEGORY))
+                    categorizeTasks(adapter!!.selectedItems, tag)
+                }
             }
-
+            REQUEST_CODE_SPEACH -> {
+                if (resultCode == RESULT_OK) {
+                    val spokenText = intent?.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS)?.get(0)
+                    if (spokenText != null && spokenText.isNotEmpty()) {
+                        quick_task.setText(spokenText)
+                    }
+                }
+            }
             else -> {
             }
         }
@@ -666,7 +696,7 @@ class ListFragment : Fragment() {
     }
 
     companion object {
-
         private val REQUEST_CODE_CATEGORY_TASKS = 3
+        private val REQUEST_CODE_SPEACH = 4
     }
 }

@@ -48,15 +48,11 @@ object UiUtils {
         }
     }
 
-    fun showMessage(activity: Activity, @StringRes messageId: Int) {
-        showMessage(activity, activity.getString(messageId), MessageType.TYPE_INFO)
-    }
-
-    fun showMessage(activity: Activity, @StringRes messageId: Int, type: MessageType) {
+    fun showMessage(activity: Activity, @StringRes messageId: Int, type: MessageType = MessageType.TYPE_INFO) {
         showMessage(activity, activity.getString(messageId), type)
     }
 
-    @JvmOverloads fun showMessage(activity: Activity, message: String, type: MessageType = MessageType.TYPE_INFO) {
+    fun showMessage(activity: Activity, message: String, type: MessageType = MessageType.TYPE_INFO) {
         val snackbar = Snackbar.make(activity.findViewById(R.id.coordinator_layout), message, Snackbar.LENGTH_SHORT)
         when (type) {
             UiUtils.MessageType.TYPE_WARN -> {
