@@ -151,7 +151,7 @@ class Task : ModelListener {
     fun setupReminderAlarm(context: Context) {
         if (hasAlarmInFuture()) {
             val intent = Intent(context, AlarmReceiver::class.java)
-            intent.putExtra(Constants.INTENT_TASK_ID, id) // Do not use parcelable with API 24+ for PendingIntentve
+            intent.putExtra(Constants.EXTRA_TASK_ID, id) // Do not use parcelable with API 24+ for PendingIntentve
             val sender = PendingIntent.getBroadcast(context, id!!.hashCode(), intent, PendingIntent.FLAG_UPDATE_CURRENT)
             val am = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
             if (Build.VERSION.SDK_INT >= 23) {

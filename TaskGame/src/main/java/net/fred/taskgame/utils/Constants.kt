@@ -19,12 +19,12 @@ package net.fred.taskgame.utils
 
 interface Constants {
     companion object {
+        val ACTION_GOOGLE_NOW = "com.google.android.gm.action.AUTO_SEND"
 
-        val INTENT_TASK_ID = "task_id"
-        val INTENT_TASK = "task"
-        val INTENT_CATEGORY = "category"
-        val INTENT_GOOGLE_NOW = "com.google.android.gm.action.AUTO_SEND"
-        val INTENT_WIDGET = "widget_id"
+        val EXTRA_TASK_ID = "task_id"
+        val EXTRA_TASK = "task"
+        val EXTRA_CATEGORY = "category"
+        val EXTRA_WIDGET_ID = "widget_id"
 
         // Custom intent actions
         val ACTION_SNOOZE = "action_snooze"

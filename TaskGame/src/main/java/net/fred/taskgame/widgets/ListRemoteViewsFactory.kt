@@ -108,7 +108,7 @@ class ListRemoteViewsFactory(private val context: Context, intent: Intent) : Rem
         // Next, set a fill-intent, which will be used to fill in the pending intent template
         // that is set on the collection view in StackWidgetProvider.
         val extras = Bundle()
-        extras.putParcelable(Constants.INTENT_TASK, Parcels.wrap(task))
+        extras.putParcelable(Constants.EXTRA_TASK, Parcels.wrap(task))
         val fillInIntent = Intent()
         fillInIntent.putExtras(extras)
         // Make it possible to distinguish the individual on-click

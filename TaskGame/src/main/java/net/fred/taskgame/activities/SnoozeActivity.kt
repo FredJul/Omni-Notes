@@ -37,7 +37,7 @@ class SnoozeActivity : FragmentActivity(), OnReminderPickedListener {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        task = DbUtils.getTask(intent.extras.getString(Constants.INTENT_TASK_ID))
+        task = DbUtils.getTask(intent.extras.getString(Constants.EXTRA_TASK_ID))
 
         // If an alarm has been fired a notification must be generated
         if (Constants.ACTION_SNOOZE == intent.action) {
@@ -49,7 +49,7 @@ class SnoozeActivity : FragmentActivity(), OnReminderPickedListener {
             ReminderPickers(this, this).pick(task!!.alarmDate)
         } else {
             val intent = Intent(this, MainActivity::class.java)
-            intent.putExtra(Constants.INTENT_TASK_ID, task!!.id)
+            intent.putExtra(Constants.EXTRA_TASK_ID, task!!.id)
             intent.action = Constants.ACTION_NOTIFICATION_CLICK
             startActivity(intent)
         }

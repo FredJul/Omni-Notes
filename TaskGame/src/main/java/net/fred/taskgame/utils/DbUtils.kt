@@ -226,7 +226,7 @@ object DbUtils {
      * @return List of categories
      */
     val categories: MutableList<Category>
-        get() = Q.Category.select().orderBy(Q.Category.CREATION_DATE, OrderBy.Order.DESC).query().toList()
+        get() = Q.Category.select().orderBy(Q.Category.CREATION_DATE, OrderBy.Order.ASC).query().toList()
 
     fun getCategory(categoryId: String): Category {
         return Q.Category.select().where(Condition.where(Q.Category.ID, Where.Op.IS, categoryId)).queryFirst()

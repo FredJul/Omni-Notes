@@ -58,14 +58,14 @@ abstract class WidgetProvider : AppWidgetProvider() {
         // Create an Intent to launch DetailActivity
         val intentDetail = Intent(context, MainActivity::class.java)
         intentDetail.action = Constants.ACTION_WIDGET
-        intentDetail.putExtra(Constants.INTENT_WIDGET, widgetId)
+        intentDetail.putExtra(Constants.EXTRA_WIDGET_ID, widgetId)
         val pendingIntentDetail = PendingIntent.getActivity(context, widgetId, intentDetail,
                 PendingIntent.FLAG_UPDATE_CURRENT)
 
         // Create an Intent to launch ListActivity
         val intentList = Intent(context, MainActivity::class.java)
         intentList.action = Constants.ACTION_WIDGET_SHOW_LIST
-        intentList.putExtra(Constants.INTENT_WIDGET, widgetId)
+        intentList.putExtra(Constants.EXTRA_WIDGET_ID, widgetId)
         val pendingIntentList = PendingIntent.getActivity(context, widgetId, intentList,
                 PendingIntent.FLAG_UPDATE_CURRENT)
 

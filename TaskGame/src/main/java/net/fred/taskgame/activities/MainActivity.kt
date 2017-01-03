@@ -322,7 +322,7 @@ class MainActivity : AppCompatActivity(), FragmentManager.OnBackStackChangedList
                 (item.actionView as TextView).text = categoryCount.toString()
             }
             val extraIntent = Intent()
-            extraIntent.putExtra(Constants.INTENT_CATEGORY, category.id)
+            extraIntent.putExtra(Constants.EXTRA_CATEGORY, category.id)
             item.intent = extraIntent
             item.icon = ColorDrawable(category.color)
             if (category.id == currentNavigation) {
@@ -331,6 +331,12 @@ class MainActivity : AppCompatActivity(), FragmentManager.OnBackStackChangedList
 
             mapCategories.put(category.id!!, category)
         }
+
+        item = navigation_view.menu.add(1, R.string.add_category, Menu.NONE, "")
+        item.setActionView(R.layout.menu_counter)
+        val addCatView = item.actionView as TextView
+        addCatView.setText(R.string.add_category)
+        addCatView.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_add_primarydark_24dp, 0, 0, 0)
 
         navigation_view.menu.setGroupCheckable(1, true, true)
 
@@ -383,7 +389,7 @@ class MainActivity : AppCompatActivity(), FragmentManager.OnBackStackChangedList
                     .forEach {
                         if (it is MenuView.ItemView) {
                             it.onLongClick {
-                                val catId = (it as MenuView.ItemView).itemData.intent?.getStringExtra(Constants.INTENT_CATEGORY)
+                                val catId = (it as MenuView.ItemView).itemData.intent?.getStringExtra(Constants.EXTRA_CATEGORY)
                                 if (catId != null) {
                                     editCategory(mapCategories[catId]!!)
                                 }
@@ -397,9 +403,9 @@ class MainActivity : AppCompatActivity(), FragmentManager.OnBackStackChangedList
     /**
      * Categories addition and editing
      */
-    fun editCategory(category: Category) {
+    fun editCategory(category: Category?) {
         val categoryIntent = Intent(this, CategoryActivity::class.java)
-        categoryIntent.putExtra(Constants.INTENT_CATEGORY, Parcels.wrap(category))
+        categoryIntent.putExtra(Constants.EXTRA_CATEGORY, Parcels.wrap(category))
         startActivityForResult(categoryIntent, REQUEST_CODE_CATEGORY)
     }
 
@@ -426,8 +432,11 @@ class MainActivity : AppCompatActivity(), FragmentManager.OnBackStackChangedList
                 val settingsIntent = Intent(this, SettingsActivity::class.java)
                 startActivity(settingsIntent)
             }
-            else // tasks, finished tasks, categories
-            -> {
+            R.string.add_category -> {
+                editCategory(null)
+                initNavigationMenu() // To not select it in app drawer
+            }
+            else -> { // tasks, finished tasks, categories
                 // Reset intent
                 intent.action = Intent.ACTION_MAIN
 
@@ -436,7 +445,7 @@ class MainActivity : AppCompatActivity(), FragmentManager.OnBackStackChangedList
                 } else if (item.itemId == R.string.finished_tasks) {
                     updateNavigation(NavigationUtils.FINISHED_TASKS)
                 } else { // This is a category
-                    updateNavigation(item.intent.getStringExtra(Constants.INTENT_CATEGORY))
+                    updateNavigation(item.intent.getStringExtra(Constants.EXTRA_CATEGORY))
                 }
             }
         }
@@ -448,8 +457,8 @@ class MainActivity : AppCompatActivity(), FragmentManager.OnBackStackChangedList
     fun updateNavigation(navigation: String) {
         NavigationUtils.navigation = navigation
 
-        if (intent != null && intent.hasExtra(Constants.INTENT_WIDGET)) {
-            intent.removeExtra(Constants.INTENT_WIDGET)
+        if (intent != null && intent.hasExtra(Constants.EXTRA_WIDGET_ID)) {
+            intent.removeExtra(Constants.EXTRA_WIDGET_ID)
             intent = intent
         }
     }
@@ -457,8 +466,8 @@ class MainActivity : AppCompatActivity(), FragmentManager.OnBackStackChangedList
     // Check if is launched from a widget with categories to set tag
     val widgetCatId: String?
         get() {
-            if (intent != null && intent.hasExtra(Constants.INTENT_WIDGET)) {
-                val widgetId = intent.extras.get(Constants.INTENT_WIDGET)!!.toString()
+            if (intent != null && intent.hasExtra(Constants.EXTRA_WIDGET_ID)) {
+                val widgetId = intent.extras.get(Constants.EXTRA_WIDGET_ID)!!.toString()
                 val pref = PrefUtils.getString(PrefUtils.PREF_WIDGET_PREFIX + widgetId, "")
                 if (pref.isNotEmpty()) {
                     return pref
@@ -532,14 +541,12 @@ class MainActivity : AppCompatActivity(), FragmentManager.OnBackStackChangedList
     }
 
     private fun handleIntents() {
-        val i = intent
+        if (intent.action == null) return
 
-        if (i.action == null) return
-
-        if (receivedIntent(i)) {
-            var task: Task? = Parcels.unwrap<Task>(i.getParcelableExtra<Parcelable>(Constants.INTENT_TASK))
+        if (receivedIntent(intent)) {
+            var task: Task? = Parcels.unwrap<Task>(intent.getParcelableExtra<Parcelable>(Constants.EXTRA_TASK))
             if (task == null) {
-                task = DbUtils.getTask(i.getStringExtra(Constants.INTENT_TASK_ID))
+                task = DbUtils.getTask(intent.getStringExtra(Constants.EXTRA_TASK_ID))
             }
             // Checks if the same note is already opened to avoid to open again
             if (task != null && isTaskAlreadyOpened(task)) {
@@ -550,10 +557,7 @@ class MainActivity : AppCompatActivity(), FragmentManager.OnBackStackChangedList
                 task = Task()
             }
             switchToDetail(task)
-        }
-
-        // Tag search
-        if (Intent.ACTION_VIEW == i.action) {
+        } else if (Intent.ACTION_VIEW == intent.action) { // Tag search
             switchToList()
         }
     }
@@ -563,7 +567,7 @@ class MainActivity : AppCompatActivity(), FragmentManager.OnBackStackChangedList
                 || Constants.ACTION_WIDGET == i.action
                 || (Intent.ACTION_SEND == i.action
                 || Intent.ACTION_SEND_MULTIPLE == i.action
-                || Constants.INTENT_GOOGLE_NOW == i.action) && i.type != null
+                || Constants.ACTION_GOOGLE_NOW == i.action) && i.type != null
                 || i.action != null && i.action.contains(Constants.ACTION_NOTIFICATION_CLICK)
     }
 

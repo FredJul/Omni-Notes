@@ -31,7 +31,7 @@ class AlarmReceiver : BroadcastReceiver() {
 
     override fun onReceive(context: Context, intent: Intent) {
         try {
-            val task = DbUtils.getTask(intent.extras.getString(Constants.INTENT_TASK_ID))
+            val task = DbUtils.getTask(intent.extras.getString(Constants.EXTRA_TASK_ID))
             task ?: createNotification(context, task!!)
         } catch (e: Exception) {
             Dog.e("Error while creating reminder notification", e)
@@ -47,13 +47,13 @@ class AlarmReceiver : BroadcastReceiver() {
 
         val snoozeIntent = Intent(context, SnoozeActivity::class.java)
         snoozeIntent.action = Constants.ACTION_SNOOZE
-        snoozeIntent.putExtra(Constants.INTENT_TASK_ID, task.id) // Do not use parcelable with API 24+ for PendingIntent
+        snoozeIntent.putExtra(Constants.EXTRA_TASK_ID, task.id) // Do not use parcelable with API 24+ for PendingIntent
         snoozeIntent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
         val piSnooze = PendingIntent.getActivity(context, 0, snoozeIntent, PendingIntent.FLAG_UPDATE_CURRENT)
 
         val postponeIntent = Intent(context, SnoozeActivity::class.java)
         postponeIntent.action = Constants.ACTION_POSTPONE
-        postponeIntent.putExtra(Constants.INTENT_TASK_ID, task.id) // Do not use parcelable with API 24+ for PendingIntent
+        postponeIntent.putExtra(Constants.EXTRA_TASK_ID, task.id) // Do not use parcelable with API 24+ for PendingIntent
         snoozeIntent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
         val piPostpone = PendingIntent.getActivity(context, 0, postponeIntent,
                 PendingIntent.FLAG_UPDATE_CURRENT)
@@ -62,7 +62,7 @@ class AlarmReceiver : BroadcastReceiver() {
 
         // Next create the bundle and initialize it
         val intent = Intent(context, SnoozeActivity::class.java)
-        intent.putExtra(Constants.INTENT_TASK_ID, task.id) // Do not use parcelable with API 24+ for PendingIntent
+        intent.putExtra(Constants.EXTRA_TASK_ID, task.id) // Do not use parcelable with API 24+ for PendingIntent
 
         // Sets the Activity to start in a new, empty task
         intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK

@@ -45,7 +45,7 @@ class CategoryActivity : Activity() {
         setContentView(R.layout.activity_category)
 
         // Retrieving intent
-        category = Parcels.unwrap<Category>(intent.getParcelableExtra<Parcelable>(Constants.INTENT_CATEGORY))
+        category = Parcels.unwrap<Category>(intent.getParcelableExtra<Parcelable>(Constants.EXTRA_CATEGORY))
 
         // Getting Views from layout
         initViews()
@@ -111,7 +111,7 @@ class CategoryActivity : Activity() {
         category!!.saveInFirebase()
 
         // Sets result to show proper message
-        intent.putExtra(Constants.INTENT_CATEGORY, Parcels.wrap<Category>(category))
+        intent.putExtra(Constants.EXTRA_CATEGORY, Parcels.wrap<Category>(category))
         setResult(Activity.RESULT_OK, intent)
         finish()
     }

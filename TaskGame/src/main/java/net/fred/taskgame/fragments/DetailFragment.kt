@@ -94,7 +94,7 @@ class DetailFragment : Fragment(), OnReminderPickedListener {
         handleIntents()
 
         if (originalTask == null) {
-            originalTask = Parcels.unwrap<Task>(arguments.getParcelable<Parcelable>(Constants.INTENT_TASK))
+            originalTask = Parcels.unwrap<Task>(arguments.getParcelable<Parcelable>(Constants.EXTRA_TASK))
         }
 
         if (currentTask == null) {
@@ -143,7 +143,7 @@ class DetailFragment : Fragment(), OnReminderPickedListener {
 
         // Action called from home shortcut
         if (Constants.ACTION_NOTIFICATION_CLICK == i.action) {
-            originalTask = DbUtils.getTask(i.getStringExtra(Constants.INTENT_TASK_ID))
+            originalTask = DbUtils.getTask(i.getStringExtra(Constants.EXTRA_TASK_ID))
             // Checks if the note pointed from the shortcut has been deleted
             if (originalTask == null) {
                 UiUtils.showMessage(activity, R.string.shortcut_task_deleted)
@@ -158,8 +158,8 @@ class DetailFragment : Fragment(), OnReminderPickedListener {
         if (Constants.ACTION_WIDGET == i.action) {
 
             //  with tags to set tag
-            if (i.hasExtra(Constants.INTENT_WIDGET)) {
-                val widgetId = i.extras.get(Constants.INTENT_WIDGET)?.toString()
+            if (i.hasExtra(Constants.EXTRA_WIDGET_ID)) {
+                val widgetId = i.extras.get(Constants.EXTRA_WIDGET_ID)?.toString()
                 if (widgetId != null) {
                     val categoryId = PrefUtils.getString(PrefUtils.PREF_WIDGET_PREFIX + widgetId, "")
                     if (!categoryId.isEmpty()) {
@@ -183,7 +183,7 @@ class DetailFragment : Fragment(), OnReminderPickedListener {
          */
         if ((Intent.ACTION_SEND == i.action
                 || Intent.ACTION_SEND_MULTIPLE == i.action
-                || Constants.INTENT_GOOGLE_NOW == i.action) && i.type != null) {
+                || Constants.ACTION_GOOGLE_NOW == i.action) && i.type != null) {
 
             if (currentTask == null) {
                 currentTask = Task()
@@ -401,7 +401,7 @@ class DetailFragment : Fragment(), OnReminderPickedListener {
             when (requestCode) {
                 CATEGORY_CHANGE -> {
                     UiUtils.showMessage(activity, R.string.category_saved)
-                    val category = Parcels.unwrap<Category>(intent!!.getParcelableExtra<Parcelable>(Constants.INTENT_CATEGORY))
+                    val category = Parcels.unwrap<Category>(intent!!.getParcelableExtra<Parcelable>(Constants.EXTRA_CATEGORY))
                     currentTask!!.category = category
                     setCategoryMarkerColor(category)
                 }
@@ -618,7 +618,7 @@ class DetailFragment : Fragment(), OnReminderPickedListener {
         fun newInstance(task: Task): DetailFragment {
             val fragment = DetailFragment()
             val args = Bundle()
-            args.putParcelable(Constants.INTENT_TASK, Parcels.wrap(task))
+            args.putParcelable(Constants.EXTRA_TASK, Parcels.wrap(task))
             fragment.arguments = args
 
             return fragment

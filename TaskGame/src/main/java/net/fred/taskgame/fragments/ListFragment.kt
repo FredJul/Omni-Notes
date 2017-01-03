@@ -376,7 +376,7 @@ class ListFragment : Fragment() {
 
         when (requestCode) {
             REQUEST_CODE_CATEGORY_TASKS -> if (intent != null) {
-                val tag = Parcels.unwrap<Category>(intent.getParcelableExtra<Parcelable>(Constants.INTENT_CATEGORY))
+                val tag = Parcels.unwrap<Category>(intent.getParcelableExtra<Parcelable>(Constants.EXTRA_CATEGORY))
                 categorizeTasks(adapter!!.selectedItems, tag)
             }
 
