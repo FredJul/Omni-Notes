@@ -27,6 +27,7 @@ import net.frju.androidquery.gen.Q
 import net.frju.androidquery.operation.condition.Condition
 import net.frju.androidquery.operation.condition.Where
 import net.frju.androidquery.operation.keyword.OrderBy
+import org.jetbrains.anko.doAsync
 import java.util.*
 
 object DbUtils {
@@ -80,12 +81,14 @@ object DbUtils {
     }
 
     // Inserting or updating single task
-    fun updateTask(task: Task, updateLastModification: Boolean) {
+    fun updateTaskAsync(task: Task, updateLastModification: Boolean) {
         if (task.creationDate != 0L && updateLastModification) { // If there already was a creation date, we put at least modification date
             task.lastModificationDate = Calendar.getInstance().timeInMillis
         }
 
-        Q.Task.save(task).query()
+        doAsync {
+            Q.Task.save(task).query()
+        }
         task.saveInFirebase()
     }
 
@@ -147,16 +150,16 @@ object DbUtils {
         return Q.Task.select().where(*conditions).orderBy(*orderBy).query().toList()
     }
 
-    fun finishTask(task: Task) {
+    fun finishTaskAsync(task: Task) {
         task.finished = true
         task.cancelReminderAlarm(App.context!!)
         updateCurrentPoints(currentPoints + task.pointReward)
-        updateTask(task, false)
+        updateTaskAsync(task, false)
     }
 
-    fun restoreTask(task: Task) {
+    fun restoreTaskAsync(task: Task) {
         task.finished = false
-        updateTask(task, false)
+        updateTaskAsync(task, false)
     }
 
     /**
@@ -247,17 +250,17 @@ object DbUtils {
         ).query()
     }
 
-    fun deleteCategoryAsync(category: Category) {
+    fun deleteCategory(category: Category) {
         // DO NOT USE the below commented solution: it will break firebase sync
         //new Update(Task.class).set(Task_Table.categoryId.isNull()).where(Task_Table.categoryId.eq(category.id));
 
         for (task in getTasks(Condition.where(Q.Task.CATEGORY_ID, Where.Op.IS, category.id))) {
             task.categoryId = null
-            Q.Task.update().model(task).rx2().subscribe()
+            Q.Task.update().model(task).query()
             task.saveInFirebase()
         }
 
-        Q.Category.delete().model(category).rx2().subscribe()
+        Q.Category.delete().model(category).query()
         category.deleteInFirebase()
     }
 }

@@ -51,7 +51,9 @@ import net.fred.taskgame.utils.recycler.ItemActionListener
 import net.fred.taskgame.utils.recycler.SimpleItemTouchHelperCallback
 import net.frju.androidquery.gen.Q
 import net.frju.androidquery.utils.ThrottledContentObserver
+import org.jetbrains.anko.doAsync
 import org.jetbrains.anko.onClick
+import org.jetbrains.anko.uiThread
 import org.parceler.Parcels
 import java.util.*
 
@@ -412,14 +414,23 @@ class ListFragment : Fragment() {
             if (intent.getStringExtra(SearchManager.QUERY) != null) {
                 searchQuery = intent.getStringExtra(SearchManager.QUERY)
             }
-            onTasksLoaded(DbUtils.getTasksByPattern(searchQuery!!))
+            doAsync {
+                val tasks = DbUtils.getTasksByPattern(searchQuery!!)
+                uiThread {
+                    onTasksLoaded(tasks)
+                }
+            }
         } else {
             // Check if is launched from a widget with categories to set tag
             if (mainActivity?.widgetCatId != null) {
-                onTasksLoaded(DbUtils.getActiveTasksByCategory(mainActivity?.widgetCatId!!))
                 mainActivity?.supportActionBar?.setTitle(DbUtils.getCategory(mainActivity?.widgetCatId!!).name)
+                doAsync {
+                    val tasks = DbUtils.getActiveTasksByCategory(mainActivity?.widgetCatId!!)
+                    uiThread {
+                        onTasksLoaded(tasks)
+                    }
+                }
             } else { // Gets all tasks
-                onTasksLoaded(DbUtils.tasksFromCurrentNavigation)
                 val currentNavigation = NavigationUtils.navigation
                 if (NavigationUtils.TASKS == currentNavigation) {
                     mainActivity?.supportActionBar?.setTitle(R.string.all_tasks)
@@ -427,7 +438,19 @@ class ListFragment : Fragment() {
                     mainActivity?.supportActionBar?.setTitle(R.string.finished_tasks)
                     mainActivity?.supportActionBar?.setBackgroundDrawable(ColorDrawable(ContextCompat.getColor(context, R.color.finished_tasks_actionbar_color)))
                 } else {
-                    mainActivity?.supportActionBar?.title = DbUtils.getCategory(currentNavigation).name
+                    doAsync {
+                        val catName = DbUtils.getCategory(currentNavigation).name
+                        uiThread {
+                            mainActivity?.supportActionBar?.title = catName
+                        }
+                    }
+                }
+
+                doAsync {
+                    val tasks = DbUtils.tasksFromCurrentNavigation
+                    uiThread {
+                        onTasksLoaded(tasks)
+                    }
                 }
             }
         }
@@ -444,7 +467,7 @@ class ListFragment : Fragment() {
             val task = tasks[position]
             toRemoveTasks.add(task)
 
-            DbUtils.finishTask(task)
+            DbUtils.finishTaskAsync(task)
         }
         tasks.removeAll(toRemoveTasks)
         // Saves tasks to be eventually restored at right position
@@ -460,7 +483,7 @@ class ListFragment : Fragment() {
         for (position in positions) {
             val task = tasks[position]
             toRemoveTasks.add(task)
-            DbUtils.restoreTask(task)
+            DbUtils.restoreTaskAsync(task)
         }
         undoTasks.addAll(toRemoveTasks) // Saves tasks to be eventually restored at right position
         tasks.removeAll(toRemoveTasks)
@@ -516,7 +539,9 @@ class ListFragment : Fragment() {
             task.deleteInFirebase()
         }
         adapter!!.tasks.removeAll(tasksToDelete)
-        Q.Task.delete().model(tasksToDelete).query()
+        doAsync {
+            Q.Task.delete().model(tasksToDelete).query()
+        }
 
         finishActionMode()
 
@@ -549,7 +574,9 @@ class ListFragment : Fragment() {
         for (position in positions) {
             val task = adapter!!.tasks[position]
             task.category = category
-            DbUtils.updateTask(task, false)
+            doAsync {
+                DbUtils.updateTaskAsync(task, false)
+            }
 
             // Update adapter content
             if (NavigationUtils.TASKS != NavigationUtils.navigation && NavigationUtils.FINISHED_TASKS != NavigationUtils.navigation
@@ -576,12 +603,11 @@ class ListFragment : Fragment() {
         // Cycles removed items to re-insert into adapter
         for (task in undoTasks) {
             if (NavigationUtils.FINISHED_TASKS == NavigationUtils.navigation) {
-                DbUtils.finishTask(task) // finish it again
+                DbUtils.finishTaskAsync(task) // finish it again
             } else {
-                DbUtils.restoreTask(task)
+                DbUtils.restoreTaskAsync(task)
             }
         }
-
         undoTasks.clear()
 
         finishActionMode()

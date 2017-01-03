@@ -33,6 +33,7 @@ import net.fred.taskgame.utils.Constants
 import net.fred.taskgame.utils.DbUtils
 import net.fred.taskgame.utils.NavigationUtils
 import net.frju.androidquery.gen.Q
+import org.jetbrains.anko.doAsync
 import org.jetbrains.anko.onClick
 import org.parceler.Parcels
 
@@ -134,7 +135,9 @@ class CategoryActivity : Activity() {
                         NavigationUtils.navigation = NavigationUtils.TASKS
                     }
                     // Removes category and edit tasks associated with it
-                    DbUtils.deleteCategoryAsync(category!!)
+                    doAsync {
+                        DbUtils.deleteCategory(category!!)
+                    }
 
                     // Sets result to show proper message
                     setResult(Activity.RESULT_FIRST_USER)

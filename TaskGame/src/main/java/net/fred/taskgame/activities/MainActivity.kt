@@ -62,6 +62,7 @@ import net.fred.taskgame.models.Task
 import net.fred.taskgame.utils.*
 import net.frju.androidquery.gen.Q
 import net.frju.androidquery.utils.ThrottledContentObserver
+import org.jetbrains.anko.doAsync
 import org.jetbrains.anko.onClick
 import org.jetbrains.anko.onLongClick
 import org.parceler.Parcels
@@ -163,7 +164,7 @@ class MainActivity : AppCompatActivity(), FragmentManager.OnBackStackChangedList
         if (firebaseUser != null) {
             firebaseDatabase = FirebaseDatabase.getInstance().reference
             compositeDisposable.add(RxFirebase.observeChildren(DbUtils.firebaseTasksNode!!)
-                    .subscribeOn(Schedulers.io())
+                    .observeOn(Schedulers.io())
                     .subscribe({ ev ->
                         when (ev.eventType) {
                             RxFirebase.EventType.CHILD_ADDED, RxFirebase.EventType.CHILD_CHANGED -> {
@@ -182,7 +183,7 @@ class MainActivity : AppCompatActivity(), FragmentManager.OnBackStackChangedList
                     }, { throwable -> Dog.e("Error", throwable) }))
 
             compositeDisposable.add(RxFirebase.observeChildren(DbUtils.firebaseCategoriesNode!!)
-                    .subscribeOn(Schedulers.io())
+                    .observeOn(Schedulers.io())
                     .subscribe({ ev ->
                         when (ev.eventType) {
                             RxFirebase.EventType.CHILD_ADDED, RxFirebase.EventType.CHILD_CHANGED -> {
@@ -201,7 +202,7 @@ class MainActivity : AppCompatActivity(), FragmentManager.OnBackStackChangedList
                     }, { throwable -> Dog.e("Error", throwable) }))
 
             compositeDisposable.add(RxFirebase.observeSingle(DbUtils.firebaseCurrentUserNode!!.child(DbUtils.FIREBASE_CURRENT_POINTS_NODE_NAME))
-                    .subscribeOn(Schedulers.io())
+                    .observeOn(Schedulers.io())
                     .subscribe({ snapshot ->
                         if (snapshot.value != null) {
                             PrefUtils.putLong(PrefUtils.PREF_CURRENT_POINTS, snapshot.getValue(Long::class.java))
@@ -250,7 +251,7 @@ class MainActivity : AppCompatActivity(), FragmentManager.OnBackStackChangedList
                 firebaseLogin()
 
                 // We successfully logged in, let's add on firebase what we have
-                Thread(Runnable {
+                doAsync {
                     val categoriesFirebase = DbUtils.firebaseCategoriesNode
                     if (categoriesFirebase != null) {
                         for (category in DbUtils.categories) {
@@ -282,7 +283,7 @@ class MainActivity : AppCompatActivity(), FragmentManager.OnBackStackChangedList
                             })
                         }
                     }
-                }).run()
+                }
             }
             else -> {
             }

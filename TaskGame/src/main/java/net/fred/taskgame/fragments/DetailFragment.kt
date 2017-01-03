@@ -37,11 +37,6 @@ import android.view.*
 import android.widget.AdapterView
 import android.widget.TextView
 import android.widget.Toast
-import io.reactivex.Observable
-import io.reactivex.ObservableOnSubscribe
-import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.disposables.CompositeDisposable
-import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.fragment_detail.*
 import net.fred.taskgame.App
 import net.fred.taskgame.R
@@ -70,9 +65,6 @@ class DetailFragment : Fragment(), OnReminderPickedListener {
     // Values to print result
     private var exitMessage: String? = null
     private var exitMessageStyle: UiUtils.MessageType = UiUtils.MessageType.TYPE_INFO
-    private var contentLineCounter = 1
-
-    private val compositeDisposable = CompositeDisposable()
 
     private val mainActivity: MainActivity?
         get() = activity as MainActivity?
@@ -131,11 +123,6 @@ class DetailFragment : Fragment(), OnReminderPickedListener {
         outState.putParcelable("mTask", Parcels.wrap<Task>(currentTask))
         outState.putParcelable("originalTask", Parcels.wrap<Task>(originalTask))
         super.onSaveInstanceState(outState)
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        compositeDisposable.clear()
     }
 
     private fun handleIntents() {
@@ -478,19 +465,15 @@ class DetailFragment : Fragment(), OnReminderPickedListener {
             return
         }
 
-        compositeDisposable.add(Observable.create(ObservableOnSubscribe<Task> { emitter ->
-            // Note updating on database
-            DbUtils.updateTask(currentTask!!, lastModificationUpdatedNeeded())
+        // Note updating on database
+        DbUtils.updateTaskAsync(currentTask!!, lastModificationUpdatedNeeded())
 
-            // Set reminder if is not passed yet
-            if (currentTask!!.hasAlarmInFuture()) {
-                currentTask!!.setupReminderAlarm(App.context!!)
-            }
+        // Set reminder if is not passed yet
+        if (currentTask!!.hasAlarmInFuture()) {
+            currentTask!!.setupReminderAlarm(App.context!!)
+        }
 
-            emitter.onNext(currentTask)
-        }).subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe { goHome() })
+        goHome()
     }
 
 
