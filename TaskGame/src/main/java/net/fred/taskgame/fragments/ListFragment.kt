@@ -423,10 +423,11 @@ class ListFragment : Fragment() {
         } else {
             // Check if is launched from a widget with categories to set tag
             if (mainActivity?.widgetCatId != null) {
-                mainActivity?.supportActionBar?.setTitle(DbUtils.getCategory(mainActivity?.widgetCatId!!).name)
                 doAsync {
+                    val catName = DbUtils.getCategory(mainActivity?.widgetCatId!!).name
                     val tasks = DbUtils.getActiveTasksByCategory(mainActivity?.widgetCatId!!)
                     uiThread {
+                        mainActivity?.supportActionBar?.title = catName
                         onTasksLoaded(tasks)
                     }
                 }
