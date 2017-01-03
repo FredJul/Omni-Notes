@@ -88,8 +88,8 @@ object DbUtils {
 
         doAsync {
             Q.Task.save(task).query()
+            task.saveInFirebase()
         }
-        task.saveInFirebase()
     }
 
     /**
@@ -170,19 +170,17 @@ object DbUtils {
      * @return Tasks list
      */
     fun getTasksByPattern(pattern: String): MutableList<Task> {
-        val Conditions = ArrayList<Condition>()
+        val conditions = ArrayList<Condition>()
 
-        Conditions.add(Condition.where(Q.Task.FINISHED, Where.Op.IS, NavigationUtils.FINISHED_TASKS == NavigationUtils.navigation))
+        conditions.add(Condition.where(Q.Task.FINISHED, Where.Op.IS, NavigationUtils.FINISHED_TASKS == NavigationUtils.navigation))
 
         if (NavigationUtils.isDisplayingACategory) {
-            Conditions.add(Condition.where(Q.Task.CATEGORY_ID, Where.Op.IS, NavigationUtils.navigation))
+            conditions.add(Condition.where(Q.Task.CATEGORY_ID, Where.Op.IS, NavigationUtils.navigation))
         }
 
-        Conditions.add(Condition.where(Q.Task.CATEGORY_ID, Where.Op.IS, NavigationUtils.navigation))
+        conditions.add(Condition.or(Condition.where(Q.Task.TITLE, Where.Op.LIKE, "%$pattern%"), Condition.where(Q.Task.CONTENT, Where.Op.LIKE, "%$pattern%")))
 
-        Conditions.add(Condition.or(Condition.where(Q.Task.TITLE, Where.Op.LIKE, "%$pattern%"), Condition.where(Q.Task.CONTENT, Where.Op.LIKE, "%$pattern%")))
-
-        return getTasks(*Conditions.toTypedArray())
+        return getTasks(*conditions.toTypedArray())
     }
 
 
