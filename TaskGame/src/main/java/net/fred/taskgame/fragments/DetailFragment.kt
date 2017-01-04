@@ -230,7 +230,7 @@ class DetailFragment : Fragment(), OnReminderPickedListener {
         reward_points.text = currentTask!!.pointReward.toString()
 
         reward_spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-            override fun onItemSelected(parent: AdapterView<*>, view: View, position: Int, id: Long) {
+            override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
                 when (position) {
                     0 -> currentTask!!.pointReward = Task.LOW_POINT_REWARD
                     1 -> currentTask!!.pointReward = Task.NORMAL_POINT_REWARD
@@ -240,7 +240,7 @@ class DetailFragment : Fragment(), OnReminderPickedListener {
                 reward_points.text = currentTask!!.pointReward.toString()
             }
 
-            override fun onNothingSelected(parent: AdapterView<*>) {
+            override fun onNothingSelected(parent: AdapterView<*>?) {
 
             }
         }
