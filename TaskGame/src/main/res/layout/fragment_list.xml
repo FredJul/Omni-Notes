@@ -40,7 +40,7 @@
         android:layout_width="match_parent"
         android:layout_height="47dp"
         android:layout_gravity="bottom"
-        android:background="@color/color_primary_dark">
+        android:background="@color/color_primary">
 
         <ImageView
             android:id="@+id/mic_button"
