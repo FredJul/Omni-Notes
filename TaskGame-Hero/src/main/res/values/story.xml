@@ -30,7 +30,7 @@
             school_friend@R:Don\'t worry, the next one will be stronger!\n
             school_friend@R:If I were you I would get some new cards at the school library.\n
             school_friend@R:I heard that the owner was once a great invoker but now he is starting to get too old for that and
-            trade his invoker cards in exchange of some well-executed _tasks.\n
+            trade his invoker cards in exchange of some well-executed tasks.\n
             school_friend@R:That\'s a easy way to become a better invoker, but be careful: you can\'t take too many card in your
             deck unless you become more experienced and gain more free slots.</item>
 
@@ -138,15 +138,18 @@
         <item>priest</item>
         <item>counselor@R:I found you a task to prove your efficiency. I would like you to kill the High Priest of the city and make it looks like a robbery.\n
             counselor@R:If you succeed in it we will accept your deal. If you fail, we will execute you for tentative of assassination on a representative of God.\n
+            hero@L:So nice of you.\n
             hero@L:What did this man do to deserve that?\n
             counselor@R:You\'ll know if you return.\n
+            hero@L:Fine. Consider that it is done.\n
             story:The evening, in the church…\n
             priest@R:Who are you? What are you doing here at this hour?\n
-            hero@L:I am officially a thief, but in reality I\'m here to assassinate you.\n
-            hero@L:Your death is part of a very big plan. Maybe your God actually approves it.\n
-            priest@R:What? This church is surrounded by guards, I just have to call them and you\'ll be the one to die!\n
-            hero@L:Please do. I\'ll let you with my invocations now, and they need some witnesses of their \"robbery\".\n
-            priest@R:Wh…? GUARDS!</item>
+            hero@L:Well, I\'m supposed to be a thief but I\'m really here to assassinate you.\n
+            hero@L:I could have done that discretely but I wanted to be transparent with you on this point.\n
+            hero@L:Your death is unfortunately necessary for my plan to be achieved. Maybe your God actually approves it.\n
+            priest@R:What?? This church is surrounded by guards, I just have to call them and you\'ll be the one to die!\n
+            hero@L:Please do. I need them to serve as witnesses of my invocations\'s \"robbery\".\n
+            priest@R:Wh…? GUARDS!!!</item>
         <item>story:The day after, at the King\'s castle…\n
             counselor@R:I heard that your mission was a success, some soldiers survived and declared that it was a thieves attack. I start to believe you are really
             capable of what you proposed.\n
