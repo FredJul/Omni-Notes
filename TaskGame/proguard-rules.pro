@@ -3,9 +3,6 @@
 -keepattributes SourceFile,LineNumberTable, Signature
 -keepnames class *
 
-# Add this global rule
--keepattributes Signature
-
 # Support v7
 # https://code.google.com/p/android/issues/detail?id=58508
 -keep class android.support.v7.widget.SearchView { *; }

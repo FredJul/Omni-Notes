@@ -68,12 +68,12 @@ class CategoryActivity : Activity() {
         colorpicker_category.onClick { colorpicker_category.color = Color.WHITE }
 
         // Added invisible saturation and value bars to get achieve pastel colors
-        val saturationbar = findViewById(R.id.saturationbar_category) as SaturationBar
-        saturationbar.setSaturation(0.4f)
-        colorpicker_category.addSaturationBar(saturationbar)
-        val valuebar = findViewById(R.id.valuebar_category) as ValueBar
-        valuebar.setValue(0.9f)
-        colorpicker_category.addValueBar(valuebar)
+        val saturationBar = findViewById(R.id.saturationbar_category) as SaturationBar
+        saturationBar.setSaturation(0.4f)
+        colorpicker_category.addSaturationBar(saturationBar)
+        val valueBar = findViewById(R.id.valuebar_category) as ValueBar
+        valueBar.setValue(0.9f)
+        colorpicker_category.addValueBar(valueBar)
 
         //		discardBtn = (Button) findViewById(R.id.discard);
 

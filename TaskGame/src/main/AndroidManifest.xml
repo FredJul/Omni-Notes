@@ -72,7 +72,8 @@
             android:name=".activities.CategoryActivity"
             android:label="@string/title_activity_category"
             android:parentActivityName=".activities.MainActivity"
-            android:theme="@style/Theme.AppCompat.Light.Dialog">
+            android:theme="@style/Theme.AppCompat.Light.Dialog"
+            android:windowSoftInputMode="stateVisible">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".activities.MainActivity" />

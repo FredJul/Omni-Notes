@@ -14,7 +14,7 @@
   ~ You should have received a copy of the GNU General Public License
   ~ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   -->
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
@@ -22,14 +22,14 @@
         android:id="@+id/recycler_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginBottom="47dp" />
+        android:layout_above="@+id/bottom_bar_layout" />
 
     <TextView
         android:id="@+id/empty_view"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:layout_marginBottom="47dp"
+        android:layout_above="@+id/bottom_bar_layout"
+        android:layout_centerInParent="true"
         android:drawablePadding="10dp"
         android:drawableTop="@drawable/no_task_icon"
         android:text="@string/no_items_in_list"
@@ -37,9 +37,10 @@
         android:textSize="20sp" />
 
     <LinearLayout
+        android:id="@+id/bottom_bar_layout"
         android:layout_width="match_parent"
         android:layout_height="47dp"
-        android:layout_gravity="bottom"
+        android:layout_alignParentBottom="true"
         android:background="@color/color_primary">
 
         <ImageView
@@ -63,4 +64,4 @@
             android:theme="@style/ThemeOverlay.AppCompat.Dark" />
 
     </LinearLayout>
-</FrameLayout>
+</RelativeLayout>

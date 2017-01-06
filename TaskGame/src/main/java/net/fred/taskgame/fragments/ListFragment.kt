@@ -65,7 +65,6 @@ class ListFragment : Fragment() {
     private var adapter: TaskAdapter? = null
 
     private val undoTasks = ArrayList<Task>()
-    private var searchView: SearchView? = null
     private var searchMenuItem: MenuItem? = null
     private var actionMode: ActionMode? = null
 
@@ -138,7 +137,7 @@ class ListFragment : Fragment() {
                     RecognizerIntent.LANGUAGE_MODEL_FREE_FORM)
 
             // Start the activity, the intent will be populated with the speech text
-            startActivityForResult(intent, REQUEST_CODE_SPEACH)
+            startActivityForResult(intent, REQUEST_CODE_SPEECH)
         }
 
         // Init tasks list
@@ -298,27 +297,28 @@ class ListFragment : Fragment() {
         searchMenuItem = menu.findItem(R.id.menu_search)
 
         // Associate searchable configuration with the SearchView
-        searchView = MenuItemCompat.getActionView(searchMenuItem) as SearchView?
-        searchView!!.imeOptions = EditorInfo.IME_ACTION_SEARCH
-
-        // Expands the widget hiding other actionbar icons
-        searchView!!.setOnQueryTextFocusChangeListener { v, hasFocus -> setActionItemsVisibility(menu) }
+        val searchView = MenuItemCompat.getActionView(searchMenuItem) as SearchView
+        searchView.imeOptions = EditorInfo.IME_ACTION_SEARCH
 
         MenuItemCompat.setOnActionExpandListener(searchMenuItem, object : MenuItemCompat.OnActionExpandListener {
 
             override fun onMenuItemActionCollapse(item: MenuItem): Boolean {
+                showBottomBar()
+
                 // Reinitialize tasks list to all tasks when search is collapsed
                 searchQuery = null
-                searchView!!.setOnQueryTextListener(null) // to avoid a bug
+                searchView.setOnQueryTextListener(null) // to avoid a bug
                 activity.intent.action = Intent.ACTION_MAIN
                 initTasksList(activity.intent)
                 activity.supportInvalidateOptionsMenu()
+
                 return true
             }
 
-
             override fun onMenuItemActionExpand(item: MenuItem): Boolean {
-                searchView!!.setOnQueryTextListener(object : OnQueryTextListener {
+                hideBottomBar()
+
+                searchView.setOnQueryTextListener(object : OnQueryTextListener {
                     override fun onQueryTextSubmit(arg0: String): Boolean {
                         return true
                     }
@@ -330,9 +330,23 @@ class ListFragment : Fragment() {
                         return true
                     }
                 })
+
                 return true
             }
         })
+    }
+
+    private fun hideBottomBar() {
+        mainActivity?.lazyFab?.hide()
+        bottom_bar_layout.visibility = View.GONE
+    }
+
+    private fun showBottomBar() {
+        val isInFinishedTasksView = NavigationUtils.FINISHED_TASKS == NavigationUtils.navigation
+        if (!isInFinishedTasksView) {
+            mainActivity?.lazyFab?.show()
+            bottom_bar_layout.visibility = View.VISIBLE
+        }
     }
 
     private fun setActionItemsVisibility(menu: Menu) {
@@ -340,9 +354,9 @@ class ListFragment : Fragment() {
         val isInFinishedTasksView = NavigationUtils.FINISHED_TASKS == NavigationUtils.navigation
 
         if (!isInFinishedTasksView) {
-            mainActivity?.lazyFab?.show()
+            showBottomBar()
         } else {
-            mainActivity?.lazyFab?.hide()
+            hideBottomBar()
         }
         menu.findItem(R.id.menu_delete_all_finished_tasks).isVisible = isInFinishedTasksView
     }
@@ -404,7 +418,7 @@ class ListFragment : Fragment() {
                     categorizeTasks(adapter!!.selectedItems, tag)
                 }
             }
-            REQUEST_CODE_SPEACH -> {
+            REQUEST_CODE_SPEECH -> {
                 if (resultCode == RESULT_OK) {
                     val spokenText = intent?.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS)?.get(0)
                     if (spokenText != null && spokenText.isNotEmpty()) {
@@ -664,7 +678,7 @@ class ListFragment : Fragment() {
             inflater.inflate(R.menu.menu_list, menu)
             actionMode = mode
 
-            mainActivity?.lazyFab?.hide()
+            hideBottomBar()
 
             return true
         }
@@ -676,7 +690,7 @@ class ListFragment : Fragment() {
 
             // Defines the conditions to set actionbar items visible or not
             if (NavigationUtils.FINISHED_TASKS != NavigationUtils.navigation) {
-                mainActivity?.lazyFab?.show()
+                showBottomBar()
             }
 
             actionMode = null
@@ -697,6 +711,6 @@ class ListFragment : Fragment() {
 
     companion object {
         private val REQUEST_CODE_CATEGORY_TASKS = 3
-        private val REQUEST_CODE_SPEACH = 4
+        private val REQUEST_CODE_SPEECH = 4
     }
 }

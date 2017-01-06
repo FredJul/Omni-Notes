@@ -113,7 +113,8 @@
         android:imeOptions="actionDone"
         android:inputType="textCapSentences|textMultiLine"
         android:padding="12dp"
-        android:textSize="@dimen/text_size_big" />
+        android:textSize="@dimen/text_size_big"
+        android:scrollbars="vertical" />
 
     <View
         android:layout_width="match_parent"

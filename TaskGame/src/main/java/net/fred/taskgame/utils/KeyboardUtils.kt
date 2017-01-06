@@ -69,8 +69,8 @@ object KeyboardUtils {
 
     }
 
-    fun hideKeyboard(mActivity: MainActivity) {
-        mActivity.window.setSoftInputMode(
+    fun hideKeyboard(activity: MainActivity) {
+        activity.window.setSoftInputMode(
                 WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN)
     }
 }

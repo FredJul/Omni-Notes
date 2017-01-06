@@ -31,7 +31,7 @@ import android.support.v4.content.ContextCompat
 import android.support.v4.view.MenuItemCompat
 import android.text.Spannable
 import android.text.TextUtils
-import android.text.method.MovementMethod
+import android.text.method.ScrollingMovementMethod
 import android.text.style.URLSpan
 import android.view.*
 import android.widget.AdapterView
@@ -103,16 +103,24 @@ class DetailFragment : Fragment(), OnReminderPickedListener {
 
         initViews()
 
-        mainActivity?.lazyFab?.hide(object : FloatingActionButton.OnVisibilityChangedListener() {
-            override fun onHidden(fab: FloatingActionButton) {
-                super.onHidden(fab)
+        // Update FAB. Can sometimes be already hidden
+        if (mainActivity?.lazyFab?.isShown ?: false) {
+            mainActivity?.lazyFab?.hide(object : FloatingActionButton.OnVisibilityChangedListener() {
+                override fun onHidden(fab: FloatingActionButton) {
+                    super.onHidden(fab)
 
-                fab.setImageResource(R.drawable.ic_done_white_24dp)
-                fab.onClick { saveAndExit() }
-                fab.setOnLongClickListener(null)
-                fab.show()
-            }
-        })
+                    fab.setImageResource(R.drawable.ic_done_white_24dp)
+                    fab.onClick { saveAndExit() }
+                    fab.setOnLongClickListener(null)
+                    fab.show()
+                }
+            })
+        } else {
+            mainActivity?.lazyFab?.setImageResource(R.drawable.ic_done_white_24dp)
+            mainActivity?.lazyFab?.onClick { saveAndExit() }
+            mainActivity?.lazyFab?.setOnLongClickListener(null)
+            mainActivity?.lazyFab?.show()
+        }
 
         setHasOptionsMenu(true)
     }
@@ -207,7 +215,7 @@ class DetailFragment : Fragment(), OnReminderPickedListener {
             detail_title.setSelection(detail_content.text.length)
             false
         }
-        detail_title.movementMethod = LinkHandler()
+        // detail_title.movementMethod = LinkHandler()
         if (currentTask == Task()) { // if the current task is totally empty, display the keyboard
             KeyboardUtils.showKeyboard(detail_title)
         }
@@ -326,6 +334,9 @@ class DetailFragment : Fragment(), OnReminderPickedListener {
                 UiUtils.showMessage(getActivity(), exitMessage!!, exitMessageStyle)
             }
 
+            // hide the keyboard
+            KeyboardUtils.hideKeyboard(detail_title)
+
             activity.supportFragmentManager.popBackStack()
         } else if (activity != null) {
             if (!TextUtils.isEmpty(exitMessage)) {
@@ -336,8 +347,8 @@ class DetailFragment : Fragment(), OnReminderPickedListener {
     }
 
 
-    override fun onOptionsItemSelected(item: MenuItem?): Boolean {
-        when (item!!.itemId) {
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
             android.R.id.home -> saveAndExit()
             R.id.menu_category -> categorizeNote()
             R.id.menu_share -> shareTask()
@@ -520,26 +531,10 @@ class DetailFragment : Fragment(), OnReminderPickedListener {
         // Nothing to do
     }
 
-    inner class LinkHandler : MovementMethod {
+    inner class LinkHandler : ScrollingMovementMethod() {
 
-        override fun initialize(widget: TextView, text: Spannable) {}
-
-        override fun onKeyDown(widget: TextView, text: Spannable, keyCode: Int, event: KeyEvent): Boolean {
-            return false
-        }
-
-        override fun onKeyUp(widget: TextView, text: Spannable, keyCode: Int, event: KeyEvent): Boolean {
-            return false
-        }
-
-        override fun onKeyOther(view: TextView, text: Spannable, event: KeyEvent): Boolean {
-            return false
-        }
-
-        override fun onTakeFocus(widget: TextView, text: Spannable, direction: Int) {}
-
-        override fun onTrackballEvent(widget: TextView, text: Spannable, event: MotionEvent): Boolean {
-            return false
+        override fun canSelectArbitrarily(): Boolean {
+            return true
         }
 
         override fun onTouchEvent(widget: TextView, buffer: Spannable, event: MotionEvent): Boolean {
@@ -567,15 +562,7 @@ class DetailFragment : Fragment(), OnReminderPickedListener {
                 }
             }
 
-            return false
-        }
-
-        override fun onGenericMotionEvent(widget: TextView, text: Spannable, event: MotionEvent): Boolean {
-            return false
-        }
-
-        override fun canSelectArbitrarily(): Boolean {
-            return true
+            return super.onTouchEvent(widget, buffer, event)
         }
 
         private fun onLinkClick(url: String) {
@@ -590,7 +577,7 @@ class DetailFragment : Fragment(), OnReminderPickedListener {
                     }
                     .setNegativeButton(R.string.modify_link) { dialog, id ->
                         // Nothing to do }.show()
-                    }
+                    }.show()
         }
     }
 
