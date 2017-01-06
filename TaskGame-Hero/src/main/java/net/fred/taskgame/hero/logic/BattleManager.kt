@@ -184,22 +184,22 @@ class BattleManager {
 
             val player = lastUsedPlayerCreatureCard
             if (result.affectedField == AleatoryAffectedField.ATTACK) {
-                result.bonusOrPenalty = getRandomIntBetween(1, Math.round(`@+id/player_image`!!.attack / 2.0f)) // up to 50% bonus or penalty
+                result.bonusOrPenalty = getRandomIntBetween(1, Math.round(player!!.attack / 2.0f)) // up to 50% bonus or penalty
                 if (Math.random() > 0.555) { // 1 chance on 2 to get a negative value
                     result.bonusOrPenalty *= -1
                 }
-                `@+id/player_image`.attack += result.bonusOrPenalty
-                if (`@+id/player_image`.attack <= 0) {
-                    `@+id/player_image`.attack = 1
+                player.attack += result.bonusOrPenalty
+                if (player.attack <= 0) {
+                    player.attack = 1
                 }
             } else {
-                result.bonusOrPenalty = getRandomIntBetween(1, Math.round(`@+id/player_image`!!.defense / 2.0f)) // up to 50% bonus or penalty
+                result.bonusOrPenalty = getRandomIntBetween(1, Math.round(player!!.defense / 2.0f)) // up to 50% bonus or penalty
                 if (Math.random() > 0.555) { // 1 chance on 2 to get a negative value
                     result.bonusOrPenalty *= -1
                 }
-                `@+id/player_image`.defense += result.bonusOrPenalty
-                if (`@+id/player_image`.defense <= 0) {
-                    `@+id/player_image`.defense = 1
+                player.defense += result.bonusOrPenalty
+                if (player.defense <= 0) {
+                    player.defense = 1
                 }
             }
 
@@ -228,21 +228,21 @@ class BattleManager {
 
                 // Change the defense points
                 if (!stunPlayer && currentStrategy != BattleStrategy.DEFENSE) {
-                    Card.allCardsMap[enemy!!.id]?.fightAction?.applyDamageFromOpponent(enemy, `@+id/player_image`!!)
+                    Card.allCardsMap[enemy!!.id]?.fightAction?.applyDamageFromOpponent(enemy, player!!)
                     enemy.defense = if (enemy.defense < 0) 0 else enemy.defense
                 }
                 if (!stunEnemy) {
                     if (currentStrategy == BattleStrategy.DEFENSE) {
                         // We reduce damage from 0 to 100% depending of luck
-                        val previousDefense = `@+id/player_image`!!.defense
-                        Card.allCardsMap[`@+id/player_image`.id]?.fightAction?.applyDamageFromOpponent(`@+id/player_image`, enemy!!)
-                        val realDamage = Math.round((previousDefense - `@+id/player_image`.defense) * Math.random()).toInt()
-                        `@+id/player_image`.defense = previousDefense - realDamage
+                        val previousDefense = player!!.defense
+                        Card.allCardsMap[player.id]?.fightAction?.applyDamageFromOpponent(player, enemy!!)
+                        val realDamage = Math.round((previousDefense - player.defense) * Math.random()).toInt()
+                        player.defense = previousDefense - realDamage
                     } else {
-                        Card.allCardsMap[`@+id/player_image`!!.id]?.fightAction?.applyDamageFromOpponent(`@+id/player_image`, enemy!!)
+                        Card.allCardsMap[player!!.id]?.fightAction?.applyDamageFromOpponent(player, enemy!!)
                     }
 
-                    `@+id/player_image`.defense = if (`@+id/player_image`.defense < 0) 0 else `@+id/player_image`.defense
+                    player.defense = if (player.defense < 0) 0 else player.defense
                 }
                 stunPlayer = false
                 stunEnemy = false
@@ -251,7 +251,7 @@ class BattleManager {
                 if (enemy!!.defense <= 0) {
                     nextSteps.add(BattleStep.ENEMY_DEATH)
                 }
-                if (`@+id/player_image`!!.defense <= 0) {
+                if (player!!.defense <= 0) {
                     nextSteps.add(BattleStep.PLAYER_DEATH)
                 }
 

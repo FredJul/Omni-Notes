@@ -404,9 +404,9 @@ class Card : Cloneable {
                 override fun executeSupportAction(manager: BattleManager, fromEnemyPointOfView: Boolean) {
                     val player = manager.getLastUsedPlayerCreatureCard(fromEnemyPointOfView)
                     //TODO: does not take in account the previous defense increase
-                    val defenseDiff = allCardsMap[`@+id/player_image`!!.id]!!.defense - `@+id/player_image`.defense
+                    val defenseDiff = allCardsMap[player!!.id]!!.defense - player.defense
                     if (defenseDiff > 0) {
-                        `@+id/player_image`.defense += Math.min(4, defenseDiff)
+                        player.defense += Math.min(4, defenseDiff)
                     }
                 }
             }
@@ -418,8 +418,8 @@ class Card : Cloneable {
             card.supportAction = object : SupportAction {
                 override fun executeSupportAction(manager: BattleManager, fromEnemyPointOfView: Boolean) {
                     val player = manager.getLastUsedPlayerCreatureCard(fromEnemyPointOfView)
-                    if (!`@+id/player_image`!!.useWeapon && !`@+id/player_image`.useMagic) {
-                        `@+id/player_image`.attack += 6
+                    if (!player!!.useWeapon && !player.useMagic) {
+                        player.attack += 6
                     }
                 }
             }
@@ -447,10 +447,10 @@ class Card : Cloneable {
             card.supportAction = object : SupportAction {
                 override fun executeSupportAction(manager: BattleManager, fromEnemyPointOfView: Boolean) {
                     val player = manager.getLastUsedPlayerCreatureCard(fromEnemyPointOfView)
-                    `@+id/player_image`!!.attack *= 2
-                    `@+id/player_image`!!.defense = (`@+id/player_image`.defense / 1.3).toInt()
-                    if (`@+id/player_image`.defense <= 0) {
-                        `@+id/player_image`.defense = 1
+                    player!!.attack *= 2
+                    player!!.defense = (player.defense / 1.3).toInt()
+                    if (player.defense <= 0) {
+                        player.defense = 1
                     }
                 }
             }
@@ -463,8 +463,8 @@ class Card : Cloneable {
                 override fun executeSupportAction(manager: BattleManager, fromEnemyPointOfView: Boolean) {
                     val player = manager.getLastUsedPlayerCreatureCard(fromEnemyPointOfView)
                     val enemy = manager.getLastUsedEnemyCreatureCard(fromEnemyPointOfView)
-                    if (enemy!!.defense <= `@+id/player_image`!!.attack) {
-                        `@+id/player_image`.defense += enemy.attack
+                    if (enemy!!.defense <= player!!.attack) {
+                        player.defense += enemy.attack
                     }
                 }
             }
@@ -486,8 +486,8 @@ class Card : Cloneable {
             card.supportAction = object : SupportAction {
                 override fun executeSupportAction(manager: BattleManager, fromEnemyPointOfView: Boolean) {
                     val player = manager.getLastUsedPlayerCreatureCard(fromEnemyPointOfView)
-                    `@+id/player_image`!!.defense = 0 //TODO: not true, but does the job for now
-                    `@+id/player_image`.attack *= 3
+                    player!!.defense = 0 //TODO: not true, but does the job for now
+                    player.attack *= 3
                 }
             }
 
@@ -500,10 +500,10 @@ class Card : Cloneable {
                     val player = manager.getLastUsedPlayerCreatureCard(fromEnemyPointOfView)
                     val enemy = manager.getLastUsedEnemyCreatureCard(fromEnemyPointOfView)
 
-                    val playerAttack = `@+id/player_image`!!.attack
-                    val playerDefense = `@+id/player_image`.defense
-                    `@+id/player_image`.attack = enemy!!.attack
-                    `@+id/player_image`.defense = enemy.defense
+                    val playerAttack = player!!.attack
+                    val playerDefense = player.defense
+                    player.attack = enemy!!.attack
+                    player.defense = enemy.defense
                     enemy.attack = playerAttack
                     enemy.defense = playerDefense
                 }
@@ -543,9 +543,9 @@ class Card : Cloneable {
             // - defense need to be greater than 1.2*attack
             // - attack is more important than defense, so big attackers should be penalised
 
-            val accepDbModelSum = card.neededSlots * 3
-            val margin = Math.round(accepDbModelSum / 100f * 30f)
-            if (card.attack > Math.round(card.defense / 1.2) || card.attack + card.defense > accepDbModelSum + margin || card.attack + card.defense < accepDbModelSum - margin) {
+            val acceptableSum = card.neededSlots * 3
+            val margin = Math.round(acceptableSum / 100f * 30f)
+            if (card.attack > Math.round(card.defense / 1.2) || card.attack + card.defense > acceptableSum + margin || card.attack + card.defense < acceptableSum - margin) {
                 throw IllegalStateException("Card " + card.name + " does not respect rules")
             }
         }
