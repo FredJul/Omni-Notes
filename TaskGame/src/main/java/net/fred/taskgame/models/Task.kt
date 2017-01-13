@@ -72,7 +72,7 @@ class Task : ModelListener {
             }
 
             if (field == null) {
-                field = Q.Category.select().where(Where.where(Q.Category.ID, Where.Op.IS, categoryId)).queryFirst()
+                field = Q.Category.select().where(Where.field(Q.Category.ID).isEqualTo(categoryId)).queryFirst()
             }
 
             return field

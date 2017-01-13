@@ -85,7 +85,7 @@
                 android:drawableStart="@drawable/point_icon"
                 android:paddingBottom="5dp" />
 
-            <Spinner
+            <net.fred.taskgame.views.BugFixedSpinner
                 android:id="@+id/reward_spinner"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"

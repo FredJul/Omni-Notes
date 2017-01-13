@@ -28,7 +28,6 @@
         android:id="@+id/empty_view"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_above="@+id/bottom_bar_layout"
         android:layout_centerInParent="true"
         android:drawablePadding="10dp"
         android:drawableTop="@drawable/no_task_icon"

@@ -21,7 +21,20 @@ import android.content.Context
 import android.util.AttributeSet
 import android.widget.TextView
 
-class AutoResizeTextView @JvmOverloads constructor(context: Context, attrs: AttributeSet? = null, defStyle: Int = 0) : TextView(context, attrs, defStyle) {
+class AutoResizeTextView : TextView {
+
+    constructor(context: Context) : super(context)
+    constructor(context: Context, attrs: AttributeSet?) : super(context, attrs) {
+        if (attrs != null) {
+            resizer?.initAttrs(context, attrs)
+        }
+    }
+
+    constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) : super(context, attrs, defStyleAttr) {
+        if (attrs != null) {
+            resizer?.initAttrs(context, attrs)
+        }
+    }
 
     private val resizer: AutoResizer? = AutoResizer(this)
 
@@ -36,12 +49,6 @@ class AutoResizeTextView @JvmOverloads constructor(context: Context, attrs: Attr
         set(minTextSize) {
             resizer?.minTextSize = minTextSize
         }
-
-    init {
-        if (attrs != null) {
-            resizer?.initAttrs(context, attrs)
-        }
-    }
 
     /**
      * When text changes, set the force resize flag to true and reset the text size.

@@ -34,7 +34,19 @@ import net.fred.taskgame.hero.R
 import net.fred.taskgame.hero.models.Card
 import java.util.*
 
-class GameCardView @JvmOverloads constructor(context: Context, attrs: AttributeSet? = null, defStyle: Int = 0) : FrameLayout(context, attrs, defStyle) {
+class GameCardView : FrameLayout {
+
+    constructor(context: Context) : super(context) {
+        inflateView(context, null, 0)
+    }
+
+    constructor(context: Context, attrs: AttributeSet?) : super(context, attrs) {
+        inflateView(context, attrs, 0)
+    }
+
+    constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) : super(context, attrs, defStyleAttr) {
+        inflateView(context, attrs, defStyleAttr)
+    }
 
     private val creature_icon: ImageView by lazy { getChildAt(0).findViewById(R.id.icon) as ImageView }
     private val creature_needed_slots: TextView by lazy { getChildAt(0).findViewById(R.id.needed_slots) as TextView }
@@ -66,10 +78,6 @@ class GameCardView @JvmOverloads constructor(context: Context, attrs: AttributeS
                 updateUI()
             }
         }
-
-    init {
-        inflateView(context, attrs, defStyle)
-    }
 
     private fun inflateView(context: Context, attrs: AttributeSet?, defStyle: Int) {
         val a = context.obtainStyledAttributes(attrs, R.styleable.GameCardView, defStyle, 0)

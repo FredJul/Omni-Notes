@@ -22,7 +22,11 @@ import android.support.v7.widget.RecyclerView
 import android.util.AttributeSet
 import android.view.View
 
-class EmptyRecyclerView @JvmOverloads constructor(context: Context, attrs: AttributeSet? = null, defStyle: Int = 0) : RecyclerView(context, attrs, defStyle) {
+class EmptyRecyclerView : RecyclerView {
+
+    constructor(context: Context) : super(context)
+    constructor(context: Context, attrs: AttributeSet?) : super(context, attrs)
+    constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) : super(context, attrs, defStyleAttr)
 
     private val observer = object : RecyclerView.AdapterDataObserver() {
         override fun onChanged() {

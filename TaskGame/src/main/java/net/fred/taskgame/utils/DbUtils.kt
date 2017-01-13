@@ -24,7 +24,6 @@ import net.fred.taskgame.App
 import net.fred.taskgame.models.Category
 import net.fred.taskgame.models.Task
 import net.frju.androidquery.gen.Q
-import net.frju.androidquery.operation.condition.Condition
 import net.frju.androidquery.operation.condition.Where
 import net.frju.androidquery.operation.keyword.OrderBy
 import org.jetbrains.anko.doAsync
@@ -100,7 +99,7 @@ object DbUtils {
      * @return
      */
     fun getTask(id: String): Task? {
-        return Q.Task.select().where(Where.where(Q.Task.ID, Where.Op.IS, id)).queryFirst()
+        return Q.Task.select().where(Where.field(Q.Task.ID).isEqualTo(id)).queryFirst()
     }
 
 
@@ -123,10 +122,10 @@ object DbUtils {
 
 
     val activeTasks: MutableList<Task>
-        get() = getTasks(Condition.where(Q.Task.FINISHED, Where.Op.IS, false))
+        get() = getTasks(Where.field(Q.Task.FINISHED).isEqualTo(false))
 
     val finishedTasks: MutableList<Task>
-        get() = getTasks(Condition.where(Q.Task.FINISHED, Where.Op.IS, true))
+        get() = getTasks(Where.field(Q.Task.FINISHED).isEqualTo(true))
 
 
     /**
@@ -142,7 +141,7 @@ object DbUtils {
 
      * @return Tasks list
      */
-    fun getTasks(vararg conditions: Condition?): MutableList<Task> {
+    fun getTasks(vararg conditions: Where?): MutableList<Task> {
         val orderBy = arrayOfNulls<OrderBy>(2)
         orderBy[0] = OrderBy(Q.Task.DISPLAY_PRIORITY, OrderBy.Order.ASC)
         orderBy[1] = OrderBy(Q.Task.CREATION_DATE, OrderBy.Order.DESC)
@@ -170,15 +169,16 @@ object DbUtils {
      * @return Tasks list
      */
     fun getTasksByPattern(pattern: String): MutableList<Task> {
-        val conditions = ArrayList<Condition>()
+        val conditions = ArrayList<Where>()
 
-        conditions.add(Condition.where(Q.Task.FINISHED, Where.Op.IS, NavigationUtils.FINISHED_TASKS == NavigationUtils.navigation))
+        conditions.add(Where.field(Q.Task.FINISHED).isEqualTo(NavigationUtils.FINISHED_TASKS == NavigationUtils.navigation))
 
         if (NavigationUtils.isDisplayingACategory) {
-            conditions.add(Condition.where(Q.Task.CATEGORY_ID, Where.Op.IS, NavigationUtils.navigation))
+            conditions.add(Where.field(Q.Task.CATEGORY_ID).isEqualTo(NavigationUtils.navigation))
         }
 
-        conditions.add(Condition.or(Condition.where(Q.Task.TITLE, Where.Op.LIKE, "%$pattern%"), Condition.where(Q.Task.CONTENT, Where.Op.LIKE, "%$pattern%")))
+        conditions.add(Where.field(Q.Task.TITLE).isLike("%$pattern%")
+                .or(Where.field(Q.Task.CONTENT).isLike("%$pattern%")))
 
         return getTasks(*conditions.toTypedArray())
     }
@@ -192,15 +192,15 @@ object DbUtils {
      * @return Tasks list
      */
     fun getTasksWithReminder(filterPastReminders: Boolean): List<Task> {
-        val conditions = ArrayList<Condition>()
+        val conditions = ArrayList<Where>()
 
         if (filterPastReminders) {
-            conditions.add(Condition.where(Q.Task.ALARM_DATE, Where.Op.MORE_THAN_OR_EQUAL, Calendar.getInstance().timeInMillis))
+            conditions.add(Where.field(Q.Task.ALARM_DATE).isMoreThanOrEqualTo(Calendar.getInstance().timeInMillis))
         } else {
-            conditions.add(Condition.where(Q.Task.ALARM_DATE, Where.Op.IS_NOT, null))
+            conditions.add(Where.field(Q.Task.ALARM_DATE).isNotEqualTo(null))
         }
 
-        conditions.add(Condition.where(Q.Task.FINISHED, Where.Op.IS_NOT, true))
+        conditions.add(Where.field(Q.Task.FINISHED).isNotEqualTo(true))
 
         return getTasks(*conditions.toTypedArray())
     }
@@ -213,10 +213,10 @@ object DbUtils {
      * @return List of tasks with requested category
      */
     fun getActiveTasksByCategory(categoryId: String): MutableList<Task> {
-        val conditions = ArrayList<Condition>()
+        val conditions = ArrayList<Where>()
 
-        conditions.add(Condition.where(Q.Task.CATEGORY_ID, Where.Op.IS, categoryId))
-        conditions.add(Condition.where(Q.Task.FINISHED, Where.Op.IS_NOT, true))
+        conditions.add(Where.field(Q.Task.CATEGORY_ID).isEqualTo(categoryId))
+        conditions.add(Where.field(Q.Task.FINISHED).isNotEqualTo(true))
 
         return getTasks(*conditions.toTypedArray())
     }
@@ -230,21 +230,19 @@ object DbUtils {
         get() = Q.Category.select().orderBy(Q.Category.CREATION_DATE, OrderBy.Order.ASC).query().toList()
 
     fun getCategory(categoryId: String): Category {
-        return Q.Category.select().where(Condition.where(Q.Category.ID, Where.Op.IS, categoryId)).queryFirst()
+        return Q.Category.select().where(Where.field(Q.Category.ID).isEqualTo(categoryId)).queryFirst()
     }
 
     val activeTaskCount: Long
-        get() = Q.Task.count().where(Condition.where(Q.Task.FINISHED, Where.Op.IS, false)).query()
+        get() = Q.Task.count().where(Where.field(Q.Task.FINISHED).isEqualTo(false)).query()
 
     val finishedTaskCount: Long
-        get() = Q.Task.count().where(Condition.where(Q.Task.FINISHED, Where.Op.IS, true)).query()
+        get() = Q.Task.count().where(Where.field(Q.Task.FINISHED).isEqualTo(true)).query()
 
     fun getActiveTaskCountByCategory(category: Category): Long {
         return Q.Task.count().where(
-                Condition.and(
-                        Condition.where(Q.Task.FINISHED, Where.Op.IS, false),
-                        Condition.where(Q.Task.CATEGORY_ID, Where.Op.IS, category.id)
-                )
+                Where.field(Q.Task.FINISHED).isEqualTo(false),
+                Where.field(Q.Task.CATEGORY_ID).isEqualTo(category.id)
         ).query()
     }
 
@@ -252,7 +250,7 @@ object DbUtils {
         // DO NOT USE the below commented solution: it will break firebase sync
         //new Update(Task.class).set(Task_Table.categoryId.isNull()).where(Task_Table.categoryId.eq(category.id));
 
-        for (task in getTasks(Condition.where(Q.Task.CATEGORY_ID, Where.Op.IS, category.id))) {
+        for (task in getTasks(Where.field(Q.Task.CATEGORY_ID).isEqualTo(category.id))) {
             task.categoryId = null
             Q.Task.update().model(task).query()
             task.saveInFirebase()
