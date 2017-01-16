@@ -26,7 +26,6 @@ import net.fred.taskgame.models.Task
 import net.frju.androidquery.gen.Q
 import net.frju.androidquery.operation.condition.Where
 import net.frju.androidquery.operation.keyword.OrderBy
-import org.jetbrains.anko.doAsync
 import java.util.*
 
 object DbUtils {
@@ -80,15 +79,13 @@ object DbUtils {
     }
 
     // Inserting or updating single task
-    fun updateTaskAsync(task: Task, updateLastModification: Boolean) {
+    fun updateTask(task: Task, updateLastModification: Boolean) {
         if (task.creationDate != 0L && updateLastModification) { // If there already was a creation date, we put at least modification date
             task.lastModificationDate = Calendar.getInstance().timeInMillis
         }
 
-        doAsync {
-            Q.Task.save(task).query()
-            task.saveInFirebase()
-        }
+        Q.Task.save(task).query()
+        task.saveInFirebase()
     }
 
     /**
@@ -153,12 +150,12 @@ object DbUtils {
         task.finished = true
         task.cancelReminderAlarm(App.context!!)
         updateCurrentPoints(currentPoints + task.pointReward)
-        updateTaskAsync(task, false)
+        updateTask(task, false)
     }
 
     fun restoreTaskAsync(task: Task) {
         task.finished = false
-        updateTaskAsync(task, false)
+        updateTask(task, false)
     }
 
     /**

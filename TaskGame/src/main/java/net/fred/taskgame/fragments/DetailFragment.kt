@@ -50,6 +50,7 @@ import net.fred.taskgame.utils.*
 import net.fred.taskgame.utils.date.DateHelper
 import net.fred.taskgame.utils.date.ReminderPickers
 import net.frju.androidquery.gen.Q
+import org.jetbrains.anko.doAsync
 import org.jetbrains.anko.onClick
 import org.parceler.Parcels
 import java.util.*
@@ -477,11 +478,13 @@ class DetailFragment : Fragment(), OnReminderPickedListener {
         }
 
         // Note updating on database
-        DbUtils.updateTaskAsync(currentTask!!, lastModificationUpdatedNeeded())
+        doAsync {
+            DbUtils.updateTask(currentTask!!, lastModificationUpdatedNeeded())
 
-        // Set reminder if is not passed yet
-        if (currentTask!!.hasAlarmInFuture()) {
-            currentTask!!.setupReminderAlarm(App.context!!)
+            // Set reminder if is not passed yet
+            if (currentTask!!.hasAlarmInFuture()) {
+                currentTask!!.setupReminderAlarm(App.context!!)
+            }
         }
 
         goHome()

@@ -126,7 +126,9 @@ class ListFragment : Fragment() {
             } else {
                 val newQuickTask = Task()
                 newQuickTask.title = quick_task.text.toString()
-                DbUtils.updateTaskAsync(newQuickTask, false)
+                doAsync {
+                    DbUtils.updateTask(newQuickTask, false)
+                }
                 quick_task.setText("")
             }
         }
@@ -620,7 +622,7 @@ class ListFragment : Fragment() {
             val task = adapter!!.tasks[position]
             task.category = category
             doAsync {
-                DbUtils.updateTaskAsync(task, false)
+                DbUtils.updateTask(task, false)
             }
 
             // Update adapter content
