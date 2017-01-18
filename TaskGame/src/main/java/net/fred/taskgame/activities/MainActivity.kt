@@ -46,13 +46,9 @@ import android.view.ViewGroup
 import android.view.animation.DecelerateInterpolator
 import android.widget.ImageView
 import android.widget.TextView
-import com.bumptech.glide.Glide
-import com.bumptech.glide.request.target.BitmapImageViewTarget
 import com.firebase.ui.auth.AuthUI
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
-import io.reactivex.disposables.CompositeDisposable
-import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.activity_main.*
 import net.fred.taskgame.R
 import net.fred.taskgame.fragments.DetailFragment
@@ -60,11 +56,10 @@ import net.fred.taskgame.fragments.ListFragment
 import net.fred.taskgame.models.Category
 import net.fred.taskgame.models.Task
 import net.fred.taskgame.utils.*
-import net.frju.androidquery.gen.Q
+import net.frju.androidquery.gen.CATEGORY
+import net.frju.androidquery.gen.TASK
 import net.frju.androidquery.utils.ThrottledContentObserver
 import org.jetbrains.anko.doAsync
-import org.jetbrains.anko.onClick
-import org.jetbrains.anko.onLongClick
 import org.parceler.Parcels
 
 class MainActivity : AppCompatActivity(), FragmentManager.OnBackStackChangedListener, NavigationView.OnNavigationItemSelectedListener {
@@ -148,8 +143,8 @@ class MainActivity : AppCompatActivity(), FragmentManager.OnBackStackChangedList
         displayHomeOrUpIcon()
 
         // registers for callbacks from the specified tables
-        contentResolver.registerContentObserver(Q.Task.getContentUri(), true, contentObserver)
-        contentResolver.registerContentObserver(Q.Category.getContentUri(), true, contentObserver)
+        contentResolver.registerContentObserver(TASK.getContentUri(), true, contentObserver)
+        contentResolver.registerContentObserver(CATEGORY.getContentUri(), true, contentObserver)
 
         navigation_view.setNavigationItemSelectedListener(this)
         navigation_view.itemIconTintList = null
@@ -170,12 +165,12 @@ class MainActivity : AppCompatActivity(), FragmentManager.OnBackStackChangedList
                             RxFirebase.EventType.CHILD_ADDED, RxFirebase.EventType.CHILD_CHANGED -> {
                                 val task = ev.snapshot.getValue(Task::class.java)
                                 task.id = ev.snapshot.key
-                                Q.Task.save(task).query()
+                                TASK.save(task).query()
                             }
                             RxFirebase.EventType.CHILD_REMOVED -> {
                                 val task = Task() // no need to copy everything, only id needed
                                 task.id = ev.snapshot.key
-                                Q.Task.delete().model(task).query()
+                                TASK.delete().model(task).query()
                             }
                             RxFirebase.EventType.CHILD_MOVED -> {
                             }
@@ -189,12 +184,12 @@ class MainActivity : AppCompatActivity(), FragmentManager.OnBackStackChangedList
                             RxFirebase.EventType.CHILD_ADDED, RxFirebase.EventType.CHILD_CHANGED -> {
                                 val category = ev.snapshot.getValue(Category::class.java)
                                 category.id = ev.snapshot.key
-                                Q.Category.save(category).query()
+                                CATEGORY.save(category).query()
                             }
                             RxFirebase.EventType.CHILD_REMOVED -> {
                                 val category = Category() // no need to copy everything, only id needed
                                 category.id = ev.snapshot.key
-                                Q.Category.delete().model(category).query()
+                                CATEGORY.delete().model(category).query()
                             }
                             RxFirebase.EventType.CHILD_MOVED -> {
                             }

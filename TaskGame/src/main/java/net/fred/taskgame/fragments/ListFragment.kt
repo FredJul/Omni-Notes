@@ -51,10 +51,10 @@ import net.fred.taskgame.models.Task
 import net.fred.taskgame.utils.*
 import net.fred.taskgame.utils.recycler.ItemActionListener
 import net.fred.taskgame.utils.recycler.SimpleItemTouchHelperCallback
-import net.frju.androidquery.gen.Q
+import net.frju.androidquery.gen.CATEGORY
+import net.frju.androidquery.gen.TASK
 import net.frju.androidquery.utils.ThrottledContentObserver
 import org.jetbrains.anko.doAsync
-import org.jetbrains.anko.onClick
 import org.jetbrains.anko.uiThread
 import org.parceler.Parcels
 import java.util.*
@@ -107,8 +107,8 @@ class ListFragment : Fragment() {
         }
 
         // registers for callbacks from the specified tables
-        context.contentResolver.registerContentObserver(Q.Task.getContentUri(), true, contentObserver)
-        context.contentResolver.registerContentObserver(Q.Category.getContentUri(), true, contentObserver)
+        context.contentResolver.registerContentObserver(TASK.getContentUri(), true, contentObserver)
+        context.contentResolver.registerContentObserver(CATEGORY.getContentUri(), true, contentObserver)
 
         PrefUtils.registerOnPrefChangeListener(prefListener)
 
@@ -207,7 +207,7 @@ class ListFragment : Fragment() {
                     task.saveInFirebase()
                 }
 
-                Q.Task.update().model(tasks).query()
+                TASK.update().model(tasks).query()
 
                 finishActionMode()
             }
@@ -587,7 +587,7 @@ class ListFragment : Fragment() {
         }
         adapter!!.tasks.removeAll(tasksToDelete)
         doAsync {
-            Q.Task.delete().model(tasksToDelete).query()
+            TASK.delete().model(tasksToDelete).query()
         }
 
         finishActionMode()

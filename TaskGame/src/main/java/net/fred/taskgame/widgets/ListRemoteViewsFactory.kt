@@ -32,7 +32,8 @@ import net.fred.taskgame.utils.Constants
 import net.fred.taskgame.utils.DbUtils
 import net.fred.taskgame.utils.Dog
 import net.fred.taskgame.utils.PrefUtils
-import net.frju.androidquery.gen.Q
+import net.frju.androidquery.gen.CATEGORY
+import net.frju.androidquery.gen.TASK
 import net.frju.androidquery.utils.ThrottledContentObserver
 import org.parceler.Parcels
 
@@ -51,8 +52,8 @@ class ListRemoteViewsFactory(private val context: Context, intent: Intent) : Rem
 
     override fun onCreate() {
         getTasks()
-        context.contentResolver.registerContentObserver(Q.Task.getContentUri(), true, contentObserver)
-        context.contentResolver.registerContentObserver(Q.Category.getContentUri(), true, contentObserver)
+        context.contentResolver.registerContentObserver(TASK.getContentUri(), true, contentObserver)
+        context.contentResolver.registerContentObserver(CATEGORY.getContentUri(), true, contentObserver)
     }
 
     override fun onDataSetChanged() {

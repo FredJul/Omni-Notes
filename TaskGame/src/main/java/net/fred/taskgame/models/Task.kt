@@ -31,7 +31,7 @@ import net.fred.taskgame.utils.DbUtils
 import net.frju.androidquery.annotation.DbField
 import net.frju.androidquery.annotation.DbModel
 import net.frju.androidquery.database.ModelListener
-import net.frju.androidquery.gen.Q
+import net.frju.androidquery.gen.CATEGORY
 import net.frju.androidquery.operation.condition.Where
 import org.parceler.Parcel
 import java.util.*
@@ -72,7 +72,7 @@ class Task : ModelListener {
             }
 
             if (field == null) {
-                field = Q.Category.select().where(Where.field(Q.Category.ID).isEqualTo(categoryId)).queryFirst()
+                field = CATEGORY.select().where(Where.field(CATEGORY.ID).isEqualTo(categoryId)).queryFirst()
             }
 
             return field

@@ -30,8 +30,7 @@ import net.fred.taskgame.hero.adapters.ComposeDeckAdapter
 import net.fred.taskgame.hero.adapters.RecyclerViewItemListener
 import net.fred.taskgame.hero.models.Card
 import net.fred.taskgame.hero.models.Level
-import net.frju.androidquery.gen.Q
-import org.jetbrains.anko.onClick
+import net.frju.androidquery.gen.CARD
 
 
 class ComposeDeckFragment : BaseFragment() {
@@ -67,7 +66,7 @@ class ComposeDeckFragment : BaseFragment() {
                 if (card.isInDeck || !card.isInDeck && usedSlots + card.neededSlots <= Level.correspondingDeckSlots) {
                     mainActivity?.playSound(MainActivity.SOUND_CHANGE_CARD)
                     card.isInDeck = !card.isInDeck
-                    Q.Card.save(card).query()
+                    CARD.save(card).query()
                     adapter!!.notifyItemChanged(position)
 
                     updateUI()

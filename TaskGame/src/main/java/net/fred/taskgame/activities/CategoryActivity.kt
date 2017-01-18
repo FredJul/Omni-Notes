@@ -32,9 +32,8 @@ import net.fred.taskgame.models.Category
 import net.fred.taskgame.utils.Constants
 import net.fred.taskgame.utils.DbUtils
 import net.fred.taskgame.utils.NavigationUtils
-import net.frju.androidquery.gen.Q
+import net.frju.androidquery.gen.CATEGORY
 import org.jetbrains.anko.doAsync
-import org.jetbrains.anko.onClick
 import org.parceler.Parcels
 
 class CategoryActivity : Activity() {
@@ -108,7 +107,7 @@ class CategoryActivity : Activity() {
         category!!.color = colorpicker_category.color
 
         // Saved to DB and new id or update result catched
-        Q.Category.save(category!!).query()
+        CATEGORY.save(category!!).query()
         category!!.saveInFirebase()
 
         // Sets result to show proper message

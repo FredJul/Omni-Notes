@@ -49,9 +49,8 @@ import net.fred.taskgame.models.Task
 import net.fred.taskgame.utils.*
 import net.fred.taskgame.utils.date.DateHelper
 import net.fred.taskgame.utils.date.ReminderPickers
-import net.frju.androidquery.gen.Q
+import net.frju.androidquery.gen.TASK
 import org.jetbrains.anko.doAsync
-import org.jetbrains.anko.onClick
 import org.parceler.Parcels
 import java.util.*
 
@@ -442,7 +441,7 @@ class DetailFragment : Fragment(), OnReminderPickedListener {
                 .setMessage(R.string.delete_task_confirmation)
                 .setPositiveButton(android.R.string.ok) { dialog, id ->
                     currentTask!!.deleteInFirebase()
-                    Q.Task.delete().model(currentTask).query()
+                    TASK.delete().model(currentTask).query()
                     UiUtils.showMessage(activity, R.string.task_deleted)
                     goHome()
                 }.show()

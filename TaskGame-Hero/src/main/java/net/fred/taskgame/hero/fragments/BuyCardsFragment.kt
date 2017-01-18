@@ -33,8 +33,7 @@ import net.fred.taskgame.hero.adapters.BuyCardsAdapter
 import net.fred.taskgame.hero.adapters.RecyclerViewItemListener
 import net.fred.taskgame.hero.models.Card
 import net.fred.taskgame.hero.utils.TaskGameUtils
-import net.frju.androidquery.gen.Q
-import org.jetbrains.anko.onClick
+import net.frju.androidquery.gen.CARD
 
 
 class BuyCardsFragment : BaseFragment() {
@@ -97,7 +96,7 @@ class BuyCardsFragment : BaseFragment() {
     private fun buyCard(position: Int, card: Card) {
         mainActivity?.playSound(MainActivity.SOUND_NEW_CARD)
         card.isObtained = true
-        Q.Card.save(card).query()
+        CARD.save(card).query()
         nonObtainedCardList!!.removeAt(position)
         adapter!!.notifyItemRemoved(position)
     }

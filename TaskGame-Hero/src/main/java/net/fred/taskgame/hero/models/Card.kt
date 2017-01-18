@@ -23,7 +23,7 @@ import net.fred.taskgame.hero.R
 import net.fred.taskgame.hero.logic.BattleManager
 import net.frju.androidquery.annotation.DbField
 import net.frju.androidquery.annotation.DbModel
-import net.frju.androidquery.gen.Q
+import net.frju.androidquery.gen.CARD
 import org.parceler.Parcel
 import java.util.*
 
@@ -182,7 +182,7 @@ class Card : Cloneable {
 
             val obtainedList = SparseBooleanArray()
             val inDeckList = SparseBooleanArray()
-            for (card in Q.Card.select().query().toArray()) {
+            for (card in CARD.select().query().toArray()) {
                 obtainedList.append(card.id, card.isObtained)
                 inDeckList.append(card.id, card.isInDeck)
             }

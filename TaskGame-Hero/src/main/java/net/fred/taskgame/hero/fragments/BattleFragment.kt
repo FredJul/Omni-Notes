@@ -36,8 +36,7 @@ import net.fred.taskgame.hero.models.Level
 import net.fred.taskgame.hero.utils.Dog
 import net.fred.taskgame.hero.utils.UiUtils
 import net.fred.taskgame.hero.views.GameCardView
-import net.frju.androidquery.gen.Q
-import org.jetbrains.anko.onClick
+import net.frju.androidquery.gen.LEVEL
 import org.parceler.Parcels
 
 
@@ -307,7 +306,7 @@ class BattleFragment : BaseFragment() {
             dialog.show(transaction, EndBattleDialogFragment::class.java.name)
         }
         level!!.isCompleted = true
-        Q.Level.save(level).query()
+        LEVEL.save(level).query()
     }
 
     fun onBackButtonClicked() {

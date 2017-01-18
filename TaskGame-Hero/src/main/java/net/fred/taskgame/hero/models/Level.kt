@@ -25,7 +25,7 @@ import android.util.SparseBooleanArray
 import net.fred.taskgame.hero.R
 import net.frju.androidquery.annotation.DbField
 import net.frju.androidquery.annotation.DbModel
-import net.frju.androidquery.gen.Q
+import net.frju.androidquery.gen.LEVEL
 import org.parceler.Parcel
 import java.util.*
 
@@ -108,7 +108,7 @@ class Level {
             ALL_LEVELS_LIST.clear()
 
             val completedList = SparseBooleanArray()
-            for (level in Q.Level.select().query().toArray()) {
+            for (level in LEVEL.select().query().toArray()) {
                 completedList.append(level.levelNumber, level.isCompleted)
             }
 

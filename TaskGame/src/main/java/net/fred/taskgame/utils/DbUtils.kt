@@ -23,7 +23,8 @@ import com.google.firebase.database.FirebaseDatabase
 import net.fred.taskgame.App
 import net.fred.taskgame.models.Category
 import net.fred.taskgame.models.Task
-import net.frju.androidquery.gen.Q
+import net.frju.androidquery.gen.CATEGORY
+import net.frju.androidquery.gen.TASK
 import net.frju.androidquery.operation.condition.Where
 import net.frju.androidquery.operation.keyword.OrderBy
 import java.util.*
@@ -84,7 +85,7 @@ object DbUtils {
             task.lastModificationDate = Calendar.getInstance().timeInMillis
         }
 
-        Q.Task.save(task).query()
+        TASK.save(task).query()
         task.saveInFirebase()
     }
 
@@ -96,7 +97,7 @@ object DbUtils {
      * @return
      */
     fun getTask(id: String): Task? {
-        return Q.Task.select().where(Where.field(Q.Task.ID).isEqualTo(id)).queryFirst()
+        return TASK.select().where(Where.field(TASK.ID).isEqualTo(id)).queryFirst()
     }
 
 
@@ -119,10 +120,10 @@ object DbUtils {
 
 
     val activeTasks: MutableList<Task>
-        get() = getTasks(Where.field(Q.Task.FINISHED).isEqualTo(false))
+        get() = getTasks(Where.field(TASK.FINISHED).isEqualTo(false))
 
     val finishedTasks: MutableList<Task>
-        get() = getTasks(Where.field(Q.Task.FINISHED).isEqualTo(true))
+        get() = getTasks(Where.field(TASK.FINISHED).isEqualTo(true))
 
 
     /**
@@ -140,10 +141,10 @@ object DbUtils {
      */
     fun getTasks(vararg conditions: Where?): MutableList<Task> {
         val orderBy = arrayOfNulls<OrderBy>(2)
-        orderBy[0] = OrderBy(Q.Task.DISPLAY_PRIORITY, OrderBy.Order.ASC)
-        orderBy[1] = OrderBy(Q.Task.CREATION_DATE, OrderBy.Order.DESC)
+        orderBy[0] = OrderBy(TASK.DISPLAY_PRIORITY, OrderBy.Order.ASC)
+        orderBy[1] = OrderBy(TASK.CREATION_DATE, OrderBy.Order.DESC)
 
-        return Q.Task.select().where(*conditions).orderBy(*orderBy).query().toList()
+        return TASK.select().where(*conditions).orderBy(*orderBy).query().toList()
     }
 
     fun finishTaskAsync(task: Task) {
@@ -168,14 +169,14 @@ object DbUtils {
     fun getTasksByPattern(pattern: String): MutableList<Task> {
         val conditions = ArrayList<Where>()
 
-        conditions.add(Where.field(Q.Task.FINISHED).isEqualTo(NavigationUtils.FINISHED_TASKS == NavigationUtils.navigation))
+        conditions.add(Where.field(TASK.FINISHED).isEqualTo(NavigationUtils.FINISHED_TASKS == NavigationUtils.navigation))
 
         if (NavigationUtils.isDisplayingACategory) {
-            conditions.add(Where.field(Q.Task.CATEGORY_ID).isEqualTo(NavigationUtils.navigation))
+            conditions.add(Where.field(TASK.CATEGORY_ID).isEqualTo(NavigationUtils.navigation))
         }
 
-        conditions.add(Where.field(Q.Task.TITLE).isLike("%$pattern%")
-                .or(Where.field(Q.Task.CONTENT).isLike("%$pattern%")))
+        conditions.add(Where.field(TASK.TITLE).isLike("%$pattern%")
+                .or(Where.field(TASK.CONTENT).isLike("%$pattern%")))
 
         return getTasks(*conditions.toTypedArray())
     }
@@ -192,12 +193,12 @@ object DbUtils {
         val conditions = ArrayList<Where>()
 
         if (filterPastReminders) {
-            conditions.add(Where.field(Q.Task.ALARM_DATE).isMoreThanOrEqualTo(Calendar.getInstance().timeInMillis))
+            conditions.add(Where.field(TASK.ALARM_DATE).isMoreThanOrEqualTo(Calendar.getInstance().timeInMillis))
         } else {
-            conditions.add(Where.field(Q.Task.ALARM_DATE).isNotEqualTo(null))
+            conditions.add(Where.field(TASK.ALARM_DATE).isNotEqualTo(null))
         }
 
-        conditions.add(Where.field(Q.Task.FINISHED).isNotEqualTo(true))
+        conditions.add(Where.field(TASK.FINISHED).isNotEqualTo(true))
 
         return getTasks(*conditions.toTypedArray())
     }
@@ -212,8 +213,8 @@ object DbUtils {
     fun getActiveTasksByCategory(categoryId: String): MutableList<Task> {
         val conditions = ArrayList<Where>()
 
-        conditions.add(Where.field(Q.Task.CATEGORY_ID).isEqualTo(categoryId))
-        conditions.add(Where.field(Q.Task.FINISHED).isNotEqualTo(true))
+        conditions.add(Where.field(TASK.CATEGORY_ID).isEqualTo(categoryId))
+        conditions.add(Where.field(TASK.FINISHED).isNotEqualTo(true))
 
         return getTasks(*conditions.toTypedArray())
     }
@@ -224,22 +225,22 @@ object DbUtils {
      * @return List of categories
      */
     val categories: MutableList<Category>
-        get() = Q.Category.select().orderBy(Q.Category.CREATION_DATE, OrderBy.Order.ASC).query().toList()
+        get() = CATEGORY.select().orderBy(CATEGORY.CREATION_DATE, OrderBy.Order.ASC).query().toList()
 
     fun getCategory(categoryId: String): Category {
-        return Q.Category.select().where(Where.field(Q.Category.ID).isEqualTo(categoryId)).queryFirst()
+        return CATEGORY.select().where(Where.field(CATEGORY.ID).isEqualTo(categoryId)).queryFirst()
     }
 
     val activeTaskCount: Long
-        get() = Q.Task.count().where(Where.field(Q.Task.FINISHED).isEqualTo(false)).query()
+        get() = TASK.count().where(Where.field(TASK.FINISHED).isEqualTo(false)).query()
 
     val finishedTaskCount: Long
-        get() = Q.Task.count().where(Where.field(Q.Task.FINISHED).isEqualTo(true)).query()
+        get() = TASK.count().where(Where.field(TASK.FINISHED).isEqualTo(true)).query()
 
     fun getActiveTaskCountByCategory(category: Category): Long {
-        return Q.Task.count().where(
-                Where.field(Q.Task.FINISHED).isEqualTo(false),
-                Where.field(Q.Task.CATEGORY_ID).isEqualTo(category.id)
+        return TASK.count().where(
+                Where.field(TASK.FINISHED).isEqualTo(false),
+                Where.field(TASK.CATEGORY_ID).isEqualTo(category.id)
         ).query()
     }
 
@@ -247,13 +248,13 @@ object DbUtils {
         // DO NOT USE the below commented solution: it will break firebase sync
         //new Update(Task.class).set(Task_Table.categoryId.isNull()).where(Task_Table.categoryId.eq(category.id));
 
-        for (task in getTasks(Where.field(Q.Task.CATEGORY_ID).isEqualTo(category.id))) {
+        for (task in getTasks(Where.field(TASK.CATEGORY_ID).isEqualTo(category.id))) {
             task.categoryId = null
-            Q.Task.update().model(task).query()
+            TASK.update().model(task).query()
             task.saveInFirebase()
         }
 
-        Q.Category.delete().model(category).query()
+        CATEGORY.delete().model(category).query()
         category.deleteInFirebase()
     }
 }
