@@ -46,9 +46,13 @@ import android.view.ViewGroup
 import android.view.animation.DecelerateInterpolator
 import android.widget.ImageView
 import android.widget.TextView
+import com.bumptech.glide.Glide
+import com.bumptech.glide.request.target.BitmapImageViewTarget
 import com.firebase.ui.auth.AuthUI
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
+import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.activity_main.*
 import net.fred.taskgame.R
 import net.fred.taskgame.fragments.DetailFragment
@@ -60,6 +64,8 @@ import net.frju.androidquery.gen.CATEGORY
 import net.frju.androidquery.gen.TASK
 import net.frju.androidquery.utils.ThrottledContentObserver
 import org.jetbrains.anko.doAsync
+import org.jetbrains.anko.onClick
+import org.jetbrains.anko.onLongClick
 import org.parceler.Parcels
 
 class MainActivity : AppCompatActivity(), FragmentManager.OnBackStackChangedListener, NavigationView.OnNavigationItemSelectedListener {

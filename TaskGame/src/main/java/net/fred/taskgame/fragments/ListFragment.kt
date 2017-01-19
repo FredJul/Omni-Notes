@@ -55,6 +55,7 @@ import net.frju.androidquery.gen.CATEGORY
 import net.frju.androidquery.gen.TASK
 import net.frju.androidquery.utils.ThrottledContentObserver
 import org.jetbrains.anko.doAsync
+import org.jetbrains.anko.onClick
 import org.jetbrains.anko.uiThread
 import org.parceler.Parcels
 import java.util.*

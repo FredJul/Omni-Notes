@@ -37,6 +37,7 @@ import net.fred.taskgame.hero.utils.Dog
 import net.fred.taskgame.hero.utils.UiUtils
 import net.fred.taskgame.hero.views.GameCardView
 import net.frju.androidquery.gen.LEVEL
+import org.jetbrains.anko.onClick
 import org.parceler.Parcels
 
 

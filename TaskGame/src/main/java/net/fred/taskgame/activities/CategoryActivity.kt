@@ -34,6 +34,7 @@ import net.fred.taskgame.utils.DbUtils
 import net.fred.taskgame.utils.NavigationUtils
 import net.frju.androidquery.gen.CATEGORY
 import org.jetbrains.anko.doAsync
+import org.jetbrains.anko.onClick
 import org.parceler.Parcels
 
 class CategoryActivity : Activity() {

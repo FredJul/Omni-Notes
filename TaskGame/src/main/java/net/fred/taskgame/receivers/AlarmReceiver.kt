@@ -32,7 +32,9 @@ class AlarmReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent) {
         try {
             val task = DbUtils.getTask(intent.extras.getString(Constants.EXTRA_TASK_ID))
-            task ?: createNotification(context, task!!)
+            if (task != null) {
+                createNotification(context, task)
+            }
         } catch (e: Exception) {
             Dog.e("Error while creating reminder notification", e)
         }

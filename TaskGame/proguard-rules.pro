@@ -7,13 +7,6 @@
 # https://code.google.com/p/android/issues/detail?id=58508
 -keep class android.support.v7.widget.SearchView { *; }
 
-# Gson
--keep class sun.misc.Unsafe { *; }
--keep class com.google.gson.stream.** { *; }
--keepclassmembers class ** {
-    @com.google.gson.annotations.Expose public *;
-}
-
 # Parceler
 -keep interface org.parceler.Parcel
 -keep @org.parceler.Parcel class * { *; }

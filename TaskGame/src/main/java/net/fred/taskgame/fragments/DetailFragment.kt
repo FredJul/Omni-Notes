@@ -51,6 +51,7 @@ import net.fred.taskgame.utils.date.DateHelper
 import net.fred.taskgame.utils.date.ReminderPickers
 import net.frju.androidquery.gen.TASK
 import org.jetbrains.anko.doAsync
+import org.jetbrains.anko.onClick
 import org.parceler.Parcels
 import java.util.*
 
