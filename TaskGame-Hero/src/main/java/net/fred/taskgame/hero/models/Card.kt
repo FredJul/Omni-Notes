@@ -486,7 +486,7 @@ class Card : Cloneable {
             card.supportAction = object : SupportAction {
                 override fun executeSupportAction(manager: BattleManager, fromEnemyPointOfView: Boolean) {
                     val player = manager.getLastUsedPlayerCreatureCard(fromEnemyPointOfView)
-                    player!!.defense = 0 //TODO: not true, but does the job for now
+                    player!!.defense = 0 //TODO: not really dead, but does the job for now
                     player.attack *= 3
                 }
             }

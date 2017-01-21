@@ -52,11 +52,12 @@
 
     <TextView
         android:id="@+id/story_text"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerInParent="true"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/translucent_dark_background"
         android:alpha="0"
-        android:textColor="@color/cardview_dark_background"
+        android:textColor="@color/card_text_color"
+        android:gravity="center"
         android:textSize="20dp"
         tools:alpha="1"
         tools:ignore="SpUsage"

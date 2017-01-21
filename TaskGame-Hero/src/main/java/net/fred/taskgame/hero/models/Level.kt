@@ -81,6 +81,7 @@ class Level {
                 put("counselor", Pair(R.string.counselor_name, R.drawable.counselor))
                 put("king", Pair(R.string.king_name, R.drawable.king))
                 put("priest", Pair(R.string.priest_name, R.drawable.priest))
+                put("outlaw", Pair(R.string.outlaw_name, R.drawable.outlaw))
             }
         }
         private val ALL_LEVELS_LIST = ArrayList<Level>()
@@ -151,6 +152,9 @@ class Level {
             level.startStoryMusicResId = R.raw.story_suspens
             level.endStoryMusicResId = R.raw.story_suspens
             level.addEnemyCard(Card.CREATURE_EMPTY_ARMOR).addEnemyCard(Card.CREATURE_EMPTY_ARMOR)
+
+            level = generateLevel(levelNumber++, completedList)
+            level.addEnemyCard(Card.CREATURE_GRUNT).addEnemyCard(Card.CREATURE_GRUNT_2).addEnemyCard(Card.SUPPORT_CONFUSION).addEnemyCard(Card.CREATURE_GRUNT)
         }
 
         private fun generateLevel(levelNumber: Int, completedList: SparseBooleanArray): Level {

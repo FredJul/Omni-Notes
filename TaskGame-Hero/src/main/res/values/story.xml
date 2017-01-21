@@ -7,6 +7,7 @@
     <string name="counselor_name">King\'s Counselor</string>
     <string name="king_name">King of Erya</string>
     <string name="priest_name">High Priest</string>
+    <string name="outlaw_name">Outlaw</string>
 
     <string-array name="level_stories">
         <!-- One levels is always composed of 3 items: enemy name, start story and end story
@@ -160,11 +161,30 @@
             this could start a revolt.\n
             hero@L:So you just wanted to protect the King?\n
             counselor@R:Our King appreciates the religion, but only when it legitimates his reign. It is true that he was not in love anymore with that priest.\n
-            counselor@R:However he did not ask me to kill him, and I did not do it for him. I actually think some arguments of that priest were valid, but I had to make
+            counselor@R:However he did not ask me to kill him, I decided to do it by myself. I actually think some arguments of that priest were valid, but I had to make
             him silent to protect the country.\n
             counselor@R:We will soon enter in war, if we go through a revolt now we will have to split our forces and will certainly suffer a quick invasion from our neighbours.\n
             counselor@R:I believe nobody wants that, including the people and the priests. What seems to be an odious act can sometimes be something needed.\n
             hero@L:I understand.</item>
+
+        <item>outlaw</item>
+        <item>counselor@R:You have proved me you value, so it\'s time for you to start the real mission.\n
+            counselor@R:As you can imagine, this is totally unofficial. You will not receive any help from us if you\'re getting arrested by enemies, is that clear?\n
+            hero@L:Yes, it is.\n
+            counselor@R:Perfect. Your first task will be to meet a men from our Intelligence Task Force near the East border control.\n
+            counselor@R:He will give you details on the mission and a way to cross the border.\n
+            hero@L:Then I would better go immediately.\n
+            story:On the way…\n
+            outlaw@R:Hey you! Do you have some water?\n
+            hero@L:Just enough for my own needs.\n
+            outlaw@R:Give it to us, we didn\'t drink anything since 2 days.\n
+            outlaw@R:Otherwise I\'m pretty sure we will not last long.\n
+            hero@L:I totally understand, but I\'m right now on an important trip and could not share.\n
+            outlaw@R:Then you give us no choice, we will take it by force.</item>
+        <item>outlaw@R:Damn you! You don\'t know what it\'s like to die of thirst!\n
+            hero@L:You are mistaking, I actually know it too well.\n
+            hero@L:But I cannot let you hinder my plans.\n
+            hero@L:Farewell.</item>
 
     </string-array>
 
