@@ -88,11 +88,11 @@ class BattleFragment : BaseFragment() {
 
         updateUI()
 
+        back.onClick { fragmentManager.popBackStack() }
         use_card_button.onClick { onUseCardClicked() }
         attack_strategy_btn.onClick { onAttackStrategyButtonClicked() }
         defense_strategy_btn.onClick { onDefenseStrategyButtonClicked() }
         aleatory_strategy_btn.onClick { onAleatoryStrategyButtonClicked() }
-        back.onClick { onBackButtonClicked() }
         dark_layer.onClick { onDarkLayerClicked() }
     }
 
@@ -308,10 +308,6 @@ class BattleFragment : BaseFragment() {
         }
         level!!.isCompleted = true
         LEVEL.save(level).query()
-    }
-
-    fun onBackButtonClicked() {
-        fragmentManager.popBackStack()
     }
 
     fun onDarkLayerClicked() {

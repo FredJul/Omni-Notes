@@ -17,7 +17,6 @@
 
 package net.fred.taskgame.hero.fragments
 
-import android.content.DialogInterface
 import android.os.Bundle
 import android.os.Parcelable
 import android.support.v4.app.DialogFragment
@@ -97,9 +96,8 @@ class EndBattleDialogFragment : ImmersiveDialogFragment() {
         ok.onClick { dialog.cancel() }
     }
 
-    override fun onCancel(dialog: DialogInterface?) {
-        super.onCancel(dialog)
-        fragmentManager.popBackStack()
+    override fun onDetach() {
+        // We are removing this fragment, let's also remove the battle one which were used as background
         fragmentManager.popBackStack()
 
         if (endType == EndType.PLAYER_WON && !TextUtils.isEmpty(level!!.getEndStory(context))) {
@@ -107,6 +105,8 @@ class EndBattleDialogFragment : ImmersiveDialogFragment() {
             UiUtils.animateTransition(transaction, UiUtils.TransitionType.TRANSITION_FADE_IN)
             transaction.replace(R.id.fragment_container, StoryFragment.newInstance(level!!, true), StoryFragment::class.java.name).addToBackStack(null).commitAllowingStateLoss()
         }
+
+        super.onDetach()
     }
 
     companion object {
