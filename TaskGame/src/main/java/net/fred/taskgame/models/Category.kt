@@ -38,9 +38,9 @@ class Category : ModelListener {
     var description = ""
     @DbField
     @ColorInt
-    var color: Int = 0
+    var color = 0
     @DbField
-    var creationDate: Long = 0
+    var creationDate = 0L
 
     fun saveInFirebase() {
         DbUtils.firebaseCategoriesNode?.child(id)?.setValue(this)

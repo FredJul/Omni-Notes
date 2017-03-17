@@ -193,7 +193,7 @@ object DbUtils {
         val conditions = ArrayList<Where>()
 
         if (filterPastReminders) {
-            conditions.add(Where.field(TASK.ALARM_DATE).isMoreThanOrEqualTo(Calendar.getInstance().timeInMillis))
+            conditions.add(Where.field(TASK.ALARM_DATE).isGreaterThanOrEqualTo(Calendar.getInstance().timeInMillis))
         } else {
             conditions.add(Where.field(TASK.ALARM_DATE).isNotEqualTo(null))
         }
@@ -225,9 +225,9 @@ object DbUtils {
      * @return List of categories
      */
     val categories: MutableList<Category>
-        get() = CATEGORY.select().orderBy(CATEGORY.CREATION_DATE, OrderBy.Order.ASC).query().toList()
+        get() = CATEGORY.select().orderByAsc(CATEGORY.CREATION_DATE).query().toList()
 
-    fun getCategory(categoryId: String): Category {
+    fun getCategory(categoryId: String): Category? {
         return CATEGORY.select().where(Where.field(CATEGORY.ID).isEqualTo(categoryId)).queryFirst()
     }
 

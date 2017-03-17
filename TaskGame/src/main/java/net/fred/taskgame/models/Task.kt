@@ -47,15 +47,15 @@ class Task : ModelListener {
     @DbField
     var content = ""
     @DbField
-    var creationDate: Long = 0
+    var creationDate = 0L
     @DbField
-    var lastModificationDate: Long = 0
+    var lastModificationDate = 0L
     @DbField
-    var displayPriority: Int = 0
+    var displayPriority = 0
     @DbField
-    var finished: Boolean = false
+    var finished = false
     @DbField
-    var alarmDate: Long = 0
+    var alarmDate = 0L
     @DbField
     var categoryId: String? = null
     @DbField

@@ -471,7 +471,7 @@ class ListFragment : Fragment() {
             // Check if is launched from a widget with categories to set tag
             if (mainActivity?.widgetCatId != null) {
                 doAsync {
-                    val catName = DbUtils.getCategory(mainActivity?.widgetCatId!!).name
+                    val catName = DbUtils.getCategory(mainActivity?.widgetCatId!!)?.name ?: ""
                     val tasks = DbUtils.getActiveTasksByCategory(mainActivity?.widgetCatId!!)
                     uiThread {
                         mainActivity?.supportActionBar?.title = catName
@@ -487,7 +487,7 @@ class ListFragment : Fragment() {
                     mainActivity?.supportActionBar?.setBackgroundDrawable(ColorDrawable(ContextCompat.getColor(context, R.color.finished_tasks_actionbar_color)))
                 } else {
                     doAsync {
-                        val catName = DbUtils.getCategory(currentNavigation).name
+                        val catName = DbUtils.getCategory(currentNavigation)?.name ?: ""
                         uiThread {
                             mainActivity?.supportActionBar?.title = catName
                         }
