@@ -50,10 +50,12 @@ class StoryFragment : BaseFragment() {
     override val mainMusicResId: Int
         @RawRes
         get() {
-            if (level != null && !isEndStory && level!!.startStoryMusicResId != Level.INVALID_ID) {
-                return level!!.startStoryMusicResId
-            } else if (level != null && isEndStory && level!!.endStoryMusicResId != Level.INVALID_ID) {
-                return level!!.endStoryMusicResId
+            level?.let { lvl ->
+                if (!isEndStory && lvl.startStoryMusicResId != Level.INVALID_ID) {
+                    return lvl.startStoryMusicResId
+                } else if (isEndStory && lvl.endStoryMusicResId != Level.INVALID_ID) {
+                    return lvl.endStoryMusicResId
+                }
             }
 
             return R.raw.story_normal
@@ -68,10 +70,12 @@ class StoryFragment : BaseFragment() {
         if (savedInstanceState != null) {
             sentences = savedInstanceState.getStringArrayList(STATE_SENTENCES)
         } else {
-            if (!isEndStory) {
-                sentences = ArrayList(Arrays.asList(*level!!.getStartStory(context).split("\n".toRegex()).dropLastWhile(String::isEmpty).toTypedArray()))
-            } else {
-                sentences = ArrayList(Arrays.asList(*level!!.getEndStory(context).split("\n".toRegex()).dropLastWhile(String::isEmpty).toTypedArray()))
+            level?.let { lvl ->
+                if (!isEndStory) {
+                    sentences = ArrayList(Arrays.asList(*lvl.getStartStory(context).split("\n".toRegex()).dropLastWhile(String::isEmpty).toTypedArray()))
+                } else {
+                    sentences = ArrayList(Arrays.asList(*lvl.getEndStory(context).split("\n".toRegex()).dropLastWhile(String::isEmpty).toTypedArray()))
+                }
             }
         }
 
@@ -86,8 +90,8 @@ class StoryFragment : BaseFragment() {
         skip_button.onClick { endStory() }
         root_view.onClick {
             if (!isInTextAnimation) {
-                if (sentences!!.size > 1) {
-                    sentences!!.removeAt(0)
+                if ((sentences?.size ?: 0) > 1) {
+                    sentences?.removeAt(0)
                     updateUI()
                 } else {
                     endStory()
@@ -97,7 +101,8 @@ class StoryFragment : BaseFragment() {
     }
 
     private fun updateUI() {
-        val sentence = sentences!![0]
+        sentences?.let {
+            val sentence = it[0]
         val separatorIndex = sentence.indexOf(':')
         val charInfo = sentence.substring(0, separatorIndex)
 
@@ -115,8 +120,9 @@ class StoryFragment : BaseFragment() {
             story_text.animate().alpha(0f)
 
             val charId = charInfo.substring(0, charInfo.length - 2).trim { it <= ' ' }
-            val charName = getString(Level.STORY_CHARS_INFO_MAP[charId]!!.first)
-            val charResId = Level.STORY_CHARS_INFO_MAP[charId]!!.second
+            Level.STORY_CHARS_INFO_MAP[charId]?.let { char ->
+                val charName = getString(char.first)
+                val charResId = char.second
             val isLeft = "L" == charInfo.substring(charInfo.length - 1)
 
             val text = charName + ": " + sentence.substring(separatorIndex + 1)
@@ -144,6 +150,8 @@ class StoryFragment : BaseFragment() {
                 right_char_text.alpha = 0f
                 right_char_text.animate().alpha(1f)
             }
+            }
+        }
         }
     }
 
@@ -181,7 +189,9 @@ class StoryFragment : BaseFragment() {
             val transaction = fragmentManager.beginTransaction()
             UiUtils.animateTransition(transaction, UiUtils.TransitionType.TRANSITION_FADE_IN)
             mainActivity?.playSound(MainActivity.SOUND_ENTER_BATTLE)
-            transaction.replace(R.id.fragment_container, BattleFragment.newInstance(level!!, Card.deckCardList), BattleFragment::class.java.name).addToBackStack(null).commitAllowingStateLoss()
+            level?.let {
+                transaction.replace(R.id.fragment_container, BattleFragment.newInstance(it, Card.deckCardList), BattleFragment::class.java.name).addToBackStack(null).commitAllowingStateLoss()
+            }
         }
     }
 

@@ -41,9 +41,9 @@ class ComposeDeckFragment : BaseFragment() {
 
     private val usedSlots: Int
         get() {
-            return obtainedCardList!!
-                    .filter(Card::isInDeck)
-                    .sumBy(Card::neededSlots)
+            return obtainedCardList
+                    ?.filter(Card::isInDeck)
+                    ?.sumBy(Card::neededSlots) ?: 0
         }
 
     override val mainMusicResId: Int
@@ -61,21 +61,23 @@ class ComposeDeckFragment : BaseFragment() {
         recycler_view.layoutManager = layoutManager
 
         obtainedCardList = Card.obtainedCardList
-        adapter = ComposeDeckAdapter(obtainedCardList!!, object : RecyclerViewItemListener {
-            override fun onItemClicked(position: Int) {
-                val card = obtainedCardList!![position]
-                if (card.isInDeck || !card.isInDeck && usedSlots + card.neededSlots <= Level.correspondingDeckSlots) {
-                    mainActivity?.playSound(MainActivity.SOUND_CHANGE_CARD)
-                    card.isInDeck = !card.isInDeck
-                    CARD.save(card).query()
-                    adapter!!.notifyItemChanged(position)
+        obtainedCardList?.let {
+            adapter = ComposeDeckAdapter(it, object : RecyclerViewItemListener {
+                override fun onItemClicked(position: Int) {
+                    val card = it[position]
+                    if (card.isInDeck || !card.isInDeck && usedSlots + card.neededSlots <= Level.correspondingDeckSlots) {
+                        mainActivity?.playSound(MainActivity.SOUND_CHANGE_CARD)
+                        card.isInDeck = !card.isInDeck
+                        CARD.save(card).query()
+                        adapter?.notifyItemChanged(position)
 
-                    updateUI()
-                } else {
-                    mainActivity?.playSound(MainActivity.SOUND_IMPOSSIBLE_ACTION)
+                        updateUI()
+                    } else {
+                        mainActivity?.playSound(MainActivity.SOUND_IMPOSSIBLE_ACTION)
+                    }
                 }
-            }
-        })
+            })
+        }
         recycler_view.adapter = adapter
 
         updateUI()

@@ -90,12 +90,14 @@ class CategoryActivity : Activity() {
     }
 
     private fun populateViews() {
-        category_title.setText(category!!.name)
-        category_description.setText(category!!.description)
-        // Reset picker to saved color
-        colorpicker_category.color = category!!.color
-        colorpicker_category.oldCenterColor = category!!.color
-        delete.visibility = View.VISIBLE
+        category?.let { cat ->
+            category_title.setText(cat.name)
+            category_description.setText(cat.description)
+            // Reset picker to saved color
+            colorpicker_category.color = cat.color
+            colorpicker_category.oldCenterColor = cat.color
+            delete.visibility = View.VISIBLE
+        }
     }
 
 
@@ -103,45 +105,49 @@ class CategoryActivity : Activity() {
      * Category saving
      */
     private fun saveCategory() {
-        category!!.name = category_title.text.toString()
-        category!!.description = category_description.text.toString()
-        category!!.color = colorpicker_category.color
+        category?.let { cat ->
+            cat.name = category_title.text.toString()
+            cat.description = category_description.text.toString()
+            cat.color = colorpicker_category.color
 
-        // Saved to DB and new id or update result catched
-        CATEGORY.save(category!!).query()
-        category!!.saveInFirebase()
+            // Saved to DB and new id or update result catched
+            CATEGORY.save(cat).query()
+            cat.saveInFirebase()
 
-        // Sets result to show proper message
-        intent.putExtra(Constants.EXTRA_CATEGORY, Parcels.wrap<Category>(category))
-        setResult(Activity.RESULT_OK, intent)
-        finish()
+            // Sets result to show proper message
+            intent.putExtra(Constants.EXTRA_CATEGORY, Parcels.wrap<Category>(cat))
+            setResult(Activity.RESULT_OK, intent)
+            finish()
+        }
     }
 
     private fun deleteCategory() {
 
-        // Retrieving how many tasks are categorized with category to be deleted
-        val count = DbUtils.getActiveTaskCountByCategory(category!!)
-        var msg = ""
-        if (count > 0) {
-            msg = getString(R.string.delete_category_confirmation).replace("$1$", count.toString())
+        category?.let { cat ->
+            // Retrieving how many tasks are categorized with category to be deleted
+            val count = DbUtils.getActiveTaskCountByCategory(cat)
+            var msg = ""
+            if (count > 0) {
+                msg = getString(R.string.delete_category_confirmation).replace("$1$", count.toString())
+            }
+
+            AlertDialog.Builder(this)
+                    .setTitle(R.string.delete_unused_category_confirmation)
+                    .setMessage(msg)
+                    .setPositiveButton(R.string.confirm) { dialog, id ->
+                        // Changes navigation if actually are shown tasks associated with this category
+                        if (NavigationUtils.isDisplayingCategory(cat)) {
+                            NavigationUtils.navigation = NavigationUtils.TASKS
+                        }
+                        // Removes category and edit tasks associated with it
+                        doAsync {
+                            DbUtils.deleteCategory(cat)
+                        }
+
+                        // Sets result to show proper message
+                        setResult(Activity.RESULT_FIRST_USER)
+                        finish()
+                    }.show()
         }
-
-        AlertDialog.Builder(this)
-                .setTitle(R.string.delete_unused_category_confirmation)
-                .setMessage(msg)
-                .setPositiveButton(R.string.confirm) { dialog, id ->
-                    // Changes navigation if actually are shown tasks associated with this category
-                    if (NavigationUtils.isDisplayingCategory(category)) {
-                        NavigationUtils.navigation = NavigationUtils.TASKS
-                    }
-                    // Removes category and edit tasks associated with it
-                    doAsync {
-                        DbUtils.deleteCategory(category!!)
-                    }
-
-                    // Sets result to show proper message
-                    setResult(Activity.RESULT_FIRST_USER)
-                    finish()
-                }.show()
     }
 }

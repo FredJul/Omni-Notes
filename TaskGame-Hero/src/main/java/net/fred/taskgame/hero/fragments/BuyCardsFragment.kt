@@ -58,21 +58,23 @@ class BuyCardsFragment : BaseFragment() {
         recycler_view.setEmptyView(empty_view)
 
         nonObtainedCardList = Card.nonObtainedCardList
-        adapter = BuyCardsAdapter(nonObtainedCardList!!, object : RecyclerViewItemListener {
-            override fun onItemClicked(position: Int) {
-                val card = nonObtainedCardList!![position]
-                if (card.price == 0) {
-                    buyCard(position, card)
-                } else {
-                    try {
-                        startActivityForResult(TaskGameUtils.getRequestPointsActivityIntent(context, card.price.toLong()), card.id)
-                    } catch (e: ActivityNotFoundException) {
-                        // TaskGame application is not installed
-                    }
+        nonObtainedCardList?.let {
+            adapter = BuyCardsAdapter(it, object : RecyclerViewItemListener {
+                override fun onItemClicked(position: Int) {
+                    val card = it[position]
+                    if (card.price == 0) {
+                        buyCard(position, card)
+                    } else {
+                        try {
+                            startActivityForResult(TaskGameUtils.getRequestPointsActivityIntent(context, card.price.toLong()), card.id)
+                        } catch (e: ActivityNotFoundException) {
+                            // TaskGame application is not installed
+                        }
 
+                    }
                 }
-            }
-        })
+            })
+        }
         recycler_view.adapter = adapter
 
         back.onClick { fragmentManager.popBackStack() }
@@ -82,11 +84,13 @@ class BuyCardsFragment : BaseFragment() {
         if (resultCode == Activity.RESULT_OK) {
             // the user accepted, let's refresh the DB and UI
 
-            for (i in nonObtainedCardList!!.indices) {
-                val card = nonObtainedCardList!![i]
-                if (card.id == requestCode) { // requestCode is card id
-                    buyCard(i, card)
-                    break
+            nonObtainedCardList?.let {
+                for (i in it.indices) {
+                    val card = it[i]
+                    if (card.id == requestCode) { // requestCode is card id
+                        buyCard(i, card)
+                        break
+                    }
                 }
             }
         }
@@ -98,7 +102,7 @@ class BuyCardsFragment : BaseFragment() {
         mainActivity?.playSound(MainActivity.SOUND_NEW_CARD)
         card.isObtained = true
         CARD.save(card).query()
-        nonObtainedCardList!!.removeAt(position)
-        adapter!!.notifyItemRemoved(position)
+        nonObtainedCardList?.removeAt(position)
+        adapter?.notifyItemRemoved(position)
     }
 }

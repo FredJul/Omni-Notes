@@ -148,9 +148,10 @@ class BattleManager {
     fun play() {
         nextSteps.add(BattleStep.SELECT_STRATEGY)
         if (!isEnemyCreatureStillAlive) {
-            val enemy = nextEnemyCreatureCard
-            usedEnemyCards.add(enemy!!)
-            remainingEnemyCards.remove(enemy)
+            nextEnemyCreatureCard?.let { enemy ->
+                usedEnemyCards.add(enemy)
+                remainingEnemyCards.remove(enemy)
+            }
         } else {
             if (remainingEnemyCards.size > 0 && remainingEnemyCards[0].type == Card.Type.SUPPORT) {
                 usedEnemyCards.add(remainingEnemyCards[0])
@@ -182,24 +183,25 @@ class BattleManager {
             // 1 chance on top of 2
             result.affectedField = if (Math.random() > 0.555) AleatoryAffectedField.ATTACK else AleatoryAffectedField.DEFENSE
 
-            val player = lastUsedPlayerCreatureCard
-            if (result.affectedField == AleatoryAffectedField.ATTACK) {
-                result.bonusOrPenalty = getRandomIntBetween(1, Math.round(player!!.attack / 2.0f)) // up to 50% bonus or penalty
-                if (Math.random() > 0.555) { // 1 chance on 2 to get a negative value
-                    result.bonusOrPenalty *= -1
-                }
-                player.attack += result.bonusOrPenalty
-                if (player.attack <= 0) {
-                    player.attack = 1
-                }
-            } else {
-                result.bonusOrPenalty = getRandomIntBetween(1, Math.round(player!!.defense / 2.0f)) // up to 50% bonus or penalty
-                if (Math.random() > 0.555) { // 1 chance on 2 to get a negative value
-                    result.bonusOrPenalty *= -1
-                }
-                player.defense += result.bonusOrPenalty
-                if (player.defense <= 0) {
-                    player.defense = 1
+            lastUsedPlayerCreatureCard?.let { player ->
+                if (result.affectedField == AleatoryAffectedField.ATTACK) {
+                    result.bonusOrPenalty = getRandomIntBetween(1, Math.round(player.attack / 2.0f)) // up to 50% bonus or penalty
+                    if (Math.random() > 0.555) { // 1 chance on 2 to get a negative value
+                        result.bonusOrPenalty *= -1
+                    }
+                    player.attack += result.bonusOrPenalty
+                    if (player.attack <= 0) {
+                        player.attack = 1
+                    }
+                } else {
+                    result.bonusOrPenalty = getRandomIntBetween(1, Math.round(player.defense / 2.0f)) // up to 50% bonus or penalty
+                    if (Math.random() > 0.555) { // 1 chance on 2 to get a negative value
+                        result.bonusOrPenalty *= -1
+                    }
+                    player.defense += result.bonusOrPenalty
+                    if (player.defense <= 0) {
+                        player.defense = 1
+                    }
                 }
             }
 
@@ -223,36 +225,38 @@ class BattleManager {
                 }
             }
             BattleManager.BattleStep.APPLY_DAMAGES -> {
-                val enemy = lastUsedEnemyCreatureCard
-                val player = lastUsedPlayerCreatureCard
+                lastUsedEnemyCreatureCard?.let { enemy ->
+                    lastUsedPlayerCreatureCard?.let { player ->
 
-                // Change the defense points
-                if (!stunPlayer && currentStrategy != BattleStrategy.DEFENSE) {
-                    Card.allCardsMap[enemy!!.id]?.fightAction?.applyDamageFromOpponent(enemy, player!!)
-                    enemy.defense = if (enemy.defense < 0) 0 else enemy.defense
-                }
-                if (!stunEnemy) {
-                    if (currentStrategy == BattleStrategy.DEFENSE) {
-                        // We reduce damage from 0 to 100% depending of luck
-                        val previousDefense = player!!.defense
-                        Card.allCardsMap[player.id]?.fightAction?.applyDamageFromOpponent(player, enemy!!)
-                        val realDamage = Math.round((previousDefense - player.defense) * Math.random()).toInt()
-                        player.defense = previousDefense - realDamage
-                    } else {
-                        Card.allCardsMap[player!!.id]?.fightAction?.applyDamageFromOpponent(player, enemy!!)
+                        // Change the defense points
+                        if (!stunPlayer && currentStrategy != BattleStrategy.DEFENSE) {
+                            Card.allCardsMap[enemy.id]?.fightAction?.applyDamageFromOpponent(enemy, player)
+                            enemy.defense = if (enemy.defense < 0) 0 else enemy.defense
+                        }
+                        if (!stunEnemy) {
+                            if (currentStrategy == BattleStrategy.DEFENSE) {
+                                // We reduce damage from 0 to 100% depending of luck
+                                val previousDefense = player.defense
+                                Card.allCardsMap[player.id]?.fightAction?.applyDamageFromOpponent(player, enemy)
+                                val realDamage = Math.round((previousDefense - player.defense) * Math.random()).toInt()
+                                player.defense = previousDefense - realDamage
+                            } else {
+                                Card.allCardsMap[player.id]?.fightAction?.applyDamageFromOpponent(player, enemy)
+                            }
+
+                            player.defense = if (player.defense < 0) 0 else player.defense
+                        }
+                        stunPlayer = false
+                        stunEnemy = false
+
+                        // Death computation
+                        if (enemy.defense <= 0) {
+                            nextSteps.add(BattleStep.ENEMY_DEATH)
+                        }
+                        if (player.defense <= 0) {
+                            nextSteps.add(BattleStep.PLAYER_DEATH)
+                        }
                     }
-
-                    player.defense = if (player.defense < 0) 0 else player.defense
-                }
-                stunPlayer = false
-                stunEnemy = false
-
-                // Death computation
-                if (enemy!!.defense <= 0) {
-                    nextSteps.add(BattleStep.ENEMY_DEATH)
-                }
-                if (player!!.defense <= 0) {
-                    nextSteps.add(BattleStep.PLAYER_DEATH)
                 }
 
                 // End of battle

@@ -402,11 +402,14 @@ class Card : Cloneable {
             card.desc = "Ok it's a summoned creature, but does that means you should be heartless?\n ● +4 defense if wounded"
             card.supportAction = object : SupportAction {
                 override fun executeSupportAction(manager: BattleManager, fromEnemyPointOfView: Boolean) {
-                    val player = manager.getLastUsedPlayerCreatureCard(fromEnemyPointOfView)
-                    //TODO: does not take in account the previous defense increase
-                    val defenseDiff = allCardsMap[player!!.id]!!.defense - player.defense
-                    if (defenseDiff > 0) {
-                        player.defense += Math.min(4, defenseDiff)
+                    manager.getLastUsedPlayerCreatureCard(fromEnemyPointOfView)?.let { player ->
+                        //TODO: does not take in account the previous defense increase
+                        allCardsMap[player.id]?.let { originalCard ->
+                            val defenseDiff = originalCard.defense - player.defense
+                            if (defenseDiff > 0) {
+                                player.defense += Math.min(4, defenseDiff)
+                            }
+                        }
                     }
                 }
             }
@@ -417,9 +420,10 @@ class Card : Cloneable {
             card.desc = "The best way to gain respect from your enemy is by putting an axe in his face\n ● +6 attack if he doesn't use weapon nor magic"
             card.supportAction = object : SupportAction {
                 override fun executeSupportAction(manager: BattleManager, fromEnemyPointOfView: Boolean) {
-                    val player = manager.getLastUsedPlayerCreatureCard(fromEnemyPointOfView)
-                    if (!player!!.useWeapon && !player.useMagic) {
+                    manager.getLastUsedPlayerCreatureCard(fromEnemyPointOfView)?.let { player ->
+                        if (!player.useWeapon && !player.useMagic) {
                         player.attack += 6
+                    }
                     }
                 }
             }
@@ -430,11 +434,12 @@ class Card : Cloneable {
             card.desc = "Your enemy weapon starts to run into pieces. Serves him damned right!\n ● -5 attack if he uses a weapon"
             card.supportAction = object : SupportAction {
                 override fun executeSupportAction(manager: BattleManager, fromEnemyPointOfView: Boolean) {
-                    val enemy = manager.getLastUsedEnemyCreatureCard(fromEnemyPointOfView)
-                    if (enemy!!.useWeapon) {
+                    manager.getLastUsedEnemyCreatureCard(fromEnemyPointOfView)?.let { enemy ->
+                        if (enemy.useWeapon) {
                         enemy.attack -= 5
                         if (enemy.attack < 0) {
                             enemy.attack = 0
+                        }
                         }
                     }
                 }
@@ -446,11 +451,12 @@ class Card : Cloneable {
             card.desc = "It's only syrup, but placebo effect makes your creature feel invincible\n ● Multiply attack by 2\n ● Divide defense by 1.3"
             card.supportAction = object : SupportAction {
                 override fun executeSupportAction(manager: BattleManager, fromEnemyPointOfView: Boolean) {
-                    val player = manager.getLastUsedPlayerCreatureCard(fromEnemyPointOfView)
-                    player!!.attack *= 2
-                    player!!.defense = (player.defense / 1.3).toInt()
+                    manager.getLastUsedPlayerCreatureCard(fromEnemyPointOfView)?.let { player ->
+                        player.attack *= 2
+                        player.defense = (player.defense / 1.3).toInt()
                     if (player.defense <= 0) {
                         player.defense = 1
+                    }
                     }
                 }
             }
@@ -461,10 +467,12 @@ class Card : Cloneable {
             card.desc = "Forget honor and attack the enemy from behind, it's more effective\n ● If you kill the enemy this turn, you'll not receive any damage"
             card.supportAction = object : SupportAction {
                 override fun executeSupportAction(manager: BattleManager, fromEnemyPointOfView: Boolean) {
-                    val player = manager.getLastUsedPlayerCreatureCard(fromEnemyPointOfView)
-                    val enemy = manager.getLastUsedEnemyCreatureCard(fromEnemyPointOfView)
-                    if (enemy!!.defense <= player!!.attack) {
+                    manager.getLastUsedPlayerCreatureCard(fromEnemyPointOfView)?.let { player ->
+                        manager.getLastUsedEnemyCreatureCard(fromEnemyPointOfView)?.let { enemy ->
+                            if (enemy.defense <= player.attack) {
                         player.defense += enemy.attack
+                            }
+                        }
                     }
                 }
             }
@@ -485,9 +493,10 @@ class Card : Cloneable {
             card.desc = "Free your creature from your control. It will charge the enemy with all his forces, and profit of the breach to run away.\n ● Multiply attack by 3\n ● Your creature run away after 1 round"
             card.supportAction = object : SupportAction {
                 override fun executeSupportAction(manager: BattleManager, fromEnemyPointOfView: Boolean) {
-                    val player = manager.getLastUsedPlayerCreatureCard(fromEnemyPointOfView)
-                    player!!.defense = 0 //TODO: not really dead, but does the job for now
+                    manager.getLastUsedPlayerCreatureCard(fromEnemyPointOfView)?.let { player ->
+                        player.defense = 0 //TODO: not really dead, but does the job for now
                     player.attack *= 3
+                    }
                 }
             }
 
@@ -497,15 +506,17 @@ class Card : Cloneable {
             card.desc = "Your creature switch it's attack/defense level with his opponent's ones. How does the potion work? Well, it's a secret."
             card.supportAction = object : SupportAction {
                 override fun executeSupportAction(manager: BattleManager, fromEnemyPointOfView: Boolean) {
-                    val player = manager.getLastUsedPlayerCreatureCard(fromEnemyPointOfView)
-                    val enemy = manager.getLastUsedEnemyCreatureCard(fromEnemyPointOfView)
+                    manager.getLastUsedPlayerCreatureCard(fromEnemyPointOfView)?.let { player ->
+                        manager.getLastUsedEnemyCreatureCard(fromEnemyPointOfView)?.let { enemy ->
 
-                    val playerAttack = player!!.attack
+                            val playerAttack = player.attack
                     val playerDefense = player.defense
-                    player.attack = enemy!!.attack
+                            player.attack = enemy.attack
                     player.defense = enemy.defense
                     enemy.attack = playerAttack
                     enemy.defense = playerDefense
+                        }
+                    }
                 }
             }
         }

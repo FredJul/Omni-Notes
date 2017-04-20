@@ -53,7 +53,7 @@ class Level {
 
     @DrawableRes
     fun getEnemyIcon(context: Context): Int {
-        return STORY_CHARS_INFO_MAP[context.resources.getStringArray(R.array.level_stories)[levelNumber * 3 - 3]]!!.second
+        return STORY_CHARS_INFO_MAP[context.resources.getStringArray(R.array.level_stories)[levelNumber * 3 - 3]]?.second ?: 0
     }
 
     fun getStartStory(context: Context): String {
@@ -65,7 +65,9 @@ class Level {
     }
 
     private fun addEnemyCard(cardId: Int): Level {
-        enemyCards.add(Card.allCardsMap[cardId]!!)
+        Card.allCardsMap[cardId]?.let {
+            enemyCards.add(it)
+        }
         return this
     }
 

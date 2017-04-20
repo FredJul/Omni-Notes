@@ -253,13 +253,12 @@ class MainActivity : AppCompatActivity(), FragmentManager.OnBackStackChangedList
 
                 // We successfully logged in, let's add on firebase what we have
                 doAsync {
-                    val categoriesFirebase = DbUtils.firebaseCategoriesNode
-                    if (categoriesFirebase != null) {
+                    DbUtils.firebaseCategoriesNode?.let { categoriesFirebase ->
                         for (category in DbUtils.categories) {
                             categoriesFirebase.child(category.id.toString()).addListenerForSingleValueEvent(object : ValueEventListener {
                                 override fun onDataChange(snapshot: DataSnapshot) {
                                     if (!snapshot.exists()) {
-                                        Dog.d("add cat: " + category.id!!)
+                                        Dog.d("add cat: " + category.id)
                                         categoriesFirebase.child(category.id.toString()).setValue(category)
                                     }
                                 }
@@ -269,13 +268,12 @@ class MainActivity : AppCompatActivity(), FragmentManager.OnBackStackChangedList
                         }
                     }
 
-                    val tasksFirebase = DbUtils.firebaseTasksNode
-                    if (tasksFirebase != null) {
+                    DbUtils.firebaseTasksNode?.let { tasksFirebase ->
                         for (task in DbUtils.tasks) {
                             tasksFirebase.child(task.id.toString()).addListenerForSingleValueEvent(object : ValueEventListener {
                                 override fun onDataChange(snapshot: DataSnapshot) {
                                     if (!snapshot.exists()) {
-                                        Dog.d("add task: " + task.id!!)
+                                        Dog.d("add task: " + task.id)
                                         tasksFirebase.child(task.id.toString()).setValue(task)
                                     }
                                 }

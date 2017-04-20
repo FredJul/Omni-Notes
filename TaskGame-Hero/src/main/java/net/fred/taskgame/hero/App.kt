@@ -38,9 +38,8 @@ class App : Application() {
     }
 
     companion object {
-
         @JvmStatic
-        var context: Context? = null
+        lateinit var context: Context
             private set
     }
 

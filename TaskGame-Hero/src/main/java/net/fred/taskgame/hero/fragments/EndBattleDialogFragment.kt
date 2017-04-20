@@ -64,18 +64,20 @@ class EndBattleDialogFragment : ImmersiveDialogFragment() {
 
                 var contentText = "Who is the boss now?\n\n"
                 if (!wasAlreadyCompletedOnce) {
-                    val previousSlots = Level.getCorrespondingDeckSlots(level!!.levelNumber - 1)
-                    val newSlots = Level.getCorrespondingDeckSlots(level!!.levelNumber)
+                    level?.let { lvl ->
+                        val previousSlots = Level.getCorrespondingDeckSlots(lvl.levelNumber - 1)
+                        val newSlots = Level.getCorrespondingDeckSlots(lvl.levelNumber)
 
-                    val previousAvailableCreatures = Card.getNonObtainedCardList(previousSlots).size
-                    val newAvailableCreatures = Card.getNonObtainedCardList(newSlots).size
+                        val previousAvailableCreatures = Card.getNonObtainedCardList(previousSlots).size
+                        val newAvailableCreatures = Card.getNonObtainedCardList(newSlots).size
 
-                    if (newAvailableCreatures > previousAvailableCreatures) {
-                        contentText += " ● You can now summon more creatures!\n"
-                    }
+                        if (newAvailableCreatures > previousAvailableCreatures) {
+                            contentText += " ● You can now summon more creatures!\n"
+                        }
 
-                    if (newSlots > previousSlots) {
-                        contentText += " ● You have earned new deck slots!\n"
+                        if (newSlots > previousSlots) {
+                            contentText += " ● You have earned new deck slots!\n"
+                        }
                     }
                 }
 
@@ -100,10 +102,12 @@ class EndBattleDialogFragment : ImmersiveDialogFragment() {
         // We are removing this fragment, let's also remove the battle one which were used as background
         fragmentManager.popBackStack()
 
-        if (endType == EndType.PLAYER_WON && !TextUtils.isEmpty(level!!.getEndStory(context))) {
-            val transaction = fragmentManager.beginTransaction()
-            UiUtils.animateTransition(transaction, UiUtils.TransitionType.TRANSITION_FADE_IN)
-            transaction.replace(R.id.fragment_container, StoryFragment.newInstance(level!!, true), StoryFragment::class.java.name).addToBackStack(null).commitAllowingStateLoss()
+        level?.let { lvl ->
+            if (endType == EndType.PLAYER_WON && !TextUtils.isEmpty(lvl.getEndStory(context))) {
+                val transaction = fragmentManager.beginTransaction()
+                UiUtils.animateTransition(transaction, UiUtils.TransitionType.TRANSITION_FADE_IN)
+                transaction.replace(R.id.fragment_container, StoryFragment.newInstance(lvl, true), StoryFragment::class.java.name).addToBackStack(null).commitAllowingStateLoss()
+            }
         }
 
         super.onDetach()

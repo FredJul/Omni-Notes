@@ -60,17 +60,19 @@ class MainActivity : AppCompatActivity() {
                 .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
                 .build()
         soundPool = SoundPool.Builder().setAudioAttributes(attributes).setMaxStreams(2).build()
-        SOUND_ENTER_BATTLE = soundPool!!.load(this, R.raw.enter_battle, 1)
-        SOUND_FIGHT = soundPool!!.load(this, R.raw.fight, 1)
-        SOUND_FIGHT_WEAPON = soundPool!!.load(this, R.raw.fight_weapon, 1)
-        SOUND_FIGHT_MAGIC = soundPool!!.load(this, R.raw.fight_magic, 1)
-        SOUND_USE_SUPPORT = soundPool!!.load(this, R.raw.use_support, 1)
-        SOUND_DEATH = soundPool!!.load(this, R.raw.death, 1)
-        SOUND_VICTORY = soundPool!!.load(this, R.raw.victory, 1)
-        SOUND_DEFEAT = soundPool!!.load(this, R.raw.defeat, 1)
-        SOUND_CHANGE_CARD = soundPool!!.load(this, R.raw.change_card, 1)
-        SOUND_NEW_CARD = soundPool!!.load(this, R.raw.new_card, 1)
-        SOUND_IMPOSSIBLE_ACTION = soundPool!!.load(this, R.raw.impossible_action, 1)
+        soundPool?.let { pool ->
+            SOUND_ENTER_BATTLE = pool.load(this, R.raw.enter_battle, 1)
+            SOUND_FIGHT = pool.load(this, R.raw.fight, 1)
+            SOUND_FIGHT_WEAPON = pool.load(this, R.raw.fight_weapon, 1)
+            SOUND_FIGHT_MAGIC = pool.load(this, R.raw.fight_magic, 1)
+            SOUND_USE_SUPPORT = pool.load(this, R.raw.use_support, 1)
+            SOUND_DEATH = pool.load(this, R.raw.death, 1)
+            SOUND_VICTORY = pool.load(this, R.raw.victory, 1)
+            SOUND_DEFEAT = pool.load(this, R.raw.defeat, 1)
+            SOUND_CHANGE_CARD = pool.load(this, R.raw.change_card, 1)
+            SOUND_NEW_CARD = pool.load(this, R.raw.new_card, 1)
+            SOUND_IMPOSSIBLE_ACTION = pool.load(this, R.raw.impossible_action, 1)
+        }
 
         if (!TaskGameUtils.isAppInstalled(this)) {
             AlertDialog.Builder(this)
@@ -137,15 +139,15 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun stopMusic() {
-        if (mediaPlayer != null) {
-            mediaPlayer!!.release()
-            mediaPlayer = null
-        }
+        mediaPlayer?.release()
+        mediaPlayer = null
+
         currentMusicResId = 0
     }
 
     fun playMusic(@RawRes soundResId: Int) {
-        if (soundResId == 0 || mediaPlayer != null && mediaPlayer!!.isPlaying && currentMusicResId == soundResId) {
+        if (soundResId == 0 ||
+                (mediaPlayer?.isPlaying ?: false && currentMusicResId == soundResId)) {
             return
         }
 
@@ -153,21 +155,25 @@ class MainActivity : AppCompatActivity() {
         stopMusic()
 
         mediaPlayer = MediaPlayer.create(this, soundResId)
-        mediaPlayer!!.setOnCompletionListener {
-            // setLooping(true) is buggy on my Nexus5X, does not really understand why... hence this workaround
-            playMusic(soundResId)
-        }
+        mediaPlayer?.let { player ->
+            player.setOnCompletionListener {
+                // setLooping(true) is buggy on my Nexus5X, does not really understand why... hence this workaround
+                playMusic(soundResId)
+            }
 
-        mediaPlayer!!.start()
+            player.start()
+        }
     }
 
     fun playSound(soundId: Int) {
-        currentSoundStreamId = soundPool!!.play(soundId, 0.5f, 0.5f, 1, 0, 1f)
+        soundPool?.let {
+            currentSoundStreamId = it.play(soundId, 0.5f, 0.5f, 1, 0, 1f)
+        }
     }
 
     fun stopSound() {
-        if (soundPool != null && currentSoundStreamId != 0) {
-            soundPool!!.stop(currentSoundStreamId)
+        if (currentSoundStreamId != 0) {
+            soundPool?.stop(currentSoundStreamId)
         }
     }
 

@@ -56,7 +56,7 @@ class LevelSelectionAdapter(val levels: List<Level>, private val mItemListener: 
         if (level.isBossLevel) {
             holder.itemView.level_number.text = ""
             holder.itemView.boss_icon.visibility = View.VISIBLE
-            holder.itemView.boss_icon.setImageResource(level.getEnemyIcon(App.context!!))
+            holder.itemView.boss_icon.setImageResource(level.getEnemyIcon(App.context))
         } else {
             holder.itemView.boss_icon.visibility = View.GONE
             holder.itemView.level_number.text = level.levelNumber.toString()

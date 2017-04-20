@@ -36,16 +36,16 @@ class AutoResizeTextView : TextView {
         }
     }
 
-    private val resizer: AutoResizer? = AutoResizer(this)
+    private val resizer: AutoResizer? = AutoResizer(this) // can actually be null sometimes
 
     var maxTextSize: Float
-        get() = resizer!!.maxTextSize
+        get() = resizer?.maxTextSize ?: 0f
         set(maxTextSize) {
             resizer?.maxTextSize = maxTextSize
         }
 
     var minTextSize: Float
-        get() = resizer!!.minTextSize
+        get() = resizer?.minTextSize ?: 0f
         set(minTextSize) {
             resizer?.minTextSize = minTextSize
         }

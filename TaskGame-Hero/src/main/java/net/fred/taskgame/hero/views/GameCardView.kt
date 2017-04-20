@@ -98,75 +98,78 @@ class GameCardView : FrameLayout {
     }
 
     private fun updateUI() {
-        if (card == null) {
-            return
-        }
+        card?.let {
 
-        if (card!!.type == Card.Type.CREATURE) {
-            creature_icon.setImageResource(card!!.iconResId)
-            creature_needed_slots.text = card!!.neededSlots.toString()
-            creature_name.text = card!!.name
-            creature_desc.text = card!!.desc
-            creature_speciality.text = if (card!!.useMagic) "Use magic" else if (card!!.useWeapon) "Use weapon" else ""
-            creature_attack.text = card!!.attack.toString()
-            creature_defense.text = card!!.defense.toString()
-        } else {
-            support_icon.setImageResource(card!!.iconResId)
-            support_needed_slots.text = card!!.neededSlots.toString()
-            support_name.text = card!!.name
-            support_desc.text = card!!.desc
+            if (it.type == Card.Type.CREATURE) {
+                creature_icon.setImageResource(it.iconResId)
+                creature_needed_slots.text = it.neededSlots.toString()
+                creature_name.text = it.name
+                creature_desc.text = it.desc
+                creature_speciality.text = if (it.useMagic) "Use magic" else if (it.useWeapon) "Use weapon" else ""
+                creature_attack.text = it.attack.toString()
+                creature_defense.text = it.defense.toString()
+            } else {
+                support_icon.setImageResource(it.iconResId)
+                support_needed_slots.text = it.neededSlots.toString()
+                support_name.text = it.name
+                support_desc.text = it.desc
+            }
         }
     }
 
     fun animateValueChange(endAction: Runnable?): Boolean {
         val property = object : Property<TextView, Int>(Int::class.javaPrimitiveType, "textColor") {
-            override fun get(`object`: TextView): Int {
-                return `object`.currentTextColor
+            override fun get(v: TextView): Int {
+                return v.currentTextColor
             }
 
-            override fun set(`object`: TextView, value: Int?) {
-                `object`.setTextColor(value!!)
+            override fun set(v: TextView, value: Int) {
+                v.setTextColor(value)
             }
         }
 
         val animators = ArrayList<Animator>()
 
-        val previousAttack = Integer.valueOf(creature_attack.text.toString())!!
-        if (previousAttack > card!!.attack || previousAttack < card!!.attack) {
-            creature_attack.text = card!!.attack.toString()
-            val colorAnim = ObjectAnimator.ofInt(creature_attack, property, if (previousAttack > card!!.attack) Color.RED else Color.GREEN)
-            colorAnim.setEvaluator(ArgbEvaluator())
-            colorAnim.repeatCount = 1
-            colorAnim.repeatMode = ObjectAnimator.REVERSE
-            val scaleXAnim = ObjectAnimator.ofFloat(creature_attack, "scaleX", 1.5f)
-            scaleXAnim.repeatCount = 1
-            scaleXAnim.repeatMode = ObjectAnimator.REVERSE
-            val scaleYAnim = ObjectAnimator.ofFloat(creature_attack, "scaleY", 1.5f)
-            scaleYAnim.repeatCount = 1
-            scaleYAnim.repeatMode = ObjectAnimator.REVERSE
+        card?.let {
+            Integer.valueOf(creature_attack.text.toString())?.let { previousAttack ->
+                if (previousAttack > it.attack || previousAttack < it.attack) {
+                    creature_attack.text = it.attack.toString()
+                    val colorAnim = ObjectAnimator.ofInt(creature_attack, property, if (previousAttack > it.attack) Color.RED else Color.GREEN)
+                    colorAnim.setEvaluator(ArgbEvaluator())
+                    colorAnim.repeatCount = 1
+                    colorAnim.repeatMode = ObjectAnimator.REVERSE
+                    val scaleXAnim = ObjectAnimator.ofFloat(creature_attack, "scaleX", 1.5f)
+                    scaleXAnim.repeatCount = 1
+                    scaleXAnim.repeatMode = ObjectAnimator.REVERSE
+                    val scaleYAnim = ObjectAnimator.ofFloat(creature_attack, "scaleY", 1.5f)
+                    scaleYAnim.repeatCount = 1
+                    scaleYAnim.repeatMode = ObjectAnimator.REVERSE
 
-            animators.add(colorAnim)
-            animators.add(scaleXAnim)
-            animators.add(scaleYAnim)
-        }
+                    animators.add(colorAnim)
+                    animators.add(scaleXAnim)
+                    animators.add(scaleYAnim)
+                }
+            }
 
-        val previousDefense = Integer.valueOf(creature_defense.text.toString())!!
-        if (previousDefense > card!!.defense || previousDefense < card!!.defense) {
-            creature_defense.text = card!!.defense.toString()
-            val colorAnim = ObjectAnimator.ofInt(creature_defense, property, if (previousDefense > card!!.defense) Color.RED else Color.GREEN)
-            colorAnim.setEvaluator(ArgbEvaluator())
-            colorAnim.repeatCount = 1
-            colorAnim.repeatMode = ObjectAnimator.REVERSE
-            val scaleXAnim = ObjectAnimator.ofFloat(creature_defense, "scaleX", 1.5f)
-            scaleXAnim.repeatCount = 1
-            scaleXAnim.repeatMode = ObjectAnimator.REVERSE
-            val scaleYAnim = ObjectAnimator.ofFloat(creature_defense, "scaleY", 1.5f)
-            scaleYAnim.repeatCount = 1
-            scaleYAnim.repeatMode = ObjectAnimator.REVERSE
+            Integer.valueOf(creature_defense.text.toString())?.let { previousDefense ->
+                if (previousDefense > it.defense || previousDefense < it.defense) {
+                    creature_defense.text = it.defense.toString()
+                    val colorAnim = ObjectAnimator.ofInt(creature_defense, property, if (previousDefense > it.defense) Color.RED else Color.GREEN)
+                    colorAnim.setEvaluator(ArgbEvaluator())
+                    colorAnim.repeatCount = 1
+                    colorAnim.repeatMode = ObjectAnimator.REVERSE
+                    val scaleXAnim = ObjectAnimator.ofFloat(creature_defense, "scaleX", 1.5f)
+                    scaleXAnim.repeatCount = 1
+                    scaleXAnim.repeatMode = ObjectAnimator.REVERSE
+                    val scaleYAnim = ObjectAnimator.ofFloat(creature_defense, "scaleY", 1.5f)
+                    scaleYAnim.repeatCount = 1
+                    scaleYAnim.repeatMode = ObjectAnimator.REVERSE
 
-            animators.add(colorAnim)
-            animators.add(scaleXAnim)
-            animators.add(scaleYAnim)
+                    animators.add(colorAnim)
+                    animators.add(scaleXAnim)
+                    animators.add(scaleYAnim)
+                }
+            }
         }
 
         if (!animators.isEmpty()) {
