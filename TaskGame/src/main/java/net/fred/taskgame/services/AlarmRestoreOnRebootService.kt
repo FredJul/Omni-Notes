@@ -28,7 +28,7 @@ class AlarmRestoreOnRebootService : Service() {
         return null
     }
 
-    override fun onStartCommand(intent: Intent, flags: Int, startId: Int): Int {
+    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         val context = applicationContext
 
         // Retrieves all tasks with reminder set
