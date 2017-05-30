@@ -27,6 +27,7 @@ interface Constants {
         val EXTRA_WIDGET_ID = "widget_id"
 
         // Custom intent actions
+        val ACTION_DONE = "action_done"
         val ACTION_SNOOZE = "action_snooze"
         val ACTION_POSTPONE = "action_postpone"
         val ACTION_WIDGET = "action_widget"

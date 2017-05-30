@@ -47,6 +47,12 @@ class AlarmReceiver : BroadcastReceiver() {
         val alarmText = DateHelper.getDateTimeShort(context, task.alarmDate)
         val text = if (task.title.isNotEmpty() && task.content.isNotEmpty()) task.content else alarmText
 
+        val doneIntent = Intent(context, SnoozeActivity::class.java)
+        doneIntent.action = Constants.ACTION_DONE
+        doneIntent.putExtra(Constants.EXTRA_TASK_ID, task.id) // Do not use parcelable with API 24+ for PendingIntent
+        doneIntent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
+        val piDone = PendingIntent.getActivity(context, 0, doneIntent, PendingIntent.FLAG_UPDATE_CURRENT)
+
         val snoozeIntent = Intent(context, SnoozeActivity::class.java)
         snoozeIntent.action = Constants.ACTION_SNOOZE
         snoozeIntent.putExtra(Constants.EXTRA_TASK_ID, task.id) // Do not use parcelable with API 24+ for PendingIntent
@@ -81,6 +87,7 @@ class AlarmReceiver : BroadcastReceiver() {
                 .setMessage(text)
 
         notificationsHelper.builder
+                ?.addAction(R.drawable.ic_done_white_24dp, context.getString(R.string.button_done), piDone)
                 ?.addAction(R.drawable.ic_update_white_24dp, context.getString(R.string.snooze, java.lang.Long.valueOf(snoozeDelay)), piSnooze)
                 ?.addAction(R.drawable.ic_alarm_white_24dp, context.getString(R.string.set_reminder), piPostpone)
 

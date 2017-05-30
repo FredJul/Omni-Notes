@@ -40,7 +40,12 @@ class SnoozeActivity : FragmentActivity(), OnReminderPickedListener {
         task = DbUtils.getTask(intent.extras.getString(Constants.EXTRA_TASK_ID))
 
         // If an alarm has been fired a notification must be generated
-        if (Constants.ACTION_SNOOZE == intent.action) {
+        if (Constants.ACTION_DONE == intent.action) {
+            task?.let {
+                DbUtils.finishTaskAsync(it)
+            }
+            finish()
+        } else if (Constants.ACTION_SNOOZE == intent.action) {
             val snoozeDelay = PrefUtils.getString(PrefUtils.PREF_SETTINGS_NOTIFICATION_SNOOZE_DELAY, "10")
             task!!.alarmDate = Calendar.getInstance().timeInMillis + Integer.parseInt(snoozeDelay) * 60 * 1000
             task!!.setupReminderAlarm(this)
