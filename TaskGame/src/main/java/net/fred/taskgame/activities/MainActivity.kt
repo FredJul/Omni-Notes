@@ -545,7 +545,7 @@ class MainActivity : AppCompatActivity(), FragmentManager.OnBackStackChangedList
 
         if (receivedIntent(intent)) {
             var task: Task? = Parcels.unwrap<Task>(intent.getParcelableExtra<Parcelable>(Constants.EXTRA_TASK))
-            if (task == null) {
+            if (task == null && intent.hasCategory(Constants.EXTRA_TASK_ID)) {
                 task = DbUtils.getTask(intent.getStringExtra(Constants.EXTRA_TASK_ID))
             }
             // Checks if the same note is already opened to avoid to open again
