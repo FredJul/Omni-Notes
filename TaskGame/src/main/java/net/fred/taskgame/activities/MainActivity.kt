@@ -18,6 +18,7 @@
 package net.fred.taskgame.activities
 
 import android.animation.ValueAnimator
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.ActivityNotFoundException
 import android.content.Intent
@@ -63,18 +64,21 @@ import net.fred.taskgame.utils.*
 import net.frju.androidquery.gen.CATEGORY
 import net.frju.androidquery.gen.TASK
 import net.frju.androidquery.utils.ThrottledContentObserver
+import org.jetbrains.anko.AnkoLogger
+import org.jetbrains.anko.debug
 import org.jetbrains.anko.doAsync
-import org.jetbrains.anko.onClick
-import org.jetbrains.anko.onLongClick
+import org.jetbrains.anko.error
+import org.jetbrains.anko.sdk21.coroutines.onClick
+import org.jetbrains.anko.sdk21.coroutines.onLongClick
 import org.parceler.Parcels
 
-class MainActivity : AppCompatActivity(), FragmentManager.OnBackStackChangedListener, NavigationView.OnNavigationItemSelectedListener {
+class MainActivity : AppCompatActivity(), FragmentManager.OnBackStackChangedListener, NavigationView.OnNavigationItemSelectedListener, AnkoLogger {
 
-    private val drawer_header by lazy { navigation_view.findViewById(R.id.drawer_header) as ViewGroup }
-    private val navigation_menu_view by lazy { navigation_view.findViewById(R.id.design_navigation_view) as ViewGroup }
-    private val player_image by lazy { drawer_header.findViewById(R.id.player_image) as ImageView }
-    private val player_name by lazy { drawer_header.findViewById(R.id.player_name) as TextView }
-    private val current_points by lazy { drawer_header.findViewById(R.id.current_points) as TextView }
+    private val drawer_header by lazy { navigation_view.findViewById<ViewGroup>(R.id.drawer_header) }
+    private val navigation_menu_view by lazy { navigation_view.findViewById<ViewGroup>(R.id.design_navigation_view) }
+    private val player_image by lazy { drawer_header.findViewById<ImageView>(R.id.player_image) }
+    private val player_name by lazy { drawer_header.findViewById<TextView>(R.id.player_name) }
+    private val current_points by lazy { drawer_header.findViewById<TextView>(R.id.current_points) }
     private val drawer_toggle by lazy {
         ActionBarDrawerToggle(this,
                 drawer_layout,
@@ -169,9 +173,10 @@ class MainActivity : AppCompatActivity(), FragmentManager.OnBackStackChangedList
                     .subscribe({ ev ->
                         when (ev.eventType) {
                             RxFirebase.EventType.CHILD_ADDED, RxFirebase.EventType.CHILD_CHANGED -> {
-                                val task = ev.snapshot.getValue(Task::class.java)
-                                task.id = ev.snapshot.key
-                                TASK.save(task).query()
+                                ev.snapshot.getValue(Task::class.java)?.let {
+                                    it.id = ev.snapshot.key
+                                    TASK.save(it).query()
+                                }
                             }
                             RxFirebase.EventType.CHILD_REMOVED -> {
                                 val task = Task() // no need to copy everything, only id needed
@@ -181,16 +186,17 @@ class MainActivity : AppCompatActivity(), FragmentManager.OnBackStackChangedList
                             RxFirebase.EventType.CHILD_MOVED -> {
                             }
                         }
-                    }, { throwable -> Dog.e("Error", throwable) }))
+                    }, { throwable -> error("Error", throwable) }))
 
             compositeDisposable.add(RxFirebase.observeChildren(DbUtils.firebaseCategoriesNode!!)
                     .observeOn(Schedulers.io())
                     .subscribe({ ev ->
                         when (ev.eventType) {
                             RxFirebase.EventType.CHILD_ADDED, RxFirebase.EventType.CHILD_CHANGED -> {
-                                val category = ev.snapshot.getValue(Category::class.java)
-                                category.id = ev.snapshot.key
-                                CATEGORY.save(category).query()
+                                ev.snapshot.getValue(Category::class.java)?.let {
+                                    it.id = ev.snapshot.key
+                                    CATEGORY.save(it).query()
+                                }
                             }
                             RxFirebase.EventType.CHILD_REMOVED -> {
                                 val category = Category() // no need to copy everything, only id needed
@@ -200,15 +206,17 @@ class MainActivity : AppCompatActivity(), FragmentManager.OnBackStackChangedList
                             RxFirebase.EventType.CHILD_MOVED -> {
                             }
                         }
-                    }, { throwable -> Dog.e("Error", throwable) }))
+                    }, { throwable -> error("Error", throwable) }))
 
             compositeDisposable.add(RxFirebase.observeSingle(DbUtils.firebaseCurrentUserNode!!.child(DbUtils.FIREBASE_CURRENT_POINTS_NODE_NAME))
                     .observeOn(Schedulers.io())
                     .subscribe({ snapshot ->
                         if (snapshot.value != null) {
-                            PrefUtils.putLong(PrefUtils.PREF_CURRENT_POINTS, snapshot.getValue(Long::class.java))
+                            snapshot.getValue(Long::class.java)?.let {
+                                PrefUtils.putLong(PrefUtils.PREF_CURRENT_POINTS, it)
+                            }
                         }
-                    }, { throwable -> Dog.e("Error", throwable) }))
+                    }, { throwable -> error("Error", throwable) }))
 
             player_name.text = firebaseUser.displayName
             Glide.with(this@MainActivity).load(firebaseUser.photoUrl).asBitmap().fitCenter().fallback(android.R.drawable.sym_def_app_icon).placeholder(android.R.drawable.sym_def_app_icon).into(object : BitmapImageViewTarget(player_image) {
@@ -258,7 +266,7 @@ class MainActivity : AppCompatActivity(), FragmentManager.OnBackStackChangedList
                             categoriesFirebase.child(category.id.toString()).addListenerForSingleValueEvent(object : ValueEventListener {
                                 override fun onDataChange(snapshot: DataSnapshot) {
                                     if (!snapshot.exists()) {
-                                        Dog.d("add cat: " + category.id)
+                                        debug("add cat: " + category.id)
                                         categoriesFirebase.child(category.id.toString()).setValue(category)
                                     }
                                 }
@@ -273,7 +281,7 @@ class MainActivity : AppCompatActivity(), FragmentManager.OnBackStackChangedList
                             tasksFirebase.child(task.id.toString()).addListenerForSingleValueEvent(object : ValueEventListener {
                                 override fun onDataChange(snapshot: DataSnapshot) {
                                     if (!snapshot.exists()) {
-                                        Dog.d("add task: " + task.id)
+                                        debug("add task: " + task.id)
                                         tasksFirebase.child(task.id.toString()).setValue(task)
                                     }
                                 }
@@ -289,6 +297,7 @@ class MainActivity : AppCompatActivity(), FragmentManager.OnBackStackChangedList
         }
     }
 
+    @SuppressLint("RestrictedApi")
     private fun initNavigationMenu() {
         navigation_view.menu.clear()
         val currentNavigation = NavigationUtils.navigation

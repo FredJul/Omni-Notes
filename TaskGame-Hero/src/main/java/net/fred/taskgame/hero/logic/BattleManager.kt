@@ -18,12 +18,13 @@
 package net.fred.taskgame.hero.logic
 
 import net.fred.taskgame.hero.models.Card
-import net.fred.taskgame.hero.utils.Dog
+import org.jetbrains.anko.AnkoLogger
+import org.jetbrains.anko.info
 import org.parceler.Parcel
 import java.util.*
 
 @Parcel(Parcel.Serialization.BEAN)
-class BattleManager {
+class BattleManager : AnkoLogger {
 
     enum class BattleStep {
         APPLY_PLAYER_SUPPORT, SELECT_STRATEGY, APPLY_ENEMY_SUPPORT, FIGHT, APPLY_DAMAGES, PLAYER_DEATH, ENEMY_DEATH, END_TURN, PLAYER_WON, ENEMY_WON, DRAW
@@ -288,7 +289,7 @@ class BattleManager {
             }
         }
 
-        Dog.i(currentStep.name)
+        info(currentStep.name)
         return currentStep
     }
 

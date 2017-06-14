@@ -48,18 +48,18 @@ class GameCardView : FrameLayout {
         inflateView(context, attrs, defStyleAttr)
     }
 
-    private val creature_icon: ImageView by lazy { getChildAt(0).findViewById(R.id.icon) as ImageView }
-    private val creature_needed_slots: TextView by lazy { getChildAt(0).findViewById(R.id.needed_slots) as TextView }
-    private val creature_name: TextView by lazy { getChildAt(0).findViewById(R.id.name) as TextView }
-    private val creature_desc: TextView by lazy { getChildAt(0).findViewById(R.id.desc) as TextView }
-    private val creature_speciality: TextView by lazy { getChildAt(0).findViewById(R.id.speciality) as TextView }
-    private val creature_attack: TextView by lazy { getChildAt(0).findViewById(R.id.attack) as TextView }
-    private val creature_defense: TextView by lazy { getChildAt(0).findViewById(R.id.defense) as TextView }
+    private val creature_icon: ImageView by lazy { getChildAt(0).findViewById<ImageView>(R.id.icon) }
+    private val creature_needed_slots: TextView by lazy { getChildAt(0).findViewById<TextView>(R.id.needed_slots) }
+    private val creature_name: TextView by lazy { getChildAt(0).findViewById<TextView>(R.id.name) }
+    private val creature_desc: TextView by lazy { getChildAt(0).findViewById<TextView>(R.id.desc) }
+    private val creature_speciality: TextView by lazy { getChildAt(0).findViewById<TextView>(R.id.speciality) }
+    private val creature_attack: TextView by lazy { getChildAt(0).findViewById<TextView>(R.id.attack) }
+    private val creature_defense: TextView by lazy { getChildAt(0).findViewById<TextView>(R.id.defense) }
 
-    private val support_icon: ImageView by lazy { getChildAt(1).findViewById(R.id.icon) as ImageView }
-    private val support_needed_slots: TextView by lazy { getChildAt(1).findViewById(R.id.needed_slots) as TextView }
-    private val support_name: TextView by lazy { getChildAt(1).findViewById(R.id.name) as TextView }
-    private val support_desc: TextView by lazy { getChildAt(1).findViewById(R.id.desc) as TextView }
+    private val support_icon: ImageView by lazy { getChildAt(1).findViewById<ImageView>(R.id.icon) }
+    private val support_needed_slots: TextView by lazy { getChildAt(1).findViewById<TextView>(R.id.needed_slots) }
+    private val support_name: TextView by lazy { getChildAt(1).findViewById<TextView>(R.id.name) }
+    private val support_desc: TextView by lazy { getChildAt(1).findViewById<TextView>(R.id.desc) }
 
     var card: Card? = null
         set(card) {

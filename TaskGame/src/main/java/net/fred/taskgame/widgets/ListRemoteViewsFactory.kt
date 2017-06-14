@@ -30,21 +30,22 @@ import net.fred.taskgame.R
 import net.fred.taskgame.models.Task
 import net.fred.taskgame.utils.Constants
 import net.fred.taskgame.utils.DbUtils
-import net.fred.taskgame.utils.Dog
 import net.fred.taskgame.utils.PrefUtils
 import net.frju.androidquery.gen.CATEGORY
 import net.frju.androidquery.gen.TASK
 import net.frju.androidquery.utils.ThrottledContentObserver
+import org.jetbrains.anko.AnkoLogger
+import org.jetbrains.anko.debug
 import org.parceler.Parcels
 
-class ListRemoteViewsFactory(private val context: Context, intent: Intent) : RemoteViewsFactory {
+class ListRemoteViewsFactory(private val context: Context, intent: Intent) : RemoteViewsFactory, AnkoLogger {
 
     private val appWidgetId = intent.getIntExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, AppWidgetManager.INVALID_APPWIDGET_ID)
     private var tasks: List<Task>? = null
 
     private val contentObserver = object : ThrottledContentObserver(Handler(), 500) {
         override fun onChangeThrottled() {
-            Dog.d("change detected, widget updated")
+            debug("change detected, widget updated")
             AppWidgetManager.getInstance(context).notifyAppWidgetViewDataChanged(appWidgetId, R.id.widget_list)
         }
     }

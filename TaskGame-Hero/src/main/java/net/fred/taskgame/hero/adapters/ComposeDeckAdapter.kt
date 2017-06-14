@@ -24,7 +24,7 @@ import android.view.ViewGroup
 import kotlinx.android.synthetic.main.item_deck_card.view.*
 import net.fred.taskgame.hero.R
 import net.fred.taskgame.hero.models.Card
-import org.jetbrains.anko.onClick
+import org.jetbrains.anko.sdk21.coroutines.onClick
 
 
 class ComposeDeckAdapter(val cards: List<Card>, private val mItemListener: RecyclerViewItemListener) : RecyclerView.Adapter<ComposeDeckAdapter.CardViewHolder>() {

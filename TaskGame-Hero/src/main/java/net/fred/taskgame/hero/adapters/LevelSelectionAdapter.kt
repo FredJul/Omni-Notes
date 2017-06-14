@@ -25,7 +25,7 @@ import kotlinx.android.synthetic.main.item_level.view.*
 import net.fred.taskgame.hero.App
 import net.fred.taskgame.hero.R
 import net.fred.taskgame.hero.models.Level
-import org.jetbrains.anko.onClick
+import org.jetbrains.anko.sdk21.coroutines.onClick
 
 class LevelSelectionAdapter(val levels: List<Level>, private val mItemListener: RecyclerViewItemListener) : RecyclerView.Adapter<LevelSelectionAdapter.LevelViewHolder>() {
 

@@ -54,14 +54,16 @@ import net.fred.taskgame.utils.recycler.SimpleItemTouchHelperCallback
 import net.frju.androidquery.gen.CATEGORY
 import net.frju.androidquery.gen.TASK
 import net.frju.androidquery.utils.ThrottledContentObserver
+import org.jetbrains.anko.AnkoLogger
 import org.jetbrains.anko.doAsync
-import org.jetbrains.anko.onClick
+import org.jetbrains.anko.error
+import org.jetbrains.anko.sdk21.coroutines.onClick
 import org.jetbrains.anko.uiThread
 import org.parceler.Parcels
 import java.util.*
 
 
-class ListFragment : Fragment() {
+class ListFragment : Fragment(), AnkoLogger {
 
     private var adapter: TaskAdapter? = null
 
@@ -327,7 +329,7 @@ class ListFragment : Fragment() {
                     }
 
                     override fun onQueryTextChange(pattern: String): Boolean {
-                        Dog.e(pattern)
+                        error(pattern)
                         searchQuery = pattern
                         onTasksLoaded(DbUtils.getTasksByPattern(searchQuery!!))
                         return true

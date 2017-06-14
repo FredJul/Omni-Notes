@@ -24,10 +24,15 @@ import android.content.Intent
 import net.fred.taskgame.R
 import net.fred.taskgame.activities.SnoozeActivity
 import net.fred.taskgame.models.Task
-import net.fred.taskgame.utils.*
+import net.fred.taskgame.utils.Constants
+import net.fred.taskgame.utils.DbUtils
+import net.fred.taskgame.utils.NotificationsHelper
+import net.fred.taskgame.utils.PrefUtils
 import net.fred.taskgame.utils.date.DateHelper
+import org.jetbrains.anko.AnkoLogger
+import org.jetbrains.anko.error
 
-class AlarmReceiver : BroadcastReceiver() {
+class AlarmReceiver : BroadcastReceiver(), AnkoLogger {
 
     override fun onReceive(context: Context, intent: Intent) {
         try {
@@ -36,7 +41,7 @@ class AlarmReceiver : BroadcastReceiver() {
                 createNotification(context, task)
             }
         } catch (e: Exception) {
-            Dog.e("Error while creating reminder notification", e)
+            error("Error while creating reminder notification", e)
         }
 
     }
@@ -87,7 +92,7 @@ class AlarmReceiver : BroadcastReceiver() {
                 .setMessage(text)
 
         notificationsHelper.builder
-                ?.addAction(R.drawable.ic_done_white_24dp, context.getString(R.string.button_done), piDone)
+                ?.addAction(R.drawable.ic_done_white_24dp, context.getString(R.string.done), piDone)
                 ?.addAction(R.drawable.ic_update_white_24dp, context.getString(R.string.snooze, java.lang.Long.valueOf(snoozeDelay)), piSnooze)
                 ?.addAction(R.drawable.ic_alarm_white_24dp, context.getString(R.string.set_reminder), piPostpone)
 

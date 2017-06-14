@@ -4,13 +4,13 @@ apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-kapt'
 
 android {
-    compileSdkVersion 25
+    compileSdkVersion 26
     buildToolsVersion "25.0.3"
 
     defaultConfig {
         applicationId "net.fred.taskgame.hero"
         minSdkVersion 21
-        targetSdkVersion 25
+        targetSdkVersion 26
         versionCode 4
         versionName "1.0.4"
     }
@@ -59,7 +59,11 @@ android {
 dependencies {
     compile fileTree(dir: 'libs', include: '*.jar')
     compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
-    compile 'org.jetbrains.anko:anko-sdk21:0.9.1'
+
+    ext.anko_version = '0.10.1'
+    compile "org.jetbrains.anko:anko-sdk21:$anko_version"
+    compile "org.jetbrains.anko:anko-sdk21-coroutines:$anko_version"
+    compile "org.jetbrains.anko:anko-appcompat-v7:$anko_version"
 
     kapt "net.frju.androidquery:android-query-preprocessor:${androidquery_version}"
     compile "net.frju.androidquery:android-query:${androidquery_version}"

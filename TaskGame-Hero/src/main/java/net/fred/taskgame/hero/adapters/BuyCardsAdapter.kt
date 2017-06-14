@@ -24,7 +24,7 @@ import android.view.ViewGroup
 import kotlinx.android.synthetic.main.item_buy_card.view.*
 import net.fred.taskgame.hero.R
 import net.fred.taskgame.hero.models.Card
-import org.jetbrains.anko.onClick
+import org.jetbrains.anko.sdk21.coroutines.onClick
 
 class BuyCardsAdapter(val cards: List<Card>, private val mItemListener: RecyclerViewItemListener) : RecyclerView.Adapter<BuyCardsAdapter.CardViewHolder>() {
 

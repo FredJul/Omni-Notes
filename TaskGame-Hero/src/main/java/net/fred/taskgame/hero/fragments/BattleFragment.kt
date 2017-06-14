@@ -33,15 +33,16 @@ import net.fred.taskgame.hero.activities.MainActivity
 import net.fred.taskgame.hero.logic.BattleManager
 import net.fred.taskgame.hero.models.Card
 import net.fred.taskgame.hero.models.Level
-import net.fred.taskgame.hero.utils.Dog
 import net.fred.taskgame.hero.utils.UiUtils
 import net.fred.taskgame.hero.views.GameCardView
 import net.frju.androidquery.gen.LEVEL
-import org.jetbrains.anko.onClick
+import org.jetbrains.anko.AnkoLogger
+import org.jetbrains.anko.debug
+import org.jetbrains.anko.sdk21.coroutines.onClick
 import org.parceler.Parcels
 
 
-class BattleFragment : BaseFragment() {
+class BattleFragment : BaseFragment(), AnkoLogger {
 
     private var battleManager = BattleManager()
     private var level: Level? = null
@@ -411,7 +412,7 @@ class BattleFragment : BaseFragment() {
         // Set the new cards to the views
         for (i in newCards.indices) {
             val card = newCards[i]
-            Dog.d("Card added to game: " + card.name)
+            debug("Card added to game: " + card.name)
             (card_list.getChildAt(i) as GameCardView).card = card
         }
 

@@ -27,7 +27,7 @@ import net.fred.taskgame.R
 import net.fred.taskgame.models.Task
 import net.fred.taskgame.utils.recycler.ItemActionListener
 import net.fred.taskgame.utils.recycler.ItemActionViewHolder
-import org.jetbrains.anko.onClick
+import org.jetbrains.anko.sdk21.coroutines.onClick
 
 
 class TaskAdapter(private val itemActionListener: ItemActionListener, recyclerView: RecyclerView, private var _tasks: MutableList<Task>) : MultiSelectAdapter<TaskAdapter.TaskViewHolder>(itemActionListener, recyclerView) {

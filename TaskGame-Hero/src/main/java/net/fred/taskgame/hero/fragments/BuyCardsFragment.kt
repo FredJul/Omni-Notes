@@ -34,7 +34,7 @@ import net.fred.taskgame.hero.adapters.RecyclerViewItemListener
 import net.fred.taskgame.hero.models.Card
 import net.fred.taskgame.hero.utils.TaskGameUtils
 import net.frju.androidquery.gen.CARD
-import org.jetbrains.anko.onClick
+import org.jetbrains.anko.sdk21.coroutines.onClick
 
 
 class BuyCardsFragment : BaseFragment() {

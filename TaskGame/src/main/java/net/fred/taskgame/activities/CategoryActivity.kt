@@ -34,7 +34,7 @@ import net.fred.taskgame.utils.DbUtils
 import net.fred.taskgame.utils.NavigationUtils
 import net.frju.androidquery.gen.CATEGORY
 import org.jetbrains.anko.doAsync
-import org.jetbrains.anko.onClick
+import org.jetbrains.anko.sdk21.coroutines.onClick
 import org.parceler.Parcels
 
 class CategoryActivity : Activity() {
@@ -68,10 +68,10 @@ class CategoryActivity : Activity() {
         colorpicker_category.onClick { colorpicker_category.color = Color.WHITE }
 
         // Added invisible saturation and value bars to get achieve pastel colors
-        val saturationBar = findViewById(R.id.saturationbar_category) as SaturationBar
+        val saturationBar = findViewById<SaturationBar>(R.id.saturationbar_category)
         saturationBar.setSaturation(0.4f)
         colorpicker_category.addSaturationBar(saturationBar)
-        val valueBar = findViewById(R.id.valuebar_category) as ValueBar
+        val valueBar = findViewById<ValueBar>(R.id.valuebar_category)
         valueBar.setValue(0.9f)
         colorpicker_category.addValueBar(valueBar)
 

@@ -29,7 +29,7 @@ import net.fred.taskgame.hero.adapters.LevelSelectionAdapter
 import net.fred.taskgame.hero.adapters.RecyclerViewItemListener
 import net.fred.taskgame.hero.models.Level
 import net.fred.taskgame.hero.utils.UiUtils
-import org.jetbrains.anko.onClick
+import org.jetbrains.anko.sdk21.coroutines.onClick
 
 
 class LevelSelectionFragment : BaseFragment() {

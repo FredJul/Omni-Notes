@@ -28,7 +28,7 @@ import net.fred.taskgame.R
 import net.fred.taskgame.adapters.CategoryAdapter
 import net.fred.taskgame.models.Category
 import net.fred.taskgame.utils.DbUtils
-import org.jetbrains.anko.onClick
+import org.jetbrains.anko.sdk21.coroutines.onClick
 
 class WidgetConfigurationActivity : Activity() {
 
@@ -55,7 +55,7 @@ class WidgetConfigurationActivity : Activity() {
         val categories = DbUtils.categories
         widget_config_spinner.adapter = CategoryAdapter(mActivity, categories)
 
-        val configOkButton = findViewById(R.id.widget_config_confirm) as Button
+        val configOkButton = findViewById<Button>(R.id.widget_config_confirm)
         configOkButton.onClick {
             var categoryId: String? = null
             if (widget_config_radiogroup.checkedRadioButtonId != R.id.widget_config_tasks) {

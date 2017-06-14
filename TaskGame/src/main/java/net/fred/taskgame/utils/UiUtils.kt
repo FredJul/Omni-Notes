@@ -56,11 +56,11 @@ object UiUtils {
         val snackbar = Snackbar.make(activity.findViewById(R.id.coordinator_layout), message, Snackbar.LENGTH_SHORT)
         when (type) {
             UiUtils.MessageType.TYPE_WARN -> {
-                val textView = snackbar.view.findViewById(R.id.snackbar_text) as TextView
+                val textView = snackbar.view.findViewById<TextView>(R.id.snackbar_text)
                 textView.setTextColor(ContextCompat.getColor(activity, R.color.warning))
             }
             UiUtils.MessageType.TYPE_ERROR -> {
-                val textView = snackbar.view.findViewById(R.id.snackbar_text) as TextView
+                val textView = snackbar.view.findViewById<TextView>(R.id.snackbar_text)
                 textView.setTextColor(ContextCompat.getColor(activity, R.color.error))
             }
             else -> {

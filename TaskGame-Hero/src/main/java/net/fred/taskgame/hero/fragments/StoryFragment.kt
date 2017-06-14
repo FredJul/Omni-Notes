@@ -35,7 +35,7 @@ import net.fred.taskgame.hero.activities.MainActivity
 import net.fred.taskgame.hero.models.Card
 import net.fred.taskgame.hero.models.Level
 import net.fred.taskgame.hero.utils.UiUtils
-import org.jetbrains.anko.onClick
+import org.jetbrains.anko.sdk21.coroutines.onClick
 import org.parceler.Parcels
 import java.util.*
 
