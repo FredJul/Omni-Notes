@@ -1,3 +1,7 @@
+
+# *BEWARE: ABANDONNED PROJECT*
+
+
 TaskGame
 ==========
 
